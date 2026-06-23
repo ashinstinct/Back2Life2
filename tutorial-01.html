@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jump Through The TV & Score A Goal — AI Video Tutorial | Back2Life.app</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0f0f0f;
+    color: #e8e8e8;
+    line-height: 1.7;
+  }
+
+  /* HERO */
+  .hero { padding-top: 20px !important;
+    background: linear-gradient(135deg, #0d1b2a 0%, #1a0a2e 40%, #0d2b1a 100%);
+    padding: 60px 40px 50px;
+    text-align: center;
+    border-bottom: 2px solid #00ff88;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, rgba(0,255,136,0.08) 0%, transparent 70%);
+  }
+  .brand-tag {
+    display: inline-block;
+    background: linear-gradient(90deg, #00ff88, #00ccff);
+    color: #000;
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 16px;
+    line-height: 1.15;
+  }
+  .hero h1 span { color: #00ff88; }
+  .hero-sub {
+    font-size: 18px;
+    color: #aaa;
+    max-width: 600px;
+    margin: 0 auto 32px;
+  }
+  .hero-meta {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .meta-pill {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 13px;
+    color: #ccc;
+  }
+  .meta-pill span { color: #00ff88; font-weight: 600; }
+
+  /* SOCIAL BAR */
+  .social-bar {
+    background: #111;
+    border-bottom: 1px solid #222;
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .social-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 2px; margin-right: 8px; }
+  .social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #ccc;
+  }
+  .social-link:hover { transform: translateY(-1px); border-color: #00ff88; color: #00ff88; }
+  .social-link.ig { border-color: rgba(225,48,108,0.3); }
+  .social-link.ig:hover { border-color: #e1306c; color: #e1306c; }
+  .social-link.tt:hover { border-color: #69c9d0; color: #69c9d0; }
+  .social-link.yt:hover { border-color: #ff0000; color: #ff0000; }
+  .social-link.tw:hover { border-color: #1da1f2; color: #1da1f2; }
+  .social-link.th:hover { border-color: #a855f7; color: #a855f7; }
+
+  /* MAIN LAYOUT */
+  .container { max-width: 860px; margin: 0 auto; padding: 60px 32px; }
+
+  /* OVERVIEW BOX */
+  .overview-box {
+    background: linear-gradient(135deg, rgba(0,255,136,0.06), rgba(0,204,255,0.04));
+    border: 1px solid rgba(0,255,136,0.2);
+    border-radius: 16px;
+    padding: 32px 36px;
+    margin-bottom: 56px;
+  }
+  .overview-box h2 { font-size: 20px; color: #00ff88; margin-bottom: 16px; }
+  .overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .overview-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 14px; color: #ccc;
+  }
+  .overview-item .dot { color: #00ff88; font-size: 18px; margin-top: -2px; flex-shrink: 0; }
+
+  /* TOOLS NEEDED */
+  .tools-row {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 56px;
+  }
+  .tool-card {
+    flex: 1; min-width: 160px;
+    background: #161616;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .tool-icon { font-size: 28px; margin-bottom: 10px; }
+  .tool-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .tool-desc { font-size: 12px; color: #777; }
+
+  /* STEP SECTIONS */
+  .step-section { margin-bottom: 64px; }
+  .step-header {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #222;
+  }
+  .step-number {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, #00ff88, #00ccff);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 800; color: #000;
+    flex-shrink: 0;
+  }
+  .step-title-block h2 { font-size: 24px; font-weight: 700; color: #fff; }
+  .step-title-block p { font-size: 14px; color: #888; margin-top: 2px; }
+
+  /* INSTRUCTION STEPS */
+  .instruction { margin-bottom: 20px; }
+  .instruction-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px;
+    background: rgba(0,255,136,0.12);
+    border: 1px solid rgba(0,255,136,0.3);
+    border-radius: 50%;
+    font-size: 12px; font-weight: 700; color: #00ff88;
+    flex-shrink: 0; margin-right: 12px; margin-bottom: 6px;
+    float: left;
+  }
+  .instruction p { color: #ccc; font-size: 15px; overflow: hidden; }
+  .instruction p strong { color: #fff; }
+  .clearfix::after { content: ''; display: table; clear: both; }
+
+  /* CODE / PROMPT BLOCKS */
+  .prompt-block {
+    background: #0a0a0a;
+    border: 1px solid #2a2a2a;
+    border-left: 3px solid #00ff88;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin: 20px 0;
+    position: relative;
+  }
+  .prompt-block .prompt-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: #00ff88;
+    margin-bottom: 14px;
+  }
+  .prompt-block pre {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: #d4f0c0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.8;
+  }
+  .copy-btn {
+    position: absolute; top: 14px; right: 14px;
+    background: rgba(0,255,136,0.1);
+    border: 1px solid rgba(0,255,136,0.3);
+    color: #00ff88;
+    font-size: 12px; font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    padding: 5px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .copy-btn:hover {
+    background: rgba(0,255,136,0.2);
+    border-color: #00ff88;
+  }
+  .copy-btn.copied {
+    background: rgba(0,255,136,0.25);
+    border-color: #00ff88;
+    color: #00ff88;
+  }
+  .copy-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+  /* INFO CALLOUT */
+  .callout {
+    display: flex; gap: 14px; align-items: flex-start;
+    background: rgba(0,200,255,0.05);
+    border: 1px solid rgba(0,200,255,0.2);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 20px 0;
+  }
+  .callout-icon { font-size: 20px; flex-shrink: 0; }
+  .callout p { font-size: 14px; color: #b0d4e0; }
+  .callout p strong { color: #00ccff; }
+
+  .callout.tip { background: rgba(255,200,0,0.05); border-color: rgba(255,200,0,0.2); }
+  .callout.tip p { color: #d4c07a; }
+  .callout.tip p strong { color: #ffc800; }
+
+  .callout.warning { background: rgba(255,100,50,0.05); border-color: rgba(255,100,50,0.2); }
+  .callout.warning p { color: #d4907a; }
+  .callout.warning p strong { color: #ff6432; }
+
+  /* SETTINGS TABLE */
+  .settings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  .settings-table th {
+    background: #161616;
+    color: #888;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .settings-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #1a1a1a;
+    color: #ccc;
+    vertical-align: top;
+  }
+  .settings-table td:first-child { color: #fff; font-weight: 500; }
+  .settings-table td .val {
+    display: inline-block;
+    background: rgba(0,255,136,0.1);
+    color: #00ff88;
+    font-family: monospace;
+    font-size: 13px;
+    padding: 2px 10px;
+    border-radius: 5px;
+  }
+  .settings-table tr:last-child td { border-bottom: none; }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid #1e1e1e;
+    margin: 56px 0;
+  }
+
+  /* FINAL CTA */
+  .final-cta {
+    background: linear-gradient(135deg, #0d1b2a, #1a0a2e);
+    border: 1px solid rgba(0,255,136,0.2);
+    border-radius: 20px;
+    padding: 48px 40px;
+    text-align: center;
+    margin-top: 40px;
+  }
+  .final-cta h2 { font-size: 28px; color: #fff; margin-bottom: 12px; }
+  .final-cta h2 span { color: #00ff88; }
+  .final-cta p { color: #888; margin-bottom: 32px; font-size: 15px; }
+  .social-grid {
+    display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
+  }
+  .cta-social {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 13px; font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #ccc;
+  }
+  .cta-social:hover { transform: translateY(-2px); color: #00ff88; border-color: #00ff88; }
+
+  /* IMAGE PLACEHOLDER */
+  .img-box {
+    background: #141414;
+    border: 2px dashed #2a2a2a;
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    margin: 20px 0;
+    color: #444;
+    font-size: 13px;
+  }
+  .img-box .img-icon { font-size: 36px; margin-bottom: 10px; }
+  .img-box strong { color: #666; display: block; margin-bottom: 4px; font-size: 14px; }
+
+
+  .media-block {
+    margin: 24px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #2a2a2a;
+  }
+  .media-label {
+    background: #161616;
+    padding: 10px 18px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #00ff88;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .media-caption {
+    background: #0f0f0f;
+    padding: 12px 18px;
+    font-size: 13px;
+    color: #666;
+    border-top: 1px solid #1a1a1a;
+  }
+  .media-block video {
+    width: 100%;
+    display: block;
+    background: #000;
+  }
+  .media-block img {
+    width: 100%;
+    display: block;
+  }
+  .media-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  /* STORYBOARD */
+  .storyboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .sb-card {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .sb-card:hover { border-color: #00ff88; }
+  .sb-img-wrap {
+    position: relative;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+  }
+  .sb-img-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .sb-timecode {
+    position: absolute;
+    top: 10px; left: 10px;
+    background: rgba(0,0,0,0.75);
+    color: #00ff88;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: monospace;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+  }
+  .sb-info { padding: 14px 16px; }
+  .sb-title {
+    font-size: 14px; font-weight: 700; color: #fff;
+    margin-bottom: 5px;
+  }
+  .sb-caption { font-size: 12px; color: #777; line-height: 1.5; }
+
+  /* Full-width last card if odd count */
+  .storyboard-grid .sb-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+  .storyboard-grid .sb-card:last-child:nth-child(odd) .sb-img-wrap {
+    max-height: 280px;
+  }
+
+  @media (max-width: 500px) {
+    .storyboard-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 600px) { .media-row { grid-template-columns: 1fr; } }
+
+
+  /* STORYBOARD */
+  .storyboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .sb-card {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .sb-card:hover { border-color: #00ff88; }
+  .sb-img-wrap {
+    position: relative;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+  }
+  .sb-img-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .sb-timecode {
+    position: absolute;
+    top: 10px; left: 10px;
+    background: rgba(0,0,0,0.75);
+    color: #00ff88;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: monospace;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+  }
+  .sb-info { padding: 14px 16px; }
+  .sb-title {
+    font-size: 14px; font-weight: 700; color: #fff;
+    margin-bottom: 5px;
+  }
+  .sb-caption { font-size: 12px; color: #777; line-height: 1.5; }
+
+  /* Full-width last card if odd count */
+  .storyboard-grid .sb-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+  .storyboard-grid .sb-card:last-child:nth-child(odd) .sb-img-wrap {
+    max-height: 280px;
+  }
+
+  @media (max-width: 500px) {
+    .storyboard-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 600px) {
+    .overview-grid { grid-template-columns: 1fr; }
+    .hero { padding: 20px 20px 32px; }
+    .container { padding: 40px 20px; }
+    .final-cta { padding: 36px 20px; }
+  }
+
+  /* ── SITE NAV ── */
+  .site-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,10,10,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);padding:0 16px;height:56px;display:flex;align-items:center;gap:10px}
+  .site-nav-logo{font-size:18px;font-weight:800;color:#fff;text-decoration:none;letter-spacing:-.2px;flex-shrink:0}
+  .site-nav-logo em{color:#00ff88;font-style:normal}
+  .site-spacer{flex:1}
+  .site-nav-back{font-size:13px;font-weight:500;color:#888;text-decoration:none;flex-shrink:0;transition:color .2s}
+  .site-nav-back:hover{color:#00ff88}
+  .site-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;z-index:1;flex-shrink:0}
+  .site-burger span{display:block;width:20px;height:2px;background:#aaa;border-radius:2px;transition:all .3s}
+  .site-burger.open span{background:#00ff88}
+  .site-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .site-burger.open span:nth-child(2){opacity:0}
+  .site-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  /* Bottom sheet drawer */
+  .site-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:290;display:none;backdrop-filter:blur(2px)}
+  .site-backdrop.open{display:block}
+  .site-drawer{position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid #2a2a2a;border-radius:20px 20px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s ease;padding:0 20px 40px;max-height:80vh;overflow-y:auto}
+  .site-drawer.open{transform:translateY(0)}
+  .drawer-handle-wrap{padding:10px 0 6px;text-align:center}
+  .drawer-handle{width:36px;height:4px;background:#333;border-radius:2px;margin:0 auto}
+  .drawer-sl{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:14px 0 7px;border-top:1px solid #1a1a1a;margin-top:4px}
+  .drawer-sl:first-of-type{border-top:none;margin-top:0;padding-top:4px}
+  .drawer-a{display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ddd;text-decoration:none;border-bottom:1px solid #222;transition:color .2s}
+  .drawer-a:active{color:#00ff88}
+  .drawer-a .ico{width:26px;text-align:center;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .drawer-a .ico svg{width:20px;height:20px;display:block}
+  .drawer-cta{display:block;margin-top:20px;background:#00ff88;color:#000;font-weight:700;font-size:14px;padding:13px;border-radius:10px;text-decoration:none;text-align:center}
+  @media(max-width:768px){.site-nav-back{display:none}.site-burger{display:flex}}
+</style>
+
+  <!-- PWA / Home Screen Icon -->
+  <link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta name="theme-color" content="#080f0a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Back2Life">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="vercel-toolbar" content="off">
+</head>
+<body>
+
+<nav class="site-nav">
+  <button class="site-burger" id="sBurger"><span></span><span></span><span></span></button>
+  <a href="/" class="site-nav-logo">Back2Life<em>.app</em></a>
+  <div class="site-spacer"></div>
+  <a href="/" class="site-nav-back">← Tutorials</a>
+</nav>
+<div class="site-backdrop" id="sBackdrop"></div>
+<div class="site-drawer" id="sDrawer">
+  <div class="drawer-handle-wrap"><div class="drawer-handle"></div></div>
+  <div class="drawer-sl">Navigation</div>
+  <a href="/" class="drawer-a"><span class="ico">🏠</span>Home</a>
+  <a href="/#tutorials" class="drawer-a"><span class="ico">🎓</span>Tutorials</a>
+  <div class="drawer-sl">Free Tools</div>
+  <a href="/watermark" class="drawer-a"><span class="ico">🎬</span>Watermark Image &amp; Video</a>
+  <a href="/frame-extractor" class="drawer-a"><span class="ico">📸</span>Frame Extractor</a>
+  <a href="/audio-editor" class="drawer-a"><span class="ico">🎵</span>Audio Editor</a>
+  <a href="/audio-converter" class="drawer-a"><span class="ico">🔄</span>Audio Converter</a>
+  <div class="drawer-sl">Follow Us</div>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="#E1306C" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="#E1306C" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="#E1306C"/></svg></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.17 8.17 0 004.78 1.52V7.1a4.85 4.85 0 01-1.01-.41z" fill="white"/></svg></span>TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24"><path d="M23.5 6.19a3 3 0 00-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 00.5 6.19 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.81 3 3 0 002.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 002.12-2.12A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.81z" fill="#FF0000"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="white"/></svg></span>YouTube</a>
+  <a href="https://x.com/Back2LifeAI" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="white"/></svg></span>X / Twitter</a>
+  <a href="https://www.threads.com/@back2life.ai" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.474 12.01v-.017c.026-3.578.876-6.43 2.521-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.594 12c.022 3.086.713 5.496 2.051 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.789-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 012.42.116c-.1-.609-.3-1.098-.605-1.446-.428-.487-1.08-.735-1.949-.739h-.005c-.67 0-1.663.2-2.275 1.495l-1.846-.823c.814-1.826 2.365-2.833 4.121-2.833h.007c1.37.005 2.527.44 3.345 1.259.826.828 1.262 2.007 1.299 3.505a5.462 5.462 0 011.157.795c1.124.976 1.747 2.355 1.747 3.888 0 .074-.002.148-.006.222-.065 3.896-2.809 6.168-7.484 6.201z" fill="white"/></svg></span>Threads</a>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-cta">📸 Follow on Instagram</a>
+</div>
+
+<!-- HERO IMAGE -->
+<div style="width:100%;background:#000;overflow:hidden;max-height:340px;margin-top:56px">
+  <img src="/img/hero.jpg" alt="Score The World Cup Winner" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block;max-height:360px">
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="position:relative;z-index:1">
+    <div class="brand-tag">BACK2LIFE.APP TUTORIAL</div>
+    <h1>Jump Through The TV<br>&amp; <span>Score The World Cup Winner</span></h1>
+    <p class="hero-sub">Create a viral AI video where YOU leap off your sofa into a live football match and score the goal of your life — using Nano Banana Pro + Seedance 2.0</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><span class="hero-meta-icon">⏱</span><span><b class="hero-meta-val">15 mins</b> to create</span></div>
+      <div class="hero-meta-item"><span class="hero-meta-icon">🎬</span><span><b class="hero-meta-val">Seedance 2.0</b> Fast Mode</span></div>
+      <div class="hero-meta-item"><span class="hero-meta-icon">📱</span><span><b class="hero-meta-val">9:16</b> Vertical Format</span></div>
+      <div class="hero-meta-item"><span class="hero-meta-icon">⚡</span><span><b class="hero-meta-val">13 second</b> video</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SOCIAL BAR -->
+<div class="social-bar">
+  <span class="social-label">FOLLOW</span>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="social-link" style="display:inline-flex;align-items:center;gap:5px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="#E1306C" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="#E1306C" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="#E1306C"/></svg> Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="social-link" style="display:inline-flex;align-items:center;gap:5px"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.17 8.17 0 004.78 1.52V7.1a4.85 4.85 0 01-1.01-.41z" fill="white"/></svg> TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="social-link" style="display:inline-flex;align-items:center;gap:5px"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M23.5 6.19a3 3 0 00-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 00.5 6.19 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.81 3 3 0 002.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 002.12-2.12A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.81z" fill="#FF0000"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="white"/></svg> YouTube</a>
+  <a href="https://x.com/Back2LifeAI" target="_blank" class="social-link" style="display:inline-flex;align-items:center;gap:5px"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="white"/></svg> X</a>
+  <a href="https://www.threads.com/@back2life.ai" target="_blank" class="social-link">🧵 Threads</a>
+</div>
+
+
+
+<!-- YOUTUBE VIDEO -->
+<div style="max-width:900px;margin:0 auto;padding:28px 20px 0">
+  <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:16px;border:1px solid #1e1e1e;box-shadow:0 24px 60px rgba(0,0,0,0.6)">
+    <iframe
+      src="https://www.youtube.com/embed/9xiuR3LKvKs?rel=0&modestbranding=1"
+      title="Jump Through The TV & Score The World Cup Winner — AI Video Tutorial"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen
+      style="position:absolute;top:0;left:0;width:100%;height:100%">
+    </iframe>
+  </div>
+  <p style="text-align:center;margin-top:12px;font-size:13px;color:#444">
+    ▶ Watch the full tutorial &nbsp;·&nbsp; <a href="https://youtu.be/9xiuR3LKvKs" target="_blank" style="color:#00ff88;text-decoration:none;font-weight:600">Open in YouTube ↗</a>
+  </p>
+</div>
+
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+  <!-- OVERVIEW -->
+  <div class="overview-box">
+    <h2>📋 What You'll Create</h2>
+    <div class="overview-grid">
+      <div class="overview-item"><span class="dot">▸</span> A character sheet of YOU in a personalised England kit</div>
+      <div class="overview-item"><span class="dot">▸</span> A sofa-to-stadium viral video moment</div>
+      <div class="overview-item"><span class="dot">▸</span> A dramatic goal score with commentator voiceover</div>
+      <div class="overview-item"><span class="dot">▸</span> A 13-second 9:16 clip ready for TikTok & Reels</div>
+    </div>
+  </div>
+
+  <!-- TOOLS -->
+  <div class="tools-row">
+    <div class="tool-card">
+      <div class="tool-icon">🤖</div>
+      <div class="tool-name">Higgsfield — Nano Banana Pro</div>
+      <div class="tool-desc">Character sheet &amp; kit generation (free unlimited)</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon">🎬</div>
+      <div class="tool-name">Higgsfield.ai</div>
+      <div class="tool-desc">Seedance 2.0 video generation</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon">🤳</div>
+      <div class="tool-name">Your Selfie</div>
+      <div class="tool-desc">A clear front-facing photo of you</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon">⚽</div>
+      <div class="tool-name">Your Imagination</div>
+      <div class="tool-desc">Customise your name, number & kit</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- STEP 1 -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">1</div>
+      <div class="step-title-block">
+        <h2>Take or Choose Your Selfie Photo</h2>
+        <p>The foundation of your character — get this right and the rest follows</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>Take a <strong>clear, well-lit selfie or portrait photo</strong> of yourself against a plain or simple background. Natural light near a window works perfectly.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>Make sure your <strong>full face and upper body are visible</strong>. Avoid sunglasses, hats, or heavy shadows across your face.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">3</span>
+      <p>Save it to your device. You'll upload this into <strong>Higgsfield.ai</strong> in the next step.</p>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>Pro tip:</strong> A plain white or grey wall behind you gives Nano Banana Pro the cleanest result when generating your character sheet. Outdoors in soft daylight works great too.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- STEP 2 -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">2</div>
+      <div class="step-title-block">
+        <h2>Generate Your Character Sheet Using Nano Banana Pro (Inside Higgsfield)</h2>
+        <p>Use Nano Banana Pro inside Higgsfield.ai — free unlimited generations with 2K quality</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>Log in to <strong><a href="https://higgsfield.ai" style="color:#00ff88;">Higgsfield.ai</a></strong>. Tap <strong>Create Image</strong>. In the Model selector at the bottom, choose <strong>Nano Banana Pro</strong>. Toggle <strong>Unlimited</strong> to ON (the green toggle) for free unlimited generations. Set quality to <strong>2K</strong> and format to <strong>9:16</strong> or <strong>16:9</strong>.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>Tap the <strong>+ Reference images</strong> box and upload your selfie photo. Then paste the following prompt into the prompt box and tap <strong>Generate</strong>:</p>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Prompt — Step 1: Character Sheet from Selfie</div>
+      <button class="copy-btn" onclick="copyPrompt(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button>
+      <pre>Using the face and physical features from the uploaded photo, generate a professional AI character reference sheet on a clean white background. Show the same person in four poses arranged side by side: full front view, 45-degree side view, full back view, and 45-degree opposite side view. Also include a close-up face portrait in the top right corner. The person should be wearing casual everyday clothing — jeans, a white t-shirt and a simple overshirt. Keep the face, skin tone, hair colour, build and facial features as faithful to the reference photo as possible. Style: clean professional character design sheet, photorealistic quality, consistent lighting from all angles.</pre>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">3</span>
+      <p>Wait for Nano Banana Pro to generate the result. If the face doesn't look quite right, <strong>hit Generate again</strong> and add to your prompt: "keep the face more faithful to the reference photo — same skin tone, same eye colour, same hair."</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">4</span>
+      <p>Once happy, click the <strong>Download</strong> button on your generation to save the character sheet. You'll upload this again in Step 3.</p>
+    </div>
+
+    <div class="callout">
+      <span class="callout-icon">ℹ️</span>
+      <p>Your result should look like the example below — multiple angles of the same person on a white background with a face close-up. <strong>This is your permanent AI avatar</strong> for any future videos. Nano Banana Pro with Unlimited ON means you can regenerate as many times as needed at no cost.</p>
+    </div>
+
+    <div class="media-block">
+      <div class="media-label">Example Output — Character Sheet (Casual Clothes)</div>
+      <img src="/img/img02.jpg" alt="Williams character sheet in casual clothing — front, side, back, side angles plus face closeup" style="width:100%;border-radius:10px;display:block;">
+      <div class="media-caption">Your output should look like this — 4 consistent angles on a white background with a face close-up in the corner.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- STEP 3 -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">3</div>
+      <div class="step-title-block">
+        <h2>Swap Into the England Kit With Your Name & Number</h2>
+        <p>Transform your character sheet into a personalised England football kit</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>In <strong>Higgsfield.ai</strong>, tap <strong>Create Image</strong> with <strong>Nano Banana Pro</strong> and <strong>upload the character sheet you just saved</strong> in Step 2.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p><strong>Paste the prompt below</strong> — replacing <strong>[YOUR NAME]</strong> with your surname in capitals and <strong>[YOUR NUMBER]</strong> with your chosen squad number:</p>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Prompt — Step 2: Kit Swap to England Football Kit</div>
+      <button class="copy-btn" onclick="copyPrompt(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button>
+      <pre>Using the character reference sheet in the uploaded image, regenerate the exact same 4-angle character sheet plus face portrait, but now dress the character in the official England home football kit. The kit should be: white short-sleeved football shirt with the Three Lions England badge on the left chest, the number [YOUR NUMBER] printed in large navy blue on the front left, navy blue shorts with the Three Lions badge, white football socks pulled up to the knee, and black football boots. On the BACK of the shirt, print the name [YOUR NAME] in large bold navy blue capital letters above the number [YOUR NUMBER]. Keep all facial features, skin tone, hair, and build identical to the uploaded reference. White studio background. Photorealistic quality. Show all 4 angles so the name and number on the back are clearly visible in the rear-facing view.</pre>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">3</span>
+      <p>Nano Banana Pro will generate your character dressed in the England kit. <strong>Check the rear-facing angle</strong> — your name and number should be clearly visible on the back of the shirt.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">4</span>
+      <p>If the name or number text isn't quite right, generate again and add to your prompt: "Fix the text on the back — it should read [YOUR NAME] above [YOUR NUMBER] in bold navy blue capital letters."</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">5</span>
+      <p><strong>Download this England kit character sheet</strong> from Higgsfield. This is the reference image you'll use when generating your video in Step 4.</p>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">⚡</span>
+      <p><strong>Want a different kit?</strong> You can swap "England home football kit" for any team — Brazil yellow, Man United red, Real Madrid white. Just change the kit description in the prompt. The name/number swap works exactly the same way.</p>
+    </div>
+  <!-- STEP 3 IMAGES -->
+  <div class="media-row">
+    <div class="media-block">
+      <div class="media-label">✅ Kit Character Sheet — Full Reference</div>
+      <img src="/img/img03.jpg" alt="Williams England kit character sheet">
+      <div class="media-caption">4 angles in the England kit with WILLIAMS 10 clearly on the back — this is what you upload to Higgsfield.</div>
+    </div>
+    <div class="media-block">
+      <div class="media-label">✅ Kit Design — Front & Back</div>
+      <img src="/img/img04.jpg" alt="Williams England kit front and back">
+      <div class="media-caption">The kit standalone showing the name and number clearly on front and back.</div>
+    </div>
+  </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- STEP 4 -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">4</div>
+      <div class="step-title-block">
+        <h2>Generate Your Viral Video on Higgsfield</h2>
+        <p>Feed your kit character sheet into Seedance 2.0 and bring the scene to life</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>Go to <strong><a href="https://higgsfield.ai" style="color:#00ff88;">higgsfield.ai</a></strong> and log in or create a free account.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>Click <strong>"Create"</strong> then select <strong>"Video"</strong> from the generation options.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">3</span>
+      <p>In the model selector, choose <strong>Seedance 2.0</strong> from the dropdown.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">4</span>
+      <p>Click the <strong>image upload button</strong> (usually a paperclip or image icon) and upload your <strong>England kit character sheet</strong> from Step 3. Set its role to <strong>"Reference Image" or "Omni"</strong>.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">5</span>
+      <p>In the prompt box, <strong>paste the full video prompt below</strong>:</p>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">🎬 Seedance 2.0 Video Prompt — Jump Through The TV & Score</div>
+      <button class="copy-btn" onclick="copyPrompt(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button>
+      <pre>[00:00-00:02] LIVING ROOM — TV GLOW
+camera low behind sofa, slow push toward tv screen, man seated with back to camera, white england football shirt reading "WILLIAMS 10" in navy on his back, 60-inch flatscreen shows live england vs brazil world cup broadcast, dark living room lit only by blue tv flicker, crowd noise bleeds out, commentator voice calm and building: "england searching for the breakthrough, williams collecting deep..."
+
+[00:02-00:04] THE JUMP — THROUGH THE SCREEN
+man springs up off sofa and dives headfirst at the tv screen with arms forward, screen surface ripples and distorts like liquid mercury on impact, chromatic pixel burst outward as body passes through, motion blur smear, crash zoom forward, commentator sharp intake of breath: "wait — wait what is happening — he's going through the screen!"
+
+[00:04-00:07] ON THE PITCH — BALL AT FEET
+instant cut to wembley stadium match broadcast angle, the character now fully in england kit on the pitch with ball at feet, sprint toward goal, stadium roaring with 80 thousand fans, st george cross flags filling the stands, two yellow-shirted brazilian defenders closing from both sides, commentator rising: "williams has got the ball — oh my god — he's going for it!"
+
+[00:07-00:09] THE SKILL — 360 SPIN
+first defender lunges and williams feints past with a sharp inside cut, second defender dives in and williams executes a full 360 pirouette spin with the ball rolling under foot, both defenders left on the ground, low angle chase cam with slow motion apex on the spin, crowd gasp, commentator screaming: "incredible skill — two defenders and he dances past them both!"
+
+[00:09-00:11] THE SHOT — GOAL
+williams plants boot and drives a low thunderous shot to the bottom right corner, goalkeeper full stretch dives but can't reach it, ball rips into the net and billows in slow motion, net ripple freeze frame, crowd silent for one beat then erupts
+
+[00:11-00:13] CELEBRATION — TEAMMATES SWARM
+williams wheels away arms wide open screaming to the sky, england teammates sprint from all directions and pile on top of him, bodies swarming and jumping, wembley erupting in full noise, confetti beginning to fall, commentator completely losing composure: "he scores — williams scores — a world cup legend — remember this name!"
+
+no cut no end card frame holds on williams buried in celebrating teammates arms still raised</pre>
+    </div>
+
+    <!-- VIDEO EXAMPLE -->
+    <div class="media-block">
+      <div class="media-label">🎬 Example Output — Scoring A Goal (Seedance 2.0)</div>
+      <div style="display:flex; justify-content:center; background:#0a0a0a; padding:20px 0;">
+        <div style="width:100%; max-width:320px;">
+          <div style="position:relative; padding-bottom:177.78%; height:0; overflow:hidden; border-radius:10px;">
+            <iframe
+              src="https://www.youtube.com/embed/-xJK-EMPTJ8?rel=0&modestbranding=1"
+              title="Jump Through The TV — Example Output"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              style="position:absolute; top:0; left:0; width:100%; height:100%;">
+            </iframe>
+          </div>
+        </div>
+      </div>
+      <div class="media-caption">This is a real Seedance 2.0 output using this exact prompt and character sheet. Your version will feature your own face and name. &nbsp;<a href="https://youtube.com/shorts/-xJK-EMPTJ8" target="_blank" style="color:#00ff88;">Open in YouTube &#8599;</a></div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">6</span>
+      <p>Now set your <strong>generation settings</strong> using the table below before hitting generate:</p>
+    </div>
+
+    <table class="settings-table">
+      <thead>
+        <tr>
+          <th>Setting</th>
+          <th>Value to Select</th>
+          <th>Why</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Model</td>
+          <td><span class="val">Seedance 2.0</span></td>
+          <td>Best motion quality for action scenes</td>
+        </tr>
+        <tr>
+          <td>Mode</td>
+          <td><span class="val">Fast</span></td>
+          <td>Quicker generation, still excellent quality</td>
+        </tr>
+        <tr>
+          <td>Duration</td>
+          <td><span class="val">13 seconds</span></td>
+          <td>Covers all 6 scene segments with a longer hold on the celebration</td>
+        </tr>
+        <tr>
+          <td>Aspect Ratio</td>
+          <td><span class="val">9:16</span></td>
+          <td>Vertical format — optimised for TikTok & Reels</td>
+        </tr>
+        <tr>
+          <td>Resolution</td>
+          <td><span class="val">480p</span></td>
+          <td>~20 credits (~$0.40) — cheapest option, great on mobile. Upgrade to 1080p for ~156 credits (~$6.00) for final quality.</td>
+        </tr>
+        <tr>
+          <td>Reference Image</td>
+          <td><span class="val">Your kit character sheet</span></td>
+          <td>Locks your character's identity into the video</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">7</span>
+      <p>Click <strong>"Generate"</strong> and wait for Seedance 2.0 to process your video. Fast mode typically takes <strong>60–90 seconds</strong>.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">8</span>
+      <p>When complete, <strong>preview the result</strong>. If you want to regenerate with slight tweaks, adjust a segment description and hit generate again — Seedance 2.0 always interprets prompts slightly differently each time.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">9</span>
+      <p>Download your final video and <strong>share it across all your socials</strong>! Caption it something like: <em>"What if I actually played at the World Cup? 🏴󠁧󠁢󠁥󠁮󠁧󠁿⚽ #AIVideo #WorldCup #Back2Life"</em></p>
+    </div>
+
+    
+  </div>
+
+  <hr class="divider">
+
+  <!-- PRO TIPS -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">🔥</div>
+      <div class="step-title-block">
+        <h2>Pro Tips to Make It Go Viral</h2>
+        <p>Small tweaks that make a huge difference to reach and engagement</p>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">🎯</span>
+      <p><strong>Hook in the first 0.5 seconds:</strong> The sofa-to-screen jump is your hook. If you post on TikTok, trim the clip so the jump happens within the very first second — this stops the scroll.</p>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">🔊</span>
+      <p><strong>Add match atmosphere audio:</strong> Download a royalty-free crowd roar + commentary audio and layer it over your video in CapCut or any editor. The audio sells the illusion completely.</p>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">📝</span>
+      <p><strong>Caption your video:</strong> Use text overlay in CapCut showing the commentator lines — "WILLIAMS HAS GOT THE BALL... HE SCORES!" Text captions double watch time on TikTok.</p>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">🏆</span>
+      <p><strong>Post during match days:</strong> Upload your video on actual England or World Cup match days for maximum hashtag reach. #EnglandFootball, #WorldCup2026, #AIVideo, #Back2Life</p>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">♻️</span>
+      <p><strong>Reuse your character sheet:</strong> Save your England kit character sheet forever — you can use it for any future football video, different stadiums, different opponents. It's your permanent AI football avatar.</p>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- STORYBOARD -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">🎬</div>
+      <div class="step-title-block">
+        <h2>Video Storyboard — Scene by Scene</h2>
+        <p>Real frames from the generated video showing each moment of the Williams story</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="callout-icon">ℹ️</span>
+      <p>These are <strong>actual screenshots from the Seedance 2.0 generated video</strong> using the prompt and character sheet in this tutorial. Your version will feature your own face and name.</p>
+    </div>
+
+    <div class="storyboard-grid">
+      <div class="sb-card">
+        <div class="sb-img-wrap">
+          <img src="/img/img05.jpg" alt="The Setup">
+          <div class="sb-timecode">00:00–00:02</div>
+        </div>
+        <div class="sb-info">
+          <div class="sb-title">The Setup</div>
+          <div class="sb-caption">Williams watches England vs Brazil from his sofa — kit on, game on.</div>
+        </div>
+      </div>
+      <div class="sb-card">
+        <div class="sb-img-wrap">
+          <img src="/img/img06.jpg" alt="On The Pitch">
+          <div class="sb-timecode">00:02–00:04</div>
+        </div>
+        <div class="sb-info">
+          <div class="sb-title">On The Pitch</div>
+          <div class="sb-caption">He leaps through the TV screen and instantly has the ball at Wembley.</div>
+        </div>
+      </div>
+      <div class="sb-card">
+        <div class="sb-img-wrap">
+          <img src="/img/img07.jpg" alt="Beating Defenders">
+          <div class="sb-timecode">00:04–00:07</div>
+        </div>
+        <div class="sb-info">
+          <div class="sb-title">Beating Defenders</div>
+          <div class="sb-caption">Williams weaves past two Brazilian defenders with pure skill.</div>
+        </div>
+      </div>
+      <div class="sb-card">
+        <div class="sb-img-wrap">
+          <img src="/img/img08.jpg" alt="The Strike">
+          <div class="sb-timecode">00:07–00:09</div>
+        </div>
+        <div class="sb-info">
+          <div class="sb-title">The Strike</div>
+          <div class="sb-caption">Low-angle boot contact — a thunderous driven shot toward goal.</div>
+        </div>
+      </div>
+      <div class="sb-card">
+        <div class="sb-img-wrap">
+          <img src="/img/img09.jpg" alt="IT'S IN!">
+          <div class="sb-timecode">00:09–00:11</div>
+        </div>
+        <div class="sb-info">
+          <div class="sb-title">IT'S IN!</div>
+          <div class="sb-caption">The goalkeeper dives full stretch — the ball rips into the net.</div>
+        </div>
+      </div>
+      <div class="sb-card">
+        <div class="sb-img-wrap">
+          <img src="/img/img10.jpg" alt="Arms Wide">
+          <div class="sb-timecode">00:11–00:11</div>
+        </div>
+        <div class="sb-info">
+          <div class="sb-title">Arms Wide</div>
+          <div class="sb-caption">Williams wheels away screaming — arms outstretched to the Wembley sky.</div>
+        </div>
+      </div>
+      <div class="sb-card">
+        <div class="sb-img-wrap">
+          <img src="/img/img11.jpg" alt="The Pile-On">
+          <div class="sb-timecode">00:11–00:12</div>
+        </div>
+        <div class="sb-info">
+          <div class="sb-title">The Pile-On</div>
+          <div class="sb-caption">England teammates swarm — a World Cup legend is born.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <!-- FINAL CTA -->
+  <div class="final-cta">
+    <h2>Created something <span>amazing?</span></h2>
+    <p>Tag us on your socials and we'll repost the best ones. Follow Back2Life.app for more AI video tutorials every week.</p>
+    <div class="social-grid">
+      <a href="https://www.instagram.com/back2life.app" class="cta-social" target="_blank">📸 @back2life.app</a>
+      <a href="https://www.tiktok.com/@back2life.app" class="cta-social" target="_blank">🎵 @back2life.app</a>
+      <a href="https://youtube.com/@back2lifeai" class="cta-social" target="_blank">▶️ @back2lifeai</a>
+      <a href="https://x.com/Back2LifeAI" class="cta-social" target="_blank">✖ @Back2LifeAI</a>
+      <a href="https://www.threads.com/@back2life.app" class="cta-social" target="_blank">🧵 @back2life.app</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function copyPrompt(btn) {
+  const block = btn.closest('.prompt-block');
+  const pre = block.querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(function() {
+    const original = btn.innerHTML;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Copied!';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      btn.innerHTML = original;
+      btn.classList.remove('copied');
+    }, 2000);
+  }).catch(function() {
+    // Fallback for older browsers
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const original = btn.innerHTML;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Copied!';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      btn.innerHTML = original;
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+</script>
+
+<script>
+// Burger menu
+(function(){
+  var b=document.getElementById('sBurger');
+  var d=document.getElementById('sDrawer');
+  var bd=document.getElementById('sBackdrop');
+  if(!b||!d)return;
+  function openMenu(){d.classList.add('open');if(bd)bd.classList.add('open');b.classList.add('open');document.body.style.overflow='hidden';}
+  function closeMenu(){d.classList.remove('open');if(bd)bd.classList.remove('open');b.classList.remove('open');document.body.style.overflow='';}
+  b.addEventListener('click',function(){d.classList.contains('open')?closeMenu():openMenu();});
+  if(bd)bd.addEventListener('click',closeMenu);
+  var ty=0;
+  d.addEventListener('touchstart',function(e){ty=e.touches[0].clientY;},{passive:true});
+  d.addEventListener('touchend',function(e){if(e.changedTouches[0].clientY-ty>60)closeMenu();},{passive:true});
+})();
+</script>
+</body>
+</html>

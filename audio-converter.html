@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="vercel-toolbar" content="off">
+<title>Audio Converter — Back2Life.app</title>
+<meta name="description" content="Convert audio between WAV, AIFF, FLAC, MP3. Extract audio from video. Free browser tool.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#0a0a0a;--surface:#141414;--s2:#1c1c1c;--border:#2a2a2a;--green:#00ff88;--gdim:rgba(0,255,136,.08);--text:#e0e0e0;--muted:#888;--bar:52px}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow:hidden;touch-action:manipulation}
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--bar);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:0 14px;z-index:100}
+.topbar-title{font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--green);position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;pointer-events:none}
+.menu-btn{background:none;border:none;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px;z-index:1;flex-shrink:0}
+.menu-btn span{display:block;width:20px;height:2px;background:#aaa;border-radius:2px;transition:all .25s}
+.menu-btn.open span{background:var(--green)}
+.menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.menu-btn.open span:nth-child(2){opacity:0}
+.menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.spacer{flex:1}
+.add-btn{background:none;border:1px solid var(--border);border-radius:7px;color:#aaa;font-size:11px;font-weight:700;letter-spacing:.5px;padding:6px 11px;cursor:pointer;font-family:'Inter',sans-serif}
+.add-btn:active{border-color:var(--green);color:var(--green)}
+.main{position:fixed;top:var(--bar);left:0;right:0;bottom:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 14px 40px}
+
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;height:calc(100vh - var(--bar) - 60px);text-align:center}
+.empty.hidden{display:none}
+.empty-icon{font-size:52px;opacity:.7;animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.07);opacity:1}}
+.empty-title{font-size:15px;font-weight:700;color:#bbb}
+.empty-sub{font-size:12px;color:#555;max-width:280px}
+.empty-btn{background:var(--green);color:#000;font-weight:800;font-size:14px;padding:12px 28px;border-radius:10px;border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px}
+.empty-chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.empty-chip{font-size:10px;font-weight:600;color:#555;border:1px solid #333;border-radius:4px;padding:2px 8px}
+
+.panel{display:none}
+.panel.show{display:block}
+.file-card{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.file-icon{font-size:28px;flex-shrink:0}
+.file-meta{flex:1;min-width:0}
+.file-name{font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-detail{font-size:11px;color:#555;margin-top:2px}
+.file-x{background:none;border:none;color:#555;font-size:18px;cursor:pointer;flex-shrink:0;padding:4px}
+
+.sect-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin:18px 0 10px}
+.fmt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.fmt-opt{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;text-align:center;transition:all .15s}
+.fmt-opt.active{background:var(--gdim);border-color:var(--green)}
+.fmt-opt-name{font-size:15px;font-weight:800;color:var(--text)}
+.fmt-opt.active .fmt-opt-name{color:var(--green)}
+.fmt-opt-desc{font-size:9px;color:#555;margin-top:3px}
+
+.field{margin-top:18px}
+.field-label{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#666;margin-bottom:7px}
+.text-input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:11px 13px;outline:none}
+.text-input:focus{border-color:var(--green)}
+.seg{display:flex;background:#111;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.seg button{flex:1;background:none;border:none;color:#777;font-size:12px;font-weight:700;padding:10px 4px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+.seg button.active{background:var(--gdim);color:var(--green)}
+
+.convert-btn{width:100%;background:var(--green);color:#000;font-weight:800;font-size:15px;padding:15px;border-radius:12px;border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-top:24px}
+.convert-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* NAV SHEET */
+.nav-sheet{position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid var(--border);border-radius:20px 20px 0 0;z-index:220;transform:translateY(100%);transition:transform .3s ease;max-height:80vh;overflow-y:auto;padding:0 20px 40px}
+.nav-sheet.open{transform:translateY(0)}
+.nav-handle-wrap{padding:10px 0 6px;text-align:center}
+.nav-handle{width:36px;height:4px;background:#3a3a3a;border-radius:2px;margin:0 auto}
+.nav-sl{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--green);padding:14px 0 7px;border-top:1px solid var(--border);margin-top:4px}
+.nav-sl:first-of-type{border-top:none;margin-top:0;padding-top:4px}
+.nav-a{display:flex;align-items:center;gap:14px;padding:12px 0;font-size:15px;font-weight:500;color:#ddd;text-decoration:none;border-bottom:1px solid #222}
+.nav-a:active{color:var(--green)}
+.nav-a .ico{width:26px;text-align:center;display:flex;align-items:center;justify-content:center}
+.nav-a .ico svg{width:20px;height:20px;display:block}
+.nav-cta{display:block;margin-top:20px;background:var(--green);color:#000;font-weight:700;font-size:14px;padding:13px;border-radius:10px;text-decoration:none;text-align:center}
+
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(2px);z-index:190;display:none;pointer-events:none}
+.backdrop.open{display:block;pointer-events:all}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(8px);background:#181818;border:1px solid var(--green);color:var(--green);font-size:12px;font-weight:600;padding:10px 18px;border-radius:8px;opacity:0;transition:all .3s;z-index:300;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.err{border-color:#ff4466;color:#ff4466}
+.overlay-spin{position:fixed;inset:0;background:rgba(10,10,10,.85);z-index:400;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.overlay-spin.show{display:flex}
+.spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin-label{font-size:13px;color:var(--muted)}
+</style>
+<link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Audio Converter">
+</head>
+<body>
+
+<input type="file" accept="audio/*,video/*" id="fileInput" style="position:fixed;top:-100px;left:-100px;width:1px;height:1px;opacity:0">
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
+  <div class="topbar-title">AUDIO CONVERTER</div>
+  <div class="spacer"></div>
+  <label for="fileInput" class="add-btn" style="cursor:pointer">+ FILE</label>
+</div>
+
+<div class="main">
+  <div class="empty" id="empty">
+    <div class="empty-icon">🔄</div>
+    <div class="empty-title">Add an audio or video file</div>
+    <div class="empty-sub">Convert between formats, or extract the audio track from a video.</div>
+    <label for="fileInput" class="empty-btn" style="cursor:pointer">+ Add File</label>
+    <div class="empty-chips">
+      <span class="empty-chip">MP3</span><span class="empty-chip">WAV</span>
+      <span class="empty-chip">AIFF</span><span class="empty-chip">FLAC</span>
+      <span class="empty-chip">MP4</span><span class="empty-chip">MOV</span>
+    </div>
+  </div>
+
+  <div class="panel" id="panel">
+    <div class="file-card">
+      <div class="file-icon" id="fileIcon">🎵</div>
+      <div class="file-meta">
+        <div class="file-name" id="fileName">—</div>
+        <div class="file-detail" id="fileDetail">—</div>
+      </div>
+      <button class="file-x" id="fileX">✕</button>
+    </div>
+
+    <div class="sect-label">Convert To</div>
+    <div class="fmt-grid">
+      <div class="fmt-opt active" data-fmt="mp3"><div class="fmt-opt-name">MP3</div><div class="fmt-opt-desc">Compressed · universal</div></div>
+      <div class="fmt-opt" data-fmt="wav"><div class="fmt-opt-name">WAV</div><div class="fmt-opt-desc">Lossless · uncompressed</div></div>
+      <div class="fmt-opt" data-fmt="aiff"><div class="fmt-opt-name">AIFF</div><div class="fmt-opt-desc">Lossless · Apple</div></div>
+      <div class="fmt-opt" data-fmt="flac"><div class="fmt-opt-name">FLAC</div><div class="fmt-opt-desc">Lossless · compressed</div></div>
+    </div>
+
+    <div class="field" id="bitrateField">
+      <div class="field-label">MP3 Bitrate</div>
+      <div class="seg" id="bitrateSeg">
+        <button data-br="128">128 kbps</button>
+        <button data-br="192" class="active">192 kbps</button>
+        <button data-br="320">320 kbps</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Filename</div>
+      <input class="text-input" type="text" id="exportName" placeholder="converted-audio" autocorrect="off" spellcheck="false">
+    </div>
+
+    <button class="convert-btn" id="convertBtn">Convert &amp; Download</button>
+  </div>
+</div>
+
+<div class="backdrop" id="backdrop"></div>
+
+<div class="nav-sheet" id="navSheet">
+  <div class="nav-handle-wrap"><div class="nav-handle"></div></div>
+  <div class="nav-sl">Navigation</div>
+  <a href="/" class="nav-a"><span class="ico">🏠</span>Home</a>
+  <a href="/#tutorials" class="nav-a"><span class="ico">🎓</span>Tutorials</a>
+  <div class="nav-sl">Free Tools</div>
+  <a href="/watermark" class="nav-a"><span class="ico">🎬</span>Watermark Image &amp; Video</a>
+  <a href="/frame-extractor" class="nav-a"><span class="ico">📸</span>Frame Extractor</a>
+  <a href="/audio-editor" class="nav-a"><span class="ico">🎵</span>Audio Editor</a>
+  <a href="/audio-converter" class="nav-a"><span class="ico" style="color:var(--green)">🔄</span>Audio Converter</a>
+  <div class="nav-sl">Follow Us</div>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-a"><span class="ico"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="#E1306C" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="#E1306C" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="#E1306C"/></svg></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="nav-a"><span class="ico"><svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.17 8.17 0 004.78 1.52V7.1a4.85 4.85 0 01-1.01-.41z" fill="white"/></svg></span>TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="nav-a"><span class="ico"><svg viewBox="0 0 24 24"><path d="M23.5 6.19a3 3 0 00-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 00.5 6.19 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.81 3 3 0 002.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 002.12-2.12A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.81z" fill="#FF0000"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="white"/></svg></span>YouTube</a>
+  <a href="https://x.com/Back2LifeAI" target="_blank" class="nav-a"><span class="ico"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="white"/></svg></span>X / Twitter</a>
+  <a href="https://www.threads.com/@back2life.ai" target="_blank" class="nav-a"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.474 12.01v-.017c.026-3.578.876-6.43 2.521-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.594 12c.022 3.086.713 5.496 2.051 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.789-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 012.42.116c-.1-.609-.3-1.098-.605-1.446-.428-.487-1.08-.735-1.949-.739h-.005c-.67 0-1.663.2-2.275 1.495l-1.846-.823c.814-1.826 2.365-2.833 4.121-2.833h.007c1.37.005 2.527.44 3.345 1.259.826.828 1.262 2.007 1.299 3.505a5.462 5.462 0 011.157.795c1.124.976 1.747 2.355 1.747 3.888 0 .074-.002.148-.006.222-.065 3.896-2.809 6.168-7.484 6.201z" fill="white"/></svg></span>Threads</a>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-cta">📸 Follow on Instagram</a>
+</div>
+
+<div class="overlay-spin" id="overlaySpin"><div class="spinner"></div><div class="spin-label" id="spinLabel">Converting…</div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+<script>
+let audioCtx=null, audioBuffer=null, sourceFileName='audio', isVideo=false;
+let outFormat='mp3', outBitrate=192;
+const $=id=>document.getElementById(id);
+
+$('fileInput').addEventListener('change',async e=>{
+  const file=e.target.files[0];
+  if(!file)return;
+  sourceFileName=file.name.replace(/\.[^.]+$/,'');
+  isVideo=file.type.startsWith('video/');
+  showSpinner(isVideo?'Extracting audio from video…':'Loading audio…');
+  try{
+    if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    const buf=await file.arrayBuffer();
+    audioBuffer=await audioCtx.decodeAudioData(buf);
+    $('empty').classList.add('hidden');
+    $('panel').classList.add('show');
+    $('fileIcon').textContent=isVideo?'🎬':'🎵';
+    $('fileName').textContent=file.name;
+    $('fileDetail').textContent=`${fmtTime(audioBuffer.duration)} · ${audioBuffer.numberOfChannels===2?'Stereo':'Mono'} · ${Math.round(audioBuffer.sampleRate/1000)}kHz${isVideo?' · audio extracted':''}`;
+    $('exportName').value=sourceFileName+(isVideo?'-audio':'-converted');
+  }catch(err){
+    console.error(err);
+    toast(isVideo?'Could not extract audio from this video':'Could not read this audio file',true);
+  }
+  hideSpinner();
+  e.target.value='';
+});
+
+$('fileX').addEventListener('click',()=>{
+  audioBuffer=null;
+  $('panel').classList.remove('show');
+  $('empty').classList.remove('hidden');
+});
+
+document.querySelectorAll('.fmt-opt').forEach(opt=>{
+  opt.addEventListener('click',()=>{
+    document.querySelectorAll('.fmt-opt').forEach(o=>o.classList.remove('active'));
+    opt.classList.add('active');
+    outFormat=opt.dataset.fmt;
+    $('bitrateField').style.display=outFormat==='mp3'?'block':'none';
+  });
+});
+document.querySelectorAll('#bitrateSeg button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#bitrateSeg button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');outBitrate=+b.dataset.br;
+  });
+});
+
+$('convertBtn').addEventListener('click',async()=>{
+  if(!audioBuffer)return;
+  showSpinner('Converting to '+outFormat.toUpperCase()+'…');
+  try{
+    const name=($('exportName').value.trim()||'converted-audio');
+    await exportFile(audioBuffer,outFormat,name,outBitrate);
+    toast('✓ Downloaded '+name+'.'+outFormat);
+  }catch(err){console.error(err);toast('Conversion failed — try a shorter file',true);}
+  hideSpinner();
+});
+
+// ══ NAV ══
+const backdrop=$('backdrop');
+$('menuBtn').addEventListener('click',()=>{
+  const open=$('navSheet').classList.contains('open');
+  if(open){$('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open');}
+  else{$('navSheet').classList.add('open');backdrop.classList.add('open');$('menuBtn').classList.add('open');}
+});
+backdrop.addEventListener('click',()=>{$('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open');});
+let ty=0;
+$('navSheet').addEventListener('touchstart',e=>ty=e.touches[0].clientY,{passive:true});
+$('navSheet').addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-ty>60){$('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open');}},{passive:true});
+
+// ══ exportFile() — ISOLATED for native wrapping ══
+async function exportFile(buffer,format,name,bitrate){
+  let blob,ext=format;
+  if(format==='mp3'){blob=encodeMP3(buffer,bitrate);}
+  else if(format==='wav'){blob=encodeWAV(buffer);}
+  else if(format==='aiff'){blob=encodeAIFF(buffer);}
+  else if(format==='flac'){blob=encodeWAV(buffer);ext='wav';toast('FLAC needs native — exported WAV instead');}
+  triggerDownload(blob,name+'.'+ext);
+}
+function triggerDownload(blob,filename){
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(a.href),15000);
+}
+function encodeWAV(buffer){
+  const numCh=buffer.numberOfChannels,sr=buffer.sampleRate,len=buffer.length*numCh*2+44;
+  const ab=new ArrayBuffer(len),view=new DataView(ab);
+  const ws=(o,s)=>{for(let i=0;i<s.length;i++)view.setUint8(o+i,s.charCodeAt(i));};
+  ws(0,'RIFF');view.setUint32(4,len-8,true);ws(8,'WAVE');ws(12,'fmt ');view.setUint32(16,16,true);
+  view.setUint16(20,1,true);view.setUint16(22,numCh,true);view.setUint32(24,sr,true);
+  view.setUint32(28,sr*numCh*2,true);view.setUint16(32,numCh*2,true);view.setUint16(34,16,true);
+  ws(36,'data');view.setUint32(40,len-44,true);
+  let off=44;const ch=[];for(let c=0;c<numCh;c++)ch.push(buffer.getChannelData(c));
+  for(let i=0;i<buffer.length;i++)for(let c=0;c<numCh;c++){let s=Math.max(-1,Math.min(1,ch[c][i]));view.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;}
+  return new Blob([view],{type:'audio/wav'});
+}
+function encodeAIFF(buffer){
+  const numCh=buffer.numberOfChannels,sr=buffer.sampleRate,frames=buffer.length,dataLen=frames*numCh*2;
+  const ab=new ArrayBuffer(54+dataLen),view=new DataView(ab);
+  const ws=(o,s)=>{for(let i=0;i<s.length;i++)view.setUint8(o+i,s.charCodeAt(i));};
+  ws(0,'FORM');view.setUint32(4,46+dataLen,false);ws(8,'AIFF');ws(12,'COMM');view.setUint32(16,18,false);
+  view.setUint16(20,numCh,false);view.setUint32(22,frames,false);view.setUint16(26,16,false);
+  const setExt=(o,v)=>{const e=Math.floor(Math.log2(v));const m=v/Math.pow(2,e);view.setUint16(o,16383+e,false);view.setUint32(o+2,(Math.floor(m*Math.pow(2,31))>>>0),false);view.setUint32(o+6,0,false);};
+  setExt(28,sr);ws(38,'SSND');view.setUint32(42,8+dataLen,false);view.setUint32(46,0,false);view.setUint32(50,0,false);
+  let off=54;const ch=[];for(let c=0;c<numCh;c++)ch.push(buffer.getChannelData(c));
+  for(let i=0;i<frames;i++)for(let c=0;c<numCh;c++){let s=Math.max(-1,Math.min(1,ch[c][i]));view.setInt16(off,s<0?s*0x8000:s*0x7FFF,false);off+=2;}
+  return new Blob([view],{type:'audio/aiff'});
+}
+function encodeMP3(buffer,kbps){
+  const numCh=buffer.numberOfChannels,sr=buffer.sampleRate;
+  const enc=new lamejs.Mp3Encoder(numCh,sr,kbps);
+  const bs=1152,data=[];
+  const left=f16(buffer.getChannelData(0));
+  const right=numCh>1?f16(buffer.getChannelData(1)):null;
+  for(let i=0;i<left.length;i+=bs){
+    const l=left.subarray(i,i+bs);let chunk;
+    if(right){const r=right.subarray(i,i+bs);chunk=enc.encodeBuffer(l,r);}else chunk=enc.encodeBuffer(l);
+    if(chunk.length)data.push(chunk);
+  }
+  const end=enc.flush();if(end.length)data.push(end);
+  return new Blob(data,{type:'audio/mp3'});
+}
+function f16(f32){const i16=new Int16Array(f32.length);for(let i=0;i<f32.length;i++){let s=Math.max(-1,Math.min(1,f32[i]));i16[i]=s<0?s*0x8000:s*0x7FFF;}return i16;}
+
+function fmtTime(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+String(sec).padStart(2,'0');}
+function showSpinner(l){$('spinLabel').textContent=l||'Working…';$('overlaySpin').classList.add('show');}
+function hideSpinner(){$('overlaySpin').classList.remove('show');}
+function toast(msg,err){const t=$('toast');t.textContent=msg;t.className='toast show'+(err?' err':'');setTimeout(()=>t.classList.remove('show'),3200);}
+</script>
+</body>
+</html>

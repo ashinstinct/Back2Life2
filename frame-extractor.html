@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Frame Extractor — Back2Life.app</title>
+<meta name="description" content="Extract any frame from a video as a high-quality PNG. 100% browser-based, free.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+:root {
+  --bg:       #0a0a0a;
+  --surface:  #141414;
+  --border:   #2a2a2a;
+  --green:    #00ff88;
+  --green-dim:rgba(0,255,136,.08);
+  --green-glow:0 0 14px rgba(0,255,136,.35);
+  --text:     #e0e0e0;
+  --muted:    #888;
+  --bar-h:    52px;    /* top bar height */
+  --btm-h:    220px;  /* bottom panel height — collapsed */
+  --btm-scrub:280px;  /* bottom panel height — scrub mode */
+  --btm-rename:310px; /* bottom panel height — rename visible */
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  touch-action: manipulation;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--bar-h);
+  background: #141414;
+  border-bottom: 1px solid #2a2a2a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  z-index: 100;
+}
+.topbar-title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 1;
+}
+.menu-btn span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #aaa;
+  border-radius: 2px;
+  transition: all .25s;
+}
+.menu-btn.open span { background: var(--green); }
+.menu-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.menu-btn.open span:nth-child(2) { opacity: 0; }
+.menu-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* upload btn in topbar */
+.topbar-upload {
+  background: none;
+  border: 1px solid #3a3a3a;
+  border-radius: 6px;
+  color: #aaa;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  z-index: 1;
+  transition: all .15s;
+}
+.topbar-upload:hover { border-color: var(--green); color: var(--green); }
+.topbar-upload input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  font-size: 0;
+}
+
+/* ── VIDEO AREA ── fills between top bar and bottom panel ── */
+.video-area {
+  position: fixed;
+  top: var(--bar-h);
+  left: 0;
+  right: 0;
+  bottom: var(--btm-h);
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: bottom .3s ease;
+}
+.video-area.scrub-mode  { bottom: var(--btm-scrub); }
+.video-area.rename-mode { bottom: var(--btm-rename); }
+
+/* Upload placeholder */
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  text-align: center;
+  padding: 0 32px;
+  cursor: pointer;
+  position: relative;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.upload-placeholder input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  font-size: 0;
+  z-index: 2;
+}
+.upload-placeholder.hidden { display: none; }
+.upl-icon {
+  font-size: 56px;
+  opacity: .8;
+  cursor: pointer;
+  position: relative;
+  z-index: 3;
+  animation: pulse 2.4s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px rgba(0,255,136,.25));
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: .8; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+.upl-title { font-size: 15px; font-weight: 700; color: #bbb; }
+.upl-sub { font-size: 12px; color: #666; }
+.upl-formats { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 4px; }
+.upl-chip { font-size: 10px; font-weight: 600; color: #777; border: 1px solid #333; border-radius: 4px; padding: 2px 7px; }
+
+/* Actual video */
+#videoEl {
+  max-width: 100%;
+  max-height: 100%;
+  display: none;
+  object-fit: contain;
+}
+#videoEl.show { display: block; }
+
+/* ── BOTTOM PANEL — always fixed ── */
+.btm {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--btm-h);
+  background: #161616;
+  border-top: 1px solid #2a2a2a;
+  z-index: 90;
+  transition: height .3s ease;
+  overflow: hidden;
+}
+.btm.scrub-mode  { height: var(--btm-scrub); }
+.btm.rename-mode { height: var(--btm-rename); }
+
+.btm-inner { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+
+/* File info row */
+.file-row {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+}
+.file-row.show { display: flex; }
+.file-name { font-weight: 600; color: #bbb; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55%; }
+.file-meta { color: #999; font-size: 10px; display: flex; gap: 10px; }
+
+/* Frame select buttons */
+.frame-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 7px;
+}
+.fbtn {
+  background: #1c1c1c;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 9px 4px;
+  color: #aaa;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  cursor: pointer;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.25;
+  transition: all .15s;
+}
+.fbtn:active { transform: scale(.97); }
+.fbtn.active { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.fbtn-time { display: block; font-size: 9px; font-weight: 500; color: #666; margin-top: 3px; font-family: monospace; }
+.fbtn.active .fbtn-time { color: rgba(0,255,136,.5); }
+
+/* Scrubber section */
+.scrub-section { display: none; }
+.scrub-section.show { display: block; }
+.scrub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.scrub-label-txt { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #999; }
+.scrub-tc { font-size: 12px; font-weight: 700; color: var(--green); font-family: monospace; }
+input[type="range"].scrubber {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: #333;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"].scrubber::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: var(--green-glow);
+  cursor: pointer;
+}
+.step-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.step-btn {
+  background: #1c1c1c;
+  border: 1px solid #333;
+  color: #aaa;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  flex: 1;
+  text-align: center;
+  transition: all .15s;
+}
+.step-btn:active { transform: scale(.97); }
+.step-btn:hover { border-color: var(--green); color: var(--green); }
+.step-num { font-size: 10px; font-weight: 700; color: #888; font-family: monospace; flex: 1; text-align: center; }
+
+/* Rename section */
+.rename-section { display: none; }
+.rename-section.show { display: block; }
+.rename-label-txt { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #888; margin-bottom: 5px; }
+.rename-row {
+  display: flex;
+  align-items: center;
+  background: #1c1c1c;
+  border: 1px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color .2s;
+}
+.rename-row:focus-within { border-color: var(--green); }
+.rename-input {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #e8e8e8;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 12px;
+  outline: none;
+}
+.rename-ext { background: #222; color: #888; font-size: 11px; font-weight: 700; padding: 10px 10px; border-left: 1px solid var(--border); white-space: nowrap; }
+
+/* Main action button */
+.action-btn {
+  width: 100%;
+  background: var(--green);
+  color: #000;
+  font-weight: 800;
+  font-size: 15px;
+  padding: 13px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: .3px;
+  transition: all .2s;
+}
+.action-btn:active { transform: scale(.98); }
+.action-btn:disabled { opacity: .2; cursor: not-allowed; transform: none; }
+.action-btn.dl { background: #111; color: var(--green); border: 1px solid var(--green); }
+.action-btn.dl:active { background: var(--green-dim); }
+
+/* ── MENU SHEET — slides up from bottom over the panel ── */
+.menu-sheet {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #181818;
+  border-top: 1px solid #2a2a2a;
+  border-radius: 20px 20px 0 0;
+  z-index: 300;
+  padding: 0 20px 32px;
+  transform: translateY(100%);
+  transition: transform .3s ease;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.menu-sheet.open { transform: translateY(0); }
+.sheet-handle {
+  width: 36px; height: 4px;
+  background: #333;
+  border-radius: 2px;
+  margin: 12px auto 20px;
+}
+.sheet-section {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--green);
+  padding: 16px 0 8px;
+  border-top: 1px solid #2a2a2a;
+  margin-top: 4px;
+}
+.sheet-section:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+.sheet-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #ddd;
+  text-decoration: none;
+  border-bottom: 1px solid #222;
+  transition: color .2s;
+}
+.sheet-link:last-child { border-bottom: none; }
+.sheet-link:hover, .sheet-link:active { color: var(--green); }
+.sheet-link .ico { font-size: 18px; width: 26px; text-align: center; }
+.sheet-cta {
+  display: block;
+  margin-top: 20px;
+  background: var(--green);
+  color: #000;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 13px 24px;
+  border-radius: 10px;
+  text-decoration: none;
+  text-align: center;
+}
+
+/* Backdrop */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 290;
+  display: none;
+  backdrop-filter: blur(2px);
+}
+.backdrop.show { display: block; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: calc(var(--btm-h) + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: #1a1a1a;
+  border: 1px solid var(--green);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: 8px;
+  opacity: 0;
+  transition: all .3s;
+  z-index: 200;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 90vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+
+<link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<meta name="theme-color" content="#080808">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Frame Extractor">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="/manifest.json">
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
+  <div class="topbar-title">FRAME EXTRACTOR</div>
+  <div class="topbar-spacer"></div>
+  <button class="topbar-upload" id="topUploadBtn">
+    + VIDEO
+    <input type="file" accept="video/*" id="videoInputTop">
+  </button>
+</div>
+
+<!-- VIDEO AREA -->
+<div class="video-area" id="videoArea">
+  <div class="upload-placeholder" id="uploadPlaceholder">
+    <input type="file" accept="video/*" id="videoInputMain">
+    <div class="upl-icon" id="uplIcon">🎬</div>
+    <div class="upl-title">Tap icon or anywhere to load a video</div>
+    <div class="upl-sub">Stays on your device — nothing uploaded</div>
+    <div class="upl-formats">
+      <span class="upl-chip">MP4</span>
+      <span class="upl-chip">MOV</span>
+      <span class="upl-chip">WebM</span>
+      <span class="upl-chip">MKV</span>
+    </div>
+  </div>
+  <video id="videoEl" muted preload="metadata" playsinline></video>
+</div>
+
+<!-- BOTTOM PANEL -->
+<div class="btm" id="btmPanel">
+  <div class="btm-inner">
+
+    <!-- File info -->
+    <div class="file-row" id="fileRow">
+      <div class="file-name" id="ibName">—</div>
+      <div class="file-meta">
+        <span id="ibDur">—</span>
+        <span id="ibRes">—</span>
+      </div>
+    </div>
+
+    <!-- Frame select -->
+    <div class="frame-btns">
+      <button class="fbtn" id="btnStart">START<span class="fbtn-time" id="startTime">0:00.000</span></button>
+      <button class="fbtn" id="btnScrub">PICK FRAME<span class="fbtn-time" id="scrubTimeLabel">—</span></button>
+      <button class="fbtn" id="btnEnd">END<span class="fbtn-time" id="endTime">—</span></button>
+    </div>
+
+    <!-- Scrubber (pick frame mode) -->
+    <div class="scrub-section" id="scrubSection">
+      <div class="scrub-header">
+        <span class="scrub-label-txt">Drag to frame</span>
+        <span class="scrub-tc" id="scrubTc">0:00.000</span>
+      </div>
+      <input type="range" class="scrubber" id="scrubber" min="0" max="1000" value="0" step="1">
+      <div class="step-row">
+        <button class="step-btn" id="prevFrame">◀ −1</button>
+        <span class="step-num" id="frameNum">Frame 0</span>
+        <button class="step-btn" id="nextFrame">+1 ▶</button>
+      </div>
+    </div>
+
+    <!-- Rename (after extract) -->
+    <div class="rename-section" id="renameSection">
+      <div class="rename-label-txt">Filename</div>
+      <div class="rename-row">
+        <input class="rename-input" type="text" id="renameInput" placeholder="frame_name" spellcheck="false" autocorrect="off">
+        <span class="rename-ext">.png</span>
+      </div>
+    </div>
+
+    <!-- Action button -->
+    <button class="action-btn" id="actionBtn" disabled>📷 Extract Frame</button>
+
+  </div>
+</div>
+
+<!-- BACKDROP -->
+<div class="backdrop" id="backdrop"></div>
+
+<!-- MENU SHEET (slides up from bottom) -->
+<div class="menu-sheet" id="menuSheet">
+  <div class="sheet-handle"></div>
+
+  <div class="sheet-section">Navigation</div>
+  <a href="/" class="sheet-link"><span class="ico">🏠</span>Home</a>
+  <a href="/#tutorials" class="sheet-link"><span class="ico">🎓</span>Tutorials</a>
+
+  <div class="sheet-section">Free Tools</div>
+  <a href="/watermark" class="sheet-link"><span class="ico">🎬</span>Watermark Image &amp; Video</a>
+  <a href="/frame-extractor" class="sheet-link"><span class="ico">📸</span>Frame Extractor</a>
+  <a href="/audio-editor" class="sheet-link"><span class="ico">🎵</span>Audio Editor</a>
+  <a href="/audio-converter" class="sheet-link"><span class="ico">🔄</span>Audio Converter</a>
+
+  <div class="sheet-section">Follow Us</div>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="sheet-link"><span class="ico"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="#E1306C" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="#E1306C" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="#E1306C"/></svg></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="sheet-link"><span class="ico"><svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.17 8.17 0 004.78 1.52V7.1a4.85 4.85 0 01-1.01-.41z" fill="white"/></svg></span>TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="sheet-link"><span class="ico"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M23.5 6.19a3 3 0 00-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 00.5 6.19 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.81 3 3 0 002.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 002.12-2.12A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.81z" fill="#FF0000"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="white"/></svg></span>YouTube</a>
+  <a href="https://x.com/Back2LifeAI" target="_blank" class="sheet-link"><span class="ico"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="white"/></svg></span>X / Twitter</a>
+  <a href="https://www.threads.com/@back2life.ai" target="_blank" class="sheet-link"><span class="ico"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.474 12.01v-.017c.026-3.578.876-6.43 2.521-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.594 12c.022 3.086.713 5.496 2.051 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.789-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 012.42.116c-.1-.609-.3-1.098-.605-1.446-.428-.487-1.08-.735-1.949-.739h-.005c-.67 0-1.663.2-2.275 1.495l-1.846-.823c.814-1.826 2.365-2.833 4.121-2.833h.007c1.37.005 2.527.44 3.345 1.259.826.828 1.262 2.007 1.299 3.505a5.462 5.462 0 011.157.795c1.124.976 1.747 2.355 1.747 3.888 0 .074-.002.148-.006.222-.065 3.896-2.809 6.168-7.484 6.201z" fill="white"/></svg></span>Threads</a>
+
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="sheet-cta">📸 Follow on Instagram</a>
+</div>
+
+<canvas id="frameCanvas" style="display:none"></canvas>
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ──
+let videoLoaded = false, duration = 0, fps = 30, frameCount = 0;
+let currentFrame = 0, mode = null;
+let extractedDataURL = null, originalFileName = 'frame';
+
+// ── Menu sheet ──
+const menuBtn   = document.getElementById('menuBtn');
+const menuSheet = document.getElementById('menuSheet');
+const backdrop  = document.getElementById('backdrop');
+
+function openMenu() {
+  menuSheet.classList.add('open');
+  backdrop.classList.add('show');
+  menuBtn.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMenu() {
+  menuSheet.classList.remove('open');
+  backdrop.classList.remove('show');
+  menuBtn.classList.remove('open');
+  document.body.style.overflow = '';
+}
+menuBtn.addEventListener('click', () => menuSheet.classList.contains('open') ? closeMenu() : openMenu());
+backdrop.addEventListener('click', closeMenu);
+// Swipe down to close
+let touchStartY = 0;
+menuSheet.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, {passive:true});
+menuSheet.addEventListener('touchend', e => {
+  if(e.changedTouches[0].clientY - touchStartY > 60) closeMenu();
+}, {passive:true});
+
+// ── File inputs ──
+function handleFileInput(file) {
+  if(file && file.type.startsWith('video/')) loadVideo(file);
+}
+document.getElementById('videoInputMain').addEventListener('change', e => handleFileInput(e.target.files[0]));
+document.getElementById('videoInputTop').addEventListener('change', e => handleFileInput(e.target.files[0]));
+// Icon click explicitly triggers file input (belt-and-braces for mobile)
+document.getElementById('uplIcon').addEventListener('click', e => {
+  e.stopPropagation();
+  document.getElementById('videoInputMain').click();
+});
+
+// ── Load video ──
+const videoEl = document.getElementById('videoEl');
+
+function loadVideo(file) {
+  originalFileName = file.name.replace(/\.[^.]+$/, '');
+  videoEl.src = URL.createObjectURL(file);
+
+  videoEl.addEventListener('loadedmetadata', () => {
+    duration   = videoEl.duration;
+    frameCount = Math.floor(duration * fps);
+
+    // Hide placeholder, show video
+    document.getElementById('uploadPlaceholder').classList.add('hidden');
+    videoEl.classList.add('show');
+
+    // File row
+    document.getElementById('ibName').textContent = file.name.length > 22 ? file.name.substring(0,20)+'…' : file.name;
+    document.getElementById('ibDur').textContent  = fmtTime(duration);
+    document.getElementById('ibRes').textContent  = videoEl.videoWidth + '×' + videoEl.videoHeight;
+    document.getElementById('fileRow').classList.add('show');
+
+    // Time labels
+    document.getElementById('startTime').textContent = '0:00.000';
+    document.getElementById('endTime').textContent   = fmtTimecode(duration);
+
+    videoLoaded = true;
+    document.getElementById('actionBtn').disabled = false;
+
+    // Reset any previous state
+    resetExtract();
+    setMode('start');
+  }, {once:true});
+}
+
+// ── Frame mode selection ──
+document.getElementById('btnStart').addEventListener('click', () => setMode('start'));
+document.getElementById('btnScrub').addEventListener('click', () => setMode('scrub'));
+document.getElementById('btnEnd').addEventListener('click',   () => setMode('end'));
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('btnStart').classList.toggle('active', m==='start');
+  document.getElementById('btnScrub').classList.toggle('active', m==='scrub');
+  document.getElementById('btnEnd').classList.toggle('active',   m==='end');
+
+  const isScrub = m === 'scrub';
+  document.getElementById('scrubSection').classList.toggle('show', isScrub);
+
+  // Adjust panel + video area height
+  const btm = document.getElementById('btmPanel');
+  const va  = document.getElementById('videoArea');
+  const hasRename = document.getElementById('renameSection').classList.contains('show');
+
+  if(hasRename) {
+    btm.className = 'btm rename-mode';
+    va.className  = 'video-area rename-mode';
+  } else if(isScrub) {
+    btm.className = 'btm scrub-mode';
+    va.className  = 'video-area scrub-mode';
+  } else {
+    btm.className = 'btm';
+    va.className  = 'video-area';
+  }
+
+  if(m === 'start') seekToFrame(0);
+  else if(m === 'end') seekToFrame(frameCount - 1);
+}
+
+// ── Scrubber ──
+const scrubber = document.getElementById('scrubber');
+scrubber.addEventListener('input', () => {
+  if(!videoLoaded) return;
+  const t = (scrubber.value / 1000) * duration;
+  videoEl.currentTime = t;
+  currentFrame = Math.round(t * fps);
+  updateScrubUI(t);
+  document.getElementById('scrubTimeLabel').textContent = fmtTimecode(t);
+});
+
+document.getElementById('prevFrame').addEventListener('click', () => {
+  seekToFrame(currentFrame - 1);
+  document.getElementById('scrubTimeLabel').textContent = fmtTimecode(currentFrame / fps);
+});
+document.getElementById('nextFrame').addEventListener('click', () => {
+  seekToFrame(currentFrame + 1);
+  document.getElementById('scrubTimeLabel').textContent = fmtTimecode(currentFrame / fps);
+});
+
+function seekToFrame(frame) {
+  currentFrame = Math.max(0, Math.min(frame, frameCount - 1));
+  const t = currentFrame / fps;
+  videoEl.currentTime = t;
+  scrubber.value = Math.round((t / duration) * 1000);
+  updateScrubUI(t);
+}
+
+function updateScrubUI(t) {
+  document.getElementById('scrubTc').textContent  = fmtTimecode(t);
+  document.getElementById('frameNum').textContent = 'Frame ' + currentFrame;
+}
+
+// ── Action button ──
+const actionBtn = document.getElementById('actionBtn');
+
+actionBtn.addEventListener('click', () => {
+  if(!videoLoaded) return;
+
+  if(extractedDataURL) {
+    downloadFrame();
+    return;
+  }
+
+  // Extract
+  const canvas = document.getElementById('frameCanvas');
+  const ctx    = canvas.getContext('2d');
+  const W = videoEl.videoWidth  || 1280;
+  const H = videoEl.videoHeight || 720;
+  canvas.width = W; canvas.height = H;
+  ctx.drawImage(videoEl, 0, 0, W, H);
+  extractedDataURL = canvas.toDataURL('image/png');
+
+  // Set default filename
+  const t = videoEl.currentTime;
+  document.getElementById('renameInput').value = `${originalFileName}_${fmtTimecode(t).replace(/[:.]/g,'-')}`;
+
+  // Show rename section + grow panel
+  document.getElementById('renameSection').classList.add('show');
+  const btm = document.getElementById('btmPanel');
+  const va  = document.getElementById('videoArea');
+  btm.className = 'btm rename-mode';
+  va.className  = 'video-area rename-mode';
+
+  // Flip button
+  actionBtn.className = 'action-btn dl';
+  actionBtn.textContent = '⬇ Download PNG';
+
+  toast('✓ Frame ready — edit name then download');
+});
+
+function downloadFrame() {
+  const name = document.getElementById('renameInput').value.trim() || 'frame';
+  const a = document.createElement('a');
+  a.href     = extractedDataURL;
+  a.download = name + '.png';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  toast('⬇ Saved ' + name + '.png');
+  resetExtract();
+}
+
+function resetExtract() {
+  extractedDataURL = null;
+  document.getElementById('renameSection').classList.remove('show');
+  actionBtn.className = 'action-btn';
+  actionBtn.textContent = '📷 Extract Frame';
+  actionBtn.disabled = !videoLoaded;
+  // Restore panel size
+  setMode(mode || 'start');
+}
+
+// ── Helpers ──
+function fmtTime(s) {
+  return Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
+}
+function fmtTimecode(s) {
+  const m = Math.floor(s/60), sec = Math.floor(s%60), ms = Math.round((s%1)*1000);
+  return m + ':' + String(sec).padStart(2,'0') + '.' + String(ms).padStart(3,'0');
+}
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
