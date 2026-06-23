@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Back2Life.app — AI Video Creation Tutorials &amp; Free Tools</title>
+<meta name="description" content="Step-by-step AI video tutorials plus free browser tools. Watermark videos, extract frames, download from social media.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#e8e8e8;line-height:1.7}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,10,10,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);padding:0 16px;height:60px;display:flex;align-items:center;gap:10px}
+.nav-logo{font-size:19px;font-weight:800;color:#fff;text-decoration:none;letter-spacing:-.2px;flex-shrink:0}
+.nav-logo em{color:#00ff88;font-style:normal}
+.nav-spacer{flex:1}
+.nav-links{display:flex;gap:20px;align-items:center}
+.nav-links a{font-size:13px;font-weight:500;color:#888;text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:#fff}
+.nav-cta{background:#00ff88;color:#000!important;font-weight:700!important;padding:7px 16px;border-radius:8px}
+.burger-btn{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0}
+.burger-btn span{display:block;width:22px;height:2px;background:#aaa;border-radius:2px;transition:all .3s}
+.burger-btn.open span{background:#00ff88}
+.burger-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.burger-btn.open span:nth-child(2){opacity:0}
+.burger-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+/* Mobile drawer */
+.nav-drawer{position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid #2a2a2a;border-radius:20px 20px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s ease;padding:0 24px 40px;max-height:80vh;overflow-y:auto}
+.nav-drawer.open{transform:translateY(0)}
+.drawer-handle-wrap{padding:10px 0 6px;text-align:center}
+.drawer-handle{width:36px;height:4px;background:#333;border-radius:2px;margin:0 auto}
+.drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:290;display:none;backdrop-filter:blur(2px)}
+.drawer-backdrop.open{display:block}
+.drawer-section-label{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:16px 0 8px;border-top:1px solid #1a1a1a;margin-top:4px}
+.drawer-section-label:first-of-type{border-top:none;padding-top:4px}
+.drawer-link{display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111;transition:color .2s}
+.drawer-link:hover,.drawer-link:active{color:#00ff88}
+.drawer-link .icon{width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.drawer-link .icon img{width:28px;height:28px;border-radius:6px;display:block}
+.drawer-link .icon svg{width:20px;height:20px;display:block}
+.drawer-cta{display:block;margin-top:20px;background:#00ff88;color:#000;font-weight:700;font-size:15px;padding:13px 24px;border-radius:10px;text-decoration:none;text-align:center}
+
+/* ── HERO VIDEO ── */
+.hero-video-wrap{width:100%;background:#000 url(https://i.ytimg.com/vi/lneLLi1PJY0/hqdefault.jpg) center/cover no-repeat;overflow:hidden;margin-top:60px;position:relative}
+.hero-video-wrap iframe{display:block;width:100%;aspect-ratio:16/9;border:none;pointer-events:none}
+.hero-video-wrap iframe.active{pointer-events:auto}
+.vid-overlay{position:absolute;inset:0;z-index:2;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.vid-overlay.gone{display:none}
+.vid-play-btn{width:60px;height:60px;background:rgba(0,0,0,.5);border-radius:50%;border:2px solid rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.vid-play-btn svg{width:22px;height:22px;fill:#fff;margin-left:4px}
+.vid-overlay:hover .vid-play-btn{background:rgba(0,255,136,.6);border-color:#00ff88;transform:scale(1.08)}
+
+/* ── HERO ── */
+.hero{display:flex;align-items:center;justify-content:center;text-align:center;padding:28px 24px 44px;background:radial-gradient(ellipse at 50% 40%,rgba(0,255,136,.07) 0%,transparent 65%),linear-gradient(180deg,#0a0a0a 0%,#0d1a12 60%,#0a0a0a 100%)}
+.hero-inner{position:relative;max-width:700px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.25);color:#00ff88;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:20px}
+.hero h1{font-size:clamp(30px,7vw,68px);font-weight:900;color:#fff;line-height:1.05;margin-bottom:18px;letter-spacing:-1px}
+.hero h1 em{color:#00ff88;font-style:normal}
+.hero-sub{font-size:clamp(14px,2.5vw,17px);color:#777;max-width:480px;margin:0 auto 32px}
+.hero-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:#00ff88;color:#000;font-weight:700;font-size:14px;padding:12px 28px;border-radius:10px;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn-secondary{background:rgba(255,255,255,.06);color:#fff;font-weight:600;font-size:14px;padding:12px 28px;border-radius:10px;text-decoration:none;border:1px solid rgba(255,255,255,.1);display:inline-flex;align-items:center;gap:8px}
+
+/* ── SOCIAL BAR ── */
+.social-bar{background:#0f0f0f;border-top:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a;padding:12px 16px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.social-label{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:2px;margin-right:4px}
+.social-link{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;text-decoration:none;color:#888;border:1px solid rgba(255,255,255,.08);transition:all .2s;background:#111}
+.social-link:hover{color:#fff;border-color:rgba(255,255,255,.2);background:#1a1a1a}
+.social-link img{width:16px;height:16px;flex-shrink:0;display:block}
+
+/* ── FREE TOOLS SECTION ── */
+.tools-section{padding:40px 20px;background:linear-gradient(180deg,#0a0a0a 0%,#0c170e 100%)}
+.tools-section-inner{max-width:600px;margin:0 auto}
+.tools-header{text-align:center;margin-bottom:20px}
+.tools-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.25);color:#00ff88;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:8px}
+.tools-heading{font-size:clamp(20px,4vw,32px);font-weight:900;color:#fff;margin-bottom:6px;letter-spacing:-.5px}
+.tools-heading em{color:#00ff88;font-style:normal}
+.tools-sub{font-size:14px;color:#555}
+.tools-grid{display:flex;flex-direction:column;gap:10px}
+.tool-card{background:#111;border:1px solid #1e1e1e;border-radius:14px;padding:16px 18px;text-decoration:none;display:flex;flex-direction:row;align-items:center;gap:16px;transition:all .15s;position:relative;overflow:hidden;min-height:76px}
+.tool-card:hover,.tool-card:active{border-color:#00ff88;background:#0d0d0d}
+.tool-card-icon{flex-shrink:0;width:52px;height:52px}
+.tool-card-icon img{width:52px;height:52px;border-radius:12px;display:block;object-fit:cover}
+.tool-card-body{flex:1;min-width:0}
+.tool-card-badge{background:#00ff88;color:#000;font-size:8px;font-weight:800;letter-spacing:1px;padding:2px 6px;border-radius:4px;display:inline-block;margin-bottom:4px}
+.tool-card-title{font-size:14px;font-weight:800;color:#fff;line-height:1.2;margin-bottom:2px}
+.tool-card-desc{font-size:11px;color:#555;line-height:1.4}
+.tool-card-arrow{font-size:20px;color:#00ff88;flex-shrink:0;opacity:.5}
+
+/* ── TUTORIALS SECTION ── */
+.section{padding:40px 20px;max-width:800px;margin:0 auto}
+.section-label{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;margin-bottom:12px}
+.section-title{font-size:clamp(24px,4vw,36px);font-weight:800;color:#fff;margin-bottom:10px;letter-spacing:-.5px}
+.section-sub{font-size:15px;color:#555;max-width:480px}
+.tutorials-grid{margin-top:20px}
+.tutorial-card{background:#111;border:1px solid #1e1e1e;border-radius:16px;overflow:hidden;text-decoration:none;display:block;transition:border-color .2s}
+.tutorial-card:hover{border-color:#00ff88}
+.card-hero{position:relative;aspect-ratio:16/7;overflow:hidden}
+.card-hero img{width:100%;height:100%;object-fit:cover;object-position:center 20%}
+.card-hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.1) 0%,rgba(0,0,0,.7) 100%)}
+.card-badges{position:absolute;top:12px;left:12px;display:flex;gap:6px}
+.card-badge{background:rgba(0,0,0,.7);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:10px;font-weight:600;padding:3px 8px;border-radius:5px}
+.card-badge.new{background:#00ff88;color:#000;border-color:#00ff88}
+.card-body{padding:20px 20px 24px}
+.card-meta{display:flex;gap:16px;margin-bottom:10px;font-size:11px;color:#444}
+.card-title{font-size:20px;font-weight:800;color:#fff;margin-bottom:8px;line-height:1.2}
+.card-desc{font-size:13px;color:#555;margin-bottom:16px;line-height:1.5}
+.card-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.tag{background:rgba(0,255,136,.08);color:#00cc66;border:1px solid rgba(0,255,136,.15);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.card-cta{display:inline-flex;align-items:center;gap:6px;background:#00ff88;color:#000;font-weight:700;font-size:13px;padding:10px 20px;border-radius:8px;text-decoration:none}
+
+/* ── FOOTER ── */
+footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;text-align:center}
+.footer-logo{font-size:20px;font-weight:800;color:#fff;margin-bottom:6px}
+.footer-logo em{color:#00ff88;font-style:normal}
+.footer-tagline{font-size:12px;color:#333;margin-bottom:14px}
+.footer-social{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.footer-social a{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:8px;font-size:12px;font-weight:600;color:#666;text-decoration:none;border:1px solid #1e1e1e;background:#0f0f0f;transition:all .2s}
+.footer-social a:hover{color:#fff;border-color:rgba(255,255,255,.15);background:#1a1a1a}
+.footer-social a img{width:15px;height:15px;flex-shrink:0;display:block}
+.footer-copy{font-size:11px;color:#2a2a2a}
+
+@media(max-width:768px){
+  .nav-links{display:none}
+  .burger-btn{display:flex}
+  .nav-spacer{display:none}
+}
+</style>
+<link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Back2Life">
+</head>
+<body>
+
+<nav>
+  <button class="burger-btn" id="burgerBtn"><span></span><span></span><span></span></button>
+  <a href="/" class="nav-logo">Back2Life<em>.app</em></a>
+  <div class="nav-spacer"></div>
+  <div class="nav-links">
+    <a href="#tutorials">Tutorials</a>
+    <a href="#tools">Free Tools</a>
+    <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-cta">Follow Us</a>
+  </div>
+</nav>
+
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<div class="nav-drawer" id="navDrawer">
+  <div class="drawer-handle-wrap"><div class="drawer-handle"></div></div>
+  <div class="drawer-section-label">Navigation</div>
+  <a href="#tutorials" class="drawer-link" id="drawerTuts"><span class="icon">🎓</span>Tutorials</a>
+  <a href="#tools" class="drawer-link" id="drawerTools"><span class="icon">🛠️</span>Free Tools</a>
+
+  <div class="drawer-section-label">Free Tools</div>
+  <a href="/watermark" class="drawer-link">
+    <span class="icon"><img src="/icons/watermark.png" alt="Watermark"></span>Watermark Image &amp; Video</a>
+  <a href="/frame-extractor" class="drawer-link">
+    <span class="icon"><img src="/icons/frame-extractor.png" alt="Frame Extractor"></span>Frame Extractor</a>
+  <a href="/audio-editor" class="drawer-link">
+    <span class="icon"><img src="/icons/audio-editor.png" alt="Audio Editor"></span>Audio Editor</a>
+  <a href="/audio-converter" class="drawer-link">
+    <span class="icon"><img src="/icons/audio-converter.png" alt="Audio Converter"></span>Audio Converter</a>
+
+  <div class="drawer-section-label">Follow Us</div>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-link">
+    <span class="icon"><img src="https://cdn.simpleicons.org/instagram/E1306C" width="20" height="20" alt="Instagram"></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="drawer-link">
+    <span class="icon"><img src="https://cdn.simpleicons.org/tiktok/ffffff" width="20" height="20" alt="TikTok"></span>TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="drawer-link">
+    <span class="icon"><img src="https://cdn.simpleicons.org/youtube/FF0000" width="20" height="20" alt="YouTube"></span>YouTube</a>
+  <a href="https://x.com/Back2LifeAI" target="_blank" class="drawer-link">
+    <span class="icon"><img src="https://cdn.simpleicons.org/x/ffffff" width="20" height="20" alt="X"></span>X / Twitter</a>
+  <a href="https://www.threads.com/@back2life.ai" target="_blank" class="drawer-link">
+    <span class="icon"><img src="https://cdn.simpleicons.org/threads/ffffff" width="20" height="20" alt="Threads"></span>Threads</a>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-cta">📸 Follow on Instagram</a>
+</div>
+
+<!-- HERO VIDEO -->
+<div class="hero-video-wrap">
+  <iframe
+    id="heroIframe"
+    src="https://www.youtube.com/embed/lneLLi1PJY0?autoplay=1&mute=1&loop=1&playlist=lneLLi1PJY0&controls=0&modestbranding=1&rel=0&playsinline=1&showinfo=0&iv_load_policy=3&enablejsapi=1"
+    allow="autoplay; encrypted-media; fullscreen"
+    allowfullscreen
+    title="Back2Life.app — AI Video Tutorial">
+  </iframe>
+  <div class="vid-overlay" id="vidOverlay">
+    <div class="vid-play-btn">
+      <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">⚡ AI Video Creation Tutorials</div>
+    <h1>Make Videos That<br><em>Break The Internet</em></h1>
+    <p class="hero-sub">Step-by-step AI video tutorials. Free browser tools for creators. No experience needed.</p>
+    <div class="hero-btns">
+      <a href="#tutorials" class="btn-primary">🎬 Watch Tutorial</a>
+      <a href="#tools" class="btn-secondary">Free Tools →</a>
+    </div>
+  </div>
+</div>
+
+<!-- SOCIAL BAR -->
+<div class="social-bar">
+  <span class="social-label">Follow</span>
+  <a href="https://www.instagram.com/back2life.ai" class="social-link" target="_blank">
+    <img src="https://cdn.simpleicons.org/instagram/E1306C" alt="Instagram"> Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" class="social-link" target="_blank">
+    <img src="https://cdn.simpleicons.org/tiktok/ffffff" alt="TikTok"> TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" class="social-link" target="_blank">
+    <img src="https://cdn.simpleicons.org/youtube/FF0000" alt="YouTube"> YouTube</a>
+  <a href="https://x.com/Back2LifeAI" class="social-link" target="_blank">
+    <img src="https://cdn.simpleicons.org/x/ffffff" alt="X"> X</a>
+  <a href="https://www.threads.com/@back2life.ai" class="social-link" target="_blank">
+    <img src="https://cdn.simpleicons.org/threads/ffffff" alt="Threads"> Threads</a>
+</div>
+
+<!-- FREE TOOLS -->
+<div class="tools-section" id="tools">
+  <div class="tools-section-inner">
+    <div class="tools-header">
+      <div class="tools-eyebrow">⚡ Free Tools</div>
+      <h2 class="tools-heading">Browser <em>Creator Tools</em></h2>
+      <p class="tools-sub">No account needed. Runs entirely on your device.</p>
+    </div>
+    <div class="tools-grid">
+      <a href="/watermark" class="tool-card">
+        <div class="tool-card-icon"><img src="/icons/watermark.png" alt="Watermark"></div>
+        <div class="tool-card-body">
+          <div class="tool-card-badge">FREE</div>
+          <div class="tool-card-title">Watermark Image &amp; Video</div>
+          <div class="tool-card-desc">Stamp your logo onto multiple videos or images at once. Set position, size &amp; opacity.</div>
+        </div>
+        <div class="tool-card-arrow">›</div>
+      </a>
+      <a href="/frame-extractor" class="tool-card">
+        <div class="tool-card-icon"><img src="/icons/frame-extractor.png" alt="Frame Extractor"></div>
+        <div class="tool-card-body">
+          <div class="tool-card-badge">FREE</div>
+          <div class="tool-card-title">Frame Extractor</div>
+          <div class="tool-card-desc">Grab any frame from a video as a high-quality PNG. Scrub, rename &amp; download.</div>
+        </div>
+        <div class="tool-card-arrow">›</div>
+      </a>
+      <a href="/audio-editor" class="tool-card">
+        <div class="tool-card-icon"><img src="/icons/audio-editor.png" alt="Audio Editor"></div>
+        <div class="tool-card-body">
+          <div class="tool-card-badge">FREE</div>
+          <div class="tool-card-title">Audio Editor</div>
+          <div class="tool-card-desc">Trim, fade, adjust volume &amp; speed. Export as MP3, WAV or AIFF.</div>
+        </div>
+        <div class="tool-card-arrow">›</div>
+      </a>
+      <a href="/audio-converter" class="tool-card">
+        <div class="tool-card-icon"><img src="/icons/audio-converter.png" alt="Audio Converter"></div>
+        <div class="tool-card-body">
+          <div class="tool-card-badge">FREE</div>
+          <div class="tool-card-title">Audio Converter</div>
+          <div class="tool-card-desc">Convert WAV, AIFF, FLAC &amp; MP3. Extract audio from any video.</div>
+        </div>
+        <div class="tool-card-arrow">›</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- TUTORIALS -->
+<div class="section" id="tutorials">
+  <div class="section-label">Tutorial #001</div>
+  <h2 class="section-title">Latest Tutorial</h2>
+  <p class="section-sub">Follow along and create your own viral AI video from scratch.</p>
+  <div class="tutorials-grid">
+    <a class="tutorial-card" href="/tutorial-01">
+      <div class="card-hero" style="position:relative">
+        <img src="/img/hero.jpg" alt="Jump Through The TV Tutorial">
+        <img src="/icons/tutorials.png" alt="" style="position:absolute;bottom:12px;right:12px;width:44px;height:44px;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,.5)">
+        <div class="card-hero-overlay"></div>
+        <div class="card-badges">
+          <span class="card-badge new">NEW</span>
+          <span class="card-badge">⚽ Football</span>
+          <span class="card-badge">🎬 Seedance 2.0</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span>⏱ 15 mins</span>
+          <span>📱 9:16 Format</span>
+          <span>💰 From $0.40</span>
+        </div>
+        <div class="card-title">Jump Through The TV &amp; Score The World Cup Winner</div>
+        <div class="card-desc">Create a viral AI video where YOU leap off your sofa into a live England vs Brazil World Cup match, weave past defenders with a 360 spin, and score the winning goal.</div>
+        <div class="card-tags">
+          <span class="tag">Nano Banana Pro</span>
+          <span class="tag">Seedance 2.0</span>
+          <span class="tag">Character Sheet</span>
+          <span class="tag">Free Unlimited</span>
+        </div>
+        <span class="card-cta">Start Tutorial →</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Back2Life<em>.app</em></div>
+  <div class="footer-tagline">AI Video Tutorials &amp; Free Creator Tools</div>
+  <div class="footer-social">
+    <a href="https://www.instagram.com/back2life.ai" target="_blank">
+      <img src="https://cdn.simpleicons.org/instagram/E1306C" alt="Instagram"> Instagram</a>
+    <a href="https://www.tiktok.com/@back2life.ai" target="_blank">
+      <img src="https://cdn.simpleicons.org/tiktok/ffffff" alt="TikTok"> TikTok</a>
+    <a href="https://youtube.com/@back2lifeai" target="_blank">
+      <img src="https://cdn.simpleicons.org/youtube/FF0000" alt="YouTube"> YouTube</a>
+    <a href="https://x.com/Back2LifeAI" target="_blank">
+      <img src="https://cdn.simpleicons.org/x/ffffff" alt="X"> X</a>
+    <a href="https://www.threads.com/@back2life.ai" target="_blank">
+      <img src="https://cdn.simpleicons.org/threads/ffffff" alt="Threads"> Threads</a>
+  </div>
+  <div class="footer-copy">© 2026 Back2Life.app — All rights reserved</div>
+</footer>
+
+<script>
+const burger = document.getElementById('burgerBtn');
+const drawer = document.getElementById('navDrawer');
+const backdrop = document.getElementById('drawerBackdrop');
+function openDrawer(){drawer.classList.add('open');backdrop.classList.add('open');burger.classList.add('open');document.body.style.overflow='hidden';}
+function closeDrawer(){drawer.classList.remove('open');backdrop.classList.remove('open');burger.classList.remove('open');document.body.style.overflow='';}
+burger.addEventListener('click',()=>drawer.classList.contains('open')?closeDrawer():openDrawer());
+backdrop.addEventListener('click',closeDrawer);
+['drawerTuts','drawerTools'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('click',closeDrawer);});
+let ty=0;
+drawer.addEventListener('touchstart',e=>{ty=e.touches[0].clientY;},{passive:true});
+drawer.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-ty>50)closeDrawer();},{passive:true});
+</script>
+</body>
+</html>
