@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Watermark Image &amp; Video — Back2Life.app</title>
+<title>Watermark Image & Video — Back2Life.app</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -24,23 +24,20 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 .menu-btn.open span:nth-child(2){opacity:0}
 .menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 .spacer{flex:1}
-/* + MEDIA button — plain button that triggers a hidden input */
-.add-btn-wrap{position:relative;flex-shrink:0}
-.add-btn{background:none;border:1px solid var(--border);border-radius:7px;color:#aaa;font-size:11px;font-weight:700;letter-spacing:.5px;padding:6px 11px;cursor:pointer;font-family:'Inter',sans-serif}
-.add-btn:active{border-color:var(--green);color:var(--green)}
+.add-media-btn{background:none;border:1px solid var(--border);border-radius:7px;color:#aaa;font-size:11px;font-weight:700;letter-spacing:.5px;padding:6px 11px;cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0}
+.add-media-btn:active{border-color:var(--green);color:var(--green)}
 
 /* SCROLL AREA */
-.scroll-area{position:fixed;top:var(--bar);left:0;right:0;bottom:var(--btm);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.scroll-area{position:fixed;top:var(--bar);left:0;right:0;bottom:var(--btm);overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--bg)}
 
-/* UPLOAD PLACEHOLDER — simple, no hidden inputs */
-.upload-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;height:100%;text-align:center;padding:40px 24px}
+/* UPLOAD PLACEHOLDER */
+.upload-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;height:100%;text-align:center;padding:40px 24px}
 .upload-placeholder.hidden{display:none}
-.upl-icon{font-size:52px;opacity:.7;animation:pulse 2.4s ease-in-out infinite;filter:drop-shadow(0 0 10px rgba(0,255,136,.2))}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.07);opacity:1}}
-.upl-title{font-size:15px;font-weight:700;color:#bbb}
-.upl-sub{font-size:12px;color:#555}
-.upl-tap-btn{background:var(--green);color:#000;font-weight:800;font-size:14px;padding:12px 28px;border-radius:10px;border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px}
-.upl-chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.upl-icon{font-size:56px;filter:drop-shadow(0 0 12px rgba(0,255,136,.3))}
+.upl-title{font-size:17px;font-weight:700;color:#ccc}
+.upl-sub{font-size:13px;color:#555;line-height:1.5}
+.upl-btn{background:var(--green);color:#000;font-weight:800;font-size:15px;padding:14px 32px;border-radius:12px;border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px;min-width:160px}
+.upl-chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:4px}
 .upl-chip{font-size:10px;font-weight:600;color:#555;border:1px solid #333;border-radius:4px;padding:2px 8px}
 
 /* MEDIA GRID */
@@ -50,11 +47,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 
 /* CARDS */
 .vcard{background:var(--s2);border:1px solid var(--border);border-radius:8px;overflow:hidden;position:relative;display:flex;flex-direction:column;transition:border-color .15s}
-.vcard.processing{border-color:#00ccff}
 .vcard.done{border-color:var(--green)}
-.vcard.cancelled{border-color:#666}
 .vcard.error{border-color:#ff4466}
-.vthumb{background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;flex:1}
+.vthumb{background:#111;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;min-height:80px}
 .vthumb video,.vthumb img.thumb-img{width:100%;height:100%;object-fit:cover;display:block}
 .wm-overlay{position:absolute;pointer-events:none;z-index:5;display:none}
 .wm-overlay img{display:block;object-fit:contain}
@@ -62,18 +57,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 .s-ready{background:rgba(30,30,30,.85);color:#555}
 .s-processing{background:rgba(0,204,255,.15);color:#00ccff}
 .s-done{background:rgba(0,255,136,.15);color:var(--green)}
-.s-cancelled{background:rgba(100,100,100,.2);color:#777}
 .s-error{background:rgba(255,68,102,.15);color:#ff4466}
-.vrem{position:absolute;top:4px;left:4px;background:rgba(0,0,0,.7);border:none;color:#777;width:18px;height:18px;border-radius:50%;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;z-index:10}
-.vrem:active{color:#ff4466}
-.vname{font-size:9px;font-weight:600;color:#777;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:3px 6px}
-.card-pos-bar{display:flex;border-top:1px solid var(--border)}
-.cpb-btn{flex:1;background:#111;border:none;border-right:1px solid var(--border);color:#444;font-size:8px;font-weight:700;padding:5px 2px;cursor:pointer;font-family:'Inter',sans-serif;text-align:center}
-.cpb-btn:last-child{border-right:none}
-.cpb-btn:active,.cpb-btn.active{background:var(--gdim);color:var(--green)}
-.cpb-btn[data-cpos="top"]::after{content:"TOP"}
-.cpb-btn[data-cpos="mid"]::after{content:"MID"}
-.cpb-btn[data-cpos="above"]::after{content:"ABOVE"}
+.vrem{position:absolute;top:4px;left:4px;background:rgba(0,0,0,.7);border:none;color:#777;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;z-index:10}
+.vname{font-size:9px;font-weight:600;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:4px 6px}
+.pos-bar{display:flex;border-top:1px solid var(--border)}
+.pos-bar-btn{flex:1;background:#111;border:none;border-right:1px solid var(--border);color:#444;font-size:8px;font-weight:700;padding:6px 2px;cursor:pointer;font-family:'Inter',sans-serif;text-align:center}
+.pos-bar-btn:last-child{border-right:none}
+.pos-bar-btn.active{background:var(--gdim);color:var(--green)}
 
 /* BOTTOM BAR */
 .btm-bar{position:fixed;bottom:0;left:0;right:0;height:var(--btm);background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;gap:7px;padding:0 10px;z-index:100}
@@ -81,15 +71,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 .prog-label{font-size:10px;color:var(--muted);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .prog-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--green),#00ccff);border-radius:2px;transition:width .3s;width:0}
-.act-btn{font-family:'Inter',sans-serif;font-weight:800;font-size:11px;padding:9px 12px;border-radius:9px;border:none;cursor:pointer;white-space:nowrap;transition:all .2s}
+.act-btn{font-family:'Inter',sans-serif;font-weight:800;font-size:11px;padding:9px 12px;border-radius:9px;border:none;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
 .act-btn:active{transform:scale(.97)}
 .btn-process{background:var(--green);color:#000}
 .btn-process:disabled{opacity:.2;cursor:not-allowed;transform:none}
-.btn-cancel{background:none;border:1px solid rgba(255,68,102,.35);color:#ff4466;display:none}
-.btn-cancel.show{display:block}
 .btn-clear{background:none;border:1px solid var(--border);color:var(--muted)}
 .btn-clear:disabled{opacity:.2;cursor:not-allowed}
-.btn-settings{background:none;border:1px solid var(--border);color:var(--muted);font-size:17px;padding:8px 11px}
+.btn-settings{background:none;border:1px solid var(--border);color:var(--muted);font-size:16px;padding:9px 12px}
 
 /* SETTINGS SHEET */
 .sheet{position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid var(--border);border-radius:20px 20px 0 0;z-index:210;transform:translateY(100%);transition:transform .3s ease;max-height:88vh;display:flex;flex-direction:column}
@@ -101,53 +89,42 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 .sh-sect{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--green);padding:14px 0 8px;border-top:1px solid var(--border);margin-top:4px}
 .sh-sect:first-child{border-top:none;margin-top:0;padding-top:4px}
 .sh-divider{height:1px;background:var(--border);margin:12px 0}
-.logo-drop{border:1.5px dashed #333;border-radius:9px;padding:14px 12px;text-align:center;cursor:pointer;position:relative;background:#111;transition:all .2s}
-.logo-drop:hover,.logo-drop.drag-over{border-color:var(--green);background:var(--gdim)}
-.logo-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.logo-drop-icon{font-size:20px;margin-bottom:4px}
-.logo-drop-title{font-size:12px;font-weight:700;color:#bbb}
-.logo-drop-sub{font-size:10px;color:#555;margin-top:2px}
-.logo-preview{display:none;align-items:center;gap:10px;background:#111;border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-top:8px}
+
+/* LOGO UPLOAD */
+.logo-upload-btn{width:100%;background:var(--s2);border:1.5px dashed #444;border-radius:9px;padding:16px;text-align:center;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;display:block}
+.logo-upload-btn:active{border-color:var(--green);background:var(--gdim)}
+.logo-upload-btn .lu-icon{font-size:22px;margin-bottom:6px}
+.logo-upload-btn .lu-title{font-size:13px;font-weight:700;color:#bbb;margin-bottom:2px}
+.logo-upload-btn .lu-sub{font-size:10px;color:#555}
+.logo-preview{display:none;align-items:center;gap:10px;background:#111;border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:8px}
 .logo-preview.show{display:flex}
-.logo-preview img{width:32px;height:32px;object-fit:contain;background:#0a0a0a;border-radius:5px}
+.logo-preview img{width:36px;height:36px;object-fit:contain;background:#0a0a0a;border-radius:5px}
 .lp-info{flex:1;min-width:0}
 .lp-name{font-size:11px;font-weight:600;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lp-size{font-size:10px;color:#555}
-.lp-rm{background:none;border:none;color:#555;cursor:pointer;font-size:13px;padding:4px;flex-shrink:0}
-.logo2-toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.logo2-toggle-btn{font-size:10px;font-weight:700;color:#777;background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;font-family:'Inter',sans-serif}
-.logo2-toggle-btn.on{border-color:var(--green);color:var(--green);background:var(--gdim)}
-.pos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:6px 0 4px}
-.pos-btn{background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:8px 3px;color:#777;font-size:8px;font-weight:700;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:'Inter',sans-serif}
+.lp-rm{background:none;border:1px solid #333;border-radius:6px;color:#666;cursor:pointer;font-size:11px;padding:5px 8px;font-family:'Inter',sans-serif}
+
+/* POSITION GRID */
+.pos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:8px 0 4px}
+.pos-btn{background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:9px 3px;color:#777;font-size:8px;font-weight:700;cursor:pointer;text-align:center;font-family:'Inter',sans-serif}
 .pos-btn.active{background:var(--gdim);border-color:var(--green);color:var(--green)}
-.pos-dot{width:5px;height:5px;background:currentColor;border-radius:50%}
-.pos-wide{grid-column:1/-1;flex-direction:row;justify-content:center;gap:8px;padding:7px 10px;font-size:8.5px;border-color:rgba(0,255,136,.25);color:rgba(0,255,136,.55)}
-.pos-wide.active{border-color:var(--green);color:var(--green)}
-.ctrl-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;margin-top:10px}
+.pos-wide{grid-column:1/-1;padding:8px;font-size:8.5px}
+
+/* SLIDERS */
+.ctrl-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;margin-top:12px}
 .ctrl-name{font-size:11px;color:#999;font-weight:500}
 .ctrl-val{font-size:12px;font-weight:700;color:var(--green)}
-input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:#2a2a2a;border-radius:2px;outline:none;cursor:pointer}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(0,255,136,.5);cursor:pointer}
-.pad-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:#2a2a2a;border-radius:2px;outline:none;cursor:pointer;margin:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(0,255,136,.5);cursor:pointer}
+.pad-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
 .pad-field label{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:4px}
-.pad-field input[type=number]{background:#111;border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;padding:7px 10px;width:100%;outline:none}
+.pad-field input[type=number]{background:#111;border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:8px 10px;width:100%;outline:none}
 .pad-field input[type=number]:focus{border-color:var(--green)}
-.rename-toggle-row{display:flex;align-items:center;justify-content:space-between}
-.rename-toggle{width:40px;height:22px;background:#222;border:1px solid var(--border);border-radius:11px;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
-.rename-toggle.on{background:var(--green)}
-.rename-toggle::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;background:#fff;border-radius:50%;transition:transform .2s}
-.rename-toggle.on::after{transform:translateX(18px)}
-.rename-toggle-label{font-size:12px;font-weight:600;color:#ccc}
-.rename-toggle-sub{font-size:10px;color:#555}
-.rename-fields{display:none;margin-top:12px;background:#111;border:1px solid var(--border);border-radius:9px;padding:12px}
-.rename-fields.show{display:block}
-.rename-hint{font-size:10px;color:#555;margin-bottom:10px;line-height:1.5}
-.rename-input-row{display:flex;align-items:center;background:var(--s2);border:1px solid var(--border);border-radius:7px;overflow:hidden;margin-bottom:8px}
-.rename-input-row:focus-within{border-color:var(--green)}
-.rename-prefix-input{flex:1;background:none;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:9px 11px;outline:none}
-.rename-suffix{background:#1a1a1a;color:#555;font-size:11px;font-weight:700;padding:9px 10px;border-left:1px solid var(--border);white-space:nowrap}
-.rename-preview{font-size:10px;color:#555;line-height:1.6}
-.rename-preview strong{color:#888}
+
+/* LOGO 2 TOGGLE */
+.logo2-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.logo2-toggle-btn{font-size:10px;font-weight:700;color:#777;background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:5px 12px;cursor:pointer;font-family:'Inter',sans-serif}
+.logo2-toggle-btn.on{border-color:var(--green);color:var(--green);background:var(--gdim)}
 
 /* NAV SHEET */
 .nav-sheet{position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid var(--border);border-radius:20px 20px 0 0;z-index:220;transform:translateY(100%);transition:transform .3s ease;max-height:80vh;overflow-y:auto;padding:0 20px 40px}
@@ -158,16 +135,15 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .nav-sl:first-of-type{border-top:none;margin-top:0;padding-top:4px}
 .nav-a{display:flex;align-items:center;gap:14px;padding:12px 0;font-size:15px;font-weight:500;color:#ddd;text-decoration:none;border-bottom:1px solid #222}
 .nav-a:active{color:var(--green)}
-.nav-a .ico{width:26px;text-align:center;display:flex;align-items:center;justify-content:center}
-.nav-a .ico svg{width:20px;height:20px;display:block}
+.nav-a .ico{width:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .nav-cta{display:block;margin-top:20px;background:var(--green);color:#000;font-weight:700;font-size:14px;padding:13px;border-radius:10px;text-decoration:none;text-align:center}
 
 /* BACKDROP */
-.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(2px);z-index:190;display:none;pointer-events:none}
-.backdrop.open{display:block;pointer-events:all}
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(2px);z-index:190;display:none}
+.backdrop.open{display:block}
 
 /* TOAST */
-.toast{position:fixed;bottom:calc(var(--btm) + 10px);left:50%;transform:translateX(-50%) translateY(8px);background:#181818;border:1px solid var(--green);color:var(--green);font-size:12px;font-weight:600;padding:9px 16px;border-radius:8px;opacity:0;transition:all .3s;z-index:300;pointer-events:none;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
+.toast{position:fixed;bottom:calc(var(--btm) + 12px);left:50%;transform:translateX(-50%) translateY(8px);background:#181818;border:1px solid var(--green);color:var(--green);font-size:12px;font-weight:600;padding:10px 18px;border-radius:8px;opacity:0;transition:all .3s;z-index:300;pointer-events:none;white-space:nowrap;max-width:90vw}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 <link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
@@ -178,17 +154,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 </head>
 <body>
 
-<!-- Hidden file input — triggered by buttons, never hidden behind anything -->
-<input type="file" accept="video/*,image/*" multiple id="mediaFileInput" style="position:fixed;top:-100px;left:-100px;width:1px;height:1px;opacity:0">
-
 <!-- TOP BAR -->
 <div class="topbar">
   <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
   <div class="topbar-title">WATERMARK IMAGE &amp; VIDEO</div>
   <div class="spacer"></div>
-  <div class="add-btn-wrap">
-    <label for="mediaFileInput" class="add-btn" style="cursor:pointer">+ MEDIA</label>
-  </div>
+  <button class="add-media-btn" id="addMediaBtn">+ MEDIA</button>
 </div>
 
 <!-- SCROLL AREA -->
@@ -196,11 +167,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   <div class="upload-placeholder" id="uploadPlaceholder">
     <div class="upl-icon">🎬</div>
     <div class="upl-title">Add images or videos</div>
-    <div class="upl-sub">Set your logo in ⚙️ Settings first</div>
-    <label for="mediaFileInput" class="upl-tap-btn" style="cursor:pointer">+ Add Media</label>
+    <div class="upl-sub">Upload your media, then set your logo<br>in ⚙️ Settings to watermark</div>
+    <button class="upl-btn" id="uplBtn">+ Add Media</button>
     <div class="upl-chips">
-      <span class="upl-chip">MP4</span><span class="upl-chip">MOV</span>
-      <span class="upl-chip">JPG</span><span class="upl-chip">PNG</span>
+      <span class="upl-chip">MP4</span>
+      <span class="upl-chip">MOV</span>
+      <span class="upl-chip">JPG</span>
+      <span class="upl-chip">PNG</span>
+      <span class="upl-chip">WEBP</span>
     </div>
   </div>
   <div class="media-grid single" id="vGrid" style="display:none"></div>
@@ -209,10 +183,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <!-- BOTTOM BAR -->
 <div class="btm-bar">
   <div class="prog-wrap">
-    <div class="prog-label" id="progLabel">Add media &amp; set logo in ⚙️</div>
+    <div class="prog-label" id="progLabel">Add media then set logo in ⚙️</div>
     <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
   </div>
-  <button class="act-btn btn-cancel" id="cancelBtn">✕</button>
   <button class="act-btn btn-clear" id="clearBtn" disabled>CLEAR</button>
   <button class="act-btn btn-settings" id="settingsBtn">⚙️</button>
   <button class="act-btn btn-process" id="processBtn" disabled>PROCESS</button>
@@ -226,95 +199,88 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   <div class="sheet-handle-wrap"><div class="sheet-handle"></div></div>
   <div class="sheet-title">WATERMARK SETTINGS</div>
   <div class="sheet-scroll">
-    <div class="sh-sect">Logo 1</div>
-    <div class="logo-drop" id="logo1Zone">
-      <input type="file" accept="image/png,image/svg+xml,image/webp,image/jpeg" id="logo1Input">
-      <div class="logo-drop-icon">🖼️</div>
-      <div class="logo-drop-title">Tap to upload logo</div>
-      <div class="logo-drop-sub">PNG transparent background works best</div>
-    </div>
+
+    <div class="sh-sect">Logo</div>
+    <button class="logo-upload-btn" id="logo1UploadBtn">
+      <div class="lu-icon">🖼️</div>
+      <div class="lu-title">Tap to upload watermark logo</div>
+      <div class="lu-sub">PNG with transparent background works best</div>
+    </button>
     <div class="logo-preview" id="logo1Preview">
       <img id="logo1Img" src="" alt="">
-      <div class="lp-info"><div class="lp-name" id="logo1Name">—</div><div class="lp-size" id="logo1Size">—</div></div>
-      <button class="lp-rm" id="logo1Remove">✕</button>
-    </div>
-    <div style="margin-top:10px">
-      <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:5px">Default Position</div>
-      <div class="pos-grid" id="pos1Grid">
-        <button class="pos-btn" data-pos="top-left" data-logo="1"><div class="pos-dot"></div>TOP LEFT</button>
-        <button class="pos-btn" data-pos="top-center" data-logo="1"><div class="pos-dot"></div>TOP</button>
-        <button class="pos-btn" data-pos="top-right" data-logo="1"><div class="pos-dot"></div>TOP RIGHT</button>
-        <button class="pos-btn" data-pos="mid-left" data-logo="1"><div class="pos-dot"></div>MID LEFT</button>
-        <button class="pos-btn" data-pos="center" data-logo="1"><div class="pos-dot"></div>CENTER</button>
-        <button class="pos-btn" data-pos="mid-right" data-logo="1"><div class="pos-dot"></div>MID RIGHT</button>
-        <button class="pos-btn active" data-pos="bottom-left" data-logo="1"><div class="pos-dot"></div>BOT LEFT</button>
-        <button class="pos-btn" data-pos="bottom-center" data-logo="1"><div class="pos-dot"></div>BOTTOM</button>
-        <button class="pos-btn" data-pos="bottom-right" data-logo="1"><div class="pos-dot"></div>BOT RIGHT</button>
-        <button class="pos-btn pos-wide" data-pos="above-text" data-logo="1"><div class="pos-dot"></div>ABOVE TEXT — clears social captions</button>
+      <div class="lp-info">
+        <div class="lp-name" id="logo1Name">—</div>
+        <div class="lp-size" id="logo1Size">—</div>
       </div>
+      <button class="lp-rm" id="logo1Remove">Remove</button>
     </div>
+
+    <div class="ctrl-row"><span class="ctrl-name">Position</span></div>
+    <div class="pos-grid" id="pos1Grid">
+      <button class="pos-btn" data-pos="top-left">TOP LEFT</button>
+      <button class="pos-btn" data-pos="top-center">TOP</button>
+      <button class="pos-btn" data-pos="top-right">TOP RIGHT</button>
+      <button class="pos-btn" data-pos="mid-left">MID LEFT</button>
+      <button class="pos-btn" data-pos="center">CENTER</button>
+      <button class="pos-btn" data-pos="mid-right">MID RIGHT</button>
+      <button class="pos-btn active" data-pos="bottom-left">BOT LEFT</button>
+      <button class="pos-btn" data-pos="bottom-center">BOTTOM</button>
+      <button class="pos-btn" data-pos="bottom-right">BOT RIGHT</button>
+    </div>
+
     <div class="ctrl-row"><span class="ctrl-name">Size</span><span class="ctrl-val" id="size1Val">20%</span></div>
-    <input type="range" id="size1Range" min="5" max="60" value="20">
+    <input type="range" id="size1Range" min="3" max="60" value="20">
+
     <div class="ctrl-row"><span class="ctrl-name">Opacity</span><span class="ctrl-val" id="opac1Val">85%</span></div>
     <input type="range" id="opac1Range" min="10" max="100" value="85">
+
     <div class="pad-row">
       <div class="pad-field"><label>H PADDING</label><input type="number" id="padX1" value="20" min="0" max="300"></div>
-      <div class="pad-field"><label>V PADDING</label><input type="number" id="padY1" value="16" min="0" max="300"></div>
+      <div class="pad-field"><label>V PADDING</label><input type="number" id="padY1" value="20" min="0" max="300"></div>
     </div>
+
     <div class="sh-divider"></div>
-    <div class="logo2-toggle-row">
-      <div><div style="font-size:12px;font-weight:700;color:#ccc">Logo 2 <span style="color:#444;font-size:10px;font-weight:400">optional</span></div></div>
+
+    <div class="logo2-row">
+      <div style="font-size:12px;font-weight:700;color:#ccc">Second Logo <span style="color:#444;font-size:10px;font-weight:400">optional</span></div>
       <button class="logo2-toggle-btn" id="logo2Toggle">+ ADD</button>
     </div>
     <div id="logo2Block" style="display:none">
-      <div class="logo-drop" id="logo2Zone">
-        <input type="file" accept="image/png,image/svg+xml,image/webp,image/jpeg" id="logo2Input">
-        <div class="logo-drop-icon">🖼️</div>
-        <div class="logo-drop-title">Tap to upload second logo</div>
-        <div class="logo-drop-sub">Sponsor, badge, secondary brand</div>
-      </div>
+      <button class="logo-upload-btn" id="logo2UploadBtn">
+        <div class="lu-icon">🖼️</div>
+        <div class="lu-title">Tap to upload second logo</div>
+        <div class="lu-sub">Sponsor, badge, secondary brand</div>
+      </button>
       <div class="logo-preview" id="logo2Preview">
         <img id="logo2Img" src="" alt="">
-        <div class="lp-info"><div class="lp-name" id="logo2Name">—</div><div class="lp-size" id="logo2Size">—</div></div>
-        <button class="lp-rm" id="logo2Remove">✕</button>
-      </div>
-      <div style="margin-top:10px">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:5px">Position</div>
-        <div class="pos-grid" id="pos2Grid">
-          <button class="pos-btn" data-pos="top-left" data-logo="2"><div class="pos-dot"></div>TOP LEFT</button>
-          <button class="pos-btn" data-pos="top-center" data-logo="2"><div class="pos-dot"></div>TOP</button>
-          <button class="pos-btn active" data-pos="top-right" data-logo="2"><div class="pos-dot"></div>TOP RIGHT</button>
-          <button class="pos-btn" data-pos="mid-left" data-logo="2"><div class="pos-dot"></div>MID LEFT</button>
-          <button class="pos-btn" data-pos="center" data-logo="2"><div class="pos-dot"></div>CENTER</button>
-          <button class="pos-btn" data-pos="mid-right" data-logo="2"><div class="pos-dot"></div>MID RIGHT</button>
-          <button class="pos-btn" data-pos="bottom-left" data-logo="2"><div class="pos-dot"></div>BOT LEFT</button>
-          <button class="pos-btn" data-pos="bottom-center" data-logo="2"><div class="pos-dot"></div>BOTTOM</button>
-          <button class="pos-btn" data-pos="bottom-right" data-logo="2"><div class="pos-dot"></div>BOT RIGHT</button>
-          <button class="pos-btn pos-wide" data-pos="above-text" data-logo="2"><div class="pos-dot"></div>ABOVE TEXT — clears social captions</button>
+        <div class="lp-info">
+          <div class="lp-name" id="logo2Name">—</div>
+          <div class="lp-size" id="logo2Size">—</div>
         </div>
+        <button class="lp-rm" id="logo2Remove">Remove</button>
+      </div>
+      <div class="ctrl-row"><span class="ctrl-name">Position</span></div>
+      <div class="pos-grid" id="pos2Grid">
+        <button class="pos-btn" data-pos="top-left">TOP LEFT</button>
+        <button class="pos-btn" data-pos="top-center">TOP</button>
+        <button class="pos-btn active" data-pos="top-right">TOP RIGHT</button>
+        <button class="pos-btn" data-pos="mid-left">MID LEFT</button>
+        <button class="pos-btn" data-pos="center">CENTER</button>
+        <button class="pos-btn" data-pos="mid-right">MID RIGHT</button>
+        <button class="pos-btn" data-pos="bottom-left">BOT LEFT</button>
+        <button class="pos-btn" data-pos="bottom-center">BOTTOM</button>
+        <button class="pos-btn" data-pos="bottom-right">BOT RIGHT</button>
       </div>
       <div class="ctrl-row"><span class="ctrl-name">Size</span><span class="ctrl-val" id="size2Val">15%</span></div>
-      <input type="range" id="size2Range" min="5" max="60" value="15">
+      <input type="range" id="size2Range" min="3" max="60" value="15">
       <div class="ctrl-row"><span class="ctrl-name">Opacity</span><span class="ctrl-val" id="opac2Val">75%</span></div>
       <input type="range" id="opac2Range" min="10" max="100" value="75">
       <div class="pad-row">
         <div class="pad-field"><label>H PADDING</label><input type="number" id="padX2" value="20" min="0" max="300"></div>
-        <div class="pad-field"><label>V PADDING</label><input type="number" id="padY2" value="16" min="0" max="300"></div>
+        <div class="pad-field"><label>V PADDING</label><input type="number" id="padY2" value="20" min="0" max="300"></div>
       </div>
     </div>
-    <div class="sh-divider"></div>
-    <div class="rename-toggle-row">
-      <div><div class="rename-toggle-label">Batch Rename Files</div><div class="rename-toggle-sub">Optional — adds numbered suffix</div></div>
-      <div class="rename-toggle" id="renameToggle"></div>
-    </div>
-    <div class="rename-fields" id="renameFields">
-      <div class="rename-hint">Files named: <strong>your-name_01.mp4</strong>, <strong>_02.mp4</strong> etc.</div>
-      <div class="rename-input-row">
-        <input class="rename-prefix-input" type="text" id="renamePrefix" placeholder="e.g. my-brand-video" autocorrect="off" spellcheck="false">
-        <span class="rename-suffix">_01</span>
-      </div>
-      <div class="rename-preview" id="renamePreview"></div>
-    </div>
+
   </div>
 </div>
 
@@ -325,381 +291,535 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   <a href="/" class="nav-a"><span class="ico">🏠</span>Home</a>
   <a href="/#tutorials" class="nav-a"><span class="ico"><img src="/icons/tutorials.png" alt="Tutorials" style="width:28px;height:28px;border-radius:6px;display:block"></span>Tutorials</a>
   <div class="nav-sl">Free Tools</div>
-  <a href="/watermark" class="nav-a">
-    <span class="ico"><img src="/icons/watermark.png" alt="Watermark" style="width:28px;height:28px;border-radius:6px;display:block"></span>Watermark Image &amp; Video</a>
-  <a href="/frame-extractor" class="nav-a">
-    <span class="ico"><img src="/icons/frame-extractor.png" alt="Frame Extractor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Frame Extractor</a>
-  <a href="/audio-editor" class="nav-a">
-    <span class="ico"><img src="/icons/audio-editor.png" alt="Audio Editor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Editor</a>
-  <a href="/audio-converter" class="nav-a">
-    <span class="ico"><img src="/icons/audio-converter.png" alt="Audio Converter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Converter</a>
+  <a href="/watermark" class="nav-a"><span class="ico"><img src="/icons/watermark.png" alt="Watermark" style="width:28px;height:28px;border-radius:6px;display:block"></span>Watermark Image &amp; Video</a>
+  <a href="/frame-extractor" class="nav-a"><span class="ico"><img src="/icons/frame-extractor.png" alt="Frame Extractor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Frame Extractor</a>
+  <a href="/audio-editor" class="nav-a"><span class="ico"><img src="/icons/audio-editor.png" alt="Audio Editor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Editor</a>
+  <a href="/audio-converter" class="nav-a"><span class="ico"><img src="/icons/audio-converter.png" alt="Audio Converter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Converter</a>
   <div class="nav-sl">Follow Us</div>
-    <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-a">
-    <span class="ico"><img src="https://cdn.simpleicons.org/instagram/E1306C" width="20" height="20" alt="Instagram"></span>Instagram</a>
-  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="nav-a">
-    <span class="ico"><img src="https://cdn.simpleicons.org/tiktok/ffffff" width="20" height="20" alt="TikTok"></span>TikTok</a>
-  <a href="https://youtube.com/@back2lifeai" target="_blank" class="nav-a">
-    <span class="ico"><img src="https://cdn.simpleicons.org/youtube/FF0000" width="20" height="20" alt="YouTube"></span>YouTube</a>
-  <a href="https://x.com/Back2LifeAI" target="_blank" class="nav-a">
-    <span class="ico"><img src="https://cdn.simpleicons.org/x/ffffff" width="20" height="20" alt="X"></span>X / Twitter</a>
-  <a href="https://www.threads.com/@back2life.ai" target="_blank" class="nav-a">
-    <span class="ico"><img src="https://cdn.simpleicons.org/threads/ffffff" width="20" height="20" alt="Threads"></span>Threads</a>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-a"><span class="ico"><img src="https://cdn.simpleicons.org/instagram/E1306C" width="20" height="20" alt="Instagram"></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="nav-a"><span class="ico"><img src="https://cdn.simpleicons.org/tiktok/ffffff" width="20" height="20" alt="TikTok"></span>TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="nav-a"><span class="ico"><img src="https://cdn.simpleicons.org/youtube/FF0000" width="20" height="20" alt="YouTube"></span>YouTube</a>
+  <a href="https://x.com/Back2LifeAI" target="_blank" class="nav-a"><span class="ico"><img src="https://cdn.simpleicons.org/x/ffffff" width="20" height="20" alt="X"></span>X / Twitter</a>
+  <a href="https://www.threads.com/@back2life.ai" target="_blank" class="nav-a"><span class="ico"><img src="https://cdn.simpleicons.org/threads/ffffff" width="20" height="20" alt="Threads"></span>Threads</a>
   <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-cta">📸 Follow on Instagram</a>
 </div>
 
-<canvas id="frameCanvas" style="display:none"></canvas>
+<canvas id="offCanvas" style="display:none"></canvas>
 <div class="toast" id="toast"></div>
 
 <script>
-// ── State ──
-let logo1URL=null,logo2URL=null,logo2Enabled=false;
-let pos1='bottom-left',pos2='top-right';
-let size1=20,size2=15,opac1=85,opac2=75;
-let padX1=20,padY1=16,padX2=20,padY2=16;
-let renameEnabled=false,renamePrefix='';
-let media=[],processing=false,cancelRequested=false;
-const cardPosOverride={};
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let logo1URL = null, logo2URL = null, logo2On = false;
+let pos1 = 'bottom-left', pos2 = 'top-right';
+let size1 = 20, size2 = 15, opac1 = 85, opac2 = 75;
+let padX1 = 20, padY1 = 20, padX2 = 20, padY2 = 20;
+let media = [], busy = false;
 
-// ── File input — single hidden input, triggered by buttons ──
-const mediaFileInput = document.getElementById('mediaFileInput');
-mediaFileInput.addEventListener('change', e => {
-  const files = Array.from(e.target.files).filter(f=>f.type.startsWith('video/')||f.type.startsWith('image/'));
-  if(files.length) addMedia(files);
-  mediaFileInput.value=''; // reset so same file can be re-selected
-});
-
-// File picker triggered via <label for="mediaFileInput"> — no JS needed
-
-// ── Sheets ──
-const menuBtn=document.getElementById('menuBtn');
-const navSheet=document.getElementById('navSheet');
-const settingsBtn=document.getElementById('settingsBtn');
-const settingsSheet=document.getElementById('settingsSheet');
-const backdrop=document.getElementById('backdrop');
-
-function openNav(){navSheet.classList.add('open');backdrop.classList.add('open');menuBtn.classList.add('open');}
-function openSettings(){settingsSheet.classList.add('open');backdrop.classList.add('open');}
-function closeAll(){navSheet.classList.remove('open');settingsSheet.classList.remove('open');backdrop.classList.remove('open');menuBtn.classList.remove('open');}
-menuBtn.addEventListener('click',()=>navSheet.classList.contains('open')?closeAll():openNav());
-settingsBtn.addEventListener('click',()=>settingsSheet.classList.contains('open')?closeAll():openSettings());
-backdrop.addEventListener('click',closeAll);
-[navSheet,settingsSheet].forEach(sh=>{
-  let ty=0;
-  sh.addEventListener('touchstart',e=>{ty=e.touches[0].clientY;},{passive:true});
-  sh.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-ty>60)closeAll();},{passive:true});
-});
-
-// ── Logo setup ──
-[1,2].forEach(n=>{
-  const zone=document.getElementById(`logo${n}Zone`);
-  const input=document.getElementById(`logo${n}Input`);
-  zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over');});
-  zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
-  zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))loadLogo(n,f);});
-  input.addEventListener('change',e=>{if(e.target.files[0])loadLogo(n,e.target.files[0]);});
-  document.getElementById(`logo${n}Remove`).addEventListener('click',()=>{
-    if(n===1)logo1URL=null;else logo2URL=null;
-    input.value='';
-    document.getElementById(`logo${n}Preview`).classList.remove('show');
-    updateAllOverlays();updateBtns();
+// ─── FILE PICKER — uses a fresh input each time (Android fix) ─────────────────
+function pickFiles(accept, multiple, cb) {
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = accept;
+  if (multiple) inp.multiple = true;
+  inp.style.cssText = 'position:fixed;top:-200px;left:-200px;opacity:0;width:1px;height:1px';
+  document.body.appendChild(inp);
+  inp.addEventListener('change', () => {
+    const files = Array.from(inp.files || []);
+    document.body.removeChild(inp);
+    if (files.length) cb(files);
   });
-});
+  // Small delay for Android reliability
+  setTimeout(() => inp.click(), 50);
+}
 
-function loadLogo(n,file){
-  const r=new FileReader();
-  r.onload=ev=>{
-    if(n===1)logo1URL=ev.target.result;else logo2URL=ev.target.result;
-    document.getElementById(`logo${n}Img`).src=ev.target.result;
-    document.getElementById(`logo${n}Name`).textContent=file.name.length>20?file.name.substring(0,18)+'…':file.name;
-    document.getElementById(`logo${n}Size`).textContent=fmtSize(file.size);
+// ─── MEDIA UPLOAD ─────────────────────────────────────────────────────────────
+function openMediaPicker() {
+  pickFiles('video/*,image/*', true, files => {
+    const valid = files.filter(f => f.type.startsWith('video/') || f.type.startsWith('image/'));
+    if (!valid.length) { showToast('No supported files selected'); return; }
+    addMedia(valid);
+  });
+}
+
+document.getElementById('addMediaBtn').addEventListener('click', openMediaPicker);
+document.getElementById('uplBtn').addEventListener('click', openMediaPicker);
+
+function addMedia(files) {
+  document.getElementById('uploadPlaceholder').classList.add('hidden');
+  document.getElementById('vGrid').style.display = 'grid';
+  files.forEach(file => {
+    const id = Date.now() + '_' + Math.random().toString(36).slice(2);
+    const url = URL.createObjectURL(file);
+    const isImage = file.type.startsWith('image/');
+    const item = { id, file, url, isImage, pos: null };
+    media.push(item);
+    renderCard(item);
+  });
+  updateGrid();
+  updateUI();
+}
+
+function updateGrid() {
+  const g = document.getElementById('vGrid');
+  g.className = media.length === 1 ? 'media-grid single' : 'media-grid multi';
+}
+
+function renderCard(item) {
+  const el = document.createElement('div');
+  el.className = 'vcard';
+  el.id = 'c' + item.id;
+  const ar = media.length === 1 ? '16/9' : '9/16';
+
+  if (item.isImage) {
+    el.innerHTML = `
+      <div class="vthumb" id="t${item.id}" style="aspect-ratio:${ar}">
+        <img class="thumb-img" src="${item.url}" id="v${item.id}" alt="">
+        <div class="wm-overlay" id="wm1_${item.id}"><img id="wmi1_${item.id}" src="" alt=""></div>
+        <div class="wm-overlay" id="wm2_${item.id}"><img id="wmi2_${item.id}" src="" alt=""></div>
+      </div>
+      <div class="vstatus s-ready" id="st${item.id}">READY</div>
+      <button class="vrem" id="rm${item.id}">✕</button>
+      <div class="vname">${item.file.name}</div>
+      <div class="pos-bar">
+        <button class="pos-bar-btn active" data-cpos="default" data-id="${item.id}">DEFAULT</button>
+        <button class="pos-bar-btn" data-cpos="top" data-id="${item.id}">TOP</button>
+        <button class="pos-bar-btn" data-cpos="center" data-id="${item.id}">CENTER</button>
+      </div>`;
+    const img = document.getElementById('v' + item.id);
+    img.addEventListener('load', () => {
+      document.getElementById('t' + item.id).style.aspectRatio = img.naturalWidth + '/' + img.naturalHeight;
+      updateOverlays(item.id);
+    });
+  } else {
+    el.innerHTML = `
+      <div class="vthumb" id="t${item.id}" style="aspect-ratio:${ar}">
+        <video src="${item.url}" id="v${item.id}" muted preload="metadata" playsinline></video>
+        <div class="wm-overlay" id="wm1_${item.id}"><img id="wmi1_${item.id}" src="" alt=""></div>
+        <div class="wm-overlay" id="wm2_${item.id}"><img id="wmi2_${item.id}" src="" alt=""></div>
+      </div>
+      <div class="vstatus s-ready" id="st${item.id}">READY</div>
+      <button class="vrem" id="rm${item.id}">✕</button>
+      <div class="vname">${item.file.name}</div>
+      <div class="pos-bar">
+        <button class="pos-bar-btn active" data-cpos="default" data-id="${item.id}">DEFAULT</button>
+        <button class="pos-bar-btn" data-cpos="top" data-id="${item.id}">TOP</button>
+        <button class="pos-bar-btn" data-cpos="center" data-id="${item.id}">CENTER</button>
+      </div>`;
+    const vid = document.getElementById('v' + item.id);
+    vid.addEventListener('loadedmetadata', () => {
+      if (vid.videoWidth) document.getElementById('t' + item.id).style.aspectRatio = vid.videoWidth + '/' + vid.videoHeight;
+      updateOverlays(item.id);
+    });
+  }
+
+  document.getElementById('vGrid').appendChild(el);
+
+  document.getElementById('rm' + item.id).addEventListener('click', () => removeMedia(item.id));
+
+  el.querySelectorAll('.pos-bar-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      el.querySelectorAll('.pos-bar-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const map = { default: null, top: 'top-center', center: 'center' };
+      item.pos = map[btn.dataset.cpos];
+      updateOverlays(item.id);
+    });
+  });
+
+  updateOverlays(item.id);
+}
+
+function removeMedia(id) {
+  media = media.filter(m => m.id !== id);
+  const el = document.getElementById('c' + id);
+  if (el) el.remove();
+  if (media.length === 0) {
+    document.getElementById('uploadPlaceholder').classList.remove('hidden');
+    document.getElementById('vGrid').style.display = 'none';
+  }
+  updateGrid();
+  updateUI();
+}
+
+// ─── OVERLAYS ─────────────────────────────────────────────────────────────────
+function calcPos(pos, lw, lh, W, H, pX, pY) {
+  const positions = {
+    'top-left':      { x: pX,           y: pY },
+    'top-center':    { x: W/2 - lw/2,   y: pY },
+    'top-right':     { x: W - lw - pX,  y: pY },
+    'mid-left':      { x: pX,           y: H/2 - lh/2 },
+    'center':        { x: W/2 - lw/2,   y: H/2 - lh/2 },
+    'mid-right':     { x: W - lw - pX,  y: H/2 - lh/2 },
+    'bottom-left':   { x: pX,           y: H - lh - pY },
+    'bottom-center': { x: W/2 - lw/2,   y: H - lh - pY },
+    'bottom-right':  { x: W - lw - pX,  y: H - lh - pY },
+  };
+  return positions[pos] || { x: pX, y: H - lh - pY };
+}
+
+function updateOverlays(id) {
+  const th = document.getElementById('t' + id);
+  if (!th) return;
+  const tw = th.offsetWidth || 160;
+  const tHeight = th.offsetHeight || 90;
+
+  [1, 2].forEach(n => {
+    const wm = document.getElementById(`wm${n}_${id}`);
+    const wmi = document.getElementById(`wmi${n}_${id}`);
+    if (!wm || !wmi) return;
+    const lURL = n === 1 ? logo1URL : logo2URL;
+    const enabled = n === 1 ? true : logo2On;
+    if (!lURL || !enabled) { wm.style.display = 'none'; return; }
+    const p = n === 1 ? (media.find(m => m.id === id)?.pos || pos1) : pos2;
+    const sz = n === 1 ? size1 : size2;
+    const op = n === 1 ? opac1 : opac2;
+    const pX = n === 1 ? (padX1 / 100) * tw * 0.5 : (padX2 / 100) * tw * 0.5;
+    const pY = n === 1 ? (padY1 / 100) * tHeight * 0.5 : (padY2 / 100) * tHeight * 0.5;
+    const lw = (sz / 100) * tw;
+    const lhEst = lw * 0.5;
+    const { x, y } = calcPos(p || pos1, lw, lhEst, tw, tHeight, pX, pY);
+    wmi.src = lURL;
+    wm.style.cssText = `display:block;opacity:${op/100};left:${x}px;top:${y}px;width:${lw}px;position:absolute;pointer-events:none;z-index:5`;
+    wmi.style.cssText = 'width:100%;height:auto;display:block;object-fit:contain';
+  });
+}
+
+function updateAllOverlays() {
+  media.forEach(m => updateOverlays(m.id));
+}
+window.addEventListener('resize', updateAllOverlays);
+
+// ─── LOGO UPLOAD (Settings) ───────────────────────────────────────────────────
+function setupLogoUpload(n) {
+  document.getElementById(`logo${n}UploadBtn`).addEventListener('click', () => {
+    pickFiles('image/png,image/jpeg,image/webp,image/svg+xml', false, files => {
+      if (!files[0]) return;
+      loadLogo(n, files[0]);
+    });
+  });
+  document.getElementById(`logo${n}Remove`).addEventListener('click', () => {
+    if (n === 1) logo1URL = null; else logo2URL = null;
+    document.getElementById(`logo${n}Preview`).classList.remove('show');
+    updateAllOverlays();
+    updateUI();
+  });
+}
+setupLogoUpload(1);
+setupLogoUpload(2);
+
+function loadLogo(n, file) {
+  const r = new FileReader();
+  r.onload = ev => {
+    if (n === 1) logo1URL = ev.target.result;
+    else logo2URL = ev.target.result;
+    document.getElementById(`logo${n}Img`).src = ev.target.result;
+    document.getElementById(`logo${n}Name`).textContent = file.name.length > 22 ? file.name.slice(0, 20) + '…' : file.name;
+    document.getElementById(`logo${n}Size`).textContent = fmtSize(file.size);
     document.getElementById(`logo${n}Preview`).classList.add('show');
-    updateAllOverlays();updateBtns();
+    updateAllOverlays();
+    updateUI();
   };
   r.readAsDataURL(file);
 }
 
-// ── Logo 2 toggle ──
-document.getElementById('logo2Toggle').addEventListener('click',()=>{
-  logo2Enabled=!logo2Enabled;
-  const btn=document.getElementById('logo2Toggle');
-  btn.textContent=logo2Enabled?'− REMOVE':'+ ADD';
-  btn.classList.toggle('on',logo2Enabled);
-  document.getElementById('logo2Block').style.display=logo2Enabled?'block':'none';
-  if(!logo2Enabled){logo2URL=null;updateAllOverlays();updateBtns();}
+// ─── LOGO 2 TOGGLE ───────────────────────────────────────────────────────────
+document.getElementById('logo2Toggle').addEventListener('click', () => {
+  logo2On = !logo2On;
+  const btn = document.getElementById('logo2Toggle');
+  btn.textContent = logo2On ? '− REMOVE' : '+ ADD';
+  btn.classList.toggle('on', logo2On);
+  document.getElementById('logo2Block').style.display = logo2On ? 'block' : 'none';
+  if (!logo2On) { logo2URL = null; updateAllOverlays(); }
 });
 
-// ── Position buttons ──
-document.querySelectorAll('.pos-btn').forEach(b=>b.addEventListener('click',()=>{
-  const logo=b.dataset.logo;
-  document.querySelectorAll(`.pos-btn[data-logo="${logo}"]`).forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');
-  if(logo==='1')pos1=b.dataset.pos;else pos2=b.dataset.pos;
-  updateAllOverlays();
-}));
-
-// ── Sliders ──
-[['size1Range','size1Val',v=>size1=v],['opac1Range','opac1Val',v=>opac1=v],
- ['size2Range','size2Val',v=>size2=v],['opac2Range','opac2Val',v=>opac2=v]].forEach(([id,vid,cb])=>{
-  const el=document.getElementById(id);
-  el.addEventListener('input',()=>{document.getElementById(vid).textContent=el.value+'%';cb(+el.value);updateAllOverlays();});
+// ─── POSITION BUTTONS (Settings) ─────────────────────────────────────────────
+[1, 2].forEach(n => {
+  document.getElementById(`pos${n}Grid`).querySelectorAll('.pos-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById(`pos${n}Grid`).querySelectorAll('.pos-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (n === 1) pos1 = btn.dataset.pos;
+      else pos2 = btn.dataset.pos;
+      updateAllOverlays();
+    });
+  });
 });
-['padX1','padY1','padX2','padY2'].forEach(id=>{
-  document.getElementById(id).addEventListener('input',e=>{
-    const v=+e.target.value||0;
-    if(id==='padX1')padX1=v;else if(id==='padY1')padY1=v;else if(id==='padX2')padX2=v;else padY2=v;
+
+// ─── SLIDERS ─────────────────────────────────────────────────────────────────
+[
+  ['size1Range', 'size1Val', v => size1 = v],
+  ['opac1Range', 'opac1Val', v => opac1 = v],
+  ['size2Range', 'size2Val', v => size2 = v],
+  ['opac2Range', 'opac2Val', v => opac2 = v],
+].forEach(([id, valId, cb]) => {
+  document.getElementById(id).addEventListener('input', e => {
+    document.getElementById(valId).textContent = e.target.value + '%';
+    cb(+e.target.value);
+    updateAllOverlays();
+  });
+});
+['padX1','padY1','padX2','padY2'].forEach(id => {
+  document.getElementById(id).addEventListener('input', e => {
+    const v = +e.target.value || 0;
+    if (id === 'padX1') padX1 = v;
+    else if (id === 'padY1') padY1 = v;
+    else if (id === 'padX2') padX2 = v;
+    else padY2 = v;
     updateAllOverlays();
   });
 });
 
-// ── Rename ──
-document.getElementById('renameToggle').addEventListener('click',function(){
-  renameEnabled=!renameEnabled;this.classList.toggle('on',renameEnabled);
-  document.getElementById('renameFields').classList.toggle('show',renameEnabled);
-  updateRenamePreview();
+// ─── SHEETS ───────────────────────────────────────────────────────────────────
+const backdrop = document.getElementById('backdrop');
+const navSheet = document.getElementById('navSheet');
+const settingsSheet = document.getElementById('settingsSheet');
+const menuBtn = document.getElementById('menuBtn');
+
+function closeAll() {
+  navSheet.classList.remove('open');
+  settingsSheet.classList.remove('open');
+  backdrop.classList.remove('open');
+  menuBtn.classList.remove('open');
+}
+menuBtn.addEventListener('click', () => {
+  if (navSheet.classList.contains('open')) { closeAll(); return; }
+  navSheet.classList.add('open');
+  backdrop.classList.add('open');
+  menuBtn.classList.add('open');
 });
-document.getElementById('renamePrefix').addEventListener('input',e=>{renamePrefix=e.target.value.trim();updateRenamePreview();});
-function updateRenamePreview(){
-  const p=document.getElementById('renamePreview');
-  if(!renameEnabled||!renamePrefix){p.textContent='';return;}
-  const ex=[`${renamePrefix}_01`,`${renamePrefix}_02`];
-  if(media.length>2)ex.push('…');
-  p.innerHTML='Preview: <strong>'+ex.join(', ')+'</strong>';
-}
-function getFileName(item,index){
-  const ext=item.isImage?'png':'mp4';
-  if(renameEnabled&&renamePrefix)return`${renamePrefix}_${String(index+1).padStart(2,'0')}.${ext}`;
-  return item.file.name.replace(/\.[^.]+$/,'')+'_watermarked.'+ext;
-}
+document.getElementById('settingsBtn').addEventListener('click', () => {
+  if (settingsSheet.classList.contains('open')) { closeAll(); return; }
+  settingsSheet.classList.add('open');
+  backdrop.classList.add('open');
+});
+backdrop.addEventListener('click', closeAll);
+[navSheet, settingsSheet].forEach(sh => {
+  let ty = 0;
+  sh.addEventListener('touchstart', e => { ty = e.touches[0].clientY; }, { passive: true });
+  sh.addEventListener('touchend', e => { if (e.changedTouches[0].clientY - ty > 60) closeAll(); }, { passive: true });
+});
 
-// ── Add media ──
-function addMedia(files){
-  document.getElementById('uploadPlaceholder').classList.add('hidden');
-  document.getElementById('vGrid').style.display='grid';
-  files.forEach(file=>{
-    const id=Date.now()+Math.random();
-    const url=URL.createObjectURL(file);
-    const isImage=file.type.startsWith('image/');
-    media.push({id,file,url,isImage});
-    cardPosOverride[id]=null;
-    renderCard({id,file,url,isImage});
-  });
-  updateGrid();updateCount();updateBtns();updateRenamePreview();
-}
+// ─── CLEAR ────────────────────────────────────────────────────────────────────
+document.getElementById('clearBtn').addEventListener('click', () => {
+  media = [];
+  document.getElementById('vGrid').innerHTML = '';
+  document.getElementById('vGrid').style.display = 'none';
+  document.getElementById('uploadPlaceholder').classList.remove('hidden');
+  document.getElementById('progFill').style.width = '0';
+  updateUI();
+});
 
-function updateGrid(){
-  const g=document.getElementById('vGrid');
-  g.className=media.length===1?'media-grid single':'media-grid multi';
-}
+// ─── PROCESS ─────────────────────────────────────────────────────────────────
+document.getElementById('processBtn').addEventListener('click', startProcess);
 
-function renderCard(item){
-  const el=document.createElement('div');
-  el.className='vcard';el.id=`c${item.id}`;
-  const ar=media.length===1?'auto':'9/16';
-  if(item.isImage){
-    el.innerHTML=`<div class="vthumb" id="t${item.id}" style="aspect-ratio:${ar}"><img class="thumb-img" src="${item.url}" alt="" id="v${item.id}"><div class="wm-overlay" id="wm1_${item.id}"><img src="" alt="" id="wmi1_${item.id}"></div><div class="wm-overlay" id="wm2_${item.id}"><img src="" alt="" id="wmi2_${item.id}"></div></div><div class="vstatus s-ready" id="st${item.id}">READY</div><button class="vrem" id="rm${item.id}">✕</button><div class="vname">${item.file.name}</div><div class="card-pos-bar"><button class="cpb-btn active" data-cpos="top" data-id="${item.id}"></button><button class="cpb-btn" data-cpos="mid" data-id="${item.id}"></button><button class="cpb-btn" data-cpos="above" data-id="${item.id}"></button></div>`;
-    const img=document.getElementById(`v${item.id}`);
-    img.addEventListener('load',()=>{const W=img.naturalWidth,H=img.naturalHeight;document.getElementById(`t${item.id}`).style.aspectRatio=`${W}/${H}`;updateOverlay(item.id,1);updateOverlay(item.id,2);});
-  } else {
-    el.innerHTML=`<div class="vthumb" id="t${item.id}" style="aspect-ratio:${ar}"><video src="${item.url}" muted preload="metadata" id="v${item.id}" playsinline></video><div class="wm-overlay" id="wm1_${item.id}"><img src="" alt="" id="wmi1_${item.id}"></div><div class="wm-overlay" id="wm2_${item.id}"><img src="" alt="" id="wmi2_${item.id}"></div></div><div class="vstatus s-ready" id="st${item.id}">READY</div><button class="vrem" id="rm${item.id}">✕</button><div class="vname">${item.file.name}</div><div class="card-pos-bar"><button class="cpb-btn" data-cpos="top" data-id="${item.id}"></button><button class="cpb-btn" data-cpos="mid" data-id="${item.id}"></button><button class="cpb-btn active" data-cpos="above" data-id="${item.id}"></button></div>`;
-    const vid=document.getElementById(`v${item.id}`);
-    vid.addEventListener('loadedmetadata',()=>{const W=vid.videoWidth||1,H=vid.videoHeight||1;document.getElementById(`t${item.id}`).style.aspectRatio=`${W}/${H}`;updateOverlay(item.id,1);updateOverlay(item.id,2);});
-  }
-  document.getElementById('vGrid').appendChild(el);
-  document.getElementById(`rm${item.id}`).addEventListener('click',()=>removeMedia(item.id));
-  el.querySelectorAll('.cpb-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      cardPosOverride[btn.dataset.id]=btn.dataset.cpos;
-      el.querySelectorAll('.cpb-btn').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      updateOverlay(btn.dataset.id,1);updateOverlay(btn.dataset.id,2);
-    });
-  });
-  updateOverlay(item.id,1);updateOverlay(item.id,2);
-}
+async function startProcess() {
+  if (!logo1URL || !media.length || busy) return;
+  closeAll();
+  busy = true;
+  let done = 0;
+  document.getElementById('processBtn').disabled = true;
+  document.getElementById('clearBtn').disabled = true;
 
-function removeMedia(id){
-  media=media.filter(v=>v.id!==id);
-  delete cardPosOverride[id];
-  const el=document.getElementById(`c${id}`);if(el)el.remove();
-  if(media.length===0){document.getElementById('uploadPlaceholder').classList.remove('hidden');document.getElementById('vGrid').style.display='none';}
-  updateGrid();updateCount();updateBtns();updateRenamePreview();
-}
-
-// ── Overlays ──
-function cardEffectivePos(id,def){
-  const ov=cardPosOverride[id];
-  if(!ov)return def;
-  return{top:'top-center',mid:'center',above:'above-text'}[ov]||def;
-}
-function logoPos(pos,lw,lh,W,H,pX,pY){
-  const aY=H*0.65-lh/2;
-  return({'top-left':{x:pX,y:pY},'top-center':{x:W/2-lw/2,y:pY},'top-right':{x:W-lw-pX,y:pY},'mid-left':{x:pX,y:H/2-lh/2},'center':{x:W/2-lw/2,y:H/2-lh/2},'mid-right':{x:W-lw-pX,y:H/2-lh/2},'bottom-left':{x:pX,y:H-lh-pY},'bottom-center':{x:W/2-lw/2,y:H-lh-pY},'bottom-right':{x:W-lw-pX,y:H-lh-pY},'above-text':{x:W/2-lw/2,y:aY}})[pos]||{x:pX,y:H-lh-pY};
-}
-function updateOverlay(id,n){
-  const wm=document.getElementById(`wm${n}_${id}`),wmi=document.getElementById(`wmi${n}_${id}`),th=document.getElementById(`t${id}`);
-  if(!wm||!th)return;
-  const lURL=n===1?logo1URL:logo2URL,en=n===1?true:logo2Enabled;
-  if(!lURL||!en){wm.style.display='none';return;}
-  const p=n===1?pos1:pos2,sz=n===1?size1:size2,op=n===1?opac1:opac2,pX=n===1?padX1:padX2,pY=n===1?padY1:padY2;
-  wmi.src=lURL;wm.style.display='block';wm.style.opacity=op/100;
-  const tw=th.offsetWidth||100,th2=th.offsetHeight||178,lw=(sz/100)*tw;
-  wmi.style.width=lw+'px';wmi.style.height='auto';
-  const sPX=(pX/100)*tw*0.4,sPY=(pY/100)*th2*0.4,lhE=lw*0.4;
-  const ep=n===1?cardEffectivePos(id,p):p;
-  const{x,y}=logoPos(ep,lw,lhE,tw,th2,sPX,sPY);
-  Object.assign(wm.style,{top:'',left:'',right:'',bottom:'',transform:''});
-  wm.style.left=x+'px';wm.style.top=y+'px';
-}
-function updateAllOverlays(){media.forEach(v=>{updateOverlay(v.id,1);updateOverlay(v.id,2);});}
-window.addEventListener('resize',updateAllOverlays);
-
-// ── Process ──
-document.getElementById('processBtn').addEventListener('click',startProcess);
-document.getElementById('cancelBtn').addEventListener('click',()=>{cancelRequested=true;document.getElementById('progLabel').textContent='Cancelling…';});
-document.getElementById('clearBtn').addEventListener('click',clearAll);
-
-async function startProcess(){
-  if(!logo1URL||!media.length||processing)return;
-  closeAll();processing=true;cancelRequested=false;let done=0;
-  document.getElementById('processBtn').disabled=true;
-  document.getElementById('clearBtn').disabled=true;
-  document.getElementById('cancelBtn').classList.add('show');
-  for(let i=0;i<media.length;i++){
-    if(cancelRequested){for(let j=i;j<media.length;j++)setStatus(media[j].id,'cancelled','—');break;}
-    const item=media[i];
-    setStatus(item.id,'processing','…');
-    document.getElementById('progLabel').textContent=`Processing ${i+1} of ${media.length}…`;
-    setProg(i/media.length);
-    try{
-      if(item.isImage)await processImage(item,i);
-      else await processVideo(item,i);
-      setStatus(item.id,'done','✓');done++;
-    }catch(e){
-      if(cancelRequested)setStatus(item.id,'cancelled','—');
-      else{console.error(e);setStatus(item.id,'error','ERR');}
+  for (let i = 0; i < media.length; i++) {
+    const item = media[i];
+    setStatus(item.id, 'processing', '…');
+    document.getElementById('progLabel').textContent = `Processing ${i+1} of ${media.length}…`;
+    document.getElementById('progFill').style.width = ((i / media.length) * 100) + '%';
+    try {
+      if (item.isImage) await processImage(item);
+      else await processVideo(item);
+      setStatus(item.id, 'done', '✓');
+      done++;
+    } catch(e) {
+      console.error(e);
+      setStatus(item.id, 'error', 'ERR');
     }
-    setProg((i+1)/media.length);
+    document.getElementById('progFill').style.width = (((i+1) / media.length) * 100) + '%';
   }
-  processing=false;
-  document.getElementById('progLabel').textContent=cancelRequested?`Cancelled — ${done}/${media.length}`:`✓ ${done} exported`;
-  document.getElementById('processBtn').disabled=false;
-  document.getElementById('clearBtn').disabled=false;
-  document.getElementById('cancelBtn').classList.remove('show');
-  cancelRequested=false;
-  toast(done>0?`✓ ${done} file${done>1?'s':''} downloaded`:'Cancelled');
+
+  busy = false;
+  document.getElementById('processBtn').disabled = false;
+  document.getElementById('clearBtn').disabled = false;
+  document.getElementById('progLabel').textContent = `✓ ${done} of ${media.length} exported`;
+  showToast(done > 0 ? `✓ ${done} file${done > 1 ? 's' : ''} downloaded` : 'Export failed — check console');
 }
 
-// ── Image processing ──
-async function processImage(item,index){
-  const srcImg=await loadImg(item.url);
-  const l1=await loadImg(logo1URL);
-  const l2=logo2Enabled&&logo2URL?await loadImg(logo2URL):null;
-  const W=srcImg.naturalWidth||1280,H=srcImg.naturalHeight||720;
-  const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
-  const ctx=canvas.getContext('2d');
-  ctx.drawImage(srcImg,0,0,W,H);
-  drawLogo(ctx,l1,cardEffectivePos(item.id,pos1),size1,opac1,padX1,padY1,W,H);
-  if(l2)drawLogo(ctx,l2,pos2,size2,opac2,padX2,padY2,W,H);
-  const a=document.createElement('a');
-  a.href=canvas.toDataURL('image/png');
-  a.download=getFileName(item,index);
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
+// ─── IMAGE PROCESSING ────────────────────────────────────────────────────────
+async function processImage(item) {
+  const src = await loadImg(item.url);
+  const W = src.naturalWidth, H = src.naturalHeight;
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(src, 0, 0, W, H);
+  await applyLogo(ctx, 1, item, W, H);
+  if (logo2On && logo2URL) await applyLogo(ctx, 2, item, W, H);
+  download(canvas.toDataURL('image/png'), stem(item.file.name) + '_watermarked.png');
 }
 
-function drawLogo(ctx,img,pos,size,opac,pX,pY,W,H){
-  const lw=(size/100)*W,lh=lw*(img.naturalHeight/img.naturalWidth);
-  const{x,y}=logoPos(pos,lw,lh,W,H,pX,pY);
-  ctx.globalAlpha=opac/100;ctx.drawImage(img,x,y,lw,lh);ctx.globalAlpha=1;
+async function applyLogo(ctx, n, item, W, H) {
+  const url = n === 1 ? logo1URL : logo2URL;
+  if (!url) return;
+  const logo = await loadImg(url);
+  const sz = n === 1 ? size1 : size2;
+  const op = n === 1 ? opac1 : opac2;
+  const pX = n === 1 ? padX1 : padX2;
+  const pY = n === 1 ? padY1 : padY2;
+  const p = n === 1 ? (item.pos || pos1) : pos2;
+  const lw = (sz / 100) * W;
+  const lh = lw * (logo.naturalHeight / logo.naturalWidth);
+  const { x, y } = calcPos(p, lw, lh, W, H, pX, pY);
+  ctx.globalAlpha = op / 100;
+  ctx.drawImage(logo, x, y, lw, lh);
+  ctx.globalAlpha = 1;
 }
 
-// ── Video processing ──
-function processVideo(item,index){
-  return new Promise((resolve,reject)=>{
-    const vid=document.createElement('video');
-    vid.src=item.url;
-    vid.muted=false;
-    vid.volume=0.001;
-    vid.playsInline=true;
+// ─── VIDEO PROCESSING ────────────────────────────────────────────────────────
+function processVideo(item) {
+  return new Promise((resolve, reject) => {
+    const vid = document.createElement('video');
+    vid.src = item.url;
+    vid.muted = true;
+    vid.playsInline = true;
+    vid.crossOrigin = 'anonymous';
 
-    vid.addEventListener('loadedmetadata',async()=>{
-      if(cancelRequested){reject(new Error('cancelled'));return;}
-      const W=vid.videoWidth||1280,H=vid.videoHeight||720,DUR=vid.duration;
-      const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
-      const ctx=canvas.getContext('2d');
-      const l1=await loadImg(logo1URL);
-      const l2=logo2Enabled&&logo2URL?await loadImg(logo2URL):null;
+    vid.addEventListener('loadedmetadata', async () => {
+      const W = vid.videoWidth || 1280, H = vid.videoHeight || 720;
+      const canvas = document.createElement('canvas');
+      canvas.width = W; canvas.height = H;
+      const ctx = canvas.getContext('2d');
 
-      // Audio capture via WebAudio
-      let finalStream;
-      const vStream=canvas.captureStream(30);
-      try{
-        const aC=new(window.AudioContext||window.webkitAudioContext)();
-        if(aC.state==='suspended')await aC.resume();
-        const src=aC.createMediaElementSource(vid);
-        const dest=aC.createMediaStreamDestination();
+      const logo1 = logo1URL ? await loadImg(logo1URL) : null;
+      const logo2 = (logo2On && logo2URL) ? await loadImg(logo2URL) : null;
+
+      // Capture stream
+      const stream = canvas.captureStream(30);
+
+      // Try to add audio
+      try {
+        const ac = new (window.AudioContext || window.webkitAudioContext)();
+        const src = ac.createMediaElementSource(vid);
+        const dest = ac.createMediaStreamDestination();
         src.connect(dest);
-        const aTrack=dest.stream.getAudioTracks()[0];
-        finalStream=aTrack?new MediaStream([...vStream.getVideoTracks(),aTrack]):vStream;
-      }catch(e){finalStream=vStream;}
+        src.connect(ac.destination);
+        const aTrack = dest.stream.getAudioTracks()[0];
+        if (aTrack) stream.addTrack(aTrack);
+      } catch(e) { /* no audio — that's fine */ }
 
-      const mp4=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4;codecs=h264','video/mp4'];
-      const wbm=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
-      const mime=mp4.find(m=>MediaRecorder.isTypeSupported(m))||wbm.find(m=>MediaRecorder.isTypeSupported(m))||'video/webm';
+      // Pick best supported format
+      const formats = [
+        'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+        'video/mp4;codecs=h264',
+        'video/mp4',
+        'video/webm;codecs=vp9,opus',
+        'video/webm;codecs=vp8,opus',
+        'video/webm'
+      ];
+      const mime = formats.find(f => MediaRecorder.isTypeSupported(f)) || 'video/webm';
+      const ext = mime.includes('mp4') ? 'mp4' : 'webm';
 
-      const rec=new MediaRecorder(finalStream,{mimeType:mime,videoBitsPerSecond:10_000_000});
-      const chunks=[];
-      rec.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
-      rec.onstop=()=>{
-        const blob=new Blob(chunks,{type:mime});
-        const a=document.createElement('a');
-        a.href=URL.createObjectURL(blob);
-        a.download=getFileName(item,index);
-        document.body.appendChild(a);a.click();document.body.removeChild(a);
-        setTimeout(()=>URL.revokeObjectURL(a.href),15000);
+      const chunks = [];
+      const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 8_000_000 });
+      rec.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      rec.onstop = () => {
+        const blob = new Blob(chunks, { type: mime });
+        download(URL.createObjectURL(blob), stem(item.file.name) + '_watermarked.' + ext);
         resolve();
       };
 
-      rec.start(100);
-      vid.currentTime=0;
-      await new Promise(r=>{vid.onseeked=r;});
-
-      let stopped=false;
-      function stop(){if(stopped)return;stopped=true;vid.pause();setTimeout(()=>rec.stop(),350);}
-      vid.onended=stop;
-      await vid.play();
-
-      function draw(){
-        if(stopped)return;
-        if(cancelRequested){stop();return;}
-        ctx.clearRect(0,0,W,H);ctx.drawImage(vid,0,0,W,H);
-        drawLogo(ctx,l1,cardEffectivePos(item.id,pos1),size1,opac1,padX1,padY1,W,H);
-        if(l2)drawLogo(ctx,l2,pos2,size2,opac2,padX2,padY2,W,H);
-        requestAnimationFrame(draw);
+      // Draw loop
+      let stopped = false;
+      function drawFrame() {
+        if (stopped) return;
+        ctx.clearRect(0, 0, W, H);
+        ctx.drawImage(vid, 0, 0, W, H);
+        if (logo1) drawLogoOnCtx(ctx, logo1, 1, item, W, H);
+        if (logo2) drawLogoOnCtx(ctx, logo2, 2, item, W, H);
+        requestAnimationFrame(drawFrame);
       }
-      requestAnimationFrame(draw);
+
+      function stop() {
+        if (stopped) return;
+        stopped = true;
+        vid.pause();
+        setTimeout(() => rec.stop(), 300);
+      }
+
+      rec.start(100);
+      vid.currentTime = 0;
+      vid.onended = stop;
+      await vid.play().catch(() => {});
+      drawFrame();
     });
-    vid.addEventListener('error',reject);
+
+    vid.addEventListener('error', reject);
     vid.load();
   });
 }
 
-function loadImg(src){return new Promise((r,j)=>{const i=new Image();i.onload=()=>r(i);i.onerror=j;i.src=src;});}
-
-// ── Helpers ──
-function setStatus(id,type,label){const s=document.getElementById(`st${id}`),c=document.getElementById(`c${id}`);if(!s||!c)return;s.className=`vstatus s-${type}`;s.textContent=label;c.className=`vcard ${type}`;}
-function setProg(f){document.getElementById('progFill').style.width=Math.round(f*100)+'%';}
-function clearAll(){
-  media=[];
-  Array.from(document.getElementById('vGrid').children).forEach(c=>c.remove());
-  document.getElementById('vGrid').style.display='none';
-  document.getElementById('uploadPlaceholder').classList.remove('hidden');
-  setProg(0);document.getElementById('progLabel').textContent='Add media & set logo in ⚙️';
-  updateCount();updateBtns();updateRenamePreview();
+function drawLogoOnCtx(ctx, logoImg, n, item, W, H) {
+  const sz = n === 1 ? size1 : size2;
+  const op = n === 1 ? opac1 : opac2;
+  const pX = n === 1 ? padX1 : padX2;
+  const pY = n === 1 ? padY1 : padY2;
+  const p = n === 1 ? (item.pos || pos1) : pos2;
+  const lw = (sz / 100) * W;
+  const lh = lw * (logoImg.naturalHeight / logoImg.naturalWidth);
+  const { x, y } = calcPos(p, lw, lh, W, H, pX, pY);
+  ctx.globalAlpha = op / 100;
+  ctx.drawImage(logoImg, x, y, lw, lh);
+  ctx.globalAlpha = 1;
 }
-function updateCount(){const n=media.length;if(!processing)document.getElementById('progLabel').textContent=n===0?'Add media & set logo in ⚙️':`${n} file${n!==1?'s':''} queued — tap PROCESS`;}
-function updateBtns(){const ok=!!logo1URL&&media.length>0&&!processing;document.getElementById('processBtn').disabled=!ok;document.getElementById('clearBtn').disabled=media.length===0||processing;}
-function fmtSize(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(1)+'MB';}
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function loadImg(src) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => res(img);
+    img.onerror = rej;
+    img.src = src;
+  });
+}
+
+function download(href, filename) {
+  const a = document.createElement('a');
+  a.href = href;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => { if (href.startsWith('blob:')) URL.revokeObjectURL(href); }, 30000);
+}
+
+function stem(name) { return name.replace(/\.[^.]+$/, ''); }
+function fmtSize(b) { return b < 1048576 ? (b/1024).toFixed(1)+'KB' : (b/1048576).toFixed(1)+'MB'; }
+function setStatus(id, type, label) {
+  const s = document.getElementById('st' + id);
+  const c = document.getElementById('c' + id);
+  if (s) { s.className = 'vstatus s-' + type; s.textContent = label; }
+  if (c) c.classList.toggle('done', type === 'done');
+  if (c) c.classList.toggle('error', type === 'error');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+function updateUI() {
+  const hasMedia = media.length > 0;
+  const hasLogo = !!logo1URL;
+  document.getElementById('processBtn').disabled = !hasMedia || !hasLogo || busy;
+  document.getElementById('clearBtn').disabled = !hasMedia || busy;
+  if (!hasMedia) {
+    document.getElementById('progLabel').textContent = 'Add media then set logo in ⚙️';
+    document.getElementById('progFill').style.width = '0';
+  } else if (!hasLogo) {
+    document.getElementById('progLabel').textContent = `${media.length} file${media.length > 1 ? 's' : ''} added — set logo in ⚙️`;
+  } else {
+    document.getElementById('progLabel').textContent = `${media.length} file${media.length > 1 ? 's' : ''} ready — tap PROCESS`;
+  }
+}
 </script>
 </body>
 </html>
