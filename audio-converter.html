@@ -63,8 +63,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 .convert-btn:disabled{opacity:.4;cursor:not-allowed}
 
 /* NAV SHEET */
-
-
+.nav-sheet{position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid var(--border);border-radius:20px 20px 0 0;z-index:220;transform:translateY(100%);transition:transform .3s ease;max-height:80vh;overflow-y:auto;padding:0 20px 40px}
+.nav-sheet.open{transform:translateY(0)}
 .nav-handle-wrap{padding:10px 0 6px;text-align:center}
 .nav-handle{width:36px;height:4px;background:#3a3a3a;border-radius:2px;margin:0 auto}
 .nav-sl{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--green);padding:14px 0 7px;border-top:1px solid var(--border);margin-top:4px}
@@ -73,7 +73,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 .nav-a:active{color:var(--green)}
 .nav-a .ico{width:26px;text-align:center;display:flex;align-items:center;justify-content:center}
 .nav-a .ico svg{width:20px;height:20px;display:block}
-
+.nav-cta{display:block;margin-top:20px;background:var(--green);color:#000;font-weight:700;font-size:14px;padding:13px;border-radius:10px;text-decoration:none;text-align:center}
 
 .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(2px);z-index:190;display:none;pointer-events:none}
 .backdrop.open{display:block;pointer-events:all}
@@ -85,48 +85,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 .spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin-label{font-size:13px;color:var(--muted)}
-
-/* ── TOPBAR ── */
-.topbar{display:flex;align-items:center;padding:0 16px;height:60px;background:rgba(8,8,8,0.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.08);position:sticky;top:0;z-index:100;gap:10px}
-.menu-btn{background:none;border:none;cursor:pointer;padding:8px 8px 8px 0;display:flex;flex-direction:column;gap:5px;flex-shrink:0}
-.menu-btn span{display:block;width:22px;height:2px;background:#aaa;border-radius:2px;transition:all .25s}
-.menu-btn.open span{background:#00ff88}
-.menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-.menu-btn.open span:nth-child(2){opacity:0}
-.menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-.topbar-title{font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#00ff88;position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;pointer-events:none}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Mobile drawer — exact copy from homepage */
-/* Nav drawer */
-.nav-drawer{position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid #2a2a2a;border-radius:20px 20px 0 0;z-index:1000;transform:translateY(100%);transition:transform .3s ease;padding:0 24px 40px;max-height:80vh;overflow-y:auto}
-.nav-drawer.open{transform:translateY(0)}
-.drawer-handle-wrap{padding:10px 0 6px;text-align:center}
-.drawer-handle{width:36px;height:4px;background:#333;border-radius:2px;margin:0 auto}
-.drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;display:none;backdrop-filter:blur(2px)}
-.drawer-backdrop.open{display:block}
-.drawer-section-label{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:16px 0 8px;border-top:1px solid #1a1a1a;margin-top:4px}
-.drawer-section-label:first-of-type{border-top:none;padding-top:4px}
-.drawer-link{display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111;transition:color .2s}
-.drawer-link:hover,.drawer-link:active{color:#00ff88}
-.drawer-link .icon{width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.drawer-link .icon img{width:28px;height:28px;border-radius:6px;display:block}
-.drawer-cta{display:block;margin-top:20px;background:#00ff88;color:#000;font-weight:700;font-size:15px;padding:13px 24px;border-radius:10px;text-decoration:none;text-align:center}
 </style>
 <link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
 <link rel="icon" href="/favicon.ico">
@@ -135,17 +93,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 <meta name="apple-mobile-web-app-title" content="Audio Converter">
 </head>
 <body>
-<div style="display:flex;align-items:center;padding:0 16px;height:60px;background:rgba(8,8,8,0.95);border-bottom:1px solid rgba(255,255,255,0.08);position:sticky;top:0;z-index:100;gap:10px"><button id="burgerBtn" style="display:flex;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0"><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px"></span><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px"></span><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px"></span></button><div style="position:absolute;left:50%;transform:translateX(-50%);font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#00ff88;white-space:nowrap;pointer-events:none">AUDIO CONVERTER</div></div>
-
-</div>
 
 <input type="file" accept="audio/*,video/*" id="fileInput" style="position:fixed;top:-100px;left:-100px;width:1px;height:1px;opacity:0">
 
-
-  <div class="spacer" style="flex:1"></div>
-</div>
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
+  <div class="topbar-title">AUDIO CONVERTER</div>
   <div class="spacer"></div>
-  
+  <label for="fileInput" class="add-btn" style="cursor:pointer">+ FILE</label>
 </div>
 
 <div class="main">
@@ -197,39 +152,27 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
   </div>
 </div>
 
-</div>
+<div class="backdrop" id="backdrop"></div>
+
+<div class="nav-sheet" id="navSheet">
+  <div class="nav-handle-wrap"><div class="nav-handle"></div></div>
   <div class="nav-sl">Navigation</div>
-  <a href="/" class="nav-a"><span class="ico">🏠</span>Home</a>
-  <a href="/#tutorials" class="nav-a"><span class="ico"><img src="/icons/tutorials.png" alt="Tutorials" style="width:28px;height:28px;border-radius:6px;display:block"></span>Tutorials</a>
+  <a href="/" class="nav-a"><span class="ico"><img src="/icons/home.png" alt="Home" style="width:28px;height:28px;border-radius:6px;display:block"></span>Home</a>
   <div class="nav-sl">Free Tools</div>
-  <a href="/frame-extractor" class="nav-a">
-    <span class="ico"><img src="/icons/frame-extractor.png" alt="Frame Extractor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Frame Extractor</a>
-  <a href="/audio-editor" class="nav-a">
-    <span class="ico"><img src="/icons/audio-editor.png" alt="Audio Editor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Editor</a>
-  <a href="/audio-converter" class="nav-a">
-    <span class="ico"><img src="/icons/audio-converter.png" alt="Audio Converter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Converter</a>
-  <div class="nav-sl">
-  <div style="font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#00ff88;padding:18px 0 8px;border-top:1px solid rgba(255,255,255,0.05)">Share This Tool</div>
-  <div style="display:flex;gap:8px;padding:4px 0 8px;overflow-x:auto;scrollbar-width:none">
-    <button onclick="shareTo('whatsapp')" style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 16px;cursor:pointer;font-family:Inter,sans-serif"><span style="font-size:22px">💬</span><span style="font-size:10px;font-weight:700;color:#555;white-space:nowrap">WhatsApp</span></button>
-    <button onclick="shareTo('x')" style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 16px;cursor:pointer;font-family:Inter,sans-serif"><span style="font-size:22px">𝕏</span><span style="font-size:10px;font-weight:700;color:#555">X / Twitter</span></button>
-    <button onclick="shareTo('tiktok')" style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 16px;cursor:pointer;font-family:Inter,sans-serif"><span style="font-size:22px">🎵</span><span style="font-size:10px;font-weight:700;color:#555">TikTok</span></button>
-    <button onclick="shareTo('instagram')" style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 16px;cursor:pointer;font-family:Inter,sans-serif"><span style="font-size:22px">📸</span><span style="font-size:10px;font-weight:700;color:#555">Instagram</span></button>
-    <button onclick="shareTo('copy')" style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 16px;cursor:pointer;font-family:Inter,sans-serif"><span style="font-size:22px">🔗</span><span style="font-size:10px;font-weight:700;color:#555">Copy Link</span></button>
-  </div>
-Follow Us</div>
-    <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-a">
-    <span class="ico"><img src="https://cdn.simpleicons.org/instagram/E1306C" width="20" height="20" alt="Instagram"></span>Instagram</a>
-  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="nav-a">
-    <span class="ico"><img src="https://cdn.simpleicons.org/tiktok/ffffff" width="20" height="20" alt="TikTok"></span>TikTok</a>
-  <a href="https://youtube.com/@back2lifeai" target="_blank" class="nav-a">
-    <span class="ico"><img src="https://cdn.simpleicons.org/youtube/FF0000" width="20" height="20" alt="YouTube"></span>YouTube</a>
-  <a href="https://x.com/Back2LifeAI" target="_blank" class="nav-a">
-    <span class="ico"><img src="https://cdn.simpleicons.org/x/ffffff" width="20" height="20" alt="X"></span>X / Twitter</a>
-  <a href="https://www.threads.com/@back2life.ai" target="_blank" class="nav-a">
-    <span class="ico"><img src="https://cdn.simpleicons.org/threads/ffffff" width="20" height="20" alt="Threads"></span>Threads</a>
+  <a href="/watermark" class="nav-a"><span class="ico"><img src="/icons/watermark.png" alt="Watermark Tool" style="width:28px;height:28px;border-radius:6px;display:block"></span>Watermark Tool</a>
+  <a href="/video-splitter" class="nav-a"><span class="ico"><img src="/icons/video-splitter.png" alt="Video Splitter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Video Splitter</a>
+  <a href="/frame-extractor" class="nav-a"><span class="ico"><img src="/icons/frame-extractor.png" alt="Frame Extractor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Frame Extractor</a>
+  <a href="/audio-editor" class="nav-a"><span class="ico"><img src="/icons/audio-editor.png" alt="Audio Editor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Editor</a>
+  <a href="/audio-converter" class="nav-a"><span class="ico"><img src="/icons/audio-converter.png" alt="Audio Converter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Converter</a>
+  <div class="nav-sl">Follow Us</div>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-a"><span class="ico"><img src="https://cdn.simpleicons.org/instagram/E1306C" width="20" height="20" alt="Instagram"></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="nav-a"><span class="ico"><img src="https://cdn.simpleicons.org/tiktok/ffffff" width="20" height="20" alt="TikTok"></span>TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="nav-a"><span class="ico"><img src="https://cdn.simpleicons.org/youtube/FF0000" width="20" height="20" alt="YouTube"></span>YouTube</a>
+  <a href="https://x.com/Back2LifeAI" target="_blank" class="nav-a"><span class="ico"><img src="https://cdn.simpleicons.org/x/ffffff" width="20" height="20" alt="X"></span>X / Twitter</a>
+  <a href="https://www.threads.com/@back2life.ai" target="_blank" class="nav-a"><span class="ico"><img src="https://cdn.simpleicons.org/threads/ffffff" width="20" height="20" alt="Threads"></span>Threads</a>
   <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-cta">📸 Follow on Instagram</a>
 </div>
+
 
 <div class="overlay-spin" id="overlaySpin"><div class="spinner"></div><div class="spin-label" id="spinLabel">Converting…</div></div>
 <div class="toast" id="toast"></div>
@@ -300,12 +243,13 @@ $('convertBtn').addEventListener('click',async()=>{
 const backdrop=$('backdrop');
 $('menuBtn').addEventListener('click',()=>{
   const open=$('navSheet').classList.contains('open');
-  if(open){$('navSheet').classList.remove('open');backdrop.classList.remove('open');}
-  else{$('navSheet').classList.add('open');backdrop.classList.add('open');}
+  if(open){$('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open');}
+  else{$('navSheet').classList.add('open');backdrop.classList.add('open');$('menuBtn').classList.add('open');}
 });
+backdrop.addEventListener('click',()=>{$('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open');});
 let ty=0;
 $('navSheet').addEventListener('touchstart',e=>ty=e.touches[0].clientY,{passive:true});
-$('navSheet').addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-ty>60){$('navSheet').classList.remove('open');backdrop.classList.remove('open');}},{passive:true});
+$('navSheet').addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-ty>60){$('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open');}},{passive:true});
 
 // ══ exportFile() — ISOLATED for native wrapping ══
 async function exportFile(buffer,format,name,bitrate){
@@ -373,53 +317,6 @@ function shareTo(platform){
   if(platform==='copy'){navigator.clipboard.writeText(window.location.href);showToast('✓ Link copied!')}
   else{window.open(urls[platform],'_blank')}
 }
-</script>
-
-
-
-  </div>
-
-
-</div>
-  </div>
-
-</div>
-  </div>
-<div class="drawer-backdrop" id="drawerBackdrop"></div>
-<div class="nav-drawer" id="navDrawer">
-  <div class="drawer-handle-wrap"><div class="drawer-handle"></div></div>
-  <div class="drawer-section-label">Navigation</div>
-  <a href="/" class="drawer-link"><span class="icon"><img src="/icons/home.png" alt="Home" style="width:28px;height:28px;border-radius:6px;display:block"></span>Home</a>
-  <div class="drawer-section-label">Free Tools</div>
-  <a href="/watermark" class="drawer-link"><span class="icon"><img src="/icons/watermark.png" alt="Watermark Tool" style="width:28px;height:28px;border-radius:6px;display:block"></span>Watermark Tool</a>
-  <a href="/video-splitter" class="drawer-link"><span class="icon"><img src="/icons/video-splitter.png" alt="Video Splitter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Video Splitter</a>
-  <a href="/frame-extractor" class="drawer-link"><span class="icon"><img src="/icons/frame-extractor.png" alt="Frame Extractor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Frame Extractor</a>
-  <a href="/audio-editor" class="drawer-link"><span class="icon"><img src="/icons/audio-editor.png" alt="Audio Editor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Editor</a>
-  <a href="/audio-converter" class="drawer-link"><span class="icon"><img src="/icons/audio-converter.png" alt="Audio Converter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Converter</a>
-  <div class="drawer-section-label">Follow Us</div>
-  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/instagram/E1306C" width="20" height="20" alt="Instagram"></span>Instagram</a>
-  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/tiktok/ffffff" width="20" height="20" alt="TikTok"></span>TikTok</a>
-  <a href="https://youtube.com/@back2lifeai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/youtube/FF0000" width="20" height="20" alt="YouTube"></span>YouTube</a>
-  <a href="https://x.com/Back2LifeAI" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/x/ffffff" width="20" height="20" alt="X"></span>X / Twitter</a>
-  <a href="https://www.threads.com/@back2life.ai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/threads/ffffff" width="20" height="20" alt="Threads"></span>Threads</a>
-  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-cta">📸 Follow on Instagram</a>
-</div>
-<script>
-(function(){
-  var b=document.getElementById('burgerBtn');
-  var d=document.getElementById('navDrawer');
-  var bd=document.getElementById('drawerBackdrop');
-  if(!b||!d||!bd)return;
-  // Move to body root to escape any stacking context
-  if(d.parentNode!==document.body){document.body.appendChild(bd);document.body.appendChild(d);}
-  function open(){d.classList.add('open');bd.classList.add('open');b.classList.add('open');document.body.style.overflow='hidden';}
-  function close(){d.classList.remove('open');bd.classList.remove('open');b.classList.remove('open');document.body.style.overflow='';}
-  b.addEventListener('click',function(){d.classList.contains('open')?close():open();});
-  bd.addEventListener('click',close);
-  var ty=0;
-  d.addEventListener('touchstart',function(e){ty=e.touches[0].clientY;},{passive:true});
-  d.addEventListener('touchend',function(e){if(e.changedTouches[0].clientY-ty>50)close();},{passive:true});
-})();
 </script>
 </body>
 </html>
