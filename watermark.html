@@ -167,12 +167,8 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
 <body>
 
 <header class="topbar">
-  <button id="menuBtn" onclick="(function(){var d=document.getElementById('navDrawer'),bd=document.getElementById('drawerBackdrop');if(!d)return;var open=d.classList.contains('open');if(open){d.classList.remove('open');bd.classList.remove('open');document.getElementById('menuBtn').classList.remove('open');document.body.style.overflow='';}else{d.classList.add('open');bd.classList.add('open');document.getElementById('menuBtn').classList.add('open');document.body.style.overflow='hidden';}})()" style="background:none;border:none;cursor:pointer;padding:8px 12px 8px 0;display:flex;flex-direction:column;gap:5px;flex-shrink:0"><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px"></span><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px"></span><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px"></span></button>
-  <span class="topbar-title">Watermark Tool</span>
-  <button class="topbar-btn" id="openSheet">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-    Settings
-  </button>
+  <button id="menuBtn" style="background:none;border:none;cursor:pointer;padding:8px 12px 8px 0;display:flex;flex-direction:column;gap:5px;flex-shrink:0"><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px;transition:all .25s"></span><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px;transition:all .25s"></span><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px;transition:all .25s"></span></button>
+  <span class="topbar-title" style="color:#00ff88">WATERMARK TOOL</span>
 </header>
 
 <main>
@@ -558,23 +554,34 @@ renderGrid();
 </div>
 <script>
 (function(){
-  var d=document.getElementById('navDrawer');
-  var bd=document.getElementById('drawerBackdrop');
-  var b=document.getElementById('menuBtn');
-  if(!d||!bd||!b)return;
-  // Move to body root to escape stacking context
+  var b = document.getElementById('menuBtn');
+  var d = document.getElementById('navDrawer');
+  var bd = document.getElementById('drawerBackdrop');
+  if(!b || !d || !bd) return;
+  // Move drawer and backdrop to body root to escape stacking context
   document.body.appendChild(bd);
   document.body.appendChild(d);
-  // Fix backdrop onclick after move
-  bd.onclick=function(){d.classList.remove('open');bd.classList.remove('open');b.classList.remove('open');document.body.style.overflow='';};
-  // Swipe to close
-  var ty=0;
-  d.addEventListener('touchstart',function(e){ty=e.touches[0].clientY;},{passive:true});
-  d.addEventListener('touchend',function(e){if(e.changedTouches[0].clientY-ty>50){d.classList.remove('open');bd.classList.remove('open');b.classList.remove('open');document.body.style.overflow='';}},{passive:true});
-  // CSS for backdrop
-  bd.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;display:none;backdrop-filter:blur(2px)';
-  bd.classList.add=function(cls){if(cls==='open')this.style.display='block';HTMLElement.prototype.classList.add.call(this,cls);};
-  bd.classList.remove=function(cls){if(cls==='open')this.style.display='none';HTMLElement.prototype.classList.remove.call(this,cls);};
+  // Reset backdrop display handling
+  bd.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;display:none;backdrop-filter:blur(2px)';
+  function openDrawer() {
+    d.classList.add('open');
+    bd.style.display = 'block';
+    b.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    d.classList.remove('open');
+    bd.style.display = 'none';
+    b.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  b.addEventListener('click', function() {
+    d.classList.contains('open') ? closeDrawer() : openDrawer();
+  });
+  bd.addEventListener('click', closeDrawer);
+  var ty = 0;
+  d.addEventListener('touchstart', function(e){ ty = e.touches[0].clientY; }, {passive:true});
+  d.addEventListener('touchend', function(e){ if(e.changedTouches[0].clientY - ty > 50) closeDrawer(); }, {passive:true});
 })();
 </script>
 </body>
