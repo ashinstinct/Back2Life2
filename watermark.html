@@ -169,6 +169,9 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
 <header class="topbar">
   <button id="menuBtn" style="background:none;border:none;cursor:pointer;padding:8px 12px 8px 0;display:flex;flex-direction:column;gap:5px;flex-shrink:0;z-index:2"><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px;transition:all .25s"></span><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px;transition:all .25s"></span><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px;transition:all .25s"></span></button>
   <span style="position:absolute;left:50%;transform:translateX(-50%);font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#00ff88;white-space:nowrap;pointer-events:none">WATERMARK TOOL</span>
+  <button id="openSheet" style="background:none;border:none;cursor:pointer;padding:8px;color:#aaa;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:2;margin-left:auto">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+  </button>
 </header>
 
 <main>
@@ -407,10 +410,6 @@ function addFiles(files){
     state.files.push({file,url,type,pos:state.wm1?state.wm1.pos:'mc'});
   });
   renderGrid();
-  // Auto-open settings sheet so user can set watermark
-  if(state.files.length>0&&!state.wm1){
-    sheet.classList.add('open');sheetOverlay.classList.add('open');
-  }
 }
 clearBtn.addEventListener('click',()=>{state.files.forEach(f=>URL.revokeObjectURL(f.url));state.files=[];renderGrid()});
 
@@ -520,6 +519,7 @@ renderGrid();
   <div style="padding:10px 0 6px;text-align:center"><div style="width:36px;height:4px;background:#333;border-radius:2px;margin:0 auto"></div></div>
   <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:16px 0 8px;border-top:none;margin-top:4px">Navigation</div>
   <a href="/" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/home.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Home"></span>Home</a>
+  <a href="/#tutorials" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/tutorials.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Tutorials"></span>Tutorials</a>
   <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:16px 0 8px;border-top:1px solid #1a1a1a;margin-top:4px">Free Tools</div>
   <a href="/watermark" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/watermark.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Watermark Tool"></span>Watermark Tool</a>
   <a href="/video-splitter" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/video-splitter.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Video Splitter"></span>Video Splitter</a>
