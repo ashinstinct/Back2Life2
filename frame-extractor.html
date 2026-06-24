@@ -100,9 +100,9 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
 .action-btn.gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#000;box-shadow:0 4px 20px rgba(255,215,0,0.25)}
 
 /* PRO SCENE PANEL */
-.scene-panel{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:80;display:none;flex-direction:column}
+.scene-panel{position:fixed;top:var(--bar-h);left:0;right:0;bottom:0;background:var(--bg);z-index:80;display:none;flex-direction:column}
 .scene-panel.show{display:flex}
-.scene-header{padding:14px 16px;padding-top:calc(var(--bar-h) + 14px);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0}
+.scene-header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0}
 .scene-header-title{font-size:13px;font-weight:800;color:var(--text)}
 .scene-header-meta{font-size:11px;color:var(--text3)}
 .scene-close{background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:12px;font-weight:700;padding:7px 14px;border-radius:var(--pill);cursor:pointer;font-family:'Inter',sans-serif}
@@ -111,13 +111,13 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
 .scene-progress-track{background:rgba(255,255,255,0.06);border-radius:var(--pill);height:4px;overflow:hidden;margin-bottom:6px}
 .scene-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:var(--pill);width:0%;transition:width 0.2s;box-shadow:0 0 8px rgba(255,215,0,0.4)}
 .scene-progress-label{font-size:11px;color:var(--text3)}
-.scene-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:10px;overflow-y:scroll;-webkit-overflow-scrolling:touch;align-content:start;touch-action:pan-y}
+.scene-grid{flex:1;overflow-y:auto;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;-webkit-overflow-scrolling:touch;align-content:start}
 .scene-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);overflow:hidden;cursor:pointer;transition:border-color var(--transition);position:relative}
 .scene-card:active{border-color:var(--gold)}
-.scene-card img{width:100%;height:auto;display:block;background:#111}
+.scene-card img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#111}
 .scene-card-time{position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,0.8);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;font-family:monospace}
 .scene-card-dl{position:absolute;bottom:4px;right:4px;background:rgba(0,255,136,0.9);border:none;border-radius:4px;color:#000;font-size:9px;font-weight:800;padding:3px 7px;cursor:pointer}
-.scene-footer{padding:12px 16px;border-top:1px solid var(--border);gap:10px;flex-shrink:0;display:none}
+.scene-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:10px;flex-shrink:0;display:none}
 .scene-footer.show{display:flex}
 
 /* PAYWALL SHEET */
@@ -472,16 +472,6 @@ async function runSceneDetection() {
   const footer = document.getElementById('sceneFooter');
 
   panel.classList.add('show');
-  // Set explicit pixel height on grid so it can scroll within fixed panel
-  var header = panel.querySelector('.scene-header');
-  var footer = document.getElementById('sceneFooter');
-  var ph = document.getElementById('sceneProgress');
-  function setGridHeight(){
-    var used = header.offsetHeight + (ph.classList.contains('show') ? ph.offsetHeight : 0) + (footer.classList.contains('show') ? footer.offsetHeight : 0);
-    grid.style.height = (window.innerHeight - used) + 'px';
-  }
-  setGridHeight();
-  window._setGridHeight = setGridHeight;
   grid.innerHTML = '';
   footer.classList.remove('show');
   progress.classList.add('show');
@@ -492,14 +482,11 @@ async function runSceneDetection() {
 
   const canvas = document.getElementById('sceneCanvas');
   const ctx = canvas.getContext('2d');
-  // Keep native aspect ratio for sampling — critical for portrait videos
-  const vW = videoEl.videoWidth || 720;
-  const vH = videoEl.videoHeight || 1280;
-  const sampleW = Math.min(vW, 360);
-  const sampleH = Math.round(vH * (sampleW / vW));
-  canvas.width = sampleW; canvas.height = sampleH;
+  const W = Math.min(videoEl.videoWidth || 1280, 320); // sample at lower res for speed
+  const H = Math.round(W * (videoEl.videoHeight / videoEl.videoWidth));
+  canvas.width = W; canvas.height = H;
 
-  const SAMPLE_INTERVAL = 1.0; // every 1 second
+  const SAMPLE_INTERVAL = 0.5; // seconds between samples
   const SCENE_THRESHOLD = 0.12; // 12% pixel difference = new scene
   const totalSamples = Math.floor(duration / SAMPLE_INTERVAL);
 
@@ -508,8 +495,8 @@ async function runSceneDetection() {
 
   // Capture first frame always
   await seekTo(0);
-  ctx.drawImage(videoEl, 0, 0, sampleW, sampleH);
-  const firstFrame = ctx.getImageData(0, 0, sampleW, sampleH);
+  ctx.drawImage(videoEl, 0, 0, W, H);
+  const firstFrame = ctx.getImageData(0, 0, W, H);
   const firstDataURL = captureFullRes();
   addSceneCard(firstDataURL, 0, ++sceneCount, grid);
   sceneFrames.push({time: 0, dataURL: firstDataURL});
@@ -520,8 +507,8 @@ async function runSceneDetection() {
     if (t >= duration) break;
 
     await seekTo(t);
-    ctx.drawImage(videoEl, 0, 0, sampleW, sampleH);
-    const imgData = ctx.getImageData(0, 0, sampleW, sampleH);
+    ctx.drawImage(videoEl, 0, 0, W, H);
+    const imgData = ctx.getImageData(0, 0, W, H);
     const diff = pixelDiff(prevData, imgData.data);
 
     if (diff > SCENE_THRESHOLD) {
@@ -542,7 +529,6 @@ async function runSceneDetection() {
   document.getElementById('scenePanelTitle').textContent = `${sceneCount} Scene${sceneCount!==1?'s':''} Detected`;
   document.getElementById('scenePanelMeta').textContent = `${fmtTime(duration)} video · tap any frame to download`;
   footer.classList.add('show');
-  if(window._setGridHeight) window._setGridHeight();
   toast(`✓ Found ${sceneCount} scene${sceneCount!==1?'s':''}`);
 }
 
@@ -556,9 +542,7 @@ function seekTo(t) {
 function captureFullRes() {
   const fc = document.getElementById('frameCanvas');
   const fctx = fc.getContext('2d');
-  // Always use actual video dimensions — preserves portrait 9:16
-  fc.width = videoEl.videoWidth || 720;
-  fc.height = videoEl.videoHeight || 1280;
+  fc.width = videoEl.videoWidth; fc.height = videoEl.videoHeight;
   fctx.drawImage(videoEl, 0, 0, fc.width, fc.height);
   return fc.toDataURL('image/png');
 }
@@ -580,23 +564,10 @@ function pixelDiff(a, b) {
 function addSceneCard(dataURL, time, num, grid) {
   const card = document.createElement('div');
   card.className = 'scene-card';
-  const img = document.createElement('img');
-  img.src = dataURL;
-  img.loading = 'lazy';
-  img.style.width = '100%';
-  img.style.height = 'auto';
-  img.style.display = 'block';
-  const timeLabel = document.createElement('div');
-  timeLabel.className = 'scene-card-time';
-  timeLabel.textContent = fmtTimecode(time);
-  const dlBtn = document.createElement('button');
-  dlBtn.className = 'scene-card-dl';
-  dlBtn.textContent = '⬇';
-  dlBtn.onclick = (e) => { e.stopPropagation(); downloadScene(num-1); };
-  img.addEventListener('click', () => downloadScene(num-1));
-  card.appendChild(img);
-  card.appendChild(timeLabel);
-  card.appendChild(dlBtn);
+  card.innerHTML = `<img src="${dataURL}" loading="lazy">
+    <div class="scene-time">${fmtTimecode(time)}</div>
+    <button class="scene-card-dl" onclick="downloadScene(${num-1})">⬇</button>`;
+  card.querySelector('img').addEventListener('click', () => downloadScene(num-1));
   grid.appendChild(card);
 }
 
