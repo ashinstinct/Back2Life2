@@ -177,15 +177,9 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
     <div class="upload-title">Drop images or videos here</div>
     <div class="upload-sub">Supports JPG, PNG, MP4, MOV, WEBM<br>Batch upload 1–100+ files</div>
     <div class="chips"><span class="chip">JPG</span><span class="chip">PNG</span><span class="chip">MP4</span><span class="chip">MOV</span><span class="chip">WEBM</span></div>
-    <button class="upload-cta" type="button" onclick="document.getElementById('fileInput').click()">Choose Files</button>
+    <button class="upload-cta" type="button" id="chooseFilesBtn">Choose Files</button>
     <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display:none">
   </div>
-
-  <div class="status-bar" id="wmStatus">
-    <span id="wmStatusText" class="status-none">No watermark set — tap Settings below</span>
-    <span id="wmCount"></span>
-  </div>
-  <button onclick="document.getElementById('sheet').classList.add('open');document.getElementById('sheetOverlay').classList.add('open')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#00ff88;font-size:14px;font-weight:700;padding:13px;border-radius:12px;cursor:pointer;font-family:Inter,sans-serif;width:100%">⚙️ Watermark Settings</button>
 
   <div class="media-grid" id="mediaGrid"></div>
 
@@ -297,16 +291,6 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
     <button class="apply-btn" id="applyWm2">✓ Apply Watermark 2</button>
   </div>
 
-  <!-- NAV -->
-  <div class="sheet-section">
-    <div class="sect-label">Navigate</div>
-    <a href="/" class="drawer-link" style="display:flex;align-items:center;gap:12px;padding:10px 0;font-size:14px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #222"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/home.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Home"></span>Home</a>
-    <a href="/video-splitter" style="display:flex;align-items:center;gap:12px;padding:10px 0;font-size:14px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #222"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/video-splitter.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Video Splitter"></span>Video Splitter</a>
-    <a href="/frame-extractor" style="display:flex;align-items:center;gap:12px;padding:10px 0;font-size:14px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #222"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/frame-extractor.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Frame Extractor"></span>Frame Extractor</a>
-    <a href="/audio-editor" style="display:flex;align-items:center;gap:12px;padding:10px 0;font-size:14px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #222"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/audio-editor.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Audio Editor"></span>Audio Editor</a>
-    <a href="/audio-converter" style="display:flex;align-items:center;gap:12px;padding:10px 0;font-size:14px;font-weight:500;color:#ccc;text-decoration:none"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/audio-converter.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Audio Converter"></span>Audio Converter</a>
-  </div>
-
   <div class="sheet-section">
     <button class="btn-secondary-sm" id="closeSheetBtn" style="width:100%">Close Settings</button>
   </div>
@@ -327,9 +311,6 @@ const clearBtn=document.getElementById('clearBtn');
 const progressWrap=document.getElementById('progressWrap');
 const progressFill=document.getElementById('progressFill');
 const progressLabel=document.getElementById('progressLabel');
-const wmStatus=document.getElementById('wmStatus');
-const wmStatusText=document.getElementById('wmStatusText');
-const wmCount=document.getElementById('wmCount');
 const toast=document.getElementById('toast');
 const sheet=document.getElementById('sheet');
 const sheetOverlay=document.getElementById('sheetOverlay');
@@ -386,7 +367,7 @@ function setupWmUpload(inputEl,previewBox,imgEl,nameEl,clearBtnEl,wmKey){
     const url=URL.createObjectURL(file);imgEl.src=url;nameEl.textContent=file.name;
     previewBox.style.display='flex';inputEl._pendingUrl=url;
   });
-  clearBtnEl.addEventListener('click',()=>{inputEl.value='';imgEl.src='';previewBox.style.display='none';inputEl._pendingUrl=null;state[wmKey]=null;renderGrid();updateStatusBar()});
+  clearBtnEl.addEventListener('click',()=>{inputEl.value='';imgEl.src='';previewBox.style.display='none';inputEl._pendingUrl=null;state[wmKey]=null;renderGrid()});
 }
 setupWmUpload(wm1Input,wm1PreviewBox,wm1Img,wm1Name,wm1Clear,'wm1');
 setupWmUpload(wm2Input,wm2PreviewBox,wm2Img,wm2Name,wm2Clear,'wm2');
@@ -398,7 +379,7 @@ applyWm1.addEventListener('click',()=>{
     const newPos=getActivePos('wm1PosGrid');
     state.wm1={url,imgEl,opacity:parseInt(wm1Opacity.value)/100,size:parseInt(wm1Size.value)/100,pos:newPos};
     state.files.forEach(f=>{f.pos=newPos});
-    renderGrid();updateStatusBar();showToast('✓ Watermark 1 applied');
+    renderGrid();showToast('✓ Watermark 1 applied');
   }else{showToast('Upload a logo first')}
 });
 
@@ -407,12 +388,12 @@ applyWm2.addEventListener('click',()=>{
     const url=wm2Input._pendingUrl||state.wm2.url;
     const imgEl=new Image();imgEl.src=url;
     state.wm2={url,imgEl,opacity:parseInt(wm2Opacity.value)/100,size:parseInt(wm2Size.value)/100,pos:getActivePos('wm2PosGrid')};
-    renderGrid();updateStatusBar();showToast('✓ Watermark 2 applied');
+    renderGrid();showToast('✓ Watermark 2 applied');
   }else{showToast('Upload a second logo first')}
 });
 
-document.querySelector('.upload-cta').addEventListener('click',e=>{e.stopPropagation();fileInput.click()});
-dropzone.addEventListener('click',e=>{if(e.target===dropzone||e.target.classList.contains('upload-zone')||e.target.classList.contains('upload-icon')||e.target.classList.contains('upload-title')||e.target.classList.contains('upload-sub'))fileInput.click()});
+document.getElementById('chooseFilesBtn').addEventListener('click',function(e){e.stopPropagation();fileInput.click();});
+dropzone.addEventListener('click',function(e){if(e.target.id!=='chooseFilesBtn')fileInput.click();});
 fileInput.addEventListener('change',e=>addFiles(Array.from(e.target.files)));
 dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.classList.add('drag-over')});
 dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('drag-over'));
@@ -426,13 +407,17 @@ function addFiles(files){
     state.files.push({file,url,type,pos:state.wm1?state.wm1.pos:'mc'});
   });
   renderGrid();
+  // Auto-open settings sheet so user can set watermark
+  if(state.files.length>0&&!state.wm1){
+    sheet.classList.add('open');sheetOverlay.classList.add('open');
+  }
 }
 clearBtn.addEventListener('click',()=>{state.files.forEach(f=>URL.revokeObjectURL(f.url));state.files=[];renderGrid()});
 
 function renderGrid(){
   const n=state.files.length;mediaGrid.innerHTML='';
-  if(n===0){dropzone.style.display='flex';actionBar.style.display='none';wmStatus.classList.remove('show');processBtn.disabled=true;return}
-  dropzone.style.display='none';actionBar.style.display='flex';wmStatus.classList.add('show');processBtn.disabled=!state.wm1;
+  if(n===0){dropzone.style.display='flex';actionBar.style.display='none';processBtn.disabled=true;return}
+  dropzone.style.display='none';actionBar.style.display='flex';processBtn.disabled=!state.wm1;
   mediaGrid.className='media-grid '+(n===1?'count-1':n===2?'count-2':'count-many');
   state.files.forEach((item,idx)=>{
     const card=document.createElement('div');card.className='media-card';
@@ -467,12 +452,7 @@ function renderGrid(){
   updateStatusBar();
 }
 
-function updateStatusBar(){
-  const n=state.files.length;wmCount.textContent=n>0?n+' file'+(n>1?'s':''):'';
-  if(!state.wm1&&!state.wm2){wmStatusText.innerHTML='<span class="status-none">No watermark set — tap Settings ⚙️</span>'}
-  else{let p=[];if(state.wm1)p.push('<span class="status-badge">WM1 · '+POS_LABELS[state.wm1.pos]+' · '+Math.round(state.wm1.opacity*100)+'%</span>');if(state.wm2)p.push('<span class="status-badge">WM2 · '+POS_LABELS[state.wm2.pos]+'</span>');wmStatusText.innerHTML=p.join(' ')}
-  processBtn.disabled=!state.wm1||state.files.length===0;
-}
+function updateStatusBar(){processBtn.disabled=!state.wm1||state.files.length===0;}
 
 processBtn.addEventListener('click',processAll);
 async function processAll(){
