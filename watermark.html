@@ -18,13 +18,13 @@
 html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden;touch-action:manipulation}
 
 /* TOPBAR */
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:var(--bar-h);background:rgba(8,8,8,0.92);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;gap:10px}
-.topbar-logo{font-size:17px;font-weight:800;color:#fff;text-decoration:none;letter-spacing:-0.3px;flex-shrink:0}
-.topbar-logo em{color:var(--green);font-style:normal}
-.topbar-title{font-size:12px;font-weight:600;color:var(--text3)}
-.topbar-btn{background:var(--surface2);border:1px solid var(--border);border-radius:var(--pill);color:var(--text2);font-size:12px;font-weight:700;padding:8px 16px;cursor:pointer;font-family:'Inter',sans-serif;position:relative;transition:all var(--transition);display:flex;align-items:center;gap:6px;flex-shrink:0}
-.topbar-btn:active{background:var(--surface3);transform:scale(0.97)}
-.topbar-btn svg{flex-shrink:0}
+
+
+
+
+
+
+
 
 /* MAIN */
 main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px}
@@ -94,13 +94,13 @@ main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px}
 .progress-label{font-size:12px;color:var(--text3);font-weight:500}
 
 /* SHEET OVERLAY */
-.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:100;opacity:0;pointer-events:none;transition:opacity 0.25s}
-.sheet-overlay.open{opacity:1;pointer-events:all}
+
+
 
 /* BOTTOM SHEET */
 .bottom-sheet{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,12,0.97);backdrop-filter:blur(30px) saturate(200%);border-top:1px solid var(--border2);border-radius:26px 26px 0 0;z-index:101;padding:0 0 env(safe-area-inset-bottom,20px);transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);max-height:92dvh;overflow-y:auto}
 .bottom-sheet.open{transform:translateY(0)}
-.sheet-handle{width:36px;height:4px;background:rgba(255,255,255,0.12);border-radius:var(--pill);margin:14px auto 6px}
+
 .sheet-header{padding:6px 20px 16px;display:flex;align-items:center;justify-content:space-between}
 .sheet-title{font-size:18px;font-weight:800;letter-spacing:-0.3px}
 .sheet-close{width:32px;height:32px;background:var(--surface2);border:none;border-radius:50%;color:var(--text2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--transition)}
@@ -148,12 +148,12 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
 .apply-btn:active{opacity:0.85;transform:scale(0.98)}
 
 /* SHARE STRIP */
-.share-strip{display:flex;gap:8px;padding:4px 0 8px;overflow-x:auto;scrollbar-width:none}
-.share-strip::-webkit-scrollbar{display:none}
-.share-btn{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition);text-decoration:none}
-.share-btn:active{transform:scale(0.93);background:var(--surface2)}
-.share-icon{font-size:22px}
-.share-label{font-size:10px;font-weight:700;color:var(--text3);white-space:nowrap}
+
+
+
+
+
+
 
 /* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(16,16,16,0.97);border:1px solid var(--border2);backdrop-filter:blur(20px);color:var(--text);font-size:13px;font-weight:600;padding:12px 22px;border-radius:var(--pill);opacity:0;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);z-index:400;pointer-events:none;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
@@ -162,18 +162,63 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:99px}
+
+/* ── UNIFIED TOPBAR & MENU ── */
+.topbar{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  padding:0 16px;
+  height:var(--bar-h,60px);
+  background:rgba(8,8,8,0.92);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:100;
+}
+.topbar-left{display:flex;align-items:center}
+.menu-btn{background:none;border:none;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+.menu-btn span{display:block;width:20px;height:2px;background:var(--text2,#aaa);border-radius:2px;transition:all .25s}
+.menu-btn.open span{background:var(--green,#00ff88)}
+.menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.menu-btn.open span:nth-child(2){opacity:0}
+.menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.topbar-title{font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--green,#00ff88);text-align:center;white-space:nowrap;pointer-events:none}
+.topbar-right{display:flex;justify-content:flex-end}
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:200;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.sheet-overlay.open{opacity:1;pointer-events:all}
+.menu-sheet{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,12,0.97);backdrop-filter:blur(30px) saturate(200%);-webkit-backdrop-filter:blur(30px) saturate(200%);border-top:1px solid rgba(255,255,255,0.13);border-radius:26px 26px 0 0;z-index:201;padding:0 20px env(safe-area-inset-bottom,32px);transform:translateY(100%);transition:transform .35s cubic-bezier(0.32,0.72,0,1);max-height:85vh;overflow-y:auto}
+.menu-sheet.open{transform:translateY(0)}
+.sheet-handle{width:36px;height:4px;background:rgba(255,255,255,0.12);border-radius:999px;margin:14px auto 8px}
+.menu-brand{font-size:17px;font-weight:800;color:#fff;letter-spacing:-0.3px;padding:8px 0 16px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:4px}
+.menu-brand em{color:var(--green,#00ff88);font-style:normal}
+.nav-sect{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--green,#00ff88);padding:16px 0 8px;border-top:1px solid rgba(255,255,255,0.05);margin-top:4px}
+.nav-sect:first-of-type{border-top:none;padding-top:12px;margin-top:0}
+.nav-link{display:flex;align-items:center;gap:14px;padding:12px 0;font-size:15px;font-weight:500;color:rgba(255,255,255,0.65);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.05);transition:color 0.2s}
+.nav-link:last-child{border-bottom:none}
+.nav-link:active{color:var(--green,#00ff88)}
+.nav-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+.nav-ico img{width:36px;height:36px;border-radius:10px;display:block;object-fit:cover}
+.nav-cta{display:block;margin-top:20px;background:linear-gradient(135deg,#00cc66,#00ff88);color:#000;font-weight:800;font-size:15px;padding:14px 24px;border-radius:12px;text-decoration:none;text-align:center;box-shadow:0 4px 20px rgba(0,255,136,0.2)}
+
 </style>
 </head>
 <body>
 
 <header class="topbar">
-  <a href="/" class="topbar-logo">Back2Life<em>.app</em></a>
-  <span class="topbar-title">Watermark Tool</span>
-  <button class="topbar-btn" id="openSheet">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-    Settings
-  </button>
+  <div class="topbar-left">
+    <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
+  </div>
+  <div class="topbar-title">WATERMARK TOOL</div>
+  <div class="topbar-right">
+    <button class="topbar-btn" id="openSheet">⚙️ Settings</button>
+  </div>
 </header>
+
+
+
+
+
 
 <main>
   <div class="upload-zone" id="dropzone">
@@ -204,7 +249,7 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
 </main>
 
 <div class="toast" id="toast"></div>
-<div class="sheet-overlay" id="sheetOverlay"></div>
+
 
 <div class="bottom-sheet" id="sheet">
   <div class="sheet-handle"></div>
@@ -303,13 +348,7 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
   <!-- SHARE -->
   <div class="sheet-section">
     <div class="sect-label">Share This Tool</div>
-    <div class="share-strip">
-      <button class="share-btn" onclick="shareTo('whatsapp')"><span class="share-icon">💬</span><span class="share-label">WhatsApp</span></button>
-      <button class="share-btn" onclick="shareTo('x')"><span class="share-icon">𝕏</span><span class="share-label">X / Twitter</span></button>
-      <button class="share-btn" onclick="shareTo('tiktok')"><span class="share-icon">🎵</span><span class="share-label">TikTok</span></button>
-      <button class="share-btn" onclick="shareTo('instagram')"><span class="share-icon">📸</span><span class="share-label">Instagram</span></button>
-      <button class="share-btn" onclick="shareTo('copy')"><span class="share-icon">🔗</span><span class="share-label">Copy Link</span></button>
-    </div>
+    
   </div>
 
   <div class="sheet-section">
@@ -538,6 +577,46 @@ function shareTo(platform){
 let toastTimer;
 function showToast(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),3200)}
 renderGrid();
+</script>
+
+<div class="sheet-overlay" id="sheetOverlay"></div>
+<div class="menu-sheet" id="menuSheet">
+  <div class="sheet-handle"></div>
+  <div class="menu-brand">Back2Life<em>.app</em></div>
+  <div class="nav-sect">Navigation</div>
+  <a href="/" class="nav-link">
+    <span class="nav-ico"><img src="/icons/home.png" alt="Home"></span>Home</a>
+  <div class="nav-sect">Free Tools</div>
+  <a href="/watermark" class="nav-link">
+    <span class="nav-ico"><img src="/icons/watermark.png" alt="Watermark Tool"></span>Watermark Tool</a>
+  <a href="/video-splitter" class="nav-link">
+    <span class="nav-ico"><img src="/icons/video-splitter.png" alt="Video Splitter"></span>Video Splitter</a>
+  <a href="/frame-extractor" class="nav-link">
+    <span class="nav-ico"><img src="/icons/frame-extractor.png" alt="Frame Extractor"></span>Frame Extractor</a>
+  <a href="/audio-editor" class="nav-link">
+    <span class="nav-ico"><img src="/icons/audio-editor.png" alt="Audio Editor"></span>Audio Editor</a>
+  <a href="/audio-converter" class="nav-link">
+    <span class="nav-ico"><img src="/icons/audio-converter.png" alt="Audio Converter"></span>Audio Converter</a>
+  <div class="nav-sect">Follow Us</div>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-link"><span class="nav-ico" style="background:rgba(255,255,255,0.06)"><img src="https://cdn.simpleicons.org/instagram/E1306C" width="20" height="20" alt="Instagram" style="width:20px;height:20px;border-radius:0;margin:auto"></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="nav-link"><span class="nav-ico" style="background:rgba(255,255,255,0.06)"><img src="https://cdn.simpleicons.org/tiktok/ffffff" width="20" height="20" alt="TikTok" style="width:20px;height:20px;border-radius:0;margin:auto"></span>TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="nav-link"><span class="nav-ico" style="background:rgba(255,255,255,0.06)"><img src="https://cdn.simpleicons.org/youtube/FF0000" width="20" height="20" alt="YouTube" style="width:20px;height:20px;border-radius:0;margin:auto"></span>YouTube</a>
+  <a href="https://x.com/Back2LifeAI" target="_blank" class="nav-link"><span class="nav-ico" style="background:rgba(255,255,255,0.06)"><img src="https://cdn.simpleicons.org/x/ffffff" width="20" height="20" alt="X / Twitter" style="width:20px;height:20px;border-radius:0;margin:auto"></span>X / Twitter</a>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-cta">📸 Follow on Instagram</a>
+</div>
+
+<script>
+
+// ── MENU ──
+const _menuBtn = document.getElementById('menuBtn');
+const _menuSheet = document.getElementById('menuSheet');
+const _sheetOverlay = document.getElementById('sheetOverlay');
+function _openMenu() { _menuSheet.classList.add('open'); _sheetOverlay.classList.add('open'); _menuBtn.classList.add('open'); }
+function _closeMenu() { _menuSheet.classList.remove('open'); _sheetOverlay.classList.remove('open'); _menuBtn.classList.remove('open'); }
+__sheetOverlay.addEventListener('click', _closeMenu);
+let _tsy = 0;
+_menuSheet.addEventListener('touchstart', e => { _tsy = e.touches[0].clientY; }, {passive:true});
+_menuSheet.addEventListener('touchend', e => { if(e.changedTouches[0].clientY - _tsy > 60) _closeMenu(); }, {passive:true});
 </script>
 </body>
 </html>
