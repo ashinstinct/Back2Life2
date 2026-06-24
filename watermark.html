@@ -15,7 +15,7 @@
   --green-glow:0 0 24px rgba(0,255,136,0.25);--text:#f0f0f0;--text2:#aaa;--text3:#555;--red:#ff4444;
   --radius:18px;--radius-sm:12px;--radius-xs:8px;--pill:999px;--bar-h:60px;--transition:0.2s cubic-bezier(0.4,0,0.2,1);
 }
-html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden;touch-action:manipulation}
+html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden;touch-action:manipulation;overflow-y:auto;}
 
 /* TOPBAR */
 .topbar{display:flex;align-items:center;padding:0 16px;height:var(--bar-h);background:rgba(8,8,8,0.92);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;gap:10px;position:sticky}
@@ -27,7 +27,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-syst
 .topbar-btn svg{flex-shrink:0}
 
 /* MAIN */
-main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px}
+main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 
 /* UPLOAD ZONE */
 .upload-zone{border:2px dashed rgba(0,255,136,0.18);border-radius:var(--radius);background:radial-gradient(ellipse at 50% 0%,rgba(0,255,136,0.04) 0%,transparent 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:44px 24px;cursor:pointer;text-align:center;transition:all var(--transition);position:relative}
