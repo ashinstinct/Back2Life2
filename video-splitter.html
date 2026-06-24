@@ -18,16 +18,31 @@
 }
 html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden;touch-action:manipulation}
 
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:var(--bar-h);background:rgba(8,8,8,0.92);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;gap:10px}
-.topbar-logo{font-size:17px;font-weight:800;color:#fff;text-decoration:none;letter-spacing:-0.3px;flex-shrink:0}
-.topbar-logo em{color:var(--green);font-style:normal}
-.topbar-title{font-size:12px;font-weight:600;color:var(--text3)}
-.menu-btn{background:none;border:none;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+/* ── TOPBAR ── */
+.topbar{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  padding:0 16px;
+  height:var(--bar-h);
+  background:rgba(8,8,8,0.92);
+  backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:50;gap:10px;
+}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.menu-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px;flex-shrink:0}
 .menu-btn span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .25s}
 .menu-btn.open span{background:var(--green)}
 .menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .menu-btn.open span:nth-child(2){opacity:0}
 .menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.topbar-logo{font-size:15px;font-weight:800;color:#fff;text-decoration:none;letter-spacing:-0.3px;white-space:nowrap}
+.topbar-logo em{color:var(--green);font-style:normal}
+.topbar-title{font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--green);text-align:center;white-space:nowrap;pointer-events:none}
+.topbar-right{display:flex;justify-content:flex-end}
+.topbar-upload{background:var(--surface2);border:1px solid var(--border);border-radius:var(--pill);color:var(--text2);font-size:11px;font-weight:700;padding:7px 14px;cursor:pointer;font-family:'Inter',sans-serif;position:relative;white-space:nowrap}
+.topbar-upload input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 
 main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;padding-bottom:40px}
 
@@ -44,14 +59,12 @@ main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;padding-bot
 .upload-cta{background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:14px;padding:12px 28px;border-radius:var(--pill);border:none;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 4px 20px rgba(0,255,136,0.2);margin-top:4px}
 
 /* VIDEO PREVIEW */
-.video-preview-wrap{display:none;border-radius:var(--radius);overflow:hidden;background:#000;position:relative}
+.video-preview-wrap{display:none;border-radius:var(--radius);overflow:hidden;background:#000}
 .video-preview-wrap.show{display:block}
-.video-preview-wrap video{width:100%;display:block;max-height:40vh;object-fit:contain;background:#000}
-.vid-info-bar{background:rgba(12,12,12,0.95);backdrop-filter:blur(12px);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.video-preview-wrap video{width:100%;display:block;max-height:38vh;object-fit:contain;background:#000}
+.vid-info-bar{background:rgba(12,12,12,0.95);padding:10px 14px;display:flex;align-items:center;gap:10px}
 .vid-info-name{font-size:12px;font-weight:700;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
 .vid-info-meta{font-size:11px;color:var(--text3);flex-shrink:0;font-family:monospace}
-.vid-change{background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:11px;font-weight:700;padding:6px 12px;border-radius:var(--pill);cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0;position:relative}
-.vid-change input{position:absolute;inset:0;opacity:0;cursor:pointer}
 
 /* SETTINGS */
 .settings-card{background:var(--glass);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:none}
@@ -72,7 +85,7 @@ main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;padding-bot
 .range-title{font-size:13px;font-weight:700;color:var(--text)}
 .range-badge{background:var(--green-dim);border:1px solid rgba(0,255,136,0.2);color:var(--green);font-size:10px;font-weight:800;padding:3px 10px;border-radius:var(--pill)}
 .range-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-.range-label{font-size:11px;color:var(--text3);min-width:36px;font-weight:600}
+.range-lbl{font-size:11px;color:var(--text3);min-width:36px;font-weight:600}
 .range-val{font-size:12px;font-weight:700;color:var(--green);font-family:monospace;min-width:50px;text-align:right}
 input[type=range].rng{-webkit-appearance:none;flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;outline:none;cursor:pointer;accent-color:var(--green)}
 input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.4),0 0 0 2px rgba(0,255,136,0.35);cursor:pointer}
@@ -92,23 +105,19 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
 .clip-info{flex:1}
 .clip-range{font-size:12px;font-weight:600;color:var(--text);font-family:monospace}
 .clip-dur{font-size:10px;color:var(--text3);margin-top:2px}
-.clip-status{font-size:13px;flex-shrink:0;min-width:20px;text-align:center}
-
-/* FFMPEG LOADING */
-.ffmpeg-status{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;display:none;align-items:center;gap:12px;font-size:13px;color:var(--text2)}
-.ffmpeg-status.show{display:flex}
-.ffmpeg-spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0}
-@keyframes spin{to{transform:rotate(360deg)}}
+.clip-status{font-size:13px;flex-shrink:0;min-width:20px;text-align:center;transition:color 0.2s}
+.clip-status.done{color:var(--green)}
+.clip-status.active{color:#ffaa00}
 
 /* PROGRESS */
 .progress-wrap{display:none;background:var(--glass);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;flex-direction:column;gap:10px}
 .progress-wrap.visible{display:flex}
 .progress-track{background:rgba(255,255,255,0.06);border-radius:var(--pill);height:5px;overflow:hidden}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--green2),var(--green));border-radius:var(--pill);transition:width 0.3s;width:0%;box-shadow:0 0 8px rgba(0,255,136,0.4)}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--green2),var(--green));border-radius:var(--pill);transition:width 0.4s;width:0%;box-shadow:0 0 8px rgba(0,255,136,0.4)}
 .progress-label{font-size:13px;color:var(--text2);font-weight:500}
 
 /* ACTIONS */
-.action-row{display:flex;gap:10px;display:none}
+.action-row{display:none;gap:10px}
 .action-row.show{display:flex}
 .btn-main{flex:2;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:15px;padding:16px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition);box-shadow:0 4px 20px rgba(0,255,136,0.2)}
 .btn-main:active{transform:scale(0.98)}
@@ -149,40 +158,40 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Video Splitter">
+<link rel="manifest" href="/manifest.json">
 </head>
 <body>
 
 <header class="topbar">
-  <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
-  <span class="topbar-title">Video Splitter</span>
-  <a href="/" class="topbar-logo">Back2Life<em>.app</em></a>
+  <div class="topbar-left">
+    <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
+    <a href="/" class="topbar-logo">Back2Life<em>.app</em></a>
+  </div>
+  <div class="topbar-title">VIDEO SPLITTER</div>
+  <div class="topbar-right">
+    <button class="topbar-upload" id="topUploadBtn">+ VIDEO<input type="file" id="topFileInput" accept="video/*"></button>
+  </div>
 </header>
 
 <main>
 
+  <!-- UPLOAD -->
   <div class="upload-zone" id="dropzone">
     <div class="upload-icon">✂️</div>
     <div class="upload-title">Drop a video to split</div>
     <div class="upload-sub">Slice into 10s, 15s, 20s, 30s or 1-min clips<br>Perfect for Stories, Reels &amp; TikTok</div>
     <div class="chips"><span class="chip">MP4</span><span class="chip">MOV</span><span class="chip">WebM</span><span class="chip">MKV</span></div>
-    <button class="upload-cta" type="button">Choose Video</button>
+    <button class="upload-cta" type="button" id="browseBtn">Choose Video</button>
     <input type="file" id="fileInput" accept="video/*">
   </div>
 
   <!-- VIDEO PREVIEW -->
   <div class="video-preview-wrap" id="videoPreview">
-    <video id="videoEl" muted playsinline preload="metadata" controls></video>
+    <video id="videoEl" muted playsinline preload="metadata"></video>
     <div class="vid-info-bar">
       <div class="vid-info-name" id="vidName">—</div>
       <div class="vid-info-meta" id="vidMeta">—</div>
-      <button class="vid-change">Change<input type="file" id="changeInput" accept="video/*"></button>
     </div>
-  </div>
-
-  <!-- FFMPEG LOADING STATUS -->
-  <div class="ffmpeg-status" id="ffmpegStatus">
-    <div class="ffmpeg-spinner"></div>
-    <span id="ffmpegStatusText">Loading FFmpeg engine…</span>
   </div>
 
   <!-- SETTINGS -->
@@ -206,14 +215,14 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
         <input type="checkbox" id="fullVideoCheck" checked>
         <span>Use full video</span>
       </label>
-      <div id="rangeControls" style="margin-top:12px;display:none">
+      <div id="rangeControls" style="margin-top:14px;display:none">
         <div class="range-row">
-          <span class="range-label">Start</span>
+          <span class="range-lbl">Start</span>
           <input type="range" class="rng" id="startRange" min="0" max="100" value="0" step="0.1">
           <span class="range-val" id="startTimeDisplay">0:00</span>
         </div>
         <div class="range-row">
-          <span class="range-label">End</span>
+          <span class="range-lbl">End</span>
           <input type="range" class="rng" id="endRange" min="0" max="100" value="100" step="0.1">
           <span class="range-val" id="endTimeDisplay">—</span>
         </div>
@@ -238,7 +247,7 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
   <!-- ACTIONS -->
   <div class="action-row" id="actionRow">
     <button class="btn-ghost" id="resetBtn">↺ Reset</button>
-    <button class="btn-main" id="splitBtn" disabled>✂️ Split &amp; Download</button>
+    <button class="btn-main" id="splitBtn">✂️ Split &amp; Download</button>
   </div>
 
 </main>
@@ -272,111 +281,71 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
   <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-cta-btn">📸 Follow on Instagram</a>
 </div>
 
-<!-- FFmpeg WASM — proper video splitting in the browser -->
-<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.6/dist/umd/ffmpeg.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
-
 <script>
-const { FFmpeg } = FFmpegWASM;
-const { fetchFile, toBlobURL } = FFmpegUtil;
+// ── STATE ──
+let videoFile = null, videoDuration = 0, clipDuration = 15;
+let startSec = 0, endSec = 0, useFullVideo = true;
+let originalName = 'video', splitting = false;
 
-let ffmpeg = null;
-let ffmpegReady = false;
-let videoFile = null;
-let videoDuration = 0;
-let clipDuration = 15;
-let startSec = 0, endSec = 0;
-let useFullVideo = true;
-let originalName = 'video';
-let splitting = false;
-
-// DOM
-const fileInput     = document.getElementById('fileInput');
-const changeInput   = document.getElementById('changeInput');
-const dropzone      = document.getElementById('dropzone');
-const videoEl       = document.getElementById('videoEl');
-const videoPreview  = document.getElementById('videoPreview');
-const settingsCard  = document.getElementById('settingsCard');
-const actionRow     = document.getElementById('actionRow');
-const splitBtn      = document.getElementById('splitBtn');
-const resetBtn      = document.getElementById('resetBtn');
-const progressWrap  = document.getElementById('progressWrap');
-const progressFill  = document.getElementById('progressFill');
-const progressLabel = document.getElementById('progressLabel');
-const clipsCard     = document.getElementById('clipsCard');
-const clipsTitle    = document.getElementById('clipsTitle');
-const clipsList     = document.getElementById('clipsList');
-const clipCountBadge= document.getElementById('clipCountBadge');
-const startRange    = document.getElementById('startRange');
-const endRange      = document.getElementById('endRange');
+// ── DOM ──
+const fileInput      = document.getElementById('fileInput');
+const topFileInput   = document.getElementById('topFileInput');
+const dropzone       = document.getElementById('dropzone');
+const videoEl        = document.getElementById('videoEl');
+const videoPreview   = document.getElementById('videoPreview');
+const settingsCard   = document.getElementById('settingsCard');
+const actionRow      = document.getElementById('actionRow');
+const splitBtn       = document.getElementById('splitBtn');
+const resetBtn       = document.getElementById('resetBtn');
+const progressWrap   = document.getElementById('progressWrap');
+const progressFill   = document.getElementById('progressFill');
+const progressLabel  = document.getElementById('progressLabel');
+const clipsCard      = document.getElementById('clipsCard');
+const clipsTitle     = document.getElementById('clipsTitle');
+const clipsList      = document.getElementById('clipsList');
+const clipCountBadge = document.getElementById('clipCountBadge');
+const startRange     = document.getElementById('startRange');
+const endRange       = document.getElementById('endRange');
 const startTimeDisplay = document.getElementById('startTimeDisplay');
 const endTimeDisplay   = document.getElementById('endTimeDisplay');
 const fullVideoCheck   = document.getElementById('fullVideoCheck');
 const rangeControls    = document.getElementById('rangeControls');
-const ffmpegStatus     = document.getElementById('ffmpegStatus');
-const ffmpegStatusText = document.getElementById('ffmpegStatusText');
 
 // ── MENU ──
-const menuBtn = document.getElementById('menuBtn');
-const menuSheet = document.getElementById('menuSheet');
+const menuBtn    = document.getElementById('menuBtn');
+const menuSheet  = document.getElementById('menuSheet');
 const sheetOverlay = document.getElementById('sheetOverlay');
 menuBtn.addEventListener('click', () => menuSheet.classList.contains('open') ? closeMenu() : openMenu());
 sheetOverlay.addEventListener('click', closeMenu);
-function openMenu() { menuSheet.classList.add('open'); sheetOverlay.classList.add('open'); menuBtn.classList.add('open'); }
+function openMenu()  { menuSheet.classList.add('open');    sheetOverlay.classList.add('open');    menuBtn.classList.add('open'); }
 function closeMenu() { menuSheet.classList.remove('open'); sheetOverlay.classList.remove('open'); menuBtn.classList.remove('open'); }
 
-// ── LOAD FFMPEG ──
-async function loadFFmpeg() {
-  ffmpegStatus.classList.add('show');
-  ffmpegStatusText.textContent = 'Loading FFmpeg engine…';
-  try {
-    ffmpeg = new FFmpeg();
-    ffmpeg.on('log', ({ message }) => { console.log('[FFmpeg]', message); });
-    ffmpeg.on('progress', ({ progress }) => {
-      if (splitting) {
-        progressFill.style.width = Math.round(progress * 100) + '%';
-      }
-    });
-    const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd';
-    await ffmpeg.load({
-      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-      wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-    });
-    ffmpegReady = true;
-    ffmpegStatus.classList.remove('show');
-    if (videoFile) splitBtn.disabled = false;
-    showToast('✓ FFmpeg ready');
-  } catch (e) {
-    console.error(e);
-    ffmpegStatusText.textContent = '⚠️ Failed to load FFmpeg — check connection';
-  }
-}
-
-// ── FILE INPUT ──
+// ── FILE HANDLING ──
 function handleFile(file) {
-  if (!file || !file.type.startsWith('video/')) return;
+  if (!file || !file.type.startsWith('video/')) { showToast('⚠️ Please select a video file'); return; }
   videoFile = file;
   originalName = file.name.replace(/\.[^.]+$/, '');
-  videoEl.src = URL.createObjectURL(file);
+  const url = URL.createObjectURL(file);
+  videoEl.src = url;
   videoEl.addEventListener('loadedmetadata', () => {
     videoDuration = videoEl.duration;
+    startSec = 0;
     endSec = videoDuration;
-    document.getElementById('vidName').textContent = file.name.length > 30 ? file.name.substring(0, 28) + '…' : file.name;
+    document.getElementById('vidName').textContent = file.name.length > 34 ? file.name.substring(0, 32) + '…' : file.name;
     document.getElementById('vidMeta').textContent = fmtTime(videoDuration) + ' · ' + videoEl.videoWidth + '×' + videoEl.videoHeight;
     endTimeDisplay.textContent = fmtTime(videoDuration);
     dropzone.style.display = 'none';
     videoPreview.classList.add('show');
     settingsCard.classList.add('show');
     actionRow.classList.add('show');
-    if (ffmpegReady) splitBtn.disabled = false;
     updateClipPreview();
   }, { once: true });
 }
 
-document.querySelector('.upload-cta').addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
+document.getElementById('browseBtn').addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
 dropzone.addEventListener('click', e => { if (e.target === dropzone) fileInput.click(); });
-fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
-changeInput.addEventListener('change', e => handleFile(e.target.files[0]));
+fileInput.addEventListener('change',    e => handleFile(e.target.files[0]));
+topFileInput.addEventListener('change', e => handleFile(e.target.files[0]));
 dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
 dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
 dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); });
@@ -391,7 +360,7 @@ document.querySelectorAll('.seg').forEach(btn => {
   });
 });
 
-// ── RANGE CONTROLS ──
+// ── RANGE ──
 fullVideoCheck.addEventListener('change', () => {
   useFullVideo = fullVideoCheck.checked;
   rangeControls.style.display = useFullVideo ? 'none' : 'block';
@@ -420,113 +389,171 @@ function updateClipPreview() {
   clipCountBadge.textContent = count + ' clip' + (count !== 1 ? 's' : '');
   clipsTitle.innerHTML = '<em>' + count + '</em> clip' + (count !== 1 ? 's' : '') + ' × ' + clipDuration + 's';
   clipsList.innerHTML = '';
-  for (let i = 0; i < Math.min(count, 50); i++) {
+  const maxShow = Math.min(count, 60);
+  for (let i = 0; i < maxShow; i++) {
     const s = startSec + i * clipDuration;
     const e = Math.min(s + clipDuration, endSec);
     const row = document.createElement('div');
     row.className = 'clip-row';
-    row.innerHTML = `<span class="clip-num">#${String(i + 1).padStart(2, '0')}</span>
+    row.innerHTML = `<span class="clip-num">#${String(i+1).padStart(2,'0')}</span>
       <div class="clip-info">
         <div class="clip-range">${fmtTimecode(s)} → ${fmtTimecode(e)}</div>
-        <div class="clip-dur">${(e - s).toFixed(1)}s</div>
+        <div class="clip-dur">${(e-s).toFixed(1)}s</div>
       </div>
       <span class="clip-status" id="cs${i}">—</span>`;
     clipsList.appendChild(row);
   }
-  if (count > 50) {
+  if (count > 60) {
     const more = document.createElement('div');
     more.style.cssText = 'text-align:center;font-size:12px;color:var(--text3);padding:10px';
-    more.textContent = `+ ${count - 50} more clips`;
+    more.textContent = `+ ${count - 60} more clips`;
     clipsList.appendChild(more);
   }
   clipsCard.classList.add('show');
 }
 
-// ── SPLIT using FFmpeg ──
+// ── SPLIT — native Blob URL + seek approach, no FFmpeg needed ──
 splitBtn.addEventListener('click', doSplit);
 resetBtn.addEventListener('click', resetAll);
 
 async function doSplit() {
-  if (!videoFile || !ffmpegReady || splitting) return;
+  if (!videoFile || splitting) return;
   splitting = true;
   splitBtn.disabled = true;
   progressWrap.classList.add('visible');
 
-  const span = endSec - startSec;
-  const count = Math.ceil(span / clipDuration);
-  progressLabel.textContent = `Processing ${count} clip${count !== 1 ? 's' : ''} with FFmpeg…`;
+  const span    = endSec - startSec;
+  const count   = Math.ceil(span / clipDuration);
+  const srcURL  = URL.createObjectURL(videoFile);
+  const ext     = videoFile.name.split('.').pop().toLowerCase();
+
+  progressLabel.textContent = `Preparing ${count} clip${count !== 1 ? 's' : ''}…`;
   progressFill.style.width = '0%';
 
-  try {
-    // Write input file to FFmpeg virtual FS
-    const inputExt = videoFile.name.split('.').pop().toLowerCase();
-    const inputName = 'input.' + inputExt;
-    await ffmpeg.writeFile(inputName, await fetchFile(videoFile));
+  for (let i = 0; i < count; i++) {
+    const clipStart = startSec + i * clipDuration;
+    const clipEnd   = Math.min(clipStart + clipDuration, endSec);
+    const clipDur   = clipEnd - clipStart;
 
-    for (let i = 0; i < count; i++) {
-      const s = startSec + i * clipDuration;
-      const e = Math.min(s + clipDuration, endSec);
-      const dur = e - s;
-      const outputName = `clip_${String(i + 1).padStart(2, '0')}.mp4`;
-      const statusEl = document.getElementById('cs' + i);
-      if (statusEl) { statusEl.textContent = '⏳'; }
+    // Update UI
+    progressLabel.textContent = `Exporting clip ${i+1} of ${count}…`;
+    progressFill.style.width  = ((i / count) * 95) + '%';
+    const statusEl = document.getElementById('cs' + i);
+    if (statusEl) { statusEl.textContent = '⏳'; statusEl.className = 'clip-status active'; }
 
-      progressLabel.textContent = `Exporting clip ${i + 1} of ${count}…`;
-      progressFill.style.width = ((i / count) * 90) + '%';
+    await exportClipBlob(srcURL, clipStart, clipDur, i + 1, count, ext);
 
-      // FFmpeg trim: copy streams exactly, no re-encode — fast & lossless
-      await ffmpeg.exec([
-        '-ss', s.toFixed(3),
-        '-i', inputName,
-        '-t', dur.toFixed(3),
-        '-c', 'copy',
-        '-avoid_negative_ts', 'make_zero',
-        '-movflags', '+faststart',
-        outputName
-      ]);
-
-      // Read output and download
-      const data = await ffmpeg.readFile(outputName);
-      const blob = new Blob([data.buffer], { type: 'video/mp4' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${originalName}_clip${String(i + 1).padStart(2, '0')}_${fmtSafe(s)}-${fmtSafe(e)}.mp4`;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
-
-      // Cleanup this clip from FS
-      await ffmpeg.deleteFile(outputName);
-
-      if (statusEl) { statusEl.textContent = '✓'; statusEl.style.color = 'var(--green)'; }
-    }
-
-    // Cleanup input
-    await ffmpeg.deleteFile(inputName);
-
-    progressFill.style.width = '100%';
-    progressLabel.textContent = `✓ Done — ${count} clip${count !== 1 ? 's' : ''} downloaded`;
-    showToast(`✓ ${count} clip${count !== 1 ? 's' : ''} exported!`);
-    setTimeout(() => { progressWrap.classList.remove('visible'); splitting = false; splitBtn.disabled = false; }, 4000);
-
-  } catch (err) {
-    console.error(err);
-    progressLabel.textContent = '⚠️ Error: ' + err.message;
-    showToast('⚠️ Split failed — see console for details');
-    splitting = false; splitBtn.disabled = false;
+    if (statusEl) { statusEl.textContent = '✓'; statusEl.className = 'clip-status done'; }
   }
+
+  URL.revokeObjectURL(srcURL);
+  progressFill.style.width  = '100%';
+  progressLabel.textContent = `✓ Done — ${count} clip${count !== 1 ? 's' : ''} downloaded`;
+  showToast(`✓ ${count} clip${count !== 1 ? 's' : ''} exported!`);
+  setTimeout(() => { progressWrap.classList.remove('visible'); splitting = false; splitBtn.disabled = false; }, 4000);
+}
+
+// Seek-and-record a single clip using MediaRecorder on a hidden video element
+function exportClipBlob(srcURL, startTime, duration, num, total, ext) {
+  return new Promise((resolve, reject) => {
+    const vid = document.createElement('video');
+    vid.src = srcURL;
+    vid.muted = false;
+    vid.playbackRate = 1;
+    vid.preload = 'auto';
+
+    vid.addEventListener('loadedmetadata', () => {
+      vid.currentTime = startTime;
+    }, { once: true });
+
+    vid.addEventListener('seeked', () => {
+      // Set up canvas to capture frames
+      const canvas = document.createElement('canvas');
+      canvas.width  = vid.videoWidth  || 1280;
+      canvas.height = vid.videoHeight || 720;
+      const ctx = canvas.getContext('2d');
+
+      // Capture video stream from canvas
+      const videoStream = canvas.captureStream(30);
+
+      // Try to capture audio too
+      let combinedStream = videoStream;
+      try {
+        const audioCtx = new AudioContext();
+        const src = audioCtx.createMediaElementSource(vid);
+        const dest = audioCtx.createMediaStreamDestination();
+        src.connect(dest);
+        src.connect(audioCtx.destination);
+        const audioTrack = dest.stream.getAudioTracks()[0];
+        if (audioTrack) {
+          combinedStream = new MediaStream([...videoStream.getTracks(), audioTrack]);
+        }
+      } catch(e) { /* audio capture not supported, video only */ }
+
+      // Pick best supported format
+      const mimeType = ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(t => MediaRecorder.isTypeSupported(t)) || 'video/webm';
+      const recorder = new MediaRecorder(combinedStream, { mimeType, videoBitsPerSecond: 10_000_000 });
+      const chunks   = [];
+
+      recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
+      recorder.onstop = () => {
+        const blob     = new Blob(chunks, { type: mimeType });
+        const blobURL  = URL.createObjectURL(blob);
+        const a        = document.createElement('a');
+        a.href         = blobURL;
+        a.download     = `${originalName}_clip${String(num).padStart(2,'0')}_${fmtSafe(startTime)}-${fmtSafe(startTime+duration)}.webm`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(blobURL), 8000);
+        vid.pause();
+        vid.remove();
+        resolve();
+      };
+
+      // Draw frames continuously
+      let drawing = true;
+      function drawLoop() {
+        if (!drawing) return;
+        ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+        requestAnimationFrame(drawLoop);
+      }
+
+      recorder.start(100);
+      vid.play();
+      drawLoop();
+
+      // Stop exactly at clip end
+      const stopAt = startTime + duration;
+      const checkInterval = setInterval(() => {
+        if (vid.currentTime >= stopAt || vid.ended) {
+          clearInterval(checkInterval);
+          drawing = false;
+          recorder.stop();
+        }
+      }, 50);
+
+    }, { once: true });
+
+    vid.load();
+  });
 }
 
 function resetAll() {
   if (splitting) return;
   videoFile = null; videoDuration = 0;
-  videoEl.src = ''; videoPreview.classList.remove('show');
-  settingsCard.classList.remove('show'); actionRow.classList.remove('show');
-  clipsCard.classList.remove('show'); progressWrap.classList.remove('visible');
-  dropzone.style.display = 'flex'; splitBtn.disabled = !ffmpegReady;
+  videoEl.src = '';
+  videoPreview.classList.remove('show');
+  settingsCard.classList.remove('show');
+  actionRow.classList.remove('show');
+  clipsCard.classList.remove('show');
+  progressWrap.classList.remove('visible');
+  dropzone.style.display = 'flex';
+  splitBtn.disabled = false;
   progressFill.style.width = '0%';
 }
 
+// ── HELPERS ──
 function fmtTime(s) {
   if (!s) return '0:00';
   const m = Math.floor(s / 60), sec = Math.floor(s % 60);
@@ -539,21 +566,26 @@ function fmtTimecode(s) {
 function fmtSafe(s) { return fmtTime(s).replace(':', 'm') + 's'; }
 
 function shareTo(platform) {
-  const url = encodeURIComponent(window.location.href);
+  const url  = encodeURIComponent(window.location.href);
   const text = encodeURIComponent('Free Video Splitter — slice videos for TikTok, Reels & Stories ✂️');
-  const urls = { whatsapp: 'https://wa.me/?text=' + text + '%20' + url, x: 'https://x.com/intent/tweet?text=' + text + '&url=' + url, tiktok: 'https://www.tiktok.com/', instagram: 'https://www.instagram.com/', copy: null };
+  const urls = {
+    whatsapp:  'https://wa.me/?text=' + text + '%20' + url,
+    x:         'https://x.com/intent/tweet?text=' + text + '&url=' + url,
+    tiktok:    'https://www.tiktok.com/',
+    instagram: 'https://www.instagram.com/',
+    copy:      null
+  };
   if (platform === 'copy') { navigator.clipboard.writeText(window.location.href); showToast('✓ Link copied!'); }
   else { window.open(urls[platform], '_blank'); }
 }
 
 let toastTimer;
 function showToast(msg) {
-  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
 }
-
-// ── INIT — load FFmpeg on page load ──
-loadFFmpeg();
 </script>
 </body>
 </html>
