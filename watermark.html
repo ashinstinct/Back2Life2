@@ -182,9 +182,10 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
   </div>
 
   <div class="status-bar" id="wmStatus">
-    <span id="wmStatusText" class="status-none">No watermark set — tap Settings</span>
+    <span id="wmStatusText" class="status-none">No watermark set — tap Settings below</span>
     <span id="wmCount"></span>
   </div>
+  <button onclick="document.getElementById('sheet').classList.add('open');document.getElementById('sheetOverlay').classList.add('open')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#00ff88;font-size:14px;font-weight:700;padding:13px;border-radius:12px;cursor:pointer;font-family:Inter,sans-serif;width:100%">⚙️ Watermark Settings</button>
 
   <div class="media-grid" id="mediaGrid"></div>
 
@@ -358,7 +359,8 @@ const wm2AddSection=document.getElementById('wm2AddSection');
 
 function openSheetFn(){sheet.classList.add('open');sheetOverlay.classList.add('open')}
 function closeSheetFn(){sheet.classList.remove('open');sheetOverlay.classList.remove('open')}
-document.getElementById('openSheet').addEventListener('click',openSheetFn);
+const openSheetEl=document.getElementById('openSheet');
+if(openSheetEl)openSheetEl.addEventListener('click',openSheetFn);
 document.getElementById('closeSheet').addEventListener('click',closeSheetFn);
 document.getElementById('closeSheetBtn').addEventListener('click',closeSheetFn);
 sheetOverlay.addEventListener('click',closeSheetFn);
