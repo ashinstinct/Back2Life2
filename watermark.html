@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Watermark Tool — Back2Life.ai</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c28;
+    --surface3: #252535;
+    --accent: #7c3aed;
+    --accent2: #a855f7;
+    --accent-glow: rgba(124,58,237,0.35);
+    --text: #f0f0ff;
+    --text-muted: #888899;
+    --border: rgba(255,255,255,0.08);
+    --green: #22c55e;
+    --red: #ef4444;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --pill: 999px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    gap: 10px;
+  }
+  .topbar-brand { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; color: var(--accent2); white-space: nowrap; }
+  .topbar-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .settings-btn {
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: var(--pill);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .settings-btn:active { background: var(--accent); }
+  .settings-btn svg { flex-shrink: 0; }
+
+  /* ── MAIN ── */
+  main { flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+
+  /* ── DROP ZONE ── */
+  .dropzone {
+    border: 2px dashed rgba(124,58,237,0.4);
+    border-radius: var(--radius);
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px 20px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    text-align: center;
+  }
+  .dropzone.drag-over { border-color: var(--accent2); background: rgba(124,58,237,0.08); }
+  .dropzone-icon { font-size: 40px; }
+  .dropzone h2 { font-size: 17px; font-weight: 700; }
+  .dropzone p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+  .dropzone-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: var(--pill);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+  #fileInput { display: none; }
+
+  /* ── WATERMARK STATUS BAR ── */
+  .wm-status {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    flex-wrap: wrap;
+  }
+  .wm-badge {
+    background: var(--surface3);
+    border-radius: var(--pill);
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent2);
+  }
+  .wm-none { color: var(--text-muted); font-style: italic; }
+
+  /* ── GRID ── */
+  .media-grid { display: grid; gap: 10px; }
+  .media-grid.count-1 { grid-template-columns: 1fr; }
+  .media-grid.count-2 { grid-template-columns: 1fr 1fr; }
+  .media-grid.count-many { grid-template-columns: repeat(3, 1fr); }
+
+  /* ── MEDIA CARD ── */
+  .media-card {
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .media-card.selected { border-color: var(--accent2); }
+
+  .media-wrap {
+    position: relative;
+    width: 100%;
+    background: #000;
+    overflow: hidden;
+  }
+  .count-1 .media-wrap { aspect-ratio: auto; max-height: 70dvh; }
+  .count-many .media-wrap,
+  .count-2 .media-wrap { aspect-ratio: 9/16; }
+
+  .media-wrap img,
+  .media-wrap video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .count-1 .media-wrap img,
+  .count-1 .media-wrap video { object-fit: contain; max-height: 70dvh; }
+
+  /* watermark overlay */
+  .wm-overlay { position: absolute; inset: 0; pointer-events: none; }
+  .wm-preview {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .wm-preview img { max-width: 60px; max-height: 30px; object-fit: contain; opacity: 0.85; }
+  .wm-preview.wm2 { opacity: 0.7; }
+  .wm-preview .wm-label { font-size: 8px; color: #fff; background: rgba(0,0,0,0.5); padding: 1px 3px; border-radius: 2px; }
+
+  /* position helpers */
+  .pos-tl  { top:8%;  left:5%; }
+  .pos-tc  { top:8%;  left:50%; transform:translateX(-50%); }
+  .pos-tr  { top:8%;  right:5%; }
+  .pos-ml  { top:50%; left:5%; transform:translateY(-50%); }
+  .pos-mc  { top:50%; left:50%; transform:translate(-50%,-50%); }
+  .pos-mr  { top:50%; right:5%; transform:translateY(-50%); }
+  .pos-bl  { bottom:8%; left:5%; }
+  .pos-bc  { bottom:8%; left:50%; transform:translateX(-50%); }
+  .pos-br  { bottom:8%; right:5%; }
+  /* FIX: Above Social lowered to 22% from bottom */
+  .pos-as  { bottom:22%; left:50%; transform:translateX(-50%); }
+
+  /* media type badge */
+  .type-badge {
+    position: absolute;
+    top: 6px; left: 6px;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    font-size: 9px; font-weight: 700;
+    padding: 2px 6px;
+    border-radius: var(--pill);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    z-index: 2;
+  }
+
+  /* remove btn */
+  .remove-btn {
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 22px; height: 22px;
+    background: rgba(239,68,68,0.85);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    z-index: 3;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── POS STRIP ── */
+  .pos-strip {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px;
+    background: var(--surface2);
+  }
+  .pos-strip-label { font-size: 9px; color: var(--text-muted); margin-right: 2px; white-space: nowrap; }
+  .pos-btn {
+    flex: 1;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 5px 2px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s, color 0.15s;
+    line-height: 1.1;
+  }
+  .pos-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .pos-btn:active { opacity: 0.7; }
+
+  /* ── ACTION BAR ── */
+  .action-bar { display: flex; gap: 10px; flex-wrap: wrap; }
+  .action-btn {
+    flex: 1;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 14px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    white-space: nowrap;
+  }
+  .action-btn.secondary {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  .action-btn:active { opacity: 0.7; }
+  .action-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* ── PROGRESS ── */
+  .progress-wrap {
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .progress-wrap.visible { display: flex; }
+  .progress-bar-bg { background: var(--surface3); border-radius: var(--pill); height: 6px; overflow: hidden; }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: var(--pill);
+    transition: width 0.3s;
+    width: 0%;
+  }
+  .progress-label { font-size: 12px; color: var(--text-muted); }
+
+  /* ── SHEET OVERLAY ── */
+  .sheet-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .sheet-overlay.open { opacity: 1; pointer-events: all; }
+
+  .sheet {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-radius: 22px 22px 0 0;
+    z-index: 101;
+    padding: 0 0 env(safe-area-inset-bottom, 16px);
+    transform: translateY(100%);
+    transition: transform 0.32s cubic-bezier(0.32,0.72,0,1);
+    max-height: 92dvh;
+    overflow-y: auto;
+  }
+  .sheet.open { transform: translateY(0); }
+  .sheet-handle {
+    width: 36px; height: 4px;
+    background: rgba(255,255,255,0.18);
+    border-radius: var(--pill);
+    margin: 12px auto 6px;
+  }
+  .sheet-header {
+    padding: 8px 20px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .sheet-title { font-size: 18px; font-weight: 700; }
+  .sheet-close {
+    background: var(--surface3);
+    border: none; color: var(--text);
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── SHEET SECTIONS ── */
+  .sheet-section { padding: 0 20px 20px; }
+  .sheet-section + .sheet-section { border-top: 1px solid var(--border); padding-top: 20px; }
+  .section-label {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 12px;
+  }
+  .section-sublabel { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4; }
+
+  /* ── WM UPLOAD AREA ── */
+  .wm-upload {
+    border: 1.5px dashed rgba(124,58,237,0.4);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    position: relative;
+  }
+  .wm-upload:active { border-color: var(--accent2); }
+  .wm-upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .wm-upload-icon { font-size: 26px; margin-bottom: 6px; }
+  .wm-upload p { font-size: 13px; color: var(--text-muted); }
+  .wm-upload strong { font-size: 14px; color: var(--text); display: block; margin-bottom: 4px; }
+
+  .wm-preview-box {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    margin-top: 10px;
+  }
+  .wm-preview-box img { max-width: 80px; max-height: 40px; object-fit: contain; border-radius: 4px; background: repeating-conic-gradient(#333 0% 25%, #222 0% 50%) 0 0/10px 10px; }
+  .wm-preview-box .wm-info { flex: 1; }
+  .wm-preview-box .wm-info span { font-size: 12px; color: var(--text-muted); }
+  .wm-clear { background: none; border: none; color: var(--red); font-size: 13px; cursor: pointer; padding: 4px; }
+
+  /* ── SLIDERS ── */
+  .slider-row { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+  .slider-row label { font-size: 13px; color: var(--text-muted); min-width: 60px; }
+  .slider-row input[type=range] { flex: 1; accent-color: var(--accent2); cursor: pointer; }
+  .slider-val { font-size: 13px; font-weight: 700; color: var(--accent2); min-width: 42px; text-align: right; }
+
+  /* ── POSITION GRID ── */
+  .pos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .pos-grid-btn {
+    background: var(--surface3);
+    border: 1.5px solid var(--border);
+    color: var(--text-muted);
+    padding: 10px 4px;
+    border-radius: var(--radius-sm);
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; text-align: center;
+    transition: all 0.15s; line-height: 1.3;
+  }
+  .pos-grid-btn.active {
+    background: rgba(124,58,237,0.2);
+    border-color: var(--accent);
+    color: var(--accent2);
+  }
+  .pos-grid-btn:active { opacity: 0.6; }
+  .pos-grid-social {
+    grid-column: span 3;
+    background: rgba(124,58,237,0.1);
+    border-color: rgba(124,58,237,0.3);
+  }
+
+  /* ── ADD WM2 BUTTON ── */
+  .add-wm2-btn {
+    width: 100%;
+    background: var(--surface2);
+    border: 1.5px dashed rgba(124,58,237,0.4);
+    color: var(--accent2);
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    font-size: 14px; font-weight: 700;
+    cursor: pointer; text-align: center;
+    transition: background 0.15s, border-color 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .add-wm2-btn:active { background: rgba(124,58,237,0.1); border-color: var(--accent2); }
+
+  /* ── PER-SECTION APPLY BTN ── */
+  .apply-wm-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    border: none;
+    padding: 13px;
+    border-radius: var(--radius-sm);
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: opacity 0.15s;
+  }
+  .apply-wm-btn:active { opacity: 0.8; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface3);
+    color: var(--text);
+    padding: 12px 20px;
+    border-radius: var(--pill);
+    font-size: 14px; font-weight: 600;
+    z-index: 200;
+    transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
+    white-space: nowrap;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <span class="topbar-brand">Back2Life.ai</span>
+  <span class="topbar-title">Watermark Tool</span>
+  <button class="settings-btn" id="openSheet">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    Settings
+  </button>
+</header>
+
+<main>
+  <!-- DROP ZONE -->
+  <div class="dropzone" id="dropzone">
+    <div class="dropzone-icon">🎬</div>
+    <h2>Drop images or videos here</h2>
+    <p>Supports JPG, PNG, GIF, MP4, MOV, WEBM<br>Upload 1 or batch up to 100+ files</p>
+    <button class="dropzone-btn" id="browseBtn">Choose Files</button>
+    <input type="file" id="fileInput" multiple accept="image/*,video/*">
+  </div>
+
+  <!-- WM STATUS -->
+  <div class="wm-status" id="wmStatus" style="display:none">
+    <span id="wmStatusText" class="wm-none">No watermark set — open Settings</span>
+    <span id="wmCount"></span>
+  </div>
+
+  <!-- MEDIA GRID -->
+  <div class="media-grid" id="mediaGrid"></div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-label" id="progressLabel">Processing…</div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+  </div>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar" id="actionBar" style="display:none">
+    <button class="action-btn secondary" id="clearBtn">Clear All</button>
+    <button class="action-btn" id="processBtn" disabled>Apply Watermarks &amp; Download</button>
+  </div>
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- SHEET OVERLAY -->
+<div class="sheet-overlay" id="sheetOverlay"></div>
+
+<!-- SETTINGS SHEET -->
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">⚙️ Watermark Settings</span>
+    <button class="sheet-close" id="closeSheet">✕</button>
+  </div>
+
+  <!-- WM 1 -->
+  <div class="sheet-section">
+    <div class="section-label">Watermark 1 — Primary</div>
+    <div class="wm-upload" id="wm1Upload">
+      <input type="file" id="wm1Input" accept="image/*">
+      <div class="wm-upload-icon">🖼️</div>
+      <strong>Upload Logo / Image</strong>
+      <p>PNG with transparency recommended</p>
+    </div>
+    <div class="wm-preview-box" id="wm1PreviewBox" style="display:none">
+      <img id="wm1Img" src="" alt="WM1">
+      <div class="wm-info">
+        <strong id="wm1Name" style="font-size:13px;color:var(--text)"></strong>
+        <span>Primary watermark</span>
+      </div>
+      <button class="wm-clear" id="wm1Clear">✕ Remove</button>
+    </div>
+
+    <div class="slider-row">
+      <label>Opacity</label>
+      <input type="range" id="wm1Opacity" min="10" max="100" value="80">
+      <span class="slider-val" id="wm1OpacityVal">80%</span>
+    </div>
+    <!-- FIX: Size max raised to 1000% -->
+    <div class="slider-row">
+      <label>Size</label>
+      <input type="range" id="wm1Size" min="5" max="1000" value="20">
+      <span class="slider-val" id="wm1SizeVal">20%</span>
+    </div>
+
+    <div class="section-label" style="margin-top:16px;">Default Position</div>
+    <div class="section-sublabel">Sets position for all media. Use the per-card strip to override individual items.</div>
+    <div class="pos-grid" id="wm1PosGrid">
+      <button class="pos-grid-btn" data-pos="tl">↖ Top Left</button>
+      <button class="pos-grid-btn" data-pos="tc">↑ Top</button>
+      <button class="pos-grid-btn" data-pos="tr">↗ Top Right</button>
+      <button class="pos-grid-btn" data-pos="ml">← Left</button>
+      <button class="pos-grid-btn active" data-pos="mc">· Mid</button>
+      <button class="pos-grid-btn" data-pos="mr">→ Right</button>
+      <button class="pos-grid-btn" data-pos="bl">↙ Bot Left</button>
+      <button class="pos-grid-btn" data-pos="bc">↓ Bottom</button>
+      <button class="pos-grid-btn" data-pos="br">↘ Bot Right</button>
+      <button class="pos-grid-btn pos-grid-social" data-pos="as">📱 Above Social — safe zone above TikTok/Reels UI</button>
+    </div>
+
+    <!-- FIX: WM1 gets its own Apply button -->
+    <button class="apply-wm-btn" id="applyWm1">✓ Apply Watermark 1</button>
+  </div>
+
+  <!-- FIX: WM2 hidden by default, shown via + button -->
+  <div class="sheet-section" id="wm2AddSection">
+    <button class="add-wm2-btn" id="addWm2Btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Second Watermark
+    </button>
+  </div>
+
+  <!-- WM 2 (hidden until + pressed) -->
+  <div class="sheet-section" id="wm2Section" style="display:none">
+    <div class="section-label">Watermark 2 — Secondary <span style="color:var(--accent2);font-size:10px;margin-left:4px;">OPTIONAL</span></div>
+    <div class="wm-upload" id="wm2Upload">
+      <input type="file" id="wm2Input" accept="image/*">
+      <div class="wm-upload-icon">➕</div>
+      <strong>Upload Second Logo / Text</strong>
+      <p>Shown alongside Watermark 1</p>
+    </div>
+    <div class="wm-preview-box" id="wm2PreviewBox" style="display:none">
+      <img id="wm2Img" src="" alt="WM2">
+      <div class="wm-info">
+        <strong id="wm2Name" style="font-size:13px;color:var(--text)"></strong>
+        <span>Secondary watermark</span>
+      </div>
+      <button class="wm-clear" id="wm2Clear">✕ Remove</button>
+    </div>
+
+    <div class="slider-row">
+      <label>Opacity</label>
+      <input type="range" id="wm2Opacity" min="10" max="100" value="70">
+      <span class="slider-val" id="wm2OpacityVal">70%</span>
+    </div>
+    <!-- FIX: WM2 size also goes to 1000% -->
+    <div class="slider-row">
+      <label>Size</label>
+      <input type="range" id="wm2Size" min="5" max="1000" value="15">
+      <span class="slider-val" id="wm2SizeVal">15%</span>
+    </div>
+
+    <div class="section-label" style="margin-top:16px;">Position (WM2)</div>
+    <div class="pos-grid" id="wm2PosGrid">
+      <button class="pos-grid-btn" data-pos="tl">↖ Top Left</button>
+      <button class="pos-grid-btn" data-pos="tc">↑ Top</button>
+      <button class="pos-grid-btn active" data-pos="tr">↗ Top Right</button>
+      <button class="pos-grid-btn" data-pos="ml">← Left</button>
+      <button class="pos-grid-btn" data-pos="mc">· Mid</button>
+      <button class="pos-grid-btn" data-pos="mr">→ Right</button>
+      <button class="pos-grid-btn" data-pos="bl">↙ Bot Left</button>
+      <button class="pos-grid-btn" data-pos="bc">↓ Bottom</button>
+      <button class="pos-grid-btn" data-pos="br">↘ Bot Right</button>
+      <button class="pos-grid-btn pos-grid-social" data-pos="as">📱 Above Social</button>
+    </div>
+
+    <!-- FIX: WM2 gets its own Apply button -->
+    <button class="apply-wm-btn" id="applyWm2">✓ Apply Watermark 2</button>
+  </div>
+
+  <!-- CLOSE -->
+  <div class="sheet-section">
+    <button class="action-btn secondary" id="closeSheetBtn" style="width:100%">Close Settings</button>
+  </div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────
+const state = {
+  files: [],
+  wm1: null,
+  wm2: null,
+};
+
+const POS_CLASSES = {
+  tl:'pos-tl', tc:'pos-tc', tr:'pos-tr',
+  ml:'pos-ml', mc:'pos-mc', mr:'pos-mr',
+  bl:'pos-bl', bc:'pos-bc', br:'pos-br',
+  as:'pos-as'
+};
+
+const POS_LABELS = {
+  tl:'Top Left', tc:'Top', tr:'Top Right',
+  ml:'Left', mc:'Mid', mr:'Right',
+  bl:'Bot Left', bc:'Bottom', br:'Bot Right',
+  as:'Above Social'
+};
+
+// ── DOM REFS ──
+const fileInput    = document.getElementById('fileInput');
+const dropzone     = document.getElementById('dropzone');
+const mediaGrid    = document.getElementById('mediaGrid');
+const actionBar    = document.getElementById('actionBar');
+const processBtn   = document.getElementById('processBtn');
+const clearBtn     = document.getElementById('clearBtn');
+const progressWrap = document.getElementById('progressWrap');
+const progressFill = document.getElementById('progressFill');
+const progressLabel= document.getElementById('progressLabel');
+const wmStatus     = document.getElementById('wmStatus');
+const wmStatusText = document.getElementById('wmStatusText');
+const wmCount      = document.getElementById('wmCount');
+const toast        = document.getElementById('toast');
+
+const sheet        = document.getElementById('sheet');
+const sheetOverlay = document.getElementById('sheetOverlay');
+const openSheet    = document.getElementById('openSheet');
+const closeSheet   = document.getElementById('closeSheet');
+const closeSheetBtn= document.getElementById('closeSheetBtn');
+
+const wm1Input     = document.getElementById('wm1Input');
+const wm2Input     = document.getElementById('wm2Input');
+const wm1Img       = document.getElementById('wm1Img');
+const wm2Img       = document.getElementById('wm2Img');
+const wm1PreviewBox= document.getElementById('wm1PreviewBox');
+const wm2PreviewBox= document.getElementById('wm2PreviewBox');
+const wm1Name      = document.getElementById('wm1Name');
+const wm2Name      = document.getElementById('wm2Name');
+const wm1Clear     = document.getElementById('wm1Clear');
+const wm2Clear     = document.getElementById('wm2Clear');
+
+const wm1Opacity   = document.getElementById('wm1Opacity');
+const wm1OpacityVal= document.getElementById('wm1OpacityVal');
+const wm1Size      = document.getElementById('wm1Size');
+const wm1SizeVal   = document.getElementById('wm1SizeVal');
+const wm2Opacity   = document.getElementById('wm2Opacity');
+const wm2OpacityVal= document.getElementById('wm2OpacityVal');
+const wm2Size      = document.getElementById('wm2Size');
+const wm2SizeVal   = document.getElementById('wm2SizeVal');
+
+const applyWm1     = document.getElementById('applyWm1');
+const applyWm2     = document.getElementById('applyWm2');
+const addWm2Btn    = document.getElementById('addWm2Btn');
+const wm2Section   = document.getElementById('wm2Section');
+const wm2AddSection= document.getElementById('wm2AddSection');
+
+// ── SHEET OPEN/CLOSE ──
+function openSheetFn()  { sheet.classList.add('open'); sheetOverlay.classList.add('open'); }
+function closeSheetFn() { sheet.classList.remove('open'); sheetOverlay.classList.remove('open'); }
+
+openSheet.addEventListener('click', openSheetFn);
+closeSheet.addEventListener('click', closeSheetFn);
+closeSheetBtn.addEventListener('click', closeSheetFn);
+sheetOverlay.addEventListener('click', closeSheetFn);
+
+// ── ADD WM2 TOGGLE ──
+addWm2Btn.addEventListener('click', () => {
+  wm2Section.style.display = 'block';
+  wm2AddSection.style.display = 'none';
+});
+
+// ── SLIDERS ──
+function bindSlider(inp, valEl, suffix='%') {
+  inp.addEventListener('input', () => { valEl.textContent = inp.value + suffix; });
+}
+bindSlider(wm1Opacity, wm1OpacityVal);
+bindSlider(wm1Size, wm1SizeVal);
+bindSlider(wm2Opacity, wm2OpacityVal);
+bindSlider(wm2Size, wm2SizeVal);
+
+// ── POS GRIDS ──
+function bindPosGrid(gridId) {
+  const grid = document.getElementById(gridId);
+  grid.querySelectorAll('.pos-grid-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      grid.querySelectorAll('.pos-grid-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+}
+bindPosGrid('wm1PosGrid');
+bindPosGrid('wm2PosGrid');
+
+function getActivePos(gridId) {
+  const active = document.querySelector(`#${gridId} .pos-grid-btn.active`);
+  return active ? active.dataset.pos : 'mc';
+}
+
+// ── WM UPLOAD ──
+function setupWmUpload(inputEl, previewBox, imgEl, nameEl, clearBtnEl, wmKey) {
+  inputEl.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    imgEl.src = url;
+    nameEl.textContent = file.name;
+    previewBox.style.display = 'flex';
+    inputEl._pendingUrl = url;
+    inputEl._pendingFile = file;
+  });
+  clearBtnEl.addEventListener('click', () => {
+    inputEl.value = '';
+    imgEl.src = '';
+    previewBox.style.display = 'none';
+    inputEl._pendingUrl = null;
+    state[wmKey] = null;
+    renderGrid();
+    updateStatusBar();
+  });
+}
+setupWmUpload(wm1Input, wm1PreviewBox, wm1Img, wm1Name, wm1Clear, 'wm1');
+setupWmUpload(wm2Input, wm2PreviewBox, wm2Img, wm2Name, wm2Clear, 'wm2');
+
+// ── FIX: Each watermark has its own independent Apply ──
+// Applying WM1 updates all cards' per-card positions to the chosen global pos,
+// then re-renders. WM2 just updates its own global pos.
+applyWm1.addEventListener('click', () => {
+  if (wm1Input._pendingUrl || (state.wm1 && state.wm1.url)) {
+    const url = wm1Input._pendingUrl || state.wm1.url;
+    const imgEl = new Image();
+    imgEl.src = url;
+    const newPos = getActivePos('wm1PosGrid');
+    state.wm1 = {
+      url,
+      imgEl,
+      opacity: parseInt(wm1Opacity.value) / 100,
+      size: parseInt(wm1Size.value) / 100,
+      pos: newPos,
+    };
+    // FIX: push global pos to ALL cards so Apply actually takes effect
+    state.files.forEach(f => { f.pos = newPos; });
+    renderGrid();
+    updateStatusBar();
+    showToast('✓ Watermark 1 applied');
+  } else {
+    showToast('Upload a logo first');
+  }
+});
+
+applyWm2.addEventListener('click', () => {
+  if (wm2Input._pendingUrl || (state.wm2 && state.wm2.url)) {
+    const url = wm2Input._pendingUrl || state.wm2.url;
+    const imgEl = new Image();
+    imgEl.src = url;
+    state.wm2 = {
+      url,
+      imgEl,
+      opacity: parseInt(wm2Opacity.value) / 100,
+      size: parseInt(wm2Size.value) / 100,
+      pos: getActivePos('wm2PosGrid'),
+    };
+    renderGrid();
+    updateStatusBar();
+    showToast('✓ Watermark 2 applied');
+  } else {
+    showToast('Upload a second logo first');
+  }
+});
+
+// ── FILE INPUT ──
+document.getElementById('browseBtn').addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('click', e => { if (e.target === dropzone) fileInput.click(); });
+fileInput.addEventListener('change', e => addFiles(Array.from(e.target.files)));
+
+// DRAG
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('drag-over');
+  addFiles(Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/') || f.type.startsWith('video/')));
+});
+
+function addFiles(files) {
+  files.forEach(file => {
+    if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) return;
+    const url = URL.createObjectURL(file);
+    const type = file.type.startsWith('image/') ? 'image' : 'video';
+    // use current wm1 global pos as default for new cards
+    state.files.push({ file, url, type, pos: state.wm1 ? state.wm1.pos : 'mc' });
+  });
+  renderGrid();
+}
+
+clearBtn.addEventListener('click', () => {
+  state.files.forEach(f => URL.revokeObjectURL(f.url));
+  state.files = [];
+  renderGrid();
+});
+
+// ── RENDER GRID ──
+function renderGrid() {
+  const n = state.files.length;
+  mediaGrid.innerHTML = '';
+
+  if (n === 0) {
+    dropzone.style.display = 'flex';
+    actionBar.style.display = 'none';
+    wmStatus.style.display = 'none';
+    processBtn.disabled = true;
+    return;
+  }
+
+  dropzone.style.display = 'none';
+  actionBar.style.display = 'flex';
+  wmStatus.style.display = 'flex';
+  processBtn.disabled = !state.wm1;
+
+  mediaGrid.className = 'media-grid ' + (n === 1 ? 'count-1' : n === 2 ? 'count-2' : 'count-many');
+
+  state.files.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'media-card';
+    card.dataset.idx = idx;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'media-wrap';
+
+    const badge = document.createElement('div');
+    badge.className = 'type-badge';
+    badge.textContent = item.type === 'image' ? 'IMG' : 'VID';
+    wrap.appendChild(badge);
+
+    const rm = document.createElement('button');
+    rm.className = 'remove-btn';
+    rm.innerHTML = '✕';
+    rm.addEventListener('click', e => { e.stopPropagation(); state.files.splice(idx, 1); renderGrid(); });
+    wrap.appendChild(rm);
+
+    if (item.type === 'image') {
+      const img = document.createElement('img');
+      img.src = item.url;
+      img.loading = 'lazy';
+      wrap.appendChild(img);
+    } else {
+      const vid = document.createElement('video');
+      vid.src = item.url;
+      vid.muted = true; vid.loop = true; vid.playsInline = true;
+      vid.autoplay = n <= 3;
+      wrap.appendChild(vid);
+    }
+
+    // WM overlays
+    const overlay = document.createElement('div');
+    overlay.className = 'wm-overlay';
+
+    if (state.wm1) {
+      const wEl = document.createElement('div');
+      wEl.className = 'wm-preview ' + POS_CLASSES[item.pos || state.wm1.pos];
+      const wImg = document.createElement('img');
+      wImg.src = state.wm1.url;
+      wImg.style.opacity = state.wm1.opacity;
+      // size is fraction — scale preview proportionally (cap at 120px for display)
+      const previewW = Math.min(Math.round(state.wm1.size * 100), 120);
+      wImg.style.maxWidth = previewW + 'px';
+      wEl.appendChild(wImg);
+      if (n > 1) {
+        const lbl = document.createElement('span');
+        lbl.className = 'wm-label';
+        lbl.textContent = 'WM1';
+        wEl.appendChild(lbl);
+      }
+      overlay.appendChild(wEl);
+    }
+
+    if (state.wm2) {
+      const wEl2 = document.createElement('div');
+      wEl2.className = 'wm-preview wm2 ' + POS_CLASSES[state.wm2.pos];
+      const wImg2 = document.createElement('img');
+      wImg2.src = state.wm2.url;
+      wImg2.style.opacity = state.wm2.opacity;
+      const previewW2 = Math.min(Math.round(state.wm2.size * 100), 120);
+      wImg2.style.maxWidth = previewW2 + 'px';
+      wEl2.appendChild(wImg2);
+      if (n > 1) {
+        const lbl = document.createElement('span');
+        lbl.className = 'wm-label';
+        lbl.textContent = 'WM2';
+        wEl2.appendChild(lbl);
+      }
+      overlay.appendChild(wEl2);
+    }
+
+    wrap.appendChild(overlay);
+    card.appendChild(wrap);
+
+    // POS STRIP
+    const strip = document.createElement('div');
+    strip.className = 'pos-strip';
+    const lbl = document.createElement('span');
+    lbl.className = 'pos-strip-label';
+    lbl.textContent = 'WM1:';
+    strip.appendChild(lbl);
+
+    ['tc','mc','as'].forEach(p => {
+      const pb = document.createElement('button');
+      pb.className = 'pos-btn' + (item.pos === p ? ' active' : '');
+      pb.dataset.pos = p;
+      pb.textContent = p === 'tc' ? '▲ Top' : p === 'mc' ? '● Mid' : '⬆ Above';
+      pb.addEventListener('click', e => {
+        e.stopPropagation();
+        state.files[idx].pos = p;
+        renderGrid();
+      });
+      strip.appendChild(pb);
+    });
+
+    card.appendChild(strip);
+    mediaGrid.appendChild(card);
+  });
+
+  updateStatusBar();
+}
+
+function updateStatusBar() {
+  const n = state.files.length;
+  wmCount.textContent = n > 0 ? `${n} file${n>1?'s':''}` : '';
+  if (!state.wm1 && !state.wm2) {
+    wmStatusText.innerHTML = '<span class="wm-none">No watermark set — tap Settings ⚙️</span>';
+  } else {
+    let parts = [];
+    if (state.wm1) parts.push(`<span class="wm-badge">WM1 · ${POS_LABELS[state.wm1.pos]} · ${Math.round(state.wm1.opacity*100)}% · ${Math.round(state.wm1.size*100)}%</span>`);
+    if (state.wm2) parts.push(`<span class="wm-badge">WM2 · ${POS_LABELS[state.wm2.pos]} · ${Math.round(state.wm2.opacity*100)}%</span>`);
+    wmStatusText.innerHTML = parts.join(' ');
+  }
+  processBtn.disabled = !state.wm1 || state.files.length === 0;
+}
+
+// ── PROCESS ──────────────────────────────────────────────────
+processBtn.addEventListener('click', processAll);
+
+async function processAll() {
+  if (!state.wm1) { showToast('Upload a watermark first in Settings'); return; }
+  if (state.files.length === 0) { showToast('No files to process'); return; }
+
+  const imageFiles = state.files.filter(f => f.type === 'image');
+  const videoFiles = state.files.filter(f => f.type === 'video');
+
+  if (videoFiles.length > 0) {
+    showToast(`⚠️ ${videoFiles.length} video${videoFiles.length>1?'s':''} skipped — video needs server-side processing`);
+  }
+
+  if (imageFiles.length === 0) {
+    showToast('No images to process. Videos require server processing.');
+    return;
+  }
+
+  progressWrap.classList.add('visible');
+  processBtn.disabled = true;
+
+  await loadWmImages();
+
+  for (let i = 0; i < imageFiles.length; i++) {
+    const item = imageFiles[i];
+    progressLabel.textContent = `Processing ${i+1} of ${imageFiles.length}…`;
+    progressFill.style.width = ((i / imageFiles.length) * 100) + '%';
+    await processImage(item);
+    await new Promise(r => setTimeout(r, 30));
+  }
+
+  progressFill.style.width = '100%';
+  progressLabel.textContent = `✓ Done — ${imageFiles.length} image${imageFiles.length>1?'s':''} saved`;
+  setTimeout(() => { progressWrap.classList.remove('visible'); processBtn.disabled = false; }, 3000);
+  showToast(`✓ ${imageFiles.length} image${imageFiles.length>1?'s':''} watermarked & downloaded`);
+}
+
+function loadWmImages() {
+  const promises = [];
+  [state.wm1, state.wm2].forEach(wm => {
+    if (!wm) return;
+    if (!wm.imgEl) wm.imgEl = new Image();
+    if (!wm.imgEl.complete) {
+      promises.push(new Promise(res => { wm.imgEl.onload = res; wm.imgEl.onerror = res; wm.imgEl.src = wm.url; }));
+    } else {
+      wm.imgEl.src = wm.url;
+    }
+  });
+  return Promise.all(promises);
+}
+
+async function processImage(item) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const W = img.naturalWidth, H = img.naturalHeight;
+      const canvas = document.createElement('canvas');
+      canvas.width = W; canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, W, H);
+
+      [state.wm1, state.wm2].forEach((wm, wmIdx) => {
+        if (!wm || !wm.imgEl) return;
+        const pos = wmIdx === 0 ? (item.pos || wm.pos) : wm.pos;
+        const wmW = Math.round(W * wm.size);
+        const wmH = Math.round(wm.imgEl.naturalHeight * (wmW / wm.imgEl.naturalWidth));
+        const pad = Math.round(W * 0.03);
+        let x, y;
+        switch(pos) {
+          case 'tl': x=pad; y=pad; break;
+          case 'tc': x=(W-wmW)/2; y=pad; break;
+          case 'tr': x=W-wmW-pad; y=pad; break;
+          case 'ml': x=pad; y=(H-wmH)/2; break;
+          case 'mc': x=(W-wmW)/2; y=(H-wmH)/2; break;
+          case 'mr': x=W-wmW-pad; y=(H-wmH)/2; break;
+          case 'bl': x=pad; y=H-wmH-pad; break;
+          case 'bc': x=(W-wmW)/2; y=H-wmH-pad; break;
+          case 'br': x=W-wmW-pad; y=H-wmH-pad; break;
+          // FIX: Above Social at 22% from bottom
+          case 'as': x=(W-wmW)/2; y=H-(H*0.22)-wmH/2; break;
+          default:   x=(W-wmW)/2; y=(H-wmH)/2;
+        }
+        ctx.globalAlpha = wm.opacity;
+        ctx.drawImage(wm.imgEl, x, y, wmW, wmH);
+        ctx.globalAlpha = 1;
+      });
+
+      canvas.toBlob(blob => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'wm_' + item.file.name.replace(/\.[^.]+$/, '') + '.png';
+        a.click();
+        resolve();
+      }, 'image/png');
+    };
+    img.src = item.url;
+  });
+}
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+}
+
+// ── INIT ──
+renderGrid();
+</script>
+</body>
+</html>
