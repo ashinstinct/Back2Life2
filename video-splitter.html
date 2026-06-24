@@ -19,20 +19,30 @@
 html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden;touch-action:manipulation}
 
 /* ── TOPBAR ── */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.topbar{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  padding:0 16px;
+  height:var(--bar-h);
+  background:rgba(8,8,8,0.92);
+  backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:50;gap:10px;
+}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.menu-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+.menu-btn span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .25s}
+.menu-btn.open span{background:var(--green)}
+.menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.menu-btn.open span:nth-child(2){opacity:0}
+.menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.topbar-logo{font-size:15px;font-weight:800;color:#fff;text-decoration:none;letter-spacing:-0.3px;white-space:nowrap}
+.topbar-logo em{color:var(--green);font-style:normal}
+.topbar-title{font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--green);text-align:center;white-space:nowrap;pointer-events:none}
+.topbar-right{display:flex;justify-content:flex-end}
+.topbar-upload{background:var(--surface2);border:1px solid var(--border);border-radius:var(--pill);color:var(--text2);font-size:11px;font-weight:700;padding:7px 14px;cursor:pointer;font-family:'Inter',sans-serif;position:relative;white-space:nowrap}
+.topbar-upload input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 
 main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;padding-bottom:40px}
 
@@ -116,69 +126,30 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
 .btn-ghost:active{background:var(--surface2)}
 
 /* MENU SHEET */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:100;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.sheet-overlay.open{opacity:1;pointer-events:all}
+.menu-sheet{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,12,0.97);backdrop-filter:blur(30px) saturate(200%);border-top:1px solid var(--border2);border-radius:26px 26px 0 0;z-index:101;padding:0 20px env(safe-area-inset-bottom,32px);transform:translateY(100%);transition:transform .35s cubic-bezier(0.32,0.72,0,1);max-height:85vh;overflow-y:auto}
+.menu-sheet.open{transform:translateY(0)}
+.sheet-handle{width:36px;height:4px;background:rgba(255,255,255,0.12);border-radius:var(--pill);margin:14px auto 20px}
+.nav-sect{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--green);padding:18px 0 8px;border-top:1px solid rgba(255,255,255,0.05);margin-top:4px}
+.nav-sect:first-of-type{border-top:none;padding-top:0;margin-top:0}
+.nav-link{display:flex;align-items:center;gap:14px;padding:14px 0;font-size:15px;font-weight:500;color:var(--text2);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.05);transition:color var(--transition)}
+.nav-link:last-child{border-bottom:none}
+.nav-link:active{color:var(--green)}
+.nav-link .ico{font-size:18px;width:28px;text-align:center}
+.nav-link .ico img{width:28px;height:28px;border-radius:8px;display:block}
+.nav-cta-btn{display:block;margin-top:20px;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:15px;padding:14px 24px;border-radius:var(--radius-sm);text-decoration:none;text-align:center;box-shadow:0 4px 20px rgba(0,255,136,0.2)}
+.share-strip{display:flex;gap:8px;padding:4px 0;overflow-x:auto;scrollbar-width:none}
+.share-strip::-webkit-scrollbar{display:none}
+.share-btn{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition)}
+.share-btn:active{transform:scale(0.93);background:var(--surface2)}
+.share-icon{font-size:22px}
+.share-label{font-size:10px;font-weight:700;color:var(--text3);white-space:nowrap}
 
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(16,16,16,0.97);border:1px solid var(--border2);backdrop-filter:blur(20px);color:var(--text);font-size:13px;font-weight:600;padding:12px 22px;border-radius:var(--pill);opacity:0;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);z-index:400;pointer-events:none;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:99px}
-
-/* ── UNIFIED TOPBAR & MENU ── */
-.topbar{
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  align-items:center;
-  padding:0 16px;
-  height:var(--bar-h,60px);
-  background:rgba(8,8,8,0.92);
-  backdrop-filter:blur(20px) saturate(180%);
-  -webkit-backdrop-filter:blur(20px) saturate(180%);
-  border-bottom:1px solid var(--border);
-  position:sticky;top:0;z-index:100;
-}
-.topbar-left{display:flex;align-items:center}
-.menu-btn{background:none;border:none;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px;flex-shrink:0}
-.menu-btn span{display:block;width:20px;height:2px;background:var(--text2,#aaa);border-radius:2px;transition:all .25s}
-.menu-btn.open span{background:var(--green,#00ff88)}
-.menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-.menu-btn.open span:nth-child(2){opacity:0}
-.menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-.topbar-title{font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--green,#00ff88);text-align:center;white-space:nowrap;pointer-events:none}
-.topbar-right{display:flex;justify-content:flex-end}
-.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:200;opacity:0;pointer-events:none;transition:opacity 0.25s}
-.sheet-overlay.open{opacity:1;pointer-events:all}
-.menu-sheet{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,12,0.97);backdrop-filter:blur(30px) saturate(200%);-webkit-backdrop-filter:blur(30px) saturate(200%);border-top:1px solid rgba(255,255,255,0.13);border-radius:26px 26px 0 0;z-index:201;padding:0 20px env(safe-area-inset-bottom,32px);transform:translateY(100%);transition:transform .35s cubic-bezier(0.32,0.72,0,1);max-height:85vh;overflow-y:auto}
-.menu-sheet.open{transform:translateY(0)}
-.sheet-handle{width:36px;height:4px;background:rgba(255,255,255,0.12);border-radius:999px;margin:14px auto 8px}
-.menu-brand{font-size:17px;font-weight:800;color:#fff;letter-spacing:-0.3px;padding:8px 0 16px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:4px}
-.menu-brand em{color:var(--green,#00ff88);font-style:normal}
-.nav-sect{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--green,#00ff88);padding:16px 0 8px;border-top:1px solid rgba(255,255,255,0.05);margin-top:4px}
-.nav-sect:first-of-type{border-top:none;padding-top:12px;margin-top:0}
-.nav-link{display:flex;align-items:center;gap:14px;padding:12px 0;font-size:15px;font-weight:500;color:rgba(255,255,255,0.65);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.05);transition:color 0.2s}
-.nav-link:last-child{border-bottom:none}
-.nav-link:active{color:var(--green,#00ff88)}
-.nav-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
-.nav-ico img{width:36px;height:36px;border-radius:10px;display:block;object-fit:cover}
-.nav-cta{display:block;margin-top:20px;background:linear-gradient(135deg,#00cc66,#00ff88);color:#000;font-weight:800;font-size:15px;padding:14px 24px;border-radius:12px;text-decoration:none;text-align:center;box-shadow:0 4px 20px rgba(0,255,136,0.2)}
-
 </style>
 <link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -194,17 +165,13 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
 <header class="topbar">
   <div class="topbar-left">
     <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
+    <a href="/" class="topbar-logo">Back2Life<em>.app</em></a>
   </div>
   <div class="topbar-title">VIDEO SPLITTER</div>
   <div class="topbar-right">
     <button class="topbar-upload" id="topUploadBtn">+ VIDEO<input type="file" id="topFileInput" accept="video/*"></button>
   </div>
 </header>
-
-
-
-
-
 
 <main>
 
@@ -286,8 +253,10 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
 </main>
 
 <div class="toast" id="toast"></div>
+<div class="sheet-overlay" id="sheetOverlay"></div>
 
-
+<div class="menu-sheet" id="menuSheet">
+  <div class="sheet-handle"></div>
   <div class="nav-sect">Navigation</div>
   <a href="/" class="nav-link"><span class="ico">🏠</span>Home</a>
   <div class="nav-sect">Free Tools</div>
@@ -297,7 +266,13 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
   <a href="/audio-editor" class="nav-link"><span class="ico"><img src="/icons/audio-editor.png" alt="Audio Editor"></span>Audio Editor</a>
   <a href="/audio-converter" class="nav-link"><span class="ico"><img src="/icons/audio-converter.png" alt="Audio Converter"></span>Audio Converter</a>
   <div class="nav-sect">Share This Tool</div>
-  
+  <div class="share-strip">
+    <button class="share-btn" onclick="shareTo('whatsapp')"><span class="share-icon">💬</span><span class="share-label">WhatsApp</span></button>
+    <button class="share-btn" onclick="shareTo('x')"><span class="share-icon">𝕏</span><span class="share-label">X / Twitter</span></button>
+    <button class="share-btn" onclick="shareTo('tiktok')"><span class="share-icon">🎵</span><span class="share-label">TikTok</span></button>
+    <button class="share-btn" onclick="shareTo('instagram')"><span class="share-icon">📸</span><span class="share-label">Instagram</span></button>
+    <button class="share-btn" onclick="shareTo('copy')"><span class="share-icon">🔗</span><span class="share-label">Copy Link</span></button>
+  </div>
   <div class="nav-sect">Follow Us</div>
   <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-link"><span class="ico"><img src="https://cdn.simpleicons.org/instagram/E1306C" width="20" height="20"></span>Instagram</a>
   <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="nav-link"><span class="ico"><img src="https://cdn.simpleicons.org/tiktok/ffffff" width="20" height="20"></span>TikTok</a>
@@ -336,8 +311,281 @@ const endTimeDisplay   = document.getElementById('endTimeDisplay');
 const fullVideoCheck   = document.getElementById('fullVideoCheck');
 const rangeControls    = document.getElementById('rangeControls');
 
+// ── MENU ──
+const menuBtn    = document.getElementById('menuBtn');
+const menuSheet  = document.getElementById('menuSheet');
+const sheetOverlay = document.getElementById('sheetOverlay');
+menuBtn.addEventListener('click', () => menuSheet.classList.contains('open') ? closeMenu() : openMenu());
+sheetOverlay.addEventListener('click', closeMenu);
+function openMenu()  { menuSheet.classList.add('open');    sheetOverlay.classList.add('open');    menuBtn.classList.add('open'); }
+function closeMenu() { menuSheet.classList.remove('open'); sheetOverlay.classList.remove('open'); menuBtn.classList.remove('open'); }
 
-_menuSheet.addEventListener('touchend', e => { if(e.changedTouches[0].clientY - _tsy > 60) _closeMenu(); }, {passive:true});
+// ── FILE HANDLING ──
+function handleFile(file) {
+  if (!file || !file.type.startsWith('video/')) { showToast('⚠️ Please select a video file'); return; }
+  videoFile = file;
+  originalName = file.name.replace(/\.[^.]+$/, '');
+  const url = URL.createObjectURL(file);
+  videoEl.src = url;
+  videoEl.addEventListener('loadedmetadata', () => {
+    videoDuration = videoEl.duration;
+    startSec = 0;
+    endSec = videoDuration;
+    document.getElementById('vidName').textContent = file.name.length > 34 ? file.name.substring(0, 32) + '…' : file.name;
+    document.getElementById('vidMeta').textContent = fmtTime(videoDuration) + ' · ' + videoEl.videoWidth + '×' + videoEl.videoHeight;
+    endTimeDisplay.textContent = fmtTime(videoDuration);
+    dropzone.style.display = 'none';
+    videoPreview.classList.add('show');
+    settingsCard.classList.add('show');
+    actionRow.classList.add('show');
+    updateClipPreview();
+  }, { once: true });
+}
+
+document.getElementById('browseBtn').addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
+dropzone.addEventListener('click', e => { if (e.target === dropzone) fileInput.click(); });
+fileInput.addEventListener('change',    e => handleFile(e.target.files[0]));
+topFileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); });
+
+// ── SEGMENT ──
+document.querySelectorAll('.seg').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.seg').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    clipDuration = parseInt(btn.dataset.dur);
+    updateClipPreview();
+  });
+});
+
+// ── RANGE ──
+fullVideoCheck.addEventListener('change', () => {
+  useFullVideo = fullVideoCheck.checked;
+  rangeControls.style.display = useFullVideo ? 'none' : 'block';
+  if (useFullVideo) { startSec = 0; endSec = videoDuration; }
+  updateClipPreview();
+});
+startRange.addEventListener('input', () => {
+  startSec = (parseFloat(startRange.value) / 100) * videoDuration;
+  if (startSec >= endSec) { startSec = endSec - 1; startRange.value = (startSec / videoDuration) * 100; }
+  startTimeDisplay.textContent = fmtTime(startSec);
+  videoEl.currentTime = startSec;
+  updateClipPreview();
+});
+endRange.addEventListener('input', () => {
+  endSec = (parseFloat(endRange.value) / 100) * videoDuration;
+  if (endSec <= startSec) { endSec = startSec + 1; endRange.value = (endSec / videoDuration) * 100; }
+  endTimeDisplay.textContent = fmtTime(endSec);
+  videoEl.currentTime = endSec;
+  updateClipPreview();
+});
+
+function updateClipPreview() {
+  if (!videoDuration) return;
+  const span = endSec - startSec;
+  const count = Math.ceil(span / clipDuration);
+  clipCountBadge.textContent = count + ' clip' + (count !== 1 ? 's' : '');
+  clipsTitle.innerHTML = '<em>' + count + '</em> clip' + (count !== 1 ? 's' : '') + ' × ' + clipDuration + 's';
+  clipsList.innerHTML = '';
+  const maxShow = Math.min(count, 60);
+  for (let i = 0; i < maxShow; i++) {
+    const s = startSec + i * clipDuration;
+    const e = Math.min(s + clipDuration, endSec);
+    const row = document.createElement('div');
+    row.className = 'clip-row';
+    row.innerHTML = `<span class="clip-num">#${String(i+1).padStart(2,'0')}</span>
+      <div class="clip-info">
+        <div class="clip-range">${fmtTimecode(s)} → ${fmtTimecode(e)}</div>
+        <div class="clip-dur">${(e-s).toFixed(1)}s</div>
+      </div>
+      <span class="clip-status" id="cs${i}">—</span>`;
+    clipsList.appendChild(row);
+  }
+  if (count > 60) {
+    const more = document.createElement('div');
+    more.style.cssText = 'text-align:center;font-size:12px;color:var(--text3);padding:10px';
+    more.textContent = `+ ${count - 60} more clips`;
+    clipsList.appendChild(more);
+  }
+  clipsCard.classList.add('show');
+}
+
+// ── SPLIT — native Blob URL + seek approach, no FFmpeg needed ──
+splitBtn.addEventListener('click', doSplit);
+resetBtn.addEventListener('click', resetAll);
+
+async function doSplit() {
+  if (!videoFile || splitting) return;
+  splitting = true;
+  splitBtn.disabled = true;
+  progressWrap.classList.add('visible');
+
+  const span    = endSec - startSec;
+  const count   = Math.ceil(span / clipDuration);
+  const srcURL  = URL.createObjectURL(videoFile);
+  const ext     = videoFile.name.split('.').pop().toLowerCase();
+
+  progressLabel.textContent = `Preparing ${count} clip${count !== 1 ? 's' : ''}…`;
+  progressFill.style.width = '0%';
+
+  for (let i = 0; i < count; i++) {
+    const clipStart = startSec + i * clipDuration;
+    const clipEnd   = Math.min(clipStart + clipDuration, endSec);
+    const clipDur   = clipEnd - clipStart;
+
+    // Update UI
+    progressLabel.textContent = `Exporting clip ${i+1} of ${count}…`;
+    progressFill.style.width  = ((i / count) * 95) + '%';
+    const statusEl = document.getElementById('cs' + i);
+    if (statusEl) { statusEl.textContent = '⏳'; statusEl.className = 'clip-status active'; }
+
+    await exportClipBlob(srcURL, clipStart, clipDur, i + 1, count, ext);
+
+    if (statusEl) { statusEl.textContent = '✓'; statusEl.className = 'clip-status done'; }
+  }
+
+  URL.revokeObjectURL(srcURL);
+  progressFill.style.width  = '100%';
+  progressLabel.textContent = `✓ Done — ${count} clip${count !== 1 ? 's' : ''} downloaded`;
+  showToast(`✓ ${count} clip${count !== 1 ? 's' : ''} exported!`);
+  setTimeout(() => { progressWrap.classList.remove('visible'); splitting = false; splitBtn.disabled = false; }, 4000);
+}
+
+// Seek-and-record a single clip using MediaRecorder on a hidden video element
+function exportClipBlob(srcURL, startTime, duration, num, total, ext) {
+  return new Promise((resolve, reject) => {
+    const vid = document.createElement('video');
+    vid.src = srcURL;
+    vid.muted = false;
+    vid.playbackRate = 1;
+    vid.preload = 'auto';
+
+    vid.addEventListener('loadedmetadata', () => {
+      vid.currentTime = startTime;
+    }, { once: true });
+
+    vid.addEventListener('seeked', () => {
+      // Set up canvas to capture frames
+      const canvas = document.createElement('canvas');
+      canvas.width  = vid.videoWidth  || 1280;
+      canvas.height = vid.videoHeight || 720;
+      const ctx = canvas.getContext('2d');
+
+      // Capture video stream from canvas
+      const videoStream = canvas.captureStream(30);
+
+      // Try to capture audio too
+      let combinedStream = videoStream;
+      try {
+        const audioCtx = new AudioContext();
+        const src = audioCtx.createMediaElementSource(vid);
+        const dest = audioCtx.createMediaStreamDestination();
+        src.connect(dest);
+        src.connect(audioCtx.destination);
+        const audioTrack = dest.stream.getAudioTracks()[0];
+        if (audioTrack) {
+          combinedStream = new MediaStream([...videoStream.getTracks(), audioTrack]);
+        }
+      } catch(e) { /* audio capture not supported, video only */ }
+
+      // Pick best supported format
+      const mimeType = ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(t => MediaRecorder.isTypeSupported(t)) || 'video/webm';
+      const recorder = new MediaRecorder(combinedStream, { mimeType, videoBitsPerSecond: 10_000_000 });
+      const chunks   = [];
+
+      recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
+      recorder.onstop = () => {
+        const blob     = new Blob(chunks, { type: mimeType });
+        const blobURL  = URL.createObjectURL(blob);
+        const a        = document.createElement('a');
+        a.href         = blobURL;
+        a.download     = `${originalName}_clip${String(num).padStart(2,'0')}_${fmtSafe(startTime)}-${fmtSafe(startTime+duration)}.webm`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(blobURL), 8000);
+        vid.pause();
+        vid.remove();
+        resolve();
+      };
+
+      // Draw frames continuously
+      let drawing = true;
+      function drawLoop() {
+        if (!drawing) return;
+        ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+        requestAnimationFrame(drawLoop);
+      }
+
+      recorder.start(100);
+      vid.play();
+      drawLoop();
+
+      // Stop exactly at clip end
+      const stopAt = startTime + duration;
+      const checkInterval = setInterval(() => {
+        if (vid.currentTime >= stopAt || vid.ended) {
+          clearInterval(checkInterval);
+          drawing = false;
+          recorder.stop();
+        }
+      }, 50);
+
+    }, { once: true });
+
+    vid.load();
+  });
+}
+
+function resetAll() {
+  if (splitting) return;
+  videoFile = null; videoDuration = 0;
+  videoEl.src = '';
+  videoPreview.classList.remove('show');
+  settingsCard.classList.remove('show');
+  actionRow.classList.remove('show');
+  clipsCard.classList.remove('show');
+  progressWrap.classList.remove('visible');
+  dropzone.style.display = 'flex';
+  splitBtn.disabled = false;
+  progressFill.style.width = '0%';
+}
+
+// ── HELPERS ──
+function fmtTime(s) {
+  if (!s) return '0:00';
+  const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+  return m + ':' + String(sec).padStart(2, '0');
+}
+function fmtTimecode(s) {
+  const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+  return m + ':' + String(sec).padStart(2, '0');
+}
+function fmtSafe(s) { return fmtTime(s).replace(':', 'm') + 's'; }
+
+function shareTo(platform) {
+  const url  = encodeURIComponent(window.location.href);
+  const text = encodeURIComponent('Free Video Splitter — slice videos for TikTok, Reels & Stories ✂️');
+  const urls = {
+    whatsapp:  'https://wa.me/?text=' + text + '%20' + url,
+    x:         'https://x.com/intent/tweet?text=' + text + '&url=' + url,
+    tiktok:    'https://www.tiktok.com/',
+    instagram: 'https://www.instagram.com/',
+    copy:      null
+  };
+  if (platform === 'copy') { navigator.clipboard.writeText(window.location.href); showToast('✓ Link copied!'); }
+  else { window.open(urls[platform], '_blank'); }
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
 </script>
 </body>
 </html>
