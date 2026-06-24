@@ -482,11 +482,14 @@ async function runSceneDetection() {
 
   const canvas = document.getElementById('sceneCanvas');
   const ctx = canvas.getContext('2d');
-  const W = Math.min(videoEl.videoWidth || 1280, 320); // sample at lower res for speed
-  const H = Math.round(W * (videoEl.videoHeight / videoEl.videoWidth));
-  canvas.width = W; canvas.height = H;
+  // Keep native aspect ratio for sampling — critical for portrait videos
+  const vW = videoEl.videoWidth || 720;
+  const vH = videoEl.videoHeight || 1280;
+  const sampleW = Math.min(vW, 360);
+  const sampleH = Math.round(vH * (sampleW / vW));
+  canvas.width = sampleW; canvas.height = sampleH;
 
-  const SAMPLE_INTERVAL = 0.5; // seconds between samples
+  const SAMPLE_INTERVAL = 2.0; // every 2 seconds — meaningful scene cuts only
   const SCENE_THRESHOLD = 0.12; // 12% pixel difference = new scene
   const totalSamples = Math.floor(duration / SAMPLE_INTERVAL);
 
@@ -495,8 +498,8 @@ async function runSceneDetection() {
 
   // Capture first frame always
   await seekTo(0);
-  ctx.drawImage(videoEl, 0, 0, W, H);
-  const firstFrame = ctx.getImageData(0, 0, W, H);
+  ctx.drawImage(videoEl, 0, 0, sampleW, sampleH);
+  const firstFrame = ctx.getImageData(0, 0, sampleW, sampleH);
   const firstDataURL = captureFullRes();
   addSceneCard(firstDataURL, 0, ++sceneCount, grid);
   sceneFrames.push({time: 0, dataURL: firstDataURL});
@@ -507,8 +510,8 @@ async function runSceneDetection() {
     if (t >= duration) break;
 
     await seekTo(t);
-    ctx.drawImage(videoEl, 0, 0, W, H);
-    const imgData = ctx.getImageData(0, 0, W, H);
+    ctx.drawImage(videoEl, 0, 0, sampleW, sampleH);
+    const imgData = ctx.getImageData(0, 0, sampleW, sampleH);
     const diff = pixelDiff(prevData, imgData.data);
 
     if (diff > SCENE_THRESHOLD) {
@@ -542,7 +545,9 @@ function seekTo(t) {
 function captureFullRes() {
   const fc = document.getElementById('frameCanvas');
   const fctx = fc.getContext('2d');
-  fc.width = videoEl.videoWidth; fc.height = videoEl.videoHeight;
+  // Always use actual video dimensions — preserves portrait 9:16
+  fc.width = videoEl.videoWidth || 720;
+  fc.height = videoEl.videoHeight || 1280;
   fctx.drawImage(videoEl, 0, 0, fc.width, fc.height);
   return fc.toDataURL('image/png');
 }
