@@ -180,8 +180,13 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
     <div class="upload-title">Drop images or videos here</div>
     <div class="upload-sub">Supports JPG, PNG, MP4, MOV, WEBM<br>Batch upload 1–100+ files</div>
     <div class="chips"><span class="chip">JPG</span><span class="chip">PNG</span><span class="chip">MP4</span><span class="chip">MOV</span><span class="chip">WEBM</span></div>
-    <button class="upload-cta" type="button" id="chooseFilesBtn">Choose Files</button>
+    <div style="display:flex;gap:10px;width:100%;margin-top:4px">
+      <button class="upload-cta" type="button" id="chooseVideosBtn" style="flex:1;background:linear-gradient(135deg,var(--green2),var(--green))">🎬 Videos</button>
+      <button class="upload-cta" type="button" id="choosePhotosBtn" style="flex:1;background:rgba(255,255,255,0.08);color:var(--text);box-shadow:none;border:1px solid rgba(255,255,255,0.12)">🖼️ Photos</button>
+    </div>
     <input type="file" id="fileInput" multiple accept="video/*,image/*" style="display:none">
+    <input type="file" id="videoInput" multiple accept="video/*" style="display:none">
+    <input type="file" id="photoInput" multiple accept="image/*" style="display:none">
   </div>
 
   <div class="media-grid" id="mediaGrid"></div>
@@ -395,9 +400,16 @@ applyWm2.addEventListener('click',()=>{
   }else{showToast('Upload a second logo first')}
 });
 
-document.getElementById('chooseFilesBtn').addEventListener('click',function(e){e.stopPropagation();fileInput.click();});
-dropzone.addEventListener('click',function(e){if(e.target.id!=='chooseFilesBtn')fileInput.click();});
+document.getElementById('chooseVideosBtn').addEventListener('click',function(e){e.stopPropagation();document.getElementById('videoInput').click();});
+document.getElementById('choosePhotosBtn').addEventListener('click',function(e){e.stopPropagation();document.getElementById('photoInput').click();});
+document.getElementById('chooseFilesBtn') && document.getElementById('chooseFilesBtn').addEventListener('click',function(e){e.stopPropagation();fileInput.click();});
+dropzone.addEventListener('click',function(e){
+  if(e.target.id==='chooseVideosBtn'||e.target.id==='choosePhotosBtn')return;
+  document.getElementById('videoInput').click();
+});
 fileInput.addEventListener('change',e=>addFiles(Array.from(e.target.files)));
+document.getElementById('videoInput').addEventListener('change',e=>addFiles(Array.from(e.target.files)));
+document.getElementById('photoInput').addEventListener('change',e=>addFiles(Array.from(e.target.files)));
 dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.classList.add('drag-over')});
 dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('drag-over'));
 dropzone.addEventListener('drop',e=>{e.preventDefault();dropzone.classList.remove('drag-over');addFiles(Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')||f.type.startsWith('video/')))});
