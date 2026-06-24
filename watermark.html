@@ -441,7 +441,6 @@ function renderGrid(){
     }
     wrap.appendChild(overlay);card.appendChild(wrap);
     const strip=document.createElement('div');strip.className='pos-strip';
-    const lbl=document.createElement('span');lbl.className='pos-strip-label';lbl.textContent='WM1:';strip.appendChild(lbl);
     ['tc','mc','as'].forEach(p=>{
       const pb=document.createElement('button');pb.className='pos-btn'+(item.pos===p?' active':'');pb.textContent=p==='tc'?'▲ Top':p==='mc'?'● Mid':'⬆ Social';
       pb.addEventListener('click',e=>{e.stopPropagation();state.files[idx].pos=p;renderGrid()});strip.appendChild(pb);
