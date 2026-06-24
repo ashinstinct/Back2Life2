@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Video Splitter — Back2Life.app</title>
+<meta name="description" content="Split any video into 10s, 15s, 20s, 30s or 1-minute clips. Perfect for Facebook Stories, Instagram Reels and TikTok. Free & browser-based.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#080808;--surface:rgba(255,255,255,0.04);--surface2:rgba(255,255,255,0.07);--surface3:rgba(255,255,255,0.10);
+  --glass:rgba(16,16,16,0.88);--glass2:rgba(22,22,22,0.93);--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.13);
+  --green:#00ff88;--green2:#00cc66;--green-dim:rgba(0,255,136,0.08);--green-mid:rgba(0,255,136,0.15);
+  --text:#f0f0f0;--text2:#aaa;--text3:#555;--red:#ff4444;
+  --radius:18px;--radius-sm:12px;--radius-xs:8px;--pill:999px;--bar-h:60px;--transition:0.2s cubic-bezier(0.4,0,0.2,1);
+}
+html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden;touch-action:manipulation}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:var(--bar-h);background:rgba(8,8,8,0.92);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;gap:10px}
+.topbar-logo{font-size:17px;font-weight:800;color:#fff;text-decoration:none;letter-spacing:-0.3px;flex-shrink:0}
+.topbar-logo em{color:var(--green);font-style:normal}
+.topbar-title{font-size:12px;font-weight:600;color:var(--text3)}
+.menu-btn{background:none;border:none;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+.menu-btn span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .25s}
+.menu-btn.open span{background:var(--green)}
+.menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.menu-btn.open span:nth-child(2){opacity:0}
+.menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+/* MAIN */
+main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;padding-bottom:40px}
+
+/* UPLOAD ZONE */
+.upload-zone{border:2px dashed rgba(0,255,136,0.18);border-radius:var(--radius);background:radial-gradient(ellipse at 50% 0%,rgba(0,255,136,0.04) 0%,transparent 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:44px 24px;cursor:pointer;text-align:center;transition:all var(--transition);position:relative}
+.upload-zone.drag-over,.upload-zone:hover{border-color:rgba(0,255,136,0.35);background:var(--green-dim)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-icon{font-size:48px;filter:drop-shadow(0 0 20px rgba(0,255,136,0.3));animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.06);opacity:1}}
+.upload-title{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-0.3px}
+.upload-sub{font-size:13px;color:var(--text3);line-height:1.5}
+.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.chip{font-size:10px;font-weight:700;color:var(--text3);border:1px solid var(--border);border-radius:5px;padding:3px 9px}
+.upload-cta{background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:14px;padding:12px 28px;border-radius:var(--pill);border:none;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 4px 20px rgba(0,255,136,0.2);margin-top:4px}
+
+/* VIDEO PREVIEW */
+.video-preview-wrap{display:none;border-radius:var(--radius);overflow:hidden;background:#000;position:relative;aspect-ratio:16/9}
+.video-preview-wrap.show{display:block}
+.video-preview-wrap video{width:100%;height:100%;object-fit:contain;display:block}
+.vid-info-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);padding:16px;display:flex;align-items:flex-end;justify-content:space-between}
+.vid-info-name{font-size:12px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%}
+.vid-info-meta{font-size:11px;color:rgba(255,255,255,0.6);text-align:right;flex-shrink:0}
+.vid-change{position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:11px;font-weight:700;padding:6px 12px;border-radius:var(--pill);cursor:pointer;font-family:'Inter',sans-serif;position:relative}
+.vid-change input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+
+/* SETTINGS CARD */
+.settings-card{background:var(--glass);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.sect-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sect-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* SEGMENT SELECTOR */
+.segment-wrap{display:flex;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px;gap:2px;margin-bottom:20px}
+.seg{flex:1;background:none;border:none;color:var(--text3);font-size:11px;font-weight:700;padding:9px 4px;border-radius:9px;cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition);text-align:center;line-height:1.2}
+.seg span{display:block;font-size:9px;font-weight:500;color:inherit;opacity:0.7;margin-top:2px}
+.seg.active{background:var(--green-dim);color:var(--green);border:1px solid rgba(0,255,136,0.25)}
+.seg:active{opacity:0.6}
+
+/* CLIP RANGE SELECTOR */
+.range-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;margin-bottom:16px}
+.range-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.range-title{font-size:13px;font-weight:700;color:var(--text)}
+.range-badge{background:var(--green-dim);border:1px solid rgba(0,255,136,0.2);color:var(--green);font-size:10px;font-weight:800;padding:3px 9px;border-radius:var(--pill);letter-spacing:0.5px}
+.range-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.range-label{font-size:11px;color:var(--text3);min-width:36px;font-weight:600}
+.range-time{font-size:12px;font-weight:700;color:var(--green);font-family:monospace;min-width:64px;text-align:right}
+input[type=range].rng{-webkit-appearance:none;flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;outline:none;cursor:pointer;accent-color:var(--green)}
+input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.4),0 0 0 2px rgba(0,255,136,0.35);cursor:pointer;transition:transform 0.15s}
+input[type=range].rng:active::-webkit-slider-thumb{transform:scale(1.15)}
+.range-toggle{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2);padding:4px 0}
+.range-toggle input[type=checkbox]{width:18px;height:18px;accent-color:var(--green);cursor:pointer}
+
+/* CLIPS PREVIEW */
+.clips-preview{display:none}
+.clips-preview.show{display:block}
+.clips-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.clips-count{font-size:14px;font-weight:800;color:var(--text)}
+.clips-count em{color:var(--green);font-style:normal}
+.clips-grid{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;max-height:280px;overflow-y:auto}
+.clip-row{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);padding:12px 14px;transition:border-color var(--transition)}
+.clip-row:hover{border-color:var(--border2)}
+.clip-num{font-size:11px;font-weight:800;color:var(--green);min-width:28px;font-family:monospace}
+.clip-info{flex:1}
+.clip-times{font-size:12px;font-weight:600;color:var(--text);font-family:monospace}
+.clip-dur{font-size:10px;color:var(--text3);margin-top:2px}
+.clip-status{font-size:11px;font-weight:700;color:var(--text3);flex-shrink:0}
+.clip-status.done{color:var(--green)}
+.clip-status.processing{color:#ffaa00}
+
+/* PROGRESS */
+.progress-wrap{display:none;background:var(--glass);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;flex-direction:column;gap:10px}
+.progress-wrap.visible{display:flex}
+.progress-track{background:rgba(255,255,255,0.06);border-radius:var(--pill);height:5px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--green2),var(--green));border-radius:var(--pill);transition:width 0.3s;width:0%;box-shadow:0 0 8px rgba(0,255,136,0.4)}
+.progress-label{font-size:13px;color:var(--text2);font-weight:500}
+
+/* ACTION BTNS */
+.action-row{display:flex;gap:10px}
+.btn-main{flex:2;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:15px;padding:16px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition);box-shadow:0 4px 20px rgba(0,255,136,0.2)}
+.btn-main:active{transform:scale(0.98);box-shadow:0 2px 10px rgba(0,255,136,0.15)}
+.btn-main:disabled{opacity:.25;cursor:not-allowed;transform:none;background:#333;color:#666;box-shadow:none}
+.btn-ghost{flex:1;background:var(--surface);color:var(--text3);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition)}
+.btn-ghost:active{background:var(--surface2)}
+
+/* NOTE */
+.note{background:rgba(255,170,0,0.06);border:1px solid rgba(255,170,0,0.15);border-radius:var(--radius-xs);padding:12px 14px;font-size:12px;color:rgba(255,200,80,0.8);line-height:1.5}
+
+/* MENU SHEET */
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:100;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.sheet-overlay.open{opacity:1;pointer-events:all}
+.menu-sheet{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,12,0.97);backdrop-filter:blur(30px) saturate(200%);border-top:1px solid var(--border2);border-radius:26px 26px 0 0;z-index:101;padding:0 20px env(safe-area-inset-bottom,32px);transform:translateY(100%);transition:transform .35s cubic-bezier(0.32,0.72,0,1);max-height:85vh;overflow-y:auto}
+.menu-sheet.open{transform:translateY(0)}
+.sheet-handle{width:36px;height:4px;background:rgba(255,255,255,0.12);border-radius:var(--pill);margin:14px auto 20px}
+.nav-sect{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--green);padding:18px 0 8px;border-top:1px solid rgba(255,255,255,0.05);margin-top:4px}
+.nav-sect:first-of-type{border-top:none;padding-top:0;margin-top:0}
+.nav-link{display:flex;align-items:center;gap:14px;padding:14px 0;font-size:15px;font-weight:500;color:var(--text2);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.05);transition:color var(--transition)}
+.nav-link:last-child{border-bottom:none}
+.nav-link:active{color:var(--green)}
+.nav-link .ico{font-size:18px;width:28px;text-align:center}
+.nav-link .ico img{width:28px;height:28px;border-radius:8px;display:block}
+.nav-cta-btn{display:block;margin-top:20px;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:15px;padding:14px 24px;border-radius:var(--radius-sm);text-decoration:none;text-align:center;box-shadow:0 4px 20px rgba(0,255,136,0.2)}
+.share-strip{display:flex;gap:8px;padding:4px 0;overflow-x:auto;scrollbar-width:none}
+.share-strip::-webkit-scrollbar{display:none}
+.share-btn{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition)}
+.share-btn:active{transform:scale(0.93);background:var(--surface2)}
+.share-icon{font-size:22px}
+.share-label{font-size:10px;font-weight:700;color:var(--text3);white-space:nowrap}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(16,16,16,0.97);border:1px solid var(--border2);backdrop-filter:blur(20px);color:var(--text);font-size:13px;font-weight:600;padding:12px 22px;border-radius:var(--pill);opacity:0;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);z-index:400;pointer-events:none;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:99px}
+</style>
+<link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<meta name="theme-color" content="#080808">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Video Splitter">
+<link rel="manifest" href="/manifest.json">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
+  <span class="topbar-title">Video Splitter</span>
+  <a href="/" class="topbar-logo">Back2Life<em>.app</em></a>
+</header>
+
+<main>
+
+  <!-- UPLOAD -->
+  <div class="upload-zone" id="dropzone">
+    <div class="upload-icon">✂️</div>
+    <div class="upload-title">Drop a video to split</div>
+    <div class="upload-sub">Slice into 10s, 15s, 20s, 30s or 1-min clips<br>Perfect for Stories, Reels & TikTok</div>
+    <div class="chips"><span class="chip">MP4</span><span class="chip">MOV</span><span class="chip">WebM</span><span class="chip">MKV</span></div>
+    <button class="upload-cta" type="button">Choose Video</button>
+    <input type="file" id="fileInput" accept="video/*">
+  </div>
+
+  <!-- VIDEO PREVIEW -->
+  <div class="video-preview-wrap" id="videoPreview">
+    <video id="videoEl" muted playsinline preload="metadata"></video>
+    <div class="vid-info-overlay">
+      <div class="vid-info-name" id="vidName">—</div>
+      <div class="vid-info-meta" id="vidMeta">—</div>
+    </div>
+    <button class="vid-change" style="position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:11px;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer;font-family:Inter,sans-serif;">
+      Change Video
+      <input type="file" id="changeInput" accept="video/" style="position:absolute;inset:0;opacity:0;cursor:pointer">
+    </button>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="settings-card" id="settingsCard" style="display:none">
+
+    <div class="sect-label">Clip Duration</div>
+    <div class="segment-wrap">
+      <button class="seg" data-dur="10">10s<span>Stories</span></button>
+      <button class="seg active" data-dur="15">15s<span>TikTok</span></button>
+      <button class="seg" data-dur="20">20s<span>Reels</span></button>
+      <button class="seg" data-dur="30">30s<span>YouTube</span></button>
+      <button class="seg" data-dur="60">1 min<span>Long</span></button>
+    </div>
+
+    <div class="sect-label">Clip Range</div>
+    <div class="range-card">
+      <div class="range-header">
+        <div class="range-title">Select portion to split</div>
+        <div class="range-badge" id="clipCountBadge">— clips</div>
+      </div>
+      <div class="range-row">
+        <span class="range-label">Start</span>
+        <input type="range" class="rng" id="startRange" min="0" max="100" value="0" step="0.1">
+        <span class="range-time" id="startTimeDisplay">0:00</span>
+      </div>
+      <div class="range-row">
+        <span class="range-label">End</span>
+        <input type="range" class="rng" id="endRange" min="0" max="100" value="100" step="0.1">
+        <span class="range-time" id="endTimeDisplay">—</span>
+      </div>
+      <div class="range-toggle">
+        <input type="checkbox" id="fullVideoCheck" checked>
+        <label for="fullVideoCheck" style="cursor:pointer;font-size:13px;color:var(--text2)">Use full video</label>
+      </div>
+    </div>
+
+    <div class="note">
+      ⚡ Video splitting runs entirely in your browser using the MediaRecorder API. For best results use <strong>Chrome</strong> or <strong>Edge</strong>. Very long videos (60min+) may take a moment to process.
+    </div>
+
+  </div>
+
+  <!-- CLIPS PREVIEW -->
+  <div class="clips-preview" id="clipsPreview">
+    <div class="clips-header">
+      <div class="clips-count" id="clipsCount">—</div>
+    </div>
+    <div class="clips-grid" id="clipsGrid"></div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-label" id="progressLabel">Preparing…</div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="action-row" id="actionRow" style="display:none">
+    <button class="btn-ghost" id="resetBtn">↺ Reset</button>
+    <button class="btn-main" id="splitBtn">✂️ Split Video</button>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+<div class="sheet-overlay" id="sheetOverlay"></div>
+
+<div class="menu-sheet" id="menuSheet">
+  <div class="sheet-handle"></div>
+  <div class="nav-sect">Navigation</div>
+  <a href="/" class="nav-link"><span class="ico">🏠</span>Home</a>
+  <a href="/#tutorials" class="nav-link"><span class="ico"><img src="/icons/tutorials.png" alt="Tutorials"></span>Tutorials</a>
+  <div class="nav-sect">Free Tools</div>
+  <a href="/watermark" class="nav-link"><span class="ico"><img src="/icons/watermark.png" alt="Watermark"></span>Watermark Tool</a>
+  <a href="/video-splitter" class="nav-link"><span class="ico">✂️</span>Video Splitter</a>
+  <a href="/frame-extractor" class="nav-link"><span class="ico"><img src="/icons/frame-extractor.png" alt="Frame Extractor"></span>Frame Extractor</a>
+  <a href="/audio-editor" class="nav-link"><span class="ico"><img src="/icons/audio-editor.png" alt="Audio Editor"></span>Audio Editor</a>
+  <a href="/audio-converter" class="nav-link"><span class="ico"><img src="/icons/audio-converter.png" alt="Audio Converter"></span>Audio Converter</a>
+  <div class="nav-sect">Share This Tool</div>
+  <div class="share-strip">
+    <button class="share-btn" onclick="shareTo('whatsapp')"><span class="share-icon">💬</span><span class="share-label">WhatsApp</span></button>
+    <button class="share-btn" onclick="shareTo('x')"><span class="share-icon">𝕏</span><span class="share-label">X / Twitter</span></button>
+    <button class="share-btn" onclick="shareTo('tiktok')"><span class="share-icon">🎵</span><span class="share-label">TikTok</span></button>
+    <button class="share-btn" onclick="shareTo('instagram')"><span class="share-icon">📸</span><span class="share-label">Instagram</span></button>
+    <button class="share-btn" onclick="shareTo('copy')"><span class="share-icon">🔗</span><span class="share-label">Copy Link</span></button>
+  </div>
+  <div class="nav-sect">Follow Us</div>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-link"><span class="ico"><img src="https://cdn.simpleicons.org/instagram/E1306C" width="20" height="20" alt="Instagram"></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="nav-link"><span class="ico"><img src="https://cdn.simpleicons.org/tiktok/ffffff" width="20" height="20" alt="TikTok"></span>TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="nav-link"><span class="ico"><img src="https://cdn.simpleicons.org/youtube/FF0000" width="20" height="20" alt="YouTube"></span>YouTube</a>
+  <a href="https://x.com/Back2LifeAI" target="_blank" class="nav-link"><span class="ico"><img src="https://cdn.simpleicons.org/x/ffffff" width="20" height="20" alt="X"></span>X / Twitter</a>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-cta-btn">📸 Follow on Instagram</a>
+</div>
+
+<script>
+// ── STATE ──
+let videoFile=null,videoDuration=0,clipDuration=15,startPct=0,endPct=100,useFullVideo=true;
+let clips=[],splitting=false,originalName='video';
+
+// ── DOM ──
+const fileInput=document.getElementById('fileInput');
+const changeInput=document.getElementById('changeInput');
+const dropzone=document.getElementById('dropzone');
+const videoEl=document.getElementById('videoEl');
+const videoPreview=document.getElementById('videoPreview');
+const settingsCard=document.getElementById('settingsCard');
+const actionRow=document.getElementById('actionRow');
+const splitBtn=document.getElementById('splitBtn');
+const resetBtn=document.getElementById('resetBtn');
+const progressWrap=document.getElementById('progressWrap');
+const progressFill=document.getElementById('progressFill');
+const progressLabel=document.getElementById('progressLabel');
+const clipsPreview=document.getElementById('clipsPreview');
+const clipsGrid=document.getElementById('clipsGrid');
+const clipsCount=document.getElementById('clipsCount');
+const clipCountBadge=document.getElementById('clipCountBadge');
+const startRange=document.getElementById('startRange');
+const endRange=document.getElementById('endRange');
+const startTimeDisplay=document.getElementById('startTimeDisplay');
+const endTimeDisplay=document.getElementById('endTimeDisplay');
+const fullVideoCheck=document.getElementById('fullVideoCheck');
+
+// ── MENU ──
+const menuBtn=document.getElementById('menuBtn'),menuSheet=document.getElementById('menuSheet'),sheetOverlay=document.getElementById('sheetOverlay');
+function openMenu(){menuSheet.classList.add('open');sheetOverlay.classList.add('open');menuBtn.classList.add('open')}
+function closeMenu(){menuSheet.classList.remove('open');sheetOverlay.classList.remove('open');menuBtn.classList.remove('open')}
+menuBtn.addEventListener('click',()=>menuSheet.classList.contains('open')?closeMenu():openMenu());
+sheetOverlay.addEventListener('click',closeMenu);
+
+// ── FILE INPUT ──
+function handleFile(file){
+  if(!file||!file.type.startsWith('video/'))return;
+  videoFile=file;originalName=file.name.replace(/\.[^.]+$/,'');
+  videoEl.src=URL.createObjectURL(file);
+  videoEl.addEventListener('loadedmetadata',()=>{
+    videoDuration=videoEl.duration;
+    document.getElementById('vidName').textContent=file.name.length>30?file.name.substring(0,28)+'…':file.name;
+    document.getElementById('vidMeta').textContent=fmtTime(videoDuration)+' · '+videoEl.videoWidth+'×'+videoEl.videoHeight;
+    dropzone.style.display='none';videoPreview.classList.add('show');
+    settingsCard.style.display='block';actionRow.style.display='flex';
+    endTimeDisplay.textContent=fmtTime(videoDuration);
+    updateClipCount();
+  },{once:true});
+}
+document.querySelector('.upload-cta').addEventListener('click',e=>{e.stopPropagation();fileInput.click()});
+dropzone.addEventListener('click',e=>{if(e.target===dropzone)fileInput.click()});
+fileInput.addEventListener('change',e=>handleFile(e.target.files[0]));
+changeInput.addEventListener('change',e=>handleFile(e.target.files[0]));
+dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.classList.add('drag-over')});
+dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('drag-over'));
+dropzone.addEventListener('drop',e=>{e.preventDefault();dropzone.classList.remove('drag-over');handleFile(e.dataTransfer.files[0])});
+
+// ── SEGMENT ──
+document.querySelectorAll('.seg').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.seg').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');clipDuration=parseInt(btn.dataset.dur);updateClipCount();
+  });
+});
+
+// ── RANGE ──
+fullVideoCheck.addEventListener('change',()=>{
+  useFullVideo=fullVideoCheck.checked;
+  startRange.disabled=useFullVideo;endRange.disabled=useFullVideo;
+  if(useFullVideo){startRange.value=0;endRange.value=100;startPct=0;endPct=100;updateRangeDisplay()}
+});
+startRange.addEventListener('input',()=>{
+  startPct=parseFloat(startRange.value);
+  if(startPct>=endPct){startPct=endPct-1;startRange.value=startPct}
+  updateRangeDisplay();updateClipCount();
+});
+endRange.addEventListener('input',()=>{
+  endPct=parseFloat(endRange.value);
+  if(endPct<=startPct){endPct=startPct+1;endRange.value=endPct}
+  updateRangeDisplay();updateClipCount();
+});
+function updateRangeDisplay(){
+  startTimeDisplay.textContent=fmtTime((startPct/100)*videoDuration);
+  endTimeDisplay.textContent=fmtTime((endPct/100)*videoDuration);
+}
+function updateClipCount(){
+  if(!videoDuration)return;
+  const start=(startPct/100)*videoDuration,end=(endPct/100)*videoDuration;
+  const span=useFullVideo?videoDuration:end-start;
+  const count=Math.ceil(span/clipDuration);
+  clipCountBadge.textContent=count+' clip'+(count!==1?'s':'');
+  clipsCount.innerHTML='<em>'+count+'</em> clip'+(count!==1?'s':'')+' × '+clipDuration+'s';
+  clipsPreview.classList.add('show');
+  // Build clip list preview
+  clipsGrid.innerHTML='';
+  const startT=useFullVideo?0:start;
+  for(let i=0;i<count;i++){
+    const s=startT+i*clipDuration,e=Math.min(s+clipDuration,useFullVideo?videoDuration:(endPct/100)*videoDuration);
+    const row=document.createElement('div');row.className='clip-row';
+    row.innerHTML=`<span class="clip-num">#${String(i+1).padStart(2,'0')}</span>
+      <div class="clip-info"><div class="clip-times">${fmtTime(s)} → ${fmtTime(e)}</div>
+      <div class="clip-dur">${(e-s).toFixed(1)}s</div></div>
+      <span class="clip-status" id="clipStatus${i}">—</span>`;
+    clipsGrid.appendChild(row);
+  }
+}
+
+// ── SPLIT ──
+splitBtn.addEventListener('click',startSplit);
+resetBtn.addEventListener('click',resetAll);
+
+async function startSplit(){
+  if(!videoFile||splitting)return;
+  if(!window.MediaRecorder){showToast('⚠️ MediaRecorder not supported — try Chrome');return}
+  splitting=true;splitBtn.disabled=true;
+  progressWrap.classList.add('visible');
+  const startT=useFullVideo?0:(startPct/100)*videoDuration;
+  const endT=useFullVideo?videoDuration:(endPct/100)*videoDuration;
+  const span=endT-startT;const count=Math.ceil(span/clipDuration);
+  for(let i=0;i<count;i++){
+    const s=startT+i*clipDuration,e=Math.min(s+clipDuration,endT);
+    progressLabel.textContent=`Exporting clip ${i+1} of ${count}…`;
+    progressFill.style.width=((i/count)*100)+'%';
+    const statusEl=document.getElementById('clipStatus'+i);
+    if(statusEl){statusEl.textContent='⏳';statusEl.className='clip-status processing'}
+    await extractClip(s,e,i+1,count);
+    if(statusEl){statusEl.textContent='✓';statusEl.className='clip-status done'}
+    await new Promise(r=>setTimeout(r,200));
+  }
+  progressFill.style.width='100%';
+  progressLabel.textContent=`✓ Done — ${count} clip${count!==1?'s':''} downloaded`;
+  showToast(`✓ ${count} clip${count!==1?'s':''} exported!`);
+  setTimeout(()=>{progressWrap.classList.remove('visible');splitting=false;splitBtn.disabled=false},4000);
+}
+
+function extractClip(startSec,endSec,num,total){
+  return new Promise(resolve=>{
+    // We use a canvas+MediaRecorder approach for browser-based splitting
+    const canvas=document.createElement('canvas');
+    canvas.width=videoEl.videoWidth||1280;canvas.height=videoEl.videoHeight||720;
+    const ctx=canvas.getContext('2d');
+    const stream=canvas.captureStream(30);
+    let audioCtx,source,dest;
+    try{
+      audioCtx=new AudioContext();source=audioCtx.createMediaElementSource(videoEl);
+      dest=audioCtx.createMediaStreamDestination();source.connect(dest);source.connect(audioCtx.destination);
+      stream.addTrack(dest.stream.getAudioTracks()[0]);
+    }catch(e){}
+    const recorder=new MediaRecorder(stream,{mimeType:getSupportedMimeType(),videoBitsPerSecond:8000000});
+    const chunks=[];
+    recorder.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data)};
+    recorder.onstop=()=>{
+      const blob=new Blob(chunks,{type:getSupportedMimeType()});
+      const ext=getSupportedMimeType().includes('mp4')?'mp4':'webm';
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+      a.download=`${originalName}_clip${String(num).padStart(2,'0')}_${fmtSafe(startSec)}-${fmtSafe(endSec)}.${ext}`;
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      if(audioCtx)audioCtx.close();resolve();
+    };
+    videoEl.currentTime=startSec;
+    videoEl.addEventListener('seeked',function onSeeked(){
+      videoEl.removeEventListener('seeked',onSeeked);
+      recorder.start(100);videoEl.play();
+      const drawFrame=()=>{if(videoEl.currentTime>=endSec||videoEl.ended){videoEl.pause();recorder.stop();return}ctx.drawImage(videoEl,0,0,canvas.width,canvas.height);requestAnimationFrame(drawFrame)};
+      drawFrame();
+    },{once:true});
+  });
+}
+
+function getSupportedMimeType(){
+  const types=['video/mp4;codecs=h264,aac','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8','video/webm'];
+  return types.find(t=>MediaRecorder.isTypeSupported(t))||'video/webm';
+}
+
+function resetAll(){
+  videoFile=null;videoDuration=0;splitting=false;
+  videoEl.src='';videoPreview.classList.remove('show');
+  settingsCard.style.display='none';actionRow.style.display='none';
+  clipsPreview.classList.remove('show');progressWrap.classList.remove('visible');
+  dropzone.style.display='flex';splitBtn.disabled=false;progressFill.style.width='0%';
+}
+
+function fmtTime(s){if(!s)return'0:00';const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+String(sec).padStart(2,'0')}
+function fmtSafe(s){return fmtTime(s).replace(':','m')+'s'}
+
+function shareTo(platform){
+  const url=encodeURIComponent(window.location.href);
+  const text=encodeURIComponent('Free Video Splitter — slice videos for TikTok, Reels & Stories ✂️');
+  const urls={whatsapp:'https://wa.me/?text='+text+'%20'+url,x:'https://x.com/intent/tweet?text='+text+'&url='+url,tiktok:'https://www.tiktok.com/',instagram:'https://www.instagram.com/',copy:null};
+  if(platform==='copy'){navigator.clipboard.writeText(window.location.href);showToast('✓ Link copied!')}
+  else{window.open(urls[platform],'_blank')}
+}
+
+let toastTimer;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3200)}
+</script>
+</body>
+</html>

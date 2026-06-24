@@ -9,11 +9,11 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--bg:#0a0a0a;--surface:#141414;--s2:#1c1c1c;--border:#2a2a2a;--green:#00ff88;--gdim:rgba(0,255,136,.08);--text:#e0e0e0;--muted:#888;--bar:52px}
+:root{--bg:#080808;--surface:rgba(255,255,255,0.04);--s2:rgba(255,255,255,0.07);--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.13);--green:#00ff88;--green2:#00cc66;--gdim:rgba(0,255,136,.08);--text:#f0f0f0;--muted:#888;--bar:60px;--radius-sm:12px;--pill:999px;--transition:0.2s cubic-bezier(0.4,0,0.2,1)}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow:hidden;touch-action:manipulation}
 
 /* TOP BAR */
-.topbar{position:fixed;top:0;left:0;right:0;height:var(--bar);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:0 14px;z-index:100}
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--bar);background:rgba(8,8,8,0.92);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:0 14px;z-index:100}
 .topbar-title{font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--green);position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;pointer-events:none}
 .menu-btn{background:none;border:none;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px;z-index:1;flex-shrink:0}
 .menu-btn span{display:block;width:20px;height:2px;background:#aaa;border-radius:2px;transition:all .25s}
@@ -35,7 +35,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 @keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.07);opacity:1}}
 .empty-title{font-size:15px;font-weight:700;color:#bbb}
 .empty-sub{font-size:12px;color:#555;max-width:260px}
-.empty-btn{background:var(--green);color:#000;font-weight:800;font-size:14px;padding:12px 28px;border-radius:10px;border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px}
+.empty-btn{background:linear-gradient(135deg,var(--green2),var(--green));color:#000;box-shadow:0 4px 20px rgba(0,255,136,0.2);font-weight:800;font-size:14px;padding:12px 28px;border-radius:10px;border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px}
 
 /* EDITOR */
 .editor{display:none}
@@ -79,7 +79,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-ra
 /* BOTTOM ACTION */
 .export-bar{display:flex;gap:8px;margin-top:18px}
 .btn-reset{flex-shrink:0;background:none;border:1px solid var(--border);color:var(--muted);font-weight:700;font-size:12px;padding:13px 16px;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif}
-.btn-export{flex:1;background:var(--green);color:#000;font-weight:800;font-size:14px;padding:13px;border-radius:10px;border:none;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-export{flex:1;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;box-shadow:0 4px 20px rgba(0,255,136,0.2);font-weight:800;font-size:14px;padding:13px;border-radius:10px;border:none;cursor:pointer;font-family:'Inter',sans-serif}
 .btn-export:disabled{opacity:.4;cursor:not-allowed}
 
 /* SHEETS */
@@ -100,7 +100,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-ra
 .fmt-opt.active .fmt-opt-name{color:var(--green)}
 .fmt-opt-desc{font-size:9px;color:#555;margin-top:2px}
 .bitrate-row{margin-top:12px}
-.do-export{width:100%;background:var(--green);color:#000;font-weight:800;font-size:14px;padding:13px;border-radius:10px;border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-top:18px}
+.do-export{width:100%;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;box-shadow:0 4px 20px rgba(0,255,136,0.2);font-weight:800;font-size:14px;padding:13px;border-radius:10px;border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-top:18px}
 .do-export:disabled{opacity:.4}
 
 /* NAV SHEET */
@@ -114,7 +114,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-ra
 .nav-a:active{color:var(--green)}
 .nav-a .ico{width:26px;text-align:center;display:flex;align-items:center;justify-content:center}
 .nav-a .ico svg{width:20px;height:20px;display:block}
-.nav-cta{display:block;margin-top:20px;background:var(--green);color:#000;font-weight:700;font-size:14px;padding:13px;border-radius:10px;text-decoration:none;text-align:center}
+.nav-cta{display:block;margin-top:20px;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;box-shadow:0 4px 20px rgba(0,255,136,0.2);font-weight:700;font-size:14px;padding:13px;border-radius:10px;text-decoration:none;text-align:center}
 
 /* BACKDROP / TOAST / SPINNER */
 .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(2px);z-index:190;display:none;pointer-events:none}
@@ -239,6 +239,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-ra
   <a href="/" class="nav-a"><span class="ico">🏠</span>Home</a>
   <a href="/#tutorials" class="nav-a"><span class="ico"><img src="/icons/tutorials.png" alt="Tutorials" style="width:28px;height:28px;border-radius:6px;display:block"></span>Tutorials</a>
   <div class="nav-sl">Free Tools</div>
+  <a href="/watermark" class="sheet-link"><span class="ico"><img src="/icons/watermark.png" alt="Watermark" style="width:28px;height:28px;border-radius:6px;display:block"></span>Watermark Tool</a>
   <a href="/frame-extractor" class="nav-a">
     <span class="ico"><img src="/icons/frame-extractor.png" alt="Frame Extractor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Frame Extractor</a>
   <a href="/audio-editor" class="nav-a">
@@ -615,6 +616,14 @@ function fmtTime(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+S
 function showSpinner(label){$('spinLabel').textContent=label||'Working…';$('overlaySpin').classList.add('show');}
 function hideSpinner(){$('overlaySpin').classList.remove('show');}
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+
+function shareTo(platform){
+  const url=encodeURIComponent(window.location.href);
+  const text=encodeURIComponent('Free Audio Editor — trim, fade, export MP3/WAV 🎵');
+  const urls={whatsapp:'https://wa.me/?text='+text+'%20'+url,x:'https://x.com/intent/tweet?text='+text+'&url='+url,tiktok:'https://www.tiktok.com/',instagram:'https://www.instagram.com/',copy:null};
+  if(platform==='copy'){navigator.clipboard.writeText(window.location.href);showToast('✓ Link copied!')}
+  else{window.open(urls[platform],'_blank')}
+}
 </script>
 </body>
 </html>

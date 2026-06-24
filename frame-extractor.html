@@ -6,415 +6,132 @@
 <title>Frame Extractor — Back2Life.app</title>
 <meta name="description" content="Extract any frame from a video as a high-quality PNG. 100% browser-based, free.">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#080808;--surface:rgba(255,255,255,0.04);--surface2:rgba(255,255,255,0.07);--surface3:rgba(255,255,255,0.10);
+  --glass:rgba(16,16,16,0.88);--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.13);
+  --green:#00ff88;--green2:#00cc66;--green-dim:rgba(0,255,136,0.08);--green-glow:0 0 20px rgba(0,255,136,0.3);
+  --text:#f0f0f0;--text2:#aaa;--text3:#555;--red:#ff4444;
+  --radius:18px;--radius-sm:12px;--radius-xs:8px;--pill:999px;--bar-h:60px;--btm-h:200px;--btm-scrub:270px;--btm-rename:310px;--transition:0.2s cubic-bezier(0.4,0,0.2,1);
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;touch-action:manipulation}
 
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--bar-h);background:rgba(8,8,8,0.92);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100;gap:10px}
+.topbar-logo{font-size:17px;font-weight:800;color:#fff;text-decoration:none;letter-spacing:-0.3px}
+.topbar-logo em{color:var(--green);font-style:normal}
+.topbar-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;pointer-events:none}
+.menu-btn{background:none;border:none;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px;z-index:1}
+.menu-btn span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .25s}
+.menu-btn.open span{background:var(--green)}
+.menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.menu-btn.open span:nth-child(2){opacity:0}
+.menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.topbar-upload{background:var(--surface2);border:1px solid var(--border);border-radius:var(--pill);color:var(--text2);font-size:11px;font-weight:700;padding:7px 14px;cursor:pointer;font-family:'Inter',sans-serif;position:relative;z-index:1;transition:all var(--transition)}
+.topbar-upload:active{background:var(--surface3)}
+.topbar-upload input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;font-size:0}
 
-:root {
-  --bg:       #0a0a0a;
-  --surface:  #141414;
-  --border:   #2a2a2a;
-  --green:    #00ff88;
-  --green-dim:rgba(0,255,136,.08);
-  --green-glow:0 0 14px rgba(0,255,136,.35);
-  --text:     #e0e0e0;
-  --muted:    #888;
-  --bar-h:    52px;    /* top bar height */
-  --btm-h:    220px;  /* bottom panel height — collapsed */
-  --btm-scrub:280px;  /* bottom panel height — scrub mode */
-  --btm-rename:310px; /* bottom panel height — rename visible */
-}
+/* VIDEO AREA */
+.video-area{position:fixed;top:var(--bar-h);left:0;right:0;bottom:var(--btm-h);background:#000;display:flex;align-items:center;justify-content:center;transition:bottom .3s ease}
+.video-area.scrub-mode{bottom:var(--btm-scrub)}
+.video-area.rename-mode{bottom:var(--btm-rename)}
 
-html, body {
-  height: 100%;
-  overflow: hidden;
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Inter', sans-serif;
-  touch-action: manipulation;
-}
+/* UPLOAD PLACEHOLDER */
+.upload-placeholder{display:flex;flex-direction:column;align-items:center;gap:12px;color:var(--text3);text-align:center;padding:0 32px;cursor:pointer;position:relative;-webkit-user-select:none;user-select:none}
+.upload-placeholder input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;font-size:0;z-index:2}
+.upload-placeholder.hidden{display:none}
+.upl-icon{font-size:56px;opacity:.85;cursor:pointer;position:relative;z-index:3;animation:pulse 2.4s ease-in-out infinite;filter:drop-shadow(0 0 16px rgba(0,255,136,0.3))}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.06);opacity:1}}
+.upl-title{font-size:16px;font-weight:800;color:#ccc;letter-spacing:-0.3px}
+.upl-sub{font-size:12px;color:#444}
+.upl-chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:4px}
+.upl-chip{font-size:10px;font-weight:700;color:#555;border:1px solid #2a2a2a;border-radius:5px;padding:3px 8px}
+#videoEl{max-width:100%;max-height:100%;display:none;object-fit:contain}
+#videoEl.show{display:block}
 
-/* ── TOP BAR ── */
-.topbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: var(--bar-h);
-  background: #141414;
-  border-bottom: 1px solid #2a2a2a;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 14px;
-  z-index: 100;
-}
-.topbar-title {
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--green);
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  pointer-events: none;
-}
-.menu-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  z-index: 1;
-}
-.menu-btn span {
-  display: block;
-  width: 20px;
-  height: 2px;
-  background: #aaa;
-  border-radius: 2px;
-  transition: all .25s;
-}
-.menu-btn.open span { background: var(--green); }
-.menu-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.menu-btn.open span:nth-child(2) { opacity: 0; }
-.menu-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+/* BOTTOM PANEL */
+.btm{position:fixed;bottom:0;left:0;right:0;height:var(--btm-h);background:rgba(12,12,12,0.97);backdrop-filter:blur(24px) saturate(180%);border-top:1px solid var(--border2);z-index:90;transition:height .3s ease;overflow:hidden}
+.btm.scrub-mode{height:var(--btm-scrub)}
+.btm.rename-mode{height:var(--btm-rename)}
+.btm-inner{padding:14px 16px;display:flex;flex-direction:column;gap:12px}
 
-/* upload btn in topbar */
-.topbar-upload {
-  background: none;
-  border: 1px solid #3a3a3a;
-  border-radius: 6px;
-  color: #aaa;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .5px;
-  padding: 5px 10px;
-  cursor: pointer;
-  font-family: 'Inter', sans-serif;
-  position: relative;
-  z-index: 1;
-  transition: all .15s;
-}
-.topbar-upload:hover { border-color: var(--green); color: var(--green); }
-.topbar-upload input {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-  font-size: 0;
-}
+/* FILE ROW */
+.file-row{display:none;align-items:center;justify-content:space-between;font-size:11px}
+.file-row.show{display:flex}
+.file-name{font-weight:700;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55%}
+.file-meta{color:var(--text3);font-size:10px;display:flex;gap:10px}
 
-/* ── VIDEO AREA ── fills between top bar and bottom panel ── */
-.video-area {
-  position: fixed;
-  top: var(--bar-h);
-  left: 0;
-  right: 0;
-  bottom: var(--btm-h);
-  background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: bottom .3s ease;
-}
-.video-area.scrub-mode  { bottom: var(--btm-scrub); }
-.video-area.rename-mode { bottom: var(--btm-rename); }
+/* FRAME BTNS - segment style */
+.frame-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--radius-sm);padding:4px}
+.fbtn{background:none;border:none;border-radius:9px;padding:10px 4px;color:var(--text3);font-size:10px;font-weight:800;letter-spacing:.4px;cursor:pointer;text-align:center;font-family:'Inter',sans-serif;line-height:1.25;transition:all var(--transition)}
+.fbtn:active{opacity:0.6}
+.fbtn.active{background:rgba(0,255,136,0.1);color:var(--green)}
+.fbtn-time{display:block;font-size:9px;font-weight:500;color:#444;margin-top:3px;font-family:monospace}
+.fbtn.active .fbtn-time{color:rgba(0,255,136,0.5)}
 
-/* Upload placeholder */
-.upload-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  color: var(--muted);
-  text-align: center;
-  padding: 0 32px;
-  cursor: pointer;
-  position: relative;
-  -webkit-user-select: none;
-  user-select: none;
-}
-.upload-placeholder input {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-  font-size: 0;
-  z-index: 2;
-}
-.upload-placeholder.hidden { display: none; }
-.upl-icon {
-  font-size: 56px;
-  opacity: .8;
-  cursor: pointer;
-  position: relative;
-  z-index: 3;
-  animation: pulse 2.4s ease-in-out infinite;
-  filter: drop-shadow(0 0 12px rgba(0,255,136,.25));
-}
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: .8; }
-  50% { transform: scale(1.08); opacity: 1; }
-}
-.upl-title { font-size: 15px; font-weight: 700; color: #bbb; }
-.upl-sub { font-size: 12px; color: #666; }
-.upl-formats { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 4px; }
-.upl-chip { font-size: 10px; font-weight: 600; color: #777; border: 1px solid #333; border-radius: 4px; padding: 2px 7px; }
+/* SCRUBBER */
+.scrub-section{display:none}
+.scrub-section.show{display:block}
+.scrub-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.scrub-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3)}
+.scrub-tc{font-size:13px;font-weight:700;color:var(--green);font-family:monospace}
+input[type=range].scrubber{-webkit-appearance:none;width:100%;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;outline:none;cursor:pointer;accent-color:var(--green)}
+input[type=range].scrubber::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.5),0 0 0 2px rgba(0,255,136,0.35);cursor:pointer;transition:transform 0.15s}
+input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
+.step-row{display:flex;align-items:center;gap:8px;margin-top:10px}
+.step-btn{background:var(--surface);border:1px solid var(--border);color:var(--text2);font-size:12px;font-weight:700;padding:9px 16px;border-radius:var(--radius-xs);cursor:pointer;font-family:'Inter',sans-serif;flex:1;text-align:center;transition:all var(--transition)}
+.step-btn:active{background:var(--surface2);transform:scale(0.97)}
+.step-num{font-size:11px;font-weight:700;color:var(--text3);font-family:monospace;flex:1;text-align:center}
 
-/* Actual video */
-#videoEl {
-  max-width: 100%;
-  max-height: 100%;
-  display: none;
-  object-fit: contain;
-}
-#videoEl.show { display: block; }
+/* RENAME */
+.rename-section{display:none}
+.rename-section.show{display:block}
+.rename-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.rename-row{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);overflow:hidden;transition:border-color var(--transition)}
+.rename-row:focus-within{border-color:rgba(0,255,136,0.35)}
+.rename-input{flex:1;background:none;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:11px 13px;outline:none}
+.rename-ext{background:rgba(255,255,255,0.04);color:var(--text3);font-size:11px;font-weight:700;padding:11px 12px;border-left:1px solid var(--border);white-space:nowrap}
 
-/* ── BOTTOM PANEL — always fixed ── */
-.btm {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: var(--btm-h);
-  background: #161616;
-  border-top: 1px solid #2a2a2a;
-  z-index: 90;
-  transition: height .3s ease;
-  overflow: hidden;
-}
-.btm.scrub-mode  { height: var(--btm-scrub); }
-.btm.rename-mode { height: var(--btm-rename); }
+/* ACTION BTN */
+.action-btn{width:100%;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:15px;padding:15px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.2px;transition:all var(--transition);box-shadow:0 4px 20px rgba(0,255,136,0.2)}
+.action-btn:active{transform:scale(0.98);box-shadow:0 2px 10px rgba(0,255,136,0.15)}
+.action-btn:disabled{opacity:.2;cursor:not-allowed;transform:none;background:#333;color:#666;box-shadow:none}
+.action-btn.dl{background:var(--surface);color:var(--green);border:1px solid rgba(0,255,136,0.3);box-shadow:none}
+.action-btn.dl:active{background:var(--green-dim)}
 
-.btm-inner { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+/* MENU SHEET */
+.menu-sheet{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,12,0.97);backdrop-filter:blur(30px) saturate(200%);border-top:1px solid var(--border2);border-radius:26px 26px 0 0;z-index:300;padding:0 20px env(safe-area-inset-bottom,32px);transform:translateY(100%);transition:transform .35s cubic-bezier(0.32,0.72,0,1);max-height:85vh;overflow-y:auto}
+.menu-sheet.open{transform:translateY(0)}
+.sheet-handle{width:36px;height:4px;background:rgba(255,255,255,0.12);border-radius:var(--pill);margin:14px auto 20px}
+.nav-sect{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--green);padding:18px 0 8px;border-top:1px solid rgba(255,255,255,0.05);margin-top:4px}
+.nav-sect:first-of-type{border-top:none;padding-top:0;margin-top:0}
+.nav-link{display:flex;align-items:center;gap:14px;padding:14px 0;font-size:15px;font-weight:500;color:var(--text2);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.05);transition:color var(--transition)}
+.nav-link:last-child{border-bottom:none}
+.nav-link:active{color:var(--green)}
+.nav-link .ico{font-size:18px;width:28px;text-align:center}
+.nav-link .ico img{width:28px;height:28px;border-radius:8px;display:block}
+.nav-cta-btn{display:block;margin-top:20px;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:15px;padding:14px 24px;border-radius:var(--radius-sm);text-decoration:none;text-align:center;box-shadow:0 4px 20px rgba(0,255,136,0.2)}
 
-/* File info row */
-.file-row {
-  display: none;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 11px;
-}
-.file-row.show { display: flex; }
-.file-name { font-weight: 600; color: #bbb; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55%; }
-.file-meta { color: #999; font-size: 10px; display: flex; gap: 10px; }
+/* SHARE */
+.share-strip{display:flex;gap:8px;padding:4px 0;overflow-x:auto;scrollbar-width:none}
+.share-strip::-webkit-scrollbar{display:none}
+.share-btn{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition)}
+.share-btn:active{transform:scale(0.93);background:var(--surface2)}
+.share-icon{font-size:22px}
+.share-label{font-size:10px;font-weight:700;color:var(--text3);white-space:nowrap}
 
-/* Frame select buttons */
-.frame-btns {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 7px;
-}
-.fbtn {
-  background: #1c1c1c;
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 9px 4px;
-  color: #aaa;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .4px;
-  cursor: pointer;
-  text-align: center;
-  font-family: 'Inter', sans-serif;
-  line-height: 1.25;
-  transition: all .15s;
-}
-.fbtn:active { transform: scale(.97); }
-.fbtn.active { background: var(--green-dim); border-color: var(--green); color: var(--green); }
-.fbtn-time { display: block; font-size: 9px; font-weight: 500; color: #666; margin-top: 3px; font-family: monospace; }
-.fbtn.active .fbtn-time { color: rgba(0,255,136,.5); }
+/* BACKDROP */
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);z-index:290;display:none}
+.backdrop.show{display:block}
 
-/* Scrubber section */
-.scrub-section { display: none; }
-.scrub-section.show { display: block; }
-.scrub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.scrub-label-txt { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #999; }
-.scrub-tc { font-size: 12px; font-weight: 700; color: var(--green); font-family: monospace; }
-input[type="range"].scrubber {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 4px;
-  background: #333;
-  border-radius: 2px;
-  outline: none;
-  cursor: pointer;
-}
-input[type="range"].scrubber::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  background: var(--green);
-  box-shadow: var(--green-glow);
-  cursor: pointer;
-}
-.step-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-.step-btn {
-  background: #1c1c1c;
-  border: 1px solid #333;
-  color: #aaa;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 7px 14px;
-  border-radius: 7px;
-  cursor: pointer;
-  font-family: 'Inter', sans-serif;
-  flex: 1;
-  text-align: center;
-  transition: all .15s;
-}
-.step-btn:active { transform: scale(.97); }
-.step-btn:hover { border-color: var(--green); color: var(--green); }
-.step-num { font-size: 10px; font-weight: 700; color: #888; font-family: monospace; flex: 1; text-align: center; }
+/* TOAST */
+.toast{position:fixed;bottom:calc(var(--btm-h) + 12px);left:50%;transform:translateX(-50%) translateY(10px);background:rgba(16,16,16,0.97);border:1px solid var(--border2);backdrop-filter:blur(20px);color:var(--text);font-size:12px;font-weight:600;padding:11px 20px;border-radius:var(--pill);opacity:0;transition:all .3s;z-index:200;pointer-events:none;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* Rename section */
-.rename-section { display: none; }
-.rename-section.show { display: block; }
-.rename-label-txt { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #888; margin-bottom: 5px; }
-.rename-row {
-  display: flex;
-  align-items: center;
-  background: #1c1c1c;
-  border: 1px solid #333;
-  border-radius: 8px;
-  overflow: hidden;
-  transition: border-color .2s;
-}
-.rename-row:focus-within { border-color: var(--green); }
-.rename-input {
-  flex: 1;
-  background: none;
-  border: none;
-  color: #e8e8e8;
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  padding: 10px 12px;
-  outline: none;
-}
-.rename-ext { background: #222; color: #888; font-size: 11px; font-weight: 700; padding: 10px 10px; border-left: 1px solid var(--border); white-space: nowrap; }
-
-/* Main action button */
-.action-btn {
-  width: 100%;
-  background: var(--green);
-  color: #000;
-  font-weight: 800;
-  font-size: 15px;
-  padding: 13px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  font-family: 'Inter', sans-serif;
-  letter-spacing: .3px;
-  transition: all .2s;
-}
-.action-btn:active { transform: scale(.98); }
-.action-btn:disabled { opacity: .2; cursor: not-allowed; transform: none; }
-.action-btn.dl { background: #111; color: var(--green); border: 1px solid var(--green); }
-.action-btn.dl:active { background: var(--green-dim); }
-
-/* ── MENU SHEET — slides up from bottom over the panel ── */
-.menu-sheet {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: #181818;
-  border-top: 1px solid #2a2a2a;
-  border-radius: 20px 20px 0 0;
-  z-index: 300;
-  padding: 0 20px 32px;
-  transform: translateY(100%);
-  transition: transform .3s ease;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-.menu-sheet.open { transform: translateY(0); }
-.sheet-handle {
-  width: 36px; height: 4px;
-  background: #333;
-  border-radius: 2px;
-  margin: 12px auto 20px;
-}
-.sheet-section {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--green);
-  padding: 16px 0 8px;
-  border-top: 1px solid #2a2a2a;
-  margin-top: 4px;
-}
-.sheet-section:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
-.sheet-link {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 13px 0;
-  font-size: 15px;
-  font-weight: 500;
-  color: #ddd;
-  text-decoration: none;
-  border-bottom: 1px solid #222;
-  transition: color .2s;
-}
-.sheet-link:last-child { border-bottom: none; }
-.sheet-link:hover, .sheet-link:active { color: var(--green); }
-.sheet-link .ico { font-size: 18px; width: 26px; text-align: center; }
-.sheet-cta {
-  display: block;
-  margin-top: 20px;
-  background: var(--green);
-  color: #000;
-  font-weight: 700;
-  font-size: 14px;
-  padding: 13px 24px;
-  border-radius: 10px;
-  text-decoration: none;
-  text-align: center;
-}
-
-/* Backdrop */
-.backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.6);
-  z-index: 290;
-  display: none;
-  backdrop-filter: blur(2px);
-}
-.backdrop.show { display: block; }
-
-/* ── TOAST ── */
-.toast {
-  position: fixed;
-  bottom: calc(var(--btm-h) + 12px);
-  left: 50%;
-  transform: translateX(-50%) translateY(10px);
-  background: #1a1a1a;
-  border: 1px solid var(--green);
-  color: var(--green);
-  font-size: 12px;
-  font-weight: 600;
-  padding: 9px 16px;
-  border-radius: 8px;
-  opacity: 0;
-  transition: all .3s;
-  z-index: 200;
-  pointer-events: none;
-  white-space: nowrap;
-  max-width: 90vw;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:99px}
 </style>
-
 <link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -422,63 +139,42 @@ input[type="range"].scrubber::-webkit-slider-thumb {
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Frame Extractor">
-<meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="/manifest.json">
 </head>
 <body>
 
-<!-- TOP BAR -->
 <div class="topbar">
   <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
   <div class="topbar-title">FRAME EXTRACTOR</div>
-  <div class="topbar-spacer"></div>
-  <button class="topbar-upload" id="topUploadBtn">
-    + VIDEO
-    <input type="file" accept="video/*" id="videoInputTop">
-  </button>
+  <a href="/" class="topbar-logo" style="position:absolute;left:50%;transform:translateX(-50%);display:none"></a>
+  <button class="topbar-upload" id="topUploadBtn">+ VIDEO<input type="file" accept="video/*" id="videoInputTop"></button>
 </div>
 
-<!-- VIDEO AREA -->
 <div class="video-area" id="videoArea">
   <div class="upload-placeholder" id="uploadPlaceholder">
     <input type="file" accept="video/*" id="videoInputMain">
     <div class="upl-icon" id="uplIcon">🎬</div>
-    <div class="upl-title">Tap icon or anywhere to load a video</div>
+    <div class="upl-title">Tap to load a video</div>
     <div class="upl-sub">Stays on your device — nothing uploaded</div>
-    <div class="upl-formats">
-      <span class="upl-chip">MP4</span>
-      <span class="upl-chip">MOV</span>
-      <span class="upl-chip">WebM</span>
-      <span class="upl-chip">MKV</span>
-    </div>
+    <div class="upl-chips"><span class="upl-chip">MP4</span><span class="upl-chip">MOV</span><span class="upl-chip">WebM</span><span class="upl-chip">MKV</span></div>
   </div>
   <video id="videoEl" muted preload="metadata" playsinline></video>
 </div>
 
-<!-- BOTTOM PANEL -->
 <div class="btm" id="btmPanel">
   <div class="btm-inner">
-
-    <!-- File info -->
     <div class="file-row" id="fileRow">
       <div class="file-name" id="ibName">—</div>
-      <div class="file-meta">
-        <span id="ibDur">—</span>
-        <span id="ibRes">—</span>
-      </div>
+      <div class="file-meta"><span id="ibDur">—</span><span id="ibRes">—</span></div>
     </div>
-
-    <!-- Frame select -->
     <div class="frame-btns">
       <button class="fbtn" id="btnStart">START<span class="fbtn-time" id="startTime">0:00.000</span></button>
       <button class="fbtn" id="btnScrub">PICK FRAME<span class="fbtn-time" id="scrubTimeLabel">—</span></button>
       <button class="fbtn" id="btnEnd">END<span class="fbtn-time" id="endTime">—</span></button>
     </div>
-
-    <!-- Scrubber (pick frame mode) -->
     <div class="scrub-section" id="scrubSection">
       <div class="scrub-header">
-        <span class="scrub-label-txt">Drag to frame</span>
+        <span class="scrub-label">Drag to frame</span>
         <span class="scrub-tc" id="scrubTc">0:00.000</span>
       </div>
       <input type="range" class="scrubber" id="scrubber" min="0" max="1000" value="0" step="1">
@@ -488,273 +184,125 @@ input[type="range"].scrubber::-webkit-slider-thumb {
         <button class="step-btn" id="nextFrame">+1 ▶</button>
       </div>
     </div>
-
-    <!-- Rename (after extract) -->
     <div class="rename-section" id="renameSection">
-      <div class="rename-label-txt">Filename</div>
+      <div class="rename-lbl">Filename</div>
       <div class="rename-row">
         <input class="rename-input" type="text" id="renameInput" placeholder="frame_name" spellcheck="false" autocorrect="off">
         <span class="rename-ext">.png</span>
       </div>
     </div>
-
-    <!-- Action button -->
     <button class="action-btn" id="actionBtn" disabled>📷 Extract Frame</button>
-
   </div>
 </div>
 
-<!-- BACKDROP -->
 <div class="backdrop" id="backdrop"></div>
 
-<!-- MENU SHEET (slides up from bottom) -->
 <div class="menu-sheet" id="menuSheet">
   <div class="sheet-handle"></div>
-
-  <div class="sheet-section">Navigation</div>
-  <a href="/" class="sheet-link"><span class="ico">🏠</span>Home</a>
-  <a href="/#tutorials" class="sheet-link"><span class="ico"><img src="/icons/tutorials.png" alt="Tutorials" style="width:28px;height:28px;border-radius:6px;display:block"></span>Tutorials</a>
-
-  <div class="sheet-section">Free Tools</div>
-  <a href="/frame-extractor" class="sheet-link">
-    <span class="ico"><img src="/icons/frame-extractor.png" alt="Frame Extractor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Frame Extractor</a>
-  <a href="/audio-editor" class="sheet-link">
-    <span class="ico"><img src="/icons/audio-editor.png" alt="Audio Editor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Editor</a>
-  <a href="/audio-converter" class="sheet-link">
-    <span class="ico"><img src="/icons/audio-converter.png" alt="Audio Converter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Converter</a>
-  <div class="sheet-section">Follow Us</div>
-    <a href="https://www.instagram.com/back2life.ai" target="_blank" class="sheet-link">
-    <span class="ico"><img src="https://cdn.simpleicons.org/instagram/E1306C" width="20" height="20" alt="Instagram"></span>Instagram</a>
-  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="sheet-link">
-    <span class="ico"><img src="https://cdn.simpleicons.org/tiktok/ffffff" width="20" height="20" alt="TikTok"></span>TikTok</a>
-  <a href="https://youtube.com/@back2lifeai" target="_blank" class="sheet-link">
-    <span class="ico"><img src="https://cdn.simpleicons.org/youtube/FF0000" width="20" height="20" alt="YouTube"></span>YouTube</a>
-  <a href="https://x.com/Back2LifeAI" target="_blank" class="sheet-link">
-    <span class="ico"><img src="https://cdn.simpleicons.org/x/ffffff" width="20" height="20" alt="X"></span>X / Twitter</a>
-  <a href="https://www.threads.com/@back2life.ai" target="_blank" class="sheet-link">
-    <span class="ico"><img src="https://cdn.simpleicons.org/threads/ffffff" width="20" height="20" alt="Threads"></span>Threads</a>
-  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="sheet-cta">📸 Follow on Instagram</a>
+  <div class="nav-sect">Navigation</div>
+  <a href="/" class="nav-link"><span class="ico">🏠</span>Home</a>
+  <a href="/#tutorials" class="nav-link"><span class="ico"><img src="/icons/tutorials.png" alt="Tutorials"></span>Tutorials</a>
+  <div class="nav-sect">Free Tools</div>
+  <a href="/watermark" class="nav-link"><span class="ico"><img src="/icons/watermark.png" alt="Watermark"></span>Watermark Tool</a>
+  <a href="/frame-extractor" class="nav-link"><span class="ico"><img src="/icons/frame-extractor.png" alt="Frame Extractor"></span>Frame Extractor</a>
+  <a href="/audio-editor" class="nav-link"><span class="ico"><img src="/icons/audio-editor.png" alt="Audio Editor"></span>Audio Editor</a>
+  <a href="/audio-converter" class="nav-link"><span class="ico"><img src="/icons/audio-converter.png" alt="Audio Converter"></span>Audio Converter</a>
+  <div class="nav-sect">Share This Tool</div>
+  <div class="share-strip">
+    <button class="share-btn" onclick="shareTo('whatsapp')"><span class="share-icon">💬</span><span class="share-label">WhatsApp</span></button>
+    <button class="share-btn" onclick="shareTo('x')"><span class="share-icon">𝕏</span><span class="share-label">X / Twitter</span></button>
+    <button class="share-btn" onclick="shareTo('tiktok')"><span class="share-icon">🎵</span><span class="share-label">TikTok</span></button>
+    <button class="share-btn" onclick="shareTo('instagram')"><span class="share-icon">📸</span><span class="share-label">Instagram</span></button>
+    <button class="share-btn" onclick="shareTo('copy')"><span class="share-icon">🔗</span><span class="share-label">Copy Link</span></button>
+  </div>
+  <div class="nav-sect">Follow Us</div>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-link"><span class="ico"><img src="https://cdn.simpleicons.org/instagram/E1306C" width="20" height="20" alt="Instagram"></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="nav-link"><span class="ico"><img src="https://cdn.simpleicons.org/tiktok/ffffff" width="20" height="20" alt="TikTok"></span>TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="nav-link"><span class="ico"><img src="https://cdn.simpleicons.org/youtube/FF0000" width="20" height="20" alt="YouTube"></span>YouTube</a>
+  <a href="https://x.com/Back2LifeAI" target="_blank" class="nav-link"><span class="ico"><img src="https://cdn.simpleicons.org/x/ffffff" width="20" height="20" alt="X"></span>X / Twitter</a>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-cta-btn">📸 Follow on Instagram</a>
 </div>
 
 <canvas id="frameCanvas" style="display:none"></canvas>
 <div class="toast" id="toast"></div>
 
 <script>
-// ── State ──
-let videoLoaded = false, duration = 0, fps = 30, frameCount = 0;
-let currentFrame = 0, mode = null;
-let extractedDataURL = null, originalFileName = 'frame';
-
-// ── Menu sheet ──
-const menuBtn   = document.getElementById('menuBtn');
-const menuSheet = document.getElementById('menuSheet');
-const backdrop  = document.getElementById('backdrop');
-
-function openMenu() {
-  menuSheet.classList.add('open');
-  backdrop.classList.add('show');
-  menuBtn.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeMenu() {
-  menuSheet.classList.remove('open');
-  backdrop.classList.remove('show');
-  menuBtn.classList.remove('open');
-  document.body.style.overflow = '';
-}
-menuBtn.addEventListener('click', () => menuSheet.classList.contains('open') ? closeMenu() : openMenu());
-backdrop.addEventListener('click', closeMenu);
-// Swipe down to close
-let touchStartY = 0;
-menuSheet.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, {passive:true});
-menuSheet.addEventListener('touchend', e => {
-  if(e.changedTouches[0].clientY - touchStartY > 60) closeMenu();
-}, {passive:true});
-
-// ── File inputs ──
-function handleFileInput(file) {
-  if(file && file.type.startsWith('video/')) loadVideo(file);
-}
-document.getElementById('videoInputMain').addEventListener('change', e => handleFileInput(e.target.files[0]));
-document.getElementById('videoInputTop').addEventListener('change', e => handleFileInput(e.target.files[0]));
-// Icon click explicitly triggers file input (belt-and-braces for mobile)
-document.getElementById('uplIcon').addEventListener('click', e => {
-  e.stopPropagation();
-  document.getElementById('videoInputMain').click();
-});
-
-// ── Load video ──
-const videoEl = document.getElementById('videoEl');
-
-function loadVideo(file) {
-  originalFileName = file.name.replace(/\.[^.]+$/, '');
-  videoEl.src = URL.createObjectURL(file);
-
-  videoEl.addEventListener('loadedmetadata', () => {
-    duration   = videoEl.duration;
-    frameCount = Math.floor(duration * fps);
-
-    // Hide placeholder, show video
-    document.getElementById('uploadPlaceholder').classList.add('hidden');
-    videoEl.classList.add('show');
-
-    // File row
-    document.getElementById('ibName').textContent = file.name.length > 22 ? file.name.substring(0,20)+'…' : file.name;
-    document.getElementById('ibDur').textContent  = fmtTime(duration);
-    document.getElementById('ibRes').textContent  = videoEl.videoWidth + '×' + videoEl.videoHeight;
+let videoLoaded=false,duration=0,fps=30,frameCount=0,currentFrame=0,mode=null,extractedDataURL=null,originalFileName='frame';
+const menuBtn=document.getElementById('menuBtn'),menuSheet=document.getElementById('menuSheet'),backdrop=document.getElementById('backdrop');
+function openMenu(){menuSheet.classList.add('open');backdrop.classList.add('show');menuBtn.classList.add('open');document.body.style.overflow='hidden'}
+function closeMenu(){menuSheet.classList.remove('open');backdrop.classList.remove('show');menuBtn.classList.remove('open');document.body.style.overflow=''}
+menuBtn.addEventListener('click',()=>menuSheet.classList.contains('open')?closeMenu():openMenu());
+backdrop.addEventListener('click',closeMenu);
+let touchStartY=0;
+menuSheet.addEventListener('touchstart',e=>{touchStartY=e.touches[0].clientY},{passive:true});
+menuSheet.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-touchStartY>60)closeMenu()},{passive:true});
+function handleFileInput(file){if(file&&file.type.startsWith('video/'))loadVideo(file)}
+document.getElementById('videoInputMain').addEventListener('change',e=>handleFileInput(e.target.files[0]));
+document.getElementById('videoInputTop').addEventListener('change',e=>handleFileInput(e.target.files[0]));
+document.getElementById('uplIcon').addEventListener('click',e=>{e.stopPropagation();document.getElementById('videoInputMain').click()});
+const videoEl=document.getElementById('videoEl');
+function loadVideo(file){
+  originalFileName=file.name.replace(/\.[^.]+$/,'');videoEl.src=URL.createObjectURL(file);
+  videoEl.addEventListener('loadedmetadata',()=>{
+    duration=videoEl.duration;frameCount=Math.floor(duration*fps);
+    document.getElementById('uploadPlaceholder').classList.add('hidden');videoEl.classList.add('show');
+    document.getElementById('ibName').textContent=file.name.length>22?file.name.substring(0,20)+'…':file.name;
+    document.getElementById('ibDur').textContent=fmtTime(duration);
+    document.getElementById('ibRes').textContent=videoEl.videoWidth+'×'+videoEl.videoHeight;
     document.getElementById('fileRow').classList.add('show');
-
-    // Time labels
-    document.getElementById('startTime').textContent = '0:00.000';
-    document.getElementById('endTime').textContent   = fmtTimecode(duration);
-
-    videoLoaded = true;
-    document.getElementById('actionBtn').disabled = false;
-
-    // Reset any previous state
-    resetExtract();
-    setMode('start');
-  }, {once:true});
+    document.getElementById('startTime').textContent='0:00.000';
+    document.getElementById('endTime').textContent=fmtTimecode(duration);
+    videoLoaded=true;document.getElementById('actionBtn').disabled=false;resetExtract();setMode('start');
+  },{once:true});
 }
-
-// ── Frame mode selection ──
-document.getElementById('btnStart').addEventListener('click', () => setMode('start'));
-document.getElementById('btnScrub').addEventListener('click', () => setMode('scrub'));
-document.getElementById('btnEnd').addEventListener('click',   () => setMode('end'));
-
-function setMode(m) {
-  mode = m;
-  document.getElementById('btnStart').classList.toggle('active', m==='start');
-  document.getElementById('btnScrub').classList.toggle('active', m==='scrub');
-  document.getElementById('btnEnd').classList.toggle('active',   m==='end');
-
-  const isScrub = m === 'scrub';
-  document.getElementById('scrubSection').classList.toggle('show', isScrub);
-
-  // Adjust panel + video area height
-  const btm = document.getElementById('btmPanel');
-  const va  = document.getElementById('videoArea');
-  const hasRename = document.getElementById('renameSection').classList.contains('show');
-
-  if(hasRename) {
-    btm.className = 'btm rename-mode';
-    va.className  = 'video-area rename-mode';
-  } else if(isScrub) {
-    btm.className = 'btm scrub-mode';
-    va.className  = 'video-area scrub-mode';
-  } else {
-    btm.className = 'btm';
-    va.className  = 'video-area';
-  }
-
-  if(m === 'start') seekToFrame(0);
-  else if(m === 'end') seekToFrame(frameCount - 1);
+document.getElementById('btnStart').addEventListener('click',()=>setMode('start'));
+document.getElementById('btnScrub').addEventListener('click',()=>setMode('scrub'));
+document.getElementById('btnEnd').addEventListener('click',()=>setMode('end'));
+function setMode(m){
+  mode=m;
+  document.getElementById('btnStart').classList.toggle('active',m==='start');
+  document.getElementById('btnScrub').classList.toggle('active',m==='scrub');
+  document.getElementById('btnEnd').classList.toggle('active',m==='end');
+  const isScrub=m==='scrub';
+  document.getElementById('scrubSection').classList.toggle('show',isScrub);
+  const btm=document.getElementById('btmPanel'),va=document.getElementById('videoArea');
+  const hasRename=document.getElementById('renameSection').classList.contains('show');
+  if(hasRename){btm.className='btm rename-mode';va.className='video-area rename-mode'}
+  else if(isScrub){btm.className='btm scrub-mode';va.className='video-area scrub-mode'}
+  else{btm.className='btm';va.className='video-area'}
+  if(m==='start')seekToFrame(0);else if(m==='end')seekToFrame(frameCount-1);
 }
-
-// ── Scrubber ──
-const scrubber = document.getElementById('scrubber');
-scrubber.addEventListener('input', () => {
-  if(!videoLoaded) return;
-  const t = (scrubber.value / 1000) * duration;
-  videoEl.currentTime = t;
-  currentFrame = Math.round(t * fps);
-  updateScrubUI(t);
-  document.getElementById('scrubTimeLabel').textContent = fmtTimecode(t);
+const scrubber=document.getElementById('scrubber');
+scrubber.addEventListener('input',()=>{
+  if(!videoLoaded)return;const t=(scrubber.value/1000)*duration;videoEl.currentTime=t;
+  currentFrame=Math.round(t*fps);updateScrubUI(t);document.getElementById('scrubTimeLabel').textContent=fmtTimecode(t);
 });
-
-document.getElementById('prevFrame').addEventListener('click', () => {
-  seekToFrame(currentFrame - 1);
-  document.getElementById('scrubTimeLabel').textContent = fmtTimecode(currentFrame / fps);
-});
-document.getElementById('nextFrame').addEventListener('click', () => {
-  seekToFrame(currentFrame + 1);
-  document.getElementById('scrubTimeLabel').textContent = fmtTimecode(currentFrame / fps);
-});
-
-function seekToFrame(frame) {
-  currentFrame = Math.max(0, Math.min(frame, frameCount - 1));
-  const t = currentFrame / fps;
-  videoEl.currentTime = t;
-  scrubber.value = Math.round((t / duration) * 1000);
-  updateScrubUI(t);
-}
-
-function updateScrubUI(t) {
-  document.getElementById('scrubTc').textContent  = fmtTimecode(t);
-  document.getElementById('frameNum').textContent = 'Frame ' + currentFrame;
-}
-
-// ── Action button ──
-const actionBtn = document.getElementById('actionBtn');
-
-actionBtn.addEventListener('click', () => {
-  if(!videoLoaded) return;
-
-  if(extractedDataURL) {
-    downloadFrame();
-    return;
-  }
-
-  // Extract
-  const canvas = document.getElementById('frameCanvas');
-  const ctx    = canvas.getContext('2d');
-  const W = videoEl.videoWidth  || 1280;
-  const H = videoEl.videoHeight || 720;
-  canvas.width = W; canvas.height = H;
-  ctx.drawImage(videoEl, 0, 0, W, H);
-  extractedDataURL = canvas.toDataURL('image/png');
-
-  // Set default filename
-  const t = videoEl.currentTime;
-  document.getElementById('renameInput').value = `${originalFileName}_${fmtTimecode(t).replace(/[:.]/g,'-')}`;
-
-  // Show rename section + grow panel
+document.getElementById('prevFrame').addEventListener('click',()=>{seekToFrame(currentFrame-1);document.getElementById('scrubTimeLabel').textContent=fmtTimecode(currentFrame/fps)});
+document.getElementById('nextFrame').addEventListener('click',()=>{seekToFrame(currentFrame+1);document.getElementById('scrubTimeLabel').textContent=fmtTimecode(currentFrame/fps)});
+function seekToFrame(frame){currentFrame=Math.max(0,Math.min(frame,frameCount-1));const t=currentFrame/fps;videoEl.currentTime=t;scrubber.value=Math.round((t/duration)*1000);updateScrubUI(t)}
+function updateScrubUI(t){document.getElementById('scrubTc').textContent=fmtTimecode(t);document.getElementById('frameNum').textContent='Frame '+currentFrame}
+const actionBtn=document.getElementById('actionBtn');
+actionBtn.addEventListener('click',()=>{
+  if(!videoLoaded)return;
+  if(extractedDataURL){downloadFrame();return}
+  const canvas=document.getElementById('frameCanvas'),ctx=canvas.getContext('2d');
+  const W=videoEl.videoWidth||1280,H=videoEl.videoHeight||720;canvas.width=W;canvas.height=H;ctx.drawImage(videoEl,0,0,W,H);extractedDataURL=canvas.toDataURL('image/png');
+  const t=videoEl.currentTime;document.getElementById('renameInput').value=`${originalFileName}_${fmtTimecode(t).replace(/[:.]/g,'-')}`;
   document.getElementById('renameSection').classList.add('show');
-  const btm = document.getElementById('btmPanel');
-  const va  = document.getElementById('videoArea');
-  btm.className = 'btm rename-mode';
-  va.className  = 'video-area rename-mode';
-
-  // Flip button
-  actionBtn.className = 'action-btn dl';
-  actionBtn.textContent = '⬇ Download PNG';
-
-  toast('✓ Frame ready — edit name then download');
+  const btm=document.getElementById('btmPanel'),va=document.getElementById('videoArea');btm.className='btm rename-mode';va.className='video-area rename-mode';
+  actionBtn.className='action-btn dl';actionBtn.textContent='⬇ Download PNG';toast('✓ Frame ready — edit name then download');
 });
-
-function downloadFrame() {
-  const name = document.getElementById('renameInput').value.trim() || 'frame';
-  const a = document.createElement('a');
-  a.href     = extractedDataURL;
-  a.download = name + '.png';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  toast('⬇ Saved ' + name + '.png');
-  resetExtract();
+function downloadFrame(){const name=document.getElementById('renameInput').value.trim()||'frame';const a=document.createElement('a');a.href=extractedDataURL;a.download=name+'.png';document.body.appendChild(a);a.click();document.body.removeChild(a);toast('⬇ Saved '+name+'.png');resetExtract()}
+function resetExtract(){extractedDataURL=null;document.getElementById('renameSection').classList.remove('show');actionBtn.className='action-btn';actionBtn.textContent='📷 Extract Frame';actionBtn.disabled=!videoLoaded;setMode(mode||'start')}
+function fmtTime(s){return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0')}
+function fmtTimecode(s){const m=Math.floor(s/60),sec=Math.floor(s%60),ms=Math.round((s%1)*1000);return m+':'+String(sec).padStart(2,'0')+'.'+String(ms).padStart(3,'0')}
+function shareTo(platform){
+  const url=encodeURIComponent(window.location.href);const text=encodeURIComponent('Free Frame Extractor — grab any video frame as PNG 🎬');
+  const urls={whatsapp:'https://wa.me/?text='+text+'%20'+url,x:'https://x.com/intent/tweet?text='+text+'&url='+url,tiktok:'https://www.tiktok.com/',instagram:'https://www.instagram.com/',copy:null};
+  if(platform==='copy'){navigator.clipboard.writeText(window.location.href);toast('✓ Link copied!')}else{window.open(urls[platform],'_blank')}
 }
-
-function resetExtract() {
-  extractedDataURL = null;
-  document.getElementById('renameSection').classList.remove('show');
-  actionBtn.className = 'action-btn';
-  actionBtn.textContent = '📷 Extract Frame';
-  actionBtn.disabled = !videoLoaded;
-  // Restore panel size
-  setMode(mode || 'start');
-}
-
-// ── Helpers ──
-function fmtTime(s) {
-  return Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
-}
-function fmtTimecode(s) {
-  const m = Math.floor(s/60), sec = Math.floor(s%60), ms = Math.round((s%1)*1000);
-  return m + ':' + String(sec).padStart(2,'0') + '.' + String(ms).padStart(3,'0');
-}
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
-}
+let toastTimer;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2800)}
 </script>
 </body>
 </html>
