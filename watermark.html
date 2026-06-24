@@ -339,14 +339,7 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
   <!-- SHARE -->
   <div class="sheet-section">
     <div class="sect-label">Share This Tool</div>
-    <div class="share-strip">
-      <button class="share-btn" onclick="shareTo('whatsapp')"><span class="share-icon">💬</span><span class="share-label">WhatsApp</span></button>
-      <button class="share-btn" onclick="shareTo('x')"><span class="share-icon">𝕏</span><span class="share-label">X / Twitter</span></button>
-      <button class="share-btn" onclick="shareTo('tiktok')"><span class="share-icon">🎵</span><span class="share-label">TikTok</span></button>
-      <button class="share-btn" onclick="shareTo('instagram')"><span class="share-icon">📸</span><span class="share-label">Instagram</span></button>
-      <button class="share-btn" onclick="shareTo('copy')"><span class="share-icon">🔗</span><span class="share-label">Copy Link</span></button>
     </div>
-  </div>
 
   <div class="sheet-section">
     <button class="btn-secondary-sm" id="closeSheetBtn" style="width:100%">Close Settings</button>
@@ -596,6 +589,24 @@ renderGrid();
 </div>
 
 
+</div>
+  <div class="drawer-section-label">Navigation</div>
+  <a href="/" class="drawer-link"><span class="icon"><img src="/icons/home.png" alt="Home" style="width:28px;height:28px;border-radius:6px;display:block"></span>Home</a>
+  <div class="drawer-section-label">Free Tools</div>
+  <a href="/watermark" class="drawer-link"><span class="icon"><img src="/icons/watermark.png" alt="Watermark Tool" style="width:28px;height:28px;border-radius:6px;display:block"></span>Watermark Tool</a>
+  <a href="/video-splitter" class="drawer-link"><span class="icon"><img src="/icons/video-splitter.png" alt="Video Splitter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Video Splitter</a>
+  <a href="/frame-extractor" class="drawer-link"><span class="icon"><img src="/icons/frame-extractor.png" alt="Frame Extractor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Frame Extractor</a>
+  <a href="/audio-editor" class="drawer-link"><span class="icon"><img src="/icons/audio-editor.png" alt="Audio Editor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Editor</a>
+  <a href="/audio-converter" class="drawer-link"><span class="icon"><img src="/icons/audio-converter.png" alt="Audio Converter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Converter</a>
+  <div class="drawer-section-label">Follow Us</div>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/instagram/E1306C" width="20" height="20" alt="Instagram"></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/tiktok/ffffff" width="20" height="20" alt="TikTok"></span>TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/youtube/FF0000" width="20" height="20" alt="YouTube"></span>YouTube</a>
+  <a href="https://x.com/Back2LifeAI" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/x/ffffff" width="20" height="20" alt="X"></span>X / Twitter</a>
+  <a href="https://www.threads.com/@back2life.ai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/threads/ffffff" width="20" height="20" alt="Threads"></span>Threads</a>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-cta">📸 Follow on Instagram</a>
+</div>
+
 <div class="drawer-backdrop" id="drawerBackdrop"></div>
 <div class="nav-drawer" id="navDrawer">
   <div class="drawer-handle-wrap"><div class="drawer-handle"></div></div>
@@ -615,20 +626,21 @@ renderGrid();
   <a href="https://www.threads.com/@back2life.ai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/threads/ffffff" width="20" height="20" alt="Threads"></span>Threads</a>
   <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-cta">📸 Follow on Instagram</a>
 </div>
-
 <script>
 (function(){
-  var burger = document.getElementById('burgerBtn');
-  var drawer = document.getElementById('navDrawer');
-  var backdrop = document.getElementById('drawerBackdrop');
-  if(!burger||!drawer||!backdrop) return;
-  function openDrawer(){drawer.classList.add('open');backdrop.classList.add('open');burger.classList.add('open');document.body.style.overflow='hidden';}
-  function closeDrawer(){drawer.classList.remove('open');backdrop.classList.remove('open');burger.classList.remove('open');document.body.style.overflow='';}
-  burger.addEventListener('click',function(){drawer.classList.contains('open')?closeDrawer():openDrawer();});
-  backdrop.addEventListener('click',closeDrawer);
+  // Move drawer and backdrop to document.body root to escape any stacking context
+  var d=document.getElementById('navDrawer');
+  var bd=document.getElementById('drawerBackdrop');
+  if(d&&d.parentNode!==document.body){document.body.appendChild(bd);document.body.appendChild(d);}
+  var b=document.getElementById('burgerBtn');
+  if(!b||!d||!bd)return;
+  function open(){d.classList.add('open');bd.classList.add('open');b.classList.add('open');document.body.style.overflow='hidden';}
+  function close(){d.classList.remove('open');bd.classList.remove('open');b.classList.remove('open');document.body.style.overflow='';}
+  b.addEventListener('click',function(){d.classList.contains('open')?close():open();});
+  bd.addEventListener('click',close);
   var ty=0;
-  drawer.addEventListener('touchstart',function(e){ty=e.touches[0].clientY;},{passive:true});
-  drawer.addEventListener('touchend',function(e){if(e.changedTouches[0].clientY-ty>50)closeDrawer();},{passive:true});
+  d.addEventListener('touchstart',function(e){ty=e.touches[0].clientY;},{passive:true});
+  d.addEventListener('touchend',function(e){if(e.changedTouches[0].clientY-ty>50)close();},{passive:true});
 })();
 </script>
 </body>
