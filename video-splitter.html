@@ -178,6 +178,7 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
 
 
 /* Mobile drawer — exact copy from homepage */
+/* Nav drawer */
 .nav-drawer{position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid #2a2a2a;border-radius:20px 20px 0 0;z-index:1000;transform:translateY(100%);transition:transform .3s ease;padding:0 24px 40px;max-height:80vh;overflow-y:auto}
 .nav-drawer.open{transform:translateY(0)}
 .drawer-handle-wrap{padding:10px 0 6px;text-align:center}
@@ -202,9 +203,8 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
 <link rel="manifest" href="/manifest.json">
 </head>
 <body>
-<div style="display:flex;align-items:center;padding:0 16px;height:60px;background:rgba(8,8,8,0.95);border-bottom:1px solid rgba(255,255,255,0.08);position:sticky;top:0;z-index:100;gap:10px">
-  <button id="burgerBtn" style="display:flex;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0"><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px;transition:all .25s"></span><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px;transition:all .25s"></span><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px;transition:all .25s"></span></button>
-  <div style="position:absolute;left:50%;transform:translateX(-50%);font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#00ff88;white-space:nowrap;pointer-events:none">VIDEO SPLITTER</div>
+<div style="display:flex;align-items:center;padding:0 16px;height:60px;background:rgba(8,8,8,0.95);border-bottom:1px solid rgba(255,255,255,0.08);position:sticky;top:0;z-index:100;gap:10px"><button id="burgerBtn" style="display:flex;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0"><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px"></span><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px"></span><span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px"></span></button><div style="position:absolute;left:50%;transform:translateX(-50%);font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#00ff88;white-space:nowrap;pointer-events:none">VIDEO SPLITTER</div></div>
+
 </div>
 
 
@@ -612,42 +612,14 @@ function showToast(msg) {
 
 
 
-  <div class="drawer-section-label">Navigation</div>
-  <a href="/" class="drawer-link"><span class="icon"><img src="/icons/home.png" alt="Home" style="width:28px;height:28px;border-radius:6px;display:block"></span>Home</a>
-  <div class="drawer-section-label">Free Tools</div>
-  <a href="/watermark" class="drawer-link"><span class="icon"><img src="/icons/watermark.png" alt="Watermark Tool" style="width:28px;height:28px;border-radius:6px;display:block"></span>Watermark Tool</a>
-  <a href="/video-splitter" class="drawer-link"><span class="icon"><img src="/icons/video-splitter.png" alt="Video Splitter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Video Splitter</a>
-  <a href="/frame-extractor" class="drawer-link"><span class="icon"><img src="/icons/frame-extractor.png" alt="Frame Extractor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Frame Extractor</a>
-  <a href="/audio-editor" class="drawer-link"><span class="icon"><img src="/icons/audio-editor.png" alt="Audio Editor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Editor</a>
-  <a href="/audio-converter" class="drawer-link"><span class="icon"><img src="/icons/audio-converter.png" alt="Audio Converter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Converter</a>
-  <div class="drawer-section-label">Follow Us</div>
-  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/instagram/E1306C" width="20" height="20" alt="Instagram" style="width:20px;height:20px;border-radius:0"></span>Instagram</a>
-  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/tiktok/ffffff" width="20" height="20" alt="TikTok" style="width:20px;height:20px;border-radius:0"></span>TikTok</a>
-  <a href="https://youtube.com/@back2lifeai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/youtube/FF0000" width="20" height="20" alt="YouTube" style="width:20px;height:20px;border-radius:0"></span>YouTube</a>
-  <a href="https://x.com/Back2LifeAI" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/x/ffffff" width="20" height="20" alt="X" style="width:20px;height:20px;border-radius:0"></span>X / Twitter</a>
-  <a href="https://www.threads.com/@back2life.ai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/threads/ffffff" width="20" height="20" alt="Threads" style="width:20px;height:20px;border-radius:0"></span>Threads</a>
-  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-cta">📸 Follow on Instagram</a>
-</div>
+  </div>
 
 
 </div>
-  <div class="drawer-section-label">Navigation</div>
-  <a href="/" class="drawer-link"><span class="icon"><img src="/icons/home.png" alt="Home" style="width:28px;height:28px;border-radius:6px;display:block"></span>Home</a>
-  <div class="drawer-section-label">Free Tools</div>
-  <a href="/watermark" class="drawer-link"><span class="icon"><img src="/icons/watermark.png" alt="Watermark Tool" style="width:28px;height:28px;border-radius:6px;display:block"></span>Watermark Tool</a>
-  <a href="/video-splitter" class="drawer-link"><span class="icon"><img src="/icons/video-splitter.png" alt="Video Splitter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Video Splitter</a>
-  <a href="/frame-extractor" class="drawer-link"><span class="icon"><img src="/icons/frame-extractor.png" alt="Frame Extractor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Frame Extractor</a>
-  <a href="/audio-editor" class="drawer-link"><span class="icon"><img src="/icons/audio-editor.png" alt="Audio Editor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Editor</a>
-  <a href="/audio-converter" class="drawer-link"><span class="icon"><img src="/icons/audio-converter.png" alt="Audio Converter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Converter</a>
-  <div class="drawer-section-label">Follow Us</div>
-  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/instagram/E1306C" width="20" height="20" alt="Instagram"></span>Instagram</a>
-  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/tiktok/ffffff" width="20" height="20" alt="TikTok"></span>TikTok</a>
-  <a href="https://youtube.com/@back2lifeai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/youtube/FF0000" width="20" height="20" alt="YouTube"></span>YouTube</a>
-  <a href="https://x.com/Back2LifeAI" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/x/ffffff" width="20" height="20" alt="X"></span>X / Twitter</a>
-  <a href="https://www.threads.com/@back2life.ai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/threads/ffffff" width="20" height="20" alt="Threads"></span>Threads</a>
-  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-cta">📸 Follow on Instagram</a>
-</div>
+  </div>
 
+</div>
+  </div>
 <div class="drawer-backdrop" id="drawerBackdrop"></div>
 <div class="nav-drawer" id="navDrawer">
   <div class="drawer-handle-wrap"><div class="drawer-handle"></div></div>
@@ -669,12 +641,12 @@ function showToast(msg) {
 </div>
 <script>
 (function(){
-  // Move drawer and backdrop to document.body root to escape any stacking context
+  var b=document.getElementById('burgerBtn');
   var d=document.getElementById('navDrawer');
   var bd=document.getElementById('drawerBackdrop');
-  if(d&&d.parentNode!==document.body){document.body.appendChild(bd);document.body.appendChild(d);}
-  var b=document.getElementById('burgerBtn');
   if(!b||!d||!bd)return;
+  // Move to body root to escape any stacking context
+  if(d.parentNode!==document.body){document.body.appendChild(bd);document.body.appendChild(d);}
   function open(){d.classList.add('open');bd.classList.add('open');b.classList.add('open');document.body.style.overflow='hidden';}
   function close(){d.classList.remove('open');bd.classList.remove('open');b.classList.remove('open');document.body.style.overflow='';}
   b.addEventListener('click',function(){d.classList.contains('open')?close():open();});
