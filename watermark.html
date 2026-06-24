@@ -21,7 +21,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-syst
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:var(--bar-h);background:rgba(8,8,8,0.92);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;gap:10px}
 .topbar-logo{font-size:17px;font-weight:800;color:#fff;text-decoration:none;letter-spacing:-0.3px;flex-shrink:0}
 .topbar-logo em{color:var(--green);font-style:normal}
-.topbar-title{font-size:12px;font-weight:600;color:var(--text3)}
+
 .topbar-btn{background:var(--surface2);border:1px solid var(--border);border-radius:var(--pill);color:var(--text2);font-size:12px;font-weight:700;padding:8px 16px;cursor:pointer;font-family:'Inter',sans-serif;position:relative;transition:all var(--transition);display:flex;align-items:center;gap:6px;flex-shrink:0}
 .topbar-btn:active{background:var(--surface3);transform:scale(0.97)}
 .topbar-btn svg{flex-shrink:0}
@@ -162,17 +162,39 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:99px}
+
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;padding:0 16px;height:60px;background:rgba(8,8,8,0.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.08);position:sticky;top:0;z-index:100;gap:10px}
+.menu-btn{background:none;border:none;cursor:pointer;padding:8px 8px 8px 0;display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+.menu-btn span{display:block;width:22px;height:2px;background:#aaa;border-radius:2px;transition:all .25s}
+.menu-btn.open span{background:#00ff88}
+.menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.menu-btn.open span:nth-child(2){opacity:0}
+.menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.topbar-title{font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#00ff88;position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;pointer-events:none}
+
+/* ── NAV DRAWER (matches homepage exactly) ── */
+.nav-drawer{position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid #2a2a2a;border-radius:20px 20px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s ease;padding:0 24px 40px;max-height:80vh;overflow-y:auto}
+.nav-drawer.open{transform:translateY(0)}
+.drawer-handle-wrap{padding:10px 0 6px;text-align:center}
+.drawer-handle{width:36px;height:4px;background:#333;border-radius:2px;margin:0 auto}
+.drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:290;display:none;backdrop-filter:blur(2px)}
+.drawer-backdrop.open{display:block}
+.drawer-section-label{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:16px 0 8px;border-top:1px solid #1a1a1a;margin-top:4px}
+.drawer-section-label:first-of-type{border-top:none;padding-top:4px}
+.drawer-link{display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111;transition:color .2s}
+.drawer-link:hover,.drawer-link:active{color:#00ff88}
+.drawer-link .icon{width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.drawer-link .icon img{width:28px;height:28px;border-radius:6px;display:block}
+.drawer-cta{display:block;margin-top:20px;background:#00ff88;color:#000;font-weight:700;font-size:15px;padding:13px 24px;border-radius:10px;text-decoration:none;text-align:center}
+
 </style>
 </head>
 <body>
 
 <header class="topbar">
-  <a href="/" class="topbar-logo">Back2Life<em>.app</em></a>
-  <span class="topbar-title">Watermark Tool</span>
-  <button class="topbar-btn" id="openSheet">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-    Settings
-  </button>
+  <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
+  <div class="topbar-title">WATERMARK TOOL</div>
 </header>
 
 <main>
@@ -204,8 +226,6 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
 </main>
 
 <div class="toast" id="toast"></div>
-<div class="sheet-overlay" id="sheetOverlay"></div>
-
 <div class="bottom-sheet" id="sheet">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
@@ -539,5 +559,26 @@ let toastTimer;
 function showToast(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),3200)}
 renderGrid();
 </script>
+
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<div class="nav-drawer" id="navDrawer">
+  <div class="drawer-handle-wrap"><div class="drawer-handle"></div></div>
+  <div class="drawer-section-label">Navigation</div>
+  <a href="/" class="drawer-link"><span class="icon"><img src="/icons/home.png" alt="Home" style="width:28px;height:28px;border-radius:6px;display:block"></span>Home</a>
+  <div class="drawer-section-label">Free Tools</div>
+  <a href="/watermark" class="drawer-link"><span class="icon"><img src="/icons/watermark.png" alt="Watermark Tool" style="width:28px;height:28px;border-radius:6px;display:block"></span>Watermark Tool</a>
+  <a href="/video-splitter" class="drawer-link"><span class="icon"><img src="/icons/video-splitter.png" alt="Video Splitter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Video Splitter</a>
+  <a href="/frame-extractor" class="drawer-link"><span class="icon"><img src="/icons/frame-extractor.png" alt="Frame Extractor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Frame Extractor</a>
+  <a href="/audio-editor" class="drawer-link"><span class="icon"><img src="/icons/audio-editor.png" alt="Audio Editor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Editor</a>
+  <a href="/audio-converter" class="drawer-link"><span class="icon"><img src="/icons/audio-converter.png" alt="Audio Converter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Converter</a>
+  <div class="drawer-section-label">Follow Us</div>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/instagram/E1306C" width="20" height="20" alt="Instagram" style="width:20px;height:20px;border-radius:0"></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/tiktok/ffffff" width="20" height="20" alt="TikTok" style="width:20px;height:20px;border-radius:0"></span>TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/youtube/FF0000" width="20" height="20" alt="YouTube" style="width:20px;height:20px;border-radius:0"></span>YouTube</a>
+  <a href="https://x.com/Back2LifeAI" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/x/ffffff" width="20" height="20" alt="X" style="width:20px;height:20px;border-radius:0"></span>X / Twitter</a>
+  <a href="https://www.threads.com/@back2life.ai" target="_blank" class="drawer-link"><span class="icon"><img src="https://cdn.simpleicons.org/threads/ffffff" width="20" height="20" alt="Threads" style="width:20px;height:20px;border-radius:0"></span>Threads</a>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-cta">📸 Follow on Instagram</a>
+</div>
+
 </body>
 </html>
