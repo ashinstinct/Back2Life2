@@ -100,7 +100,7 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
 .action-btn.gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#000;box-shadow:0 4px 20px rgba(255,215,0,0.25)}
 
 /* PRO SCENE PANEL */
-.scene-panel{position:fixed;top:var(--bar-h);left:0;right:0;bottom:0;background:var(--bg);z-index:80;display:none;flex-direction:column}
+.scene-panel{position:fixed;top:var(--bar-h);left:0;right:0;bottom:0;background:var(--bg);z-index:80;display:none;flex-direction:column;padding-bottom:200px}
 .scene-panel.show{display:flex}
 .scene-header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0}
 .scene-header-title{font-size:13px;font-weight:800;color:var(--text)}
@@ -111,7 +111,7 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
 .scene-progress-track{background:rgba(255,255,255,0.06);border-radius:var(--pill);height:4px;overflow:hidden;margin-bottom:6px}
 .scene-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:var(--pill);width:0%;transition:width 0.2s;box-shadow:0 0 8px rgba(255,215,0,0.4)}
 .scene-progress-label{font-size:11px;color:var(--text3)}
-.scene-grid{flex:1;overflow-y:auto;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;-webkit-overflow-scrolling:touch;align-content:start}
+.scene-grid{flex:1;overflow-y:auto;padding:10px;display:grid;grid-template-columns:repeat(2,1fr);gap:8px;-webkit-overflow-scrolling:touch;align-content:start;overscroll-behavior-y:contain}
 .scene-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);overflow:hidden;cursor:pointer;transition:border-color var(--transition);position:relative}
 .scene-card:active{border-color:var(--gold)}
 .scene-card img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#111}
@@ -223,6 +223,12 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
       </div>
     </div>
     <!-- SCENE DETECT BUTTON (shown when video loaded) -->
+    <div id="sceneActions" style="display:none;gap:10px;flex-direction:column">
+      <div style="display:flex;gap:8px">
+        <button class="action-btn" style="flex:1;font-size:13px" onclick="downloadAllScenes()">⬇ Download All PNGs</button>
+        <button class="action-btn" style="flex:0 0 auto;background:var(--surface);color:var(--text2);border:1px solid var(--border);font-size:13px;padding:15px 16px;box-shadow:none" onclick="closeScenePanel()">✕ Close</button>
+      </div>
+    </div>
     <button class="action-btn gold" id="sceneBtn" style="display:none" onclick="handleSceneBtn()">⚡ Auto-Detect Scenes — PRO</button>
     <button class="action-btn" id="actionBtn" disabled>📷 Extract Frame</button>
   </div>
@@ -242,9 +248,7 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
     <div class="scene-progress-label" id="sceneProgressLabel">Scanning video…</div>
   </div>
   <div class="scene-grid" id="sceneGrid"></div>
-  <div class="scene-footer" id="sceneFooter">
-    <button class="action-btn" style="flex:1" onclick="downloadAllScenes()">⬇ Download All PNGs</button>
-  </div>
+  <div class="scene-footer" id="sceneFooter" style="display:none"></div>
 </div>
 
 <!-- PAYWALL SHEET -->
@@ -458,6 +462,7 @@ function handleSceneBtn() {
 
 function closeScenePanel() {
   document.getElementById('scenePanel').classList.remove('show');
+  document.getElementById('sceneActions').style.display = 'none';
 }
 
 async function runSceneDetection() {
@@ -529,6 +534,8 @@ async function runSceneDetection() {
   document.getElementById('scenePanelTitle').textContent = `${sceneCount} Scene${sceneCount!==1?'s':''} Detected`;
   document.getElementById('scenePanelMeta').textContent = `${fmtTime(duration)} video · tap any frame to download`;
   footer.classList.add('show');
+  document.getElementById('sceneActions').style.display = 'flex';
+  document.getElementById('sceneActions').style.flexDirection = 'column';
   toast(`✓ Found ${sceneCount} scene${sceneCount!==1?'s':''}`);
 }
 
