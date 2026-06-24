@@ -111,10 +111,10 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
 .scene-progress-track{background:rgba(255,255,255,0.06);border-radius:var(--pill);height:4px;overflow:hidden;margin-bottom:6px}
 .scene-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:var(--pill);width:0%;transition:width 0.2s;box-shadow:0 0 8px rgba(255,215,0,0.4)}
 .scene-progress-label{font-size:11px;color:var(--text3)}
-.scene-grid{flex:1;overflow-y:auto;padding:10px;display:grid;grid-template-columns:1fr;gap:10px;-webkit-overflow-scrolling:touch;align-content:start}
-.scene-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);overflow:hidden;cursor:pointer;transition:border-color var(--transition);position:relative}
+.scene-grid{flex:1;overflow-y:auto;padding:10px;display:grid;grid-template-columns:repeat(2,1fr);gap:8px;-webkit-overflow-scrolling:touch;align-content:start}
+.scene-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);overflow:hidden;cursor:pointer;transition:border-color var(--transition);position:relative;display:block}
 .scene-card:active{border-color:var(--gold)}
-.scene-card img{width:100%;height:auto;display:block;background:#111}
+.scene-card img{width:100%;height:auto;display:block;background:#111;min-height:120px}
 .scene-card-time{position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,0.8);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;font-family:monospace}
 .scene-card-dl{position:absolute;bottom:4px;right:4px;background:rgba(0,255,136,0.9);border:none;border-radius:4px;color:#000;font-size:9px;font-weight:800;padding:3px 7px;cursor:pointer}
 .scene-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:10px;flex-shrink:0;display:none}
@@ -487,9 +487,13 @@ async function runSceneDetection() {
 
   const canvas = document.getElementById('sceneCanvas');
   const ctx = canvas.getContext('2d');
-  const W = Math.min(videoEl.videoWidth || 1280, 320); // sample at lower res for speed
-  const H = Math.round(W * (videoEl.videoHeight / videoEl.videoWidth));
-  canvas.width = W; canvas.height = H;
+  // Use actual video dimensions for sampling — critical for portrait
+  const vW = videoEl.videoWidth || 720;
+  const vH = videoEl.videoHeight || 1280;
+  // Sample at reduced size but keep exact same aspect ratio
+  const sW = Math.min(vW, 320);
+  const sH = Math.round(vH * (sW / vW));
+  canvas.width = sW; canvas.height = sH;
 
   const SAMPLE_INTERVAL = 0.5; // seconds between samples
   const SCENE_THRESHOLD = 0.12; // 12% pixel difference = new scene
@@ -500,8 +504,8 @@ async function runSceneDetection() {
 
   // Capture first frame always
   await seekTo(0);
-  ctx.drawImage(videoEl, 0, 0, W, H);
-  const firstFrame = ctx.getImageData(0, 0, W, H);
+  ctx.drawImage(videoEl, 0, 0, sW, sH);
+  const firstFrame = ctx.getImageData(0, 0, sW, sH);
   const firstDataURL = captureFullRes();
   addSceneCard(firstDataURL, 0, ++sceneCount, grid);
   sceneFrames.push({time: 0, dataURL: firstDataURL});
@@ -512,8 +516,8 @@ async function runSceneDetection() {
     if (t >= duration) break;
 
     await seekTo(t);
-    ctx.drawImage(videoEl, 0, 0, W, H);
-    const imgData = ctx.getImageData(0, 0, W, H);
+    ctx.drawImage(videoEl, 0, 0, sW, sH);
+    const imgData = ctx.getImageData(0, 0, sW, sH);
     const diff = pixelDiff(prevData, imgData.data);
 
     if (diff > SCENE_THRESHOLD) {
@@ -549,8 +553,11 @@ function seekTo(t) {
 function captureFullRes() {
   const fc = document.getElementById('frameCanvas');
   const fctx = fc.getContext('2d');
-  fc.width = videoEl.videoWidth; fc.height = videoEl.videoHeight;
-  fctx.drawImage(videoEl, 0, 0, fc.width, fc.height);
+  const vw = videoEl.videoWidth || 720;
+  const vh = videoEl.videoHeight || 1280;
+  fc.width = vw;
+  fc.height = vh;
+  fctx.drawImage(videoEl, 0, 0, vw, vh);
   return fc.toDataURL('image/png');
 }
 
