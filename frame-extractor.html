@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Frame Extractor — Back2Life.app</title>
-<meta name="description" content="Extract any frame from a video as a high-quality PNG. 100% browser-based, free.">
+<meta name="description" content="Extract any frame from a video as a high-quality PNG. Pro: auto scene detection. 100% browser-based.">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -12,30 +12,28 @@
   --bg:#080808;--surface:rgba(255,255,255,0.04);--surface2:rgba(255,255,255,0.07);--surface3:rgba(255,255,255,0.10);
   --glass:rgba(16,16,16,0.88);--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.13);
   --green:#00ff88;--green2:#00cc66;--green-dim:rgba(0,255,136,0.08);--green-glow:0 0 20px rgba(0,255,136,0.3);
+  --gold:#ffd700;--gold2:#ffaa00;--gold-dim:rgba(255,215,0,0.08);
   --text:#f0f0f0;--text2:#aaa;--text3:#555;--red:#ff4444;
   --radius:18px;--radius-sm:12px;--radius-xs:8px;--pill:999px;--bar-h:60px;--btm-h:200px;--btm-scrub:270px;--btm-rename:310px;--transition:0.2s cubic-bezier(0.4,0,0.2,1);
 }
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;touch-action:manipulation}
 
 /* TOPBAR */
-.topbar{position:fixed;top:0;left:0;right:0;height:var(--bar-h);background:rgba(8,8,8,0.92);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100;gap:10px}
-.topbar-logo{font-size:17px;font-weight:800;color:#fff;text-decoration:none;letter-spacing:-0.3px}
-.topbar-logo em{color:var(--green);font-style:normal}
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--bar-h);background:rgba(8,8,8,0.92);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;z-index:100;gap:10px}
 .topbar-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;pointer-events:none}
-.menu-btn{background:none;border:none;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px;z-index:1}
+.menu-btn{background:none;border:none;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px;z-index:1;flex-shrink:0}
 .menu-btn span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .25s}
 .menu-btn.open span{background:var(--green)}
 .menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .menu-btn.open span:nth-child(2){opacity:0}
 .menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-.topbar-upload{background:var(--surface2);border:1px solid var(--border);border-radius:var(--pill);color:var(--text2);font-size:11px;font-weight:700;padding:7px 14px;cursor:pointer;font-family:'Inter',sans-serif;position:relative;z-index:1;transition:all var(--transition)}
-.topbar-upload:active{background:var(--surface3)}
-.topbar-upload input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;font-size:0}
+.pro-badge{margin-left:auto;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#000;font-size:9px;font-weight:800;padding:4px 10px;border-radius:var(--pill);letter-spacing:1px;cursor:pointer;border:none;font-family:'Inter',sans-serif;flex-shrink:0;z-index:1}
 
 /* VIDEO AREA */
 .video-area{position:fixed;top:var(--bar-h);left:0;right:0;bottom:var(--btm-h);background:#000;display:flex;align-items:center;justify-content:center;transition:bottom .3s ease}
 .video-area.scrub-mode{bottom:var(--btm-scrub)}
 .video-area.rename-mode{bottom:var(--btm-rename)}
+.video-area.scene-mode{bottom:0;top:var(--bar-h)}
 
 /* UPLOAD PLACEHOLDER */
 .upload-placeholder{display:flex;flex-direction:column;align-items:center;gap:12px;color:var(--text3);text-align:center;padding:0 32px;cursor:pointer;position:relative;-webkit-user-select:none;user-select:none}
@@ -62,7 +60,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .file-name{font-weight:700;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55%}
 .file-meta{color:var(--text3);font-size:10px;display:flex;gap:10px}
 
-/* FRAME BTNS - segment style */
+/* FRAME BTNS */
 .frame-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--radius-sm);padding:4px}
 .fbtn{background:none;border:none;border-radius:9px;padding:10px 4px;color:var(--text3);font-size:10px;font-weight:800;letter-spacing:.4px;cursor:pointer;text-align:center;font-family:'Inter',sans-serif;line-height:1.25;transition:all var(--transition)}
 .fbtn:active{opacity:0.6}
@@ -95,10 +93,53 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
 
 /* ACTION BTN */
 .action-btn{width:100%;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:15px;padding:15px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.2px;transition:all var(--transition);box-shadow:0 4px 20px rgba(0,255,136,0.2)}
-.action-btn:active{transform:scale(0.98);box-shadow:0 2px 10px rgba(0,255,136,0.15)}
+.action-btn:active{transform:scale(0.98)}
 .action-btn:disabled{opacity:.2;cursor:not-allowed;transform:none;background:#333;color:#666;box-shadow:none}
 .action-btn.dl{background:var(--surface);color:var(--green);border:1px solid rgba(0,255,136,0.3);box-shadow:none}
 .action-btn.dl:active{background:var(--green-dim)}
+.action-btn.gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#000;box-shadow:0 4px 20px rgba(255,215,0,0.25)}
+
+/* PRO SCENE PANEL */
+.scene-panel{position:fixed;top:var(--bar-h);left:0;right:0;bottom:0;background:var(--bg);z-index:80;display:none;flex-direction:column}
+.scene-panel.show{display:flex}
+.scene-header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0}
+.scene-header-title{font-size:13px;font-weight:800;color:var(--text)}
+.scene-header-meta{font-size:11px;color:var(--text3)}
+.scene-close{background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:12px;font-weight:700;padding:7px 14px;border-radius:var(--pill);cursor:pointer;font-family:'Inter',sans-serif}
+.scene-progress{padding:12px 16px;flex-shrink:0;display:none}
+.scene-progress.show{display:block}
+.scene-progress-track{background:rgba(255,255,255,0.06);border-radius:var(--pill);height:4px;overflow:hidden;margin-bottom:6px}
+.scene-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:var(--pill);width:0%;transition:width 0.2s;box-shadow:0 0 8px rgba(255,215,0,0.4)}
+.scene-progress-label{font-size:11px;color:var(--text3)}
+.scene-grid{flex:1;overflow-y:auto;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;-webkit-overflow-scrolling:touch;align-content:start}
+.scene-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);overflow:hidden;cursor:pointer;transition:border-color var(--transition);position:relative}
+.scene-card:active{border-color:var(--gold)}
+.scene-card img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#111}
+.scene-card-time{position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,0.8);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;font-family:monospace}
+.scene-card-dl{position:absolute;bottom:4px;right:4px;background:rgba(0,255,136,0.9);border:none;border-radius:4px;color:#000;font-size:9px;font-weight:800;padding:3px 7px;cursor:pointer}
+.scene-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:10px;flex-shrink:0;display:none}
+.scene-footer.show{display:flex}
+
+/* PAYWALL SHEET */
+.paywall-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);z-index:500;display:none;align-items:flex-end;justify-content:center}
+.paywall-overlay.show{display:flex}
+.paywall-sheet{background:rgba(14,14,14,0.98);border-top:1px solid var(--border2);border-radius:26px 26px 0 0;padding:28px 24px 48px;width:100%;max-height:90vh;overflow-y:auto}
+.paywall-crown{font-size:44px;text-align:center;margin-bottom:8px}
+.paywall-title{font-size:22px;font-weight:900;text-align:center;letter-spacing:-0.5px;margin-bottom:6px}
+.paywall-title em{background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.paywall-sub{font-size:14px;color:var(--text3);text-align:center;line-height:1.5;margin-bottom:24px}
+.paywall-features{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.paywall-feat{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--text2)}
+.paywall-feat-icon{font-size:18px;width:28px;text-align:center;flex-shrink:0}
+.paywall-price{text-align:center;margin-bottom:20px}
+.paywall-amount{font-size:36px;font-weight:900;color:var(--gold)}
+.paywall-period{font-size:13px;color:var(--text3);margin-top:2px}
+.paywall-cta{width:100%;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#000;font-size:16px;font-weight:800;padding:16px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:12px;box-shadow:0 4px 24px rgba(255,215,0,0.3)}
+.paywall-code-row{display:flex;gap:8px;margin-bottom:12px}
+.paywall-code-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:12px 14px;outline:none;letter-spacing:1px;text-transform:uppercase}
+.paywall-code-input:focus{border-color:rgba(255,215,0,0.4)}
+.paywall-code-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:13px;font-weight:700;padding:12px 16px;border-radius:var(--radius-xs);cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap}
+.paywall-dismiss{width:100%;background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;padding:8px}
 
 /* MENU SHEET */
 .menu-sheet{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,12,0.97);backdrop-filter:blur(30px) saturate(200%);border-top:1px solid var(--border2);border-radius:26px 26px 0 0;z-index:300;padding:0 20px env(safe-area-inset-bottom,32px);transform:translateY(100%);transition:transform .35s cubic-bezier(0.32,0.72,0,1);max-height:85vh;overflow-y:auto}
@@ -112,21 +153,11 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
 .nav-link .ico{font-size:18px;width:28px;text-align:center}
 .nav-link .ico img{width:28px;height:28px;border-radius:8px;display:block}
 .nav-cta-btn{display:block;margin-top:20px;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:15px;padding:14px 24px;border-radius:var(--radius-sm);text-decoration:none;text-align:center;box-shadow:0 4px 20px rgba(0,255,136,0.2)}
-
-/* SHARE */
-.share-strip{display:flex;gap:8px;padding:4px 0;overflow-x:auto;scrollbar-width:none}
-.share-strip::-webkit-scrollbar{display:none}
-.share-btn{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition)}
-.share-btn:active{transform:scale(0.93);background:var(--surface2)}
-.share-icon{font-size:22px}
-.share-label{font-size:10px;font-weight:700;color:var(--text3);white-space:nowrap}
-
-/* BACKDROP */
 .backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);z-index:290;display:none}
 .backdrop.show{display:block}
 
 /* TOAST */
-.toast{position:fixed;bottom:calc(var(--btm-h) + 12px);left:50%;transform:translateX(-50%) translateY(10px);background:rgba(16,16,16,0.97);border:1px solid var(--border2);backdrop-filter:blur(20px);color:var(--text);font-size:12px;font-weight:600;padding:11px 20px;border-radius:var(--pill);opacity:0;transition:all .3s;z-index:200;pointer-events:none;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
+.toast{position:fixed;bottom:calc(var(--btm-h) + 12px);left:50%;transform:translateX(-50%) translateY(10px);background:rgba(16,16,16,0.97);border:1px solid var(--border2);backdrop-filter:blur(20px);color:var(--text);font-size:12px;font-weight:600;padding:11px 20px;border-radius:var(--pill);opacity:0;transition:all .3s;z-index:400;pointer-events:none;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 ::-webkit-scrollbar{width:3px}
@@ -134,22 +165,21 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
 </style>
 <link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#080808">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Frame Extractor">
-<link rel="manifest" href="/manifest.json">
 </head>
 <body>
 
+<!-- TOPBAR -->
 <div class="topbar">
   <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
   <div class="topbar-title">FRAME EXTRACTOR</div>
-  <a href="/" class="topbar-logo" style="position:absolute;left:50%;transform:translateX(-50%);display:none"></a>
-  <button class="topbar-upload" id="topUploadBtn">+ VIDEO<input type="file" accept="video/*" id="videoInputTop"></button>
+  <button class="pro-badge" id="proBtn">⚡ PRO</button>
 </div>
 
+<!-- VIDEO AREA -->
 <div class="video-area" id="videoArea">
   <div class="upload-placeholder" id="uploadPlaceholder">
     <input type="file" accept="video/*" id="videoInputMain">
@@ -161,6 +191,7 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
   <video id="videoEl" muted preload="metadata" playsinline></video>
 </div>
 
+<!-- BOTTOM PANEL -->
 <div class="btm" id="btmPanel">
   <div class="btm-inner">
     <div class="file-row" id="fileRow">
@@ -191,12 +222,58 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
         <span class="rename-ext">.png</span>
       </div>
     </div>
+    <!-- SCENE DETECT BUTTON (shown when video loaded) -->
+    <button class="action-btn gold" id="sceneBtn" style="display:none" onclick="handleSceneBtn()">⚡ Auto-Detect Scenes — PRO</button>
     <button class="action-btn" id="actionBtn" disabled>📷 Extract Frame</button>
   </div>
 </div>
 
-<div class="backdrop" id="backdrop"></div>
+<!-- PRO SCENE PANEL -->
+<div class="scene-panel" id="scenePanel">
+  <div class="scene-header">
+    <div>
+      <div class="scene-header-title" id="scenePanelTitle">Detected Scenes</div>
+      <div class="scene-header-meta" id="scenePanelMeta">—</div>
+    </div>
+    <button class="scene-close" onclick="closeScenePanel()">✕ Close</button>
+  </div>
+  <div class="scene-progress" id="sceneProgress">
+    <div class="scene-progress-track"><div class="scene-progress-fill" id="sceneProgressFill"></div></div>
+    <div class="scene-progress-label" id="sceneProgressLabel">Scanning video…</div>
+  </div>
+  <div class="scene-grid" id="sceneGrid"></div>
+  <div class="scene-footer" id="sceneFooter">
+    <button class="action-btn" style="flex:1" onclick="downloadAllScenes()">⬇ Download All PNGs</button>
+  </div>
+</div>
 
+<!-- PAYWALL SHEET -->
+<div class="paywall-overlay" id="paywallOverlay">
+  <div class="paywall-sheet">
+    <div class="paywall-crown">⚡</div>
+    <div class="paywall-title">Back2Life <em>PRO</em></div>
+    <div class="paywall-sub">Unlock Auto Scene Detection — the tool scans your entire video and grabs the first frame of every scene automatically.</div>
+    <div class="paywall-features">
+      <div class="paywall-feat"><span class="paywall-feat-icon">🎬</span>Auto-detects every scene cut in your video</div>
+      <div class="paywall-feat"><span class="paywall-feat-icon">📸</span>Extracts one high-res PNG per scene</div>
+      <div class="paywall-feat"><span class="paywall-feat-icon">⬇</span>Download all scene frames in one tap</div>
+      <div class="paywall-feat"><span class="paywall-feat-icon">🔒</span>100% browser-based — nothing uploaded</div>
+    </div>
+    <div class="paywall-price">
+      <div class="paywall-amount">£4.99</div>
+      <div class="paywall-period">one-time · unlock forever on this device</div>
+    </div>
+    <button class="paywall-cta" onclick="openStripe()">⚡ Unlock Pro — £4.99</button>
+    <div class="paywall-code-row">
+      <input class="paywall-code-input" type="text" id="unlockCodeInput" placeholder="HAVE A CODE?">
+      <button class="paywall-code-btn" onclick="redeemCode()">Redeem</button>
+    </div>
+    <button class="paywall-dismiss" onclick="closePaywall()">Maybe later</button>
+  </div>
+</div>
+
+<!-- MENU SHEET -->
+<div class="backdrop" id="backdrop"></div>
 <div class="menu-sheet" id="menuSheet">
   <div class="sheet-handle"></div>
   <div class="nav-sect">Navigation</div>
@@ -217,87 +294,326 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
   <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-cta-btn">📸 Follow on Instagram</a>
 </div>
 
-
 <canvas id="frameCanvas" style="display:none"></canvas>
+<canvas id="sceneCanvas" style="display:none"></canvas>
 <div class="toast" id="toast"></div>
 
 <script>
-let videoLoaded=false,duration=0,fps=30,frameCount=0,currentFrame=0,mode=null,extractedDataURL=null,originalFileName='frame';
-const menuBtn=document.getElementById('menuBtn'),menuSheet=document.getElementById('menuSheet'),backdrop=document.getElementById('backdrop');
+// ── PRO UNLOCK ──────────────────────────────────────────────────────────────
+const PRO_CODES = ['B2L-PRO-2026', 'B2LPRO2026', 'B2L-DEV-ASH'];
+const STRIPE_URL = 'https://buy.stripe.com/PLACEHOLDER'; // Replace with real Stripe link
+
+function isPro() {
+  return localStorage.getItem('b2l_pro') === 'unlocked';
+}
+function unlockPro() {
+  localStorage.setItem('b2l_pro', 'unlocked');
+  document.getElementById('proBtn').textContent = '⚡ PRO ✓';
+  document.getElementById('proBtn').style.background = 'linear-gradient(135deg,#00cc66,#00ff88)';
+}
+function redeemCode() {
+  const code = document.getElementById('unlockCodeInput').value.trim().toUpperCase().replace(/\s/g,'');
+  if (PRO_CODES.includes(code)) {
+    unlockPro();
+    closePaywall();
+    toast('✓ Pro unlocked! Scene detection is ready.');
+  } else {
+    document.getElementById('unlockCodeInput').style.borderColor = '#ff4444';
+    setTimeout(() => document.getElementById('unlockCodeInput').style.borderColor = '', 1500);
+    toast('❌ Invalid code — please try again');
+  }
+}
+function openStripe() {
+  window.open(STRIPE_URL, '_blank');
+}
+function showPaywall() {
+  document.getElementById('paywallOverlay').classList.add('show');
+}
+function closePaywall() {
+  document.getElementById('paywallOverlay').classList.remove('show');
+}
+document.getElementById('proBtn').addEventListener('click', () => {
+  if (isPro()) { toast('✓ Pro already unlocked on this device'); return; }
+  showPaywall();
+});
+document.getElementById('paywallOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('paywallOverlay')) closePaywall();
+});
+document.getElementById('unlockCodeInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') redeemCode();
+});
+
+// Check unlock on load
+if (isPro()) unlockPro();
+
+// ── MENU ────────────────────────────────────────────────────────────────────
+const menuBtn = document.getElementById('menuBtn');
+const menuSheet = document.getElementById('menuSheet');
+const backdrop = document.getElementById('backdrop');
 function openMenu(){menuSheet.classList.add('open');backdrop.classList.add('show');menuBtn.classList.add('open');document.body.style.overflow='hidden'}
 function closeMenu(){menuSheet.classList.remove('open');backdrop.classList.remove('show');menuBtn.classList.remove('open');document.body.style.overflow=''}
-menuBtn.addEventListener('click',()=>menuSheet.classList.contains('open')?closeMenu():openMenu());
-backdrop.addEventListener('click',closeMenu);
-let touchStartY=0;
-menuSheet.addEventListener('touchstart',e=>{touchStartY=e.touches[0].clientY},{passive:true});
-menuSheet.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-touchStartY>60)closeMenu()},{passive:true});
-function handleFileInput(file){if(file&&file.type.startsWith('video/'))loadVideo(file)}
-document.getElementById('videoInputMain').addEventListener('change',e=>handleFileInput(e.target.files[0]));
-document.getElementById('videoInputTop').addEventListener('change',e=>handleFileInput(e.target.files[0]));
-document.getElementById('uplIcon').addEventListener('click',e=>{e.stopPropagation();document.getElementById('videoInputMain').click()});
-const videoEl=document.getElementById('videoEl');
-function loadVideo(file){
-  originalFileName=file.name.replace(/\.[^.]+$/,'');videoEl.src=URL.createObjectURL(file);
-  videoEl.addEventListener('loadedmetadata',()=>{
-    duration=videoEl.duration;frameCount=Math.floor(duration*fps);
-    document.getElementById('uploadPlaceholder').classList.add('hidden');videoEl.classList.add('show');
-    document.getElementById('ibName').textContent=file.name.length>22?file.name.substring(0,20)+'…':file.name;
-    document.getElementById('ibDur').textContent=fmtTime(duration);
-    document.getElementById('ibRes').textContent=videoEl.videoWidth+'×'+videoEl.videoHeight;
+menuBtn.addEventListener('click', () => menuSheet.classList.contains('open') ? closeMenu() : openMenu());
+backdrop.addEventListener('click', closeMenu);
+let touchStartY = 0;
+menuSheet.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, {passive:true});
+menuSheet.addEventListener('touchend', e => { if(e.changedTouches[0].clientY - touchStartY > 60) closeMenu(); }, {passive:true});
+
+// ── FRAME EXTRACTOR ─────────────────────────────────────────────────────────
+let videoLoaded=false, duration=0, fps=30, frameCount=0, currentFrame=0;
+let mode=null, extractedDataURL=null, originalFileName='frame';
+let sceneFrames = []; // stores {time, dataURL}
+
+function handleFileInput(file) { if(file && file.type.startsWith('video/')) loadVideo(file); }
+document.getElementById('videoInputMain').addEventListener('change', e => handleFileInput(e.target.files[0]));
+document.getElementById('uplIcon').addEventListener('click', e => { e.stopPropagation(); document.getElementById('videoInputMain').click(); });
+const videoEl = document.getElementById('videoEl');
+
+function loadVideo(file) {
+  originalFileName = file.name.replace(/\.[^.]+$/, '');
+  videoEl.src = URL.createObjectURL(file);
+  videoEl.addEventListener('loadedmetadata', () => {
+    duration = videoEl.duration; frameCount = Math.floor(duration * fps);
+    document.getElementById('uploadPlaceholder').classList.add('hidden');
+    videoEl.classList.add('show');
+    document.getElementById('ibName').textContent = file.name.length > 22 ? file.name.substring(0,20)+'…' : file.name;
+    document.getElementById('ibDur').textContent = fmtTime(duration);
+    document.getElementById('ibRes').textContent = videoEl.videoWidth+'×'+videoEl.videoHeight;
     document.getElementById('fileRow').classList.add('show');
-    document.getElementById('startTime').textContent='0:00.000';
-    document.getElementById('endTime').textContent=fmtTimecode(duration);
-    videoLoaded=true;document.getElementById('actionBtn').disabled=false;resetExtract();setMode('start');
-  },{once:true});
+    document.getElementById('startTime').textContent = '0:00.000';
+    document.getElementById('endTime').textContent = fmtTimecode(duration);
+    videoLoaded = true;
+    document.getElementById('actionBtn').disabled = false;
+    document.getElementById('sceneBtn').style.display = 'block';
+    resetExtract(); setMode('start');
+  }, {once:true});
 }
-document.getElementById('btnStart').addEventListener('click',()=>setMode('start'));
-document.getElementById('btnScrub').addEventListener('click',()=>setMode('scrub'));
-document.getElementById('btnEnd').addEventListener('click',()=>setMode('end'));
-function setMode(m){
-  mode=m;
-  document.getElementById('btnStart').classList.toggle('active',m==='start');
-  document.getElementById('btnScrub').classList.toggle('active',m==='scrub');
-  document.getElementById('btnEnd').classList.toggle('active',m==='end');
-  const isScrub=m==='scrub';
-  document.getElementById('scrubSection').classList.toggle('show',isScrub);
-  const btm=document.getElementById('btmPanel'),va=document.getElementById('videoArea');
-  const hasRename=document.getElementById('renameSection').classList.contains('show');
+
+document.getElementById('btnStart').addEventListener('click', () => setMode('start'));
+document.getElementById('btnScrub').addEventListener('click', () => setMode('scrub'));
+document.getElementById('btnEnd').addEventListener('click', () => setMode('end'));
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('btnStart').classList.toggle('active', m==='start');
+  document.getElementById('btnScrub').classList.toggle('active', m==='scrub');
+  document.getElementById('btnEnd').classList.toggle('active', m==='end');
+  const isScrub = m==='scrub';
+  document.getElementById('scrubSection').classList.toggle('show', isScrub);
+  const btm = document.getElementById('btmPanel'), va = document.getElementById('videoArea');
+  const hasRename = document.getElementById('renameSection').classList.contains('show');
   if(hasRename){btm.className='btm rename-mode';va.className='video-area rename-mode'}
   else if(isScrub){btm.className='btm scrub-mode';va.className='video-area scrub-mode'}
   else{btm.className='btm';va.className='video-area'}
-  if(m==='start')seekToFrame(0);else if(m==='end')seekToFrame(frameCount-1);
+  if(m==='start') seekToFrame(0); else if(m==='end') seekToFrame(frameCount-1);
 }
-const scrubber=document.getElementById('scrubber');
-scrubber.addEventListener('input',()=>{
-  if(!videoLoaded)return;const t=(scrubber.value/1000)*duration;videoEl.currentTime=t;
-  currentFrame=Math.round(t*fps);updateScrubUI(t);document.getElementById('scrubTimeLabel').textContent=fmtTimecode(t);
+
+const scrubber = document.getElementById('scrubber');
+scrubber.addEventListener('input', () => {
+  if(!videoLoaded) return;
+  const t = (scrubber.value/1000)*duration;
+  videoEl.currentTime = t;
+  currentFrame = Math.round(t*fps);
+  updateScrubUI(t);
+  document.getElementById('scrubTimeLabel').textContent = fmtTimecode(t);
 });
-document.getElementById('prevFrame').addEventListener('click',()=>{seekToFrame(currentFrame-1);document.getElementById('scrubTimeLabel').textContent=fmtTimecode(currentFrame/fps)});
-document.getElementById('nextFrame').addEventListener('click',()=>{seekToFrame(currentFrame+1);document.getElementById('scrubTimeLabel').textContent=fmtTimecode(currentFrame/fps)});
-function seekToFrame(frame){currentFrame=Math.max(0,Math.min(frame,frameCount-1));const t=currentFrame/fps;videoEl.currentTime=t;scrubber.value=Math.round((t/duration)*1000);updateScrubUI(t)}
-function updateScrubUI(t){document.getElementById('scrubTc').textContent=fmtTimecode(t);document.getElementById('frameNum').textContent='Frame '+currentFrame}
-const actionBtn=document.getElementById('actionBtn');
-actionBtn.addEventListener('click',()=>{
-  if(!videoLoaded)return;
-  if(extractedDataURL){downloadFrame();return}
-  const canvas=document.getElementById('frameCanvas'),ctx=canvas.getContext('2d');
-  const W=videoEl.videoWidth||1280,H=videoEl.videoHeight||720;canvas.width=W;canvas.height=H;ctx.drawImage(videoEl,0,0,W,H);extractedDataURL=canvas.toDataURL('image/png');
-  const t=videoEl.currentTime;document.getElementById('renameInput').value=`${originalFileName}_${fmtTimecode(t).replace(/[:.]/g,'-')}`;
+document.getElementById('prevFrame').addEventListener('click', () => { seekToFrame(currentFrame-1); document.getElementById('scrubTimeLabel').textContent = fmtTimecode(currentFrame/fps); });
+document.getElementById('nextFrame').addEventListener('click', () => { seekToFrame(currentFrame+1); document.getElementById('scrubTimeLabel').textContent = fmtTimecode(currentFrame/fps); });
+function seekToFrame(frame) { currentFrame=Math.max(0,Math.min(frame,frameCount-1)); const t=currentFrame/fps; videoEl.currentTime=t; scrubber.value=Math.round((t/duration)*1000); updateScrubUI(t); }
+function updateScrubUI(t) { document.getElementById('scrubTc').textContent=fmtTimecode(t); document.getElementById('frameNum').textContent='Frame '+currentFrame; }
+
+const actionBtn = document.getElementById('actionBtn');
+actionBtn.addEventListener('click', () => {
+  if(!videoLoaded) return;
+  if(extractedDataURL) { downloadFrame(); return; }
+  const canvas=document.getElementById('frameCanvas'), ctx=canvas.getContext('2d');
+  const W=videoEl.videoWidth||1280, H=videoEl.videoHeight||720;
+  canvas.width=W; canvas.height=H; ctx.drawImage(videoEl,0,0,W,H);
+  extractedDataURL = canvas.toDataURL('image/png');
+  const t = videoEl.currentTime;
+  document.getElementById('renameInput').value = `${originalFileName}_${fmtTimecode(t).replace(/[:.]/g,'-')}`;
   document.getElementById('renameSection').classList.add('show');
-  const btm=document.getElementById('btmPanel'),va=document.getElementById('videoArea');btm.className='btm rename-mode';va.className='video-area rename-mode';
-  actionBtn.className='action-btn dl';actionBtn.textContent='⬇ Download PNG';toast('✓ Frame ready — edit name then download');
+  const btm=document.getElementById('btmPanel'), va=document.getElementById('videoArea');
+  btm.className='btm rename-mode'; va.className='video-area rename-mode';
+  actionBtn.className='action-btn dl'; actionBtn.textContent='⬇ Download PNG';
+  toast('✓ Frame ready — edit name then download');
 });
-function downloadFrame(){const name=document.getElementById('renameInput').value.trim()||'frame';const a=document.createElement('a');a.href=extractedDataURL;a.download=name+'.png';document.body.appendChild(a);a.click();document.body.removeChild(a);toast('⬇ Saved '+name+'.png');resetExtract()}
-function resetExtract(){extractedDataURL=null;document.getElementById('renameSection').classList.remove('show');actionBtn.className='action-btn';actionBtn.textContent='📷 Extract Frame';actionBtn.disabled=!videoLoaded;setMode(mode||'start')}
+function downloadFrame() {
+  const name=document.getElementById('renameInput').value.trim()||'frame';
+  const a=document.createElement('a'); a.href=extractedDataURL; a.download=name+'.png';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  toast('⬇ Saved '+name+'.png'); resetExtract();
+}
+function resetExtract() {
+  extractedDataURL=null;
+  document.getElementById('renameSection').classList.remove('show');
+  actionBtn.className='action-btn'; actionBtn.textContent='📷 Extract Frame';
+  actionBtn.disabled=!videoLoaded; setMode(mode||'start');
+}
+
+// ── SCENE DETECTION ─────────────────────────────────────────────────────────
+function handleSceneBtn() {
+  if (!isPro()) { showPaywall(); return; }
+  runSceneDetection();
+}
+
+function closeScenePanel() {
+  document.getElementById('scenePanel').classList.remove('show');
+}
+
+async function runSceneDetection() {
+  if (!videoLoaded) return;
+  sceneFrames = [];
+
+  const panel = document.getElementById('scenePanel');
+  const grid = document.getElementById('sceneGrid');
+  const progress = document.getElementById('sceneProgress');
+  const progressFill = document.getElementById('sceneProgressFill');
+  const progressLabel = document.getElementById('sceneProgressLabel');
+  const footer = document.getElementById('sceneFooter');
+
+  panel.classList.add('show');
+  grid.innerHTML = '';
+  footer.classList.remove('show');
+  progress.classList.add('show');
+  progressFill.style.width = '0%';
+  progressLabel.textContent = 'Scanning video…';
+  document.getElementById('scenePanelTitle').textContent = 'Detecting Scenes…';
+  document.getElementById('scenePanelMeta').textContent = 'Comparing frames every 0.5s';
+
+  const canvas = document.getElementById('sceneCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = Math.min(videoEl.videoWidth || 1280, 320); // sample at lower res for speed
+  const H = Math.round(W * (videoEl.videoHeight / videoEl.videoWidth));
+  canvas.width = W; canvas.height = H;
+
+  const SAMPLE_INTERVAL = 0.5; // seconds between samples
+  const SCENE_THRESHOLD = 0.12; // 12% pixel difference = new scene
+  const totalSamples = Math.floor(duration / SAMPLE_INTERVAL);
+
+  let prevData = null;
+  let sceneCount = 0;
+
+  // Capture first frame always
+  await seekTo(0);
+  ctx.drawImage(videoEl, 0, 0, W, H);
+  const firstFrame = ctx.getImageData(0, 0, W, H);
+  const firstDataURL = captureFullRes();
+  addSceneCard(firstDataURL, 0, ++sceneCount, grid);
+  sceneFrames.push({time: 0, dataURL: firstDataURL});
+  prevData = firstFrame.data;
+
+  for (let i = 1; i <= totalSamples; i++) {
+    const t = i * SAMPLE_INTERVAL;
+    if (t >= duration) break;
+
+    await seekTo(t);
+    ctx.drawImage(videoEl, 0, 0, W, H);
+    const imgData = ctx.getImageData(0, 0, W, H);
+    const diff = pixelDiff(prevData, imgData.data);
+
+    if (diff > SCENE_THRESHOLD) {
+      const dataURL = captureFullRes();
+      addSceneCard(dataURL, t, ++sceneCount, grid);
+      sceneFrames.push({time: t, dataURL});
+    }
+
+    prevData = imgData.data;
+    progressFill.style.width = ((i / totalSamples) * 100) + '%';
+    progressLabel.textContent = `Scanning ${fmtTime(t)} / ${fmtTime(duration)} — ${sceneCount} scene${sceneCount!==1?'s':''} found`;
+
+    // Yield to browser every 10 frames to keep UI responsive
+    if (i % 10 === 0) await new Promise(r => setTimeout(r, 0));
+  }
+
+  progress.classList.remove('show');
+  document.getElementById('scenePanelTitle').textContent = `${sceneCount} Scene${sceneCount!==1?'s':''} Detected`;
+  document.getElementById('scenePanelMeta').textContent = `${fmtTime(duration)} video · tap any frame to download`;
+  footer.classList.add('show');
+  toast(`✓ Found ${sceneCount} scene${sceneCount!==1?'s':''}`);
+}
+
+function seekTo(t) {
+  return new Promise(resolve => {
+    videoEl.currentTime = t;
+    videoEl.addEventListener('seeked', resolve, {once: true});
+  });
+}
+
+function captureFullRes() {
+  const fc = document.getElementById('frameCanvas');
+  const fctx = fc.getContext('2d');
+  fc.width = videoEl.videoWidth; fc.height = videoEl.videoHeight;
+  fctx.drawImage(videoEl, 0, 0, fc.width, fc.height);
+  return fc.toDataURL('image/png');
+}
+
+function pixelDiff(a, b) {
+  let diff = 0;
+  const step = 4 * 4; // sample every 4th pixel for speed
+  let count = 0;
+  for (let i = 0; i < a.length; i += step) {
+    const dr = Math.abs(a[i]   - b[i]);
+    const dg = Math.abs(a[i+1] - b[i+1]);
+    const db = Math.abs(a[i+2] - b[i+2]);
+    if ((dr + dg + db) / 3 > 25) diff++;
+    count++;
+  }
+  return diff / count;
+}
+
+function addSceneCard(dataURL, time, num, grid) {
+  const card = document.createElement('div');
+  card.className = 'scene-card';
+  card.innerHTML = `<img src="${dataURL}" loading="lazy">
+    <div class="scene-time">${fmtTimecode(time)}</div>
+    <button class="scene-card-dl" onclick="downloadScene(${num-1})">⬇</button>`;
+  card.querySelector('img').addEventListener('click', () => downloadScene(num-1));
+  grid.appendChild(card);
+}
+
+function downloadScene(idx) {
+  const s = sceneFrames[idx]; if(!s) return;
+  const a = document.createElement('a');
+  a.href = s.dataURL;
+  a.download = `${originalFileName}_scene${String(idx+1).padStart(3,'0')}_${fmtTimecode(s.time).replace(/[:.]/g,'-')}.png`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+async function downloadAllScenes() {
+  toast('⬇ Downloading all scenes…');
+  for (let i = 0; i < sceneFrames.length; i++) {
+    downloadScene(i);
+    await new Promise(r => setTimeout(r, 300)); // stagger downloads
+  }
+  toast(`✓ ${sceneFrames.length} scenes downloaded`);
+}
+
+// ── HELPERS ─────────────────────────────────────────────────────────────────
 function fmtTime(s){return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0')}
 function fmtTimecode(s){const m=Math.floor(s/60),sec=Math.floor(s%60),ms=Math.round((s%1)*1000);return m+':'+String(sec).padStart(2,'0')+'.'+String(ms).padStart(3,'0')}
-function shareTo(platform){
-  const url=encodeURIComponent(window.location.href);const text=encodeURIComponent('Free Frame Extractor — grab any video frame as PNG 🎬');
-  const urls={whatsapp:'https://wa.me/?text='+text+'%20'+url,x:'https://x.com/intent/tweet?text='+text+'&url='+url,tiktok:'https://www.tiktok.com/',instagram:'https://www.instagram.com/',copy:null};
-  if(platform==='copy'){navigator.clipboard.writeText(window.location.href);toast('✓ Link copied!')}else{window.open(urls[platform],'_blank')}
-}
 let toastTimer;
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2800)}
+</script>
+
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<div id="navDrawer" style="position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid #2a2a2a;border-radius:20px 20px 0 0;z-index:1000;transform:translateY(100%);transition:transform .3s ease;padding:0 24px 40px;max-height:80vh;overflow-y:auto">
+</div>
+<script>
+(function(){
+  var b=document.getElementById('burgerBtn');
+  var d=document.getElementById('navDrawer');
+  var bd=document.getElementById('drawerBackdrop');
+  if(!b||!d||!bd)return;
+  document.body.appendChild(bd);document.body.appendChild(d);
+  bd.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;display:none;backdrop-filter:blur(2px)';
+  function openD(){d.style.transform='translateY(0)';bd.style.display='block';document.body.style.overflow='hidden';}
+  function closeD(){d.style.transform='translateY(100%)';bd.style.display='none';document.body.style.overflow='';}
+  b.addEventListener('click',function(){d.style.transform==='translateY(0)'?closeD():openD();});
+  bd.addEventListener('click',closeD);
+  var ty=0;
+  d.addEventListener('touchstart',function(e){ty=e.touches[0].clientY;},{passive:true});
+  d.addEventListener('touchend',function(e){if(e.changedTouches[0].clientY-ty>50)closeD();},{passive:true});
+})();
 </script>
 </body>
 </html>
