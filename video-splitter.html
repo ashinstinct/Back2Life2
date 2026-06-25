@@ -278,7 +278,6 @@ let originalName = 'video', splitting = false;
 
 // ── DOM ──
 const fileInput      = document.getElementById('fileInput');
-const topFileInput   = document.getElementById('topFileInput');
 const dropzone       = document.getElementById('dropzone');
 const videoEl        = document.getElementById('videoEl');
 const videoPreview   = document.getElementById('videoPreview');
@@ -334,7 +333,6 @@ function handleFile(file) {
 document.getElementById('browseBtn').addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
 dropzone.addEventListener('click', e => { if (e.target === dropzone) fileInput.click(); });
 fileInput.addEventListener('change',    e => handleFile(e.target.files[0]));
-topFileInput.addEventListener('change', e => handleFile(e.target.files[0]));
 dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
 dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
 dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); });
