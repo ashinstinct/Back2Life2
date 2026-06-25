@@ -12,6 +12,7 @@
   --bg:#080808;--surface:rgba(255,255,255,0.04);--surface2:rgba(255,255,255,0.07);--surface3:rgba(255,255,255,0.10);
   --glass:rgba(16,16,16,0.88);--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.13);
   --green:#00ff88;--green2:#00cc66;--green-dim:rgba(0,255,136,0.08);--green-glow:0 0 20px rgba(0,255,136,0.3);
+  --gold:#ffd700;--gold2:#ffaa00;--gold-dim:rgba(255,215,0,0.08);
   --text:#f0f0f0;--text2:#aaa;--text3:#555;--red:#ff4444;
   --radius:18px;--radius-sm:12px;--radius-xs:8px;--pill:999px;--bar-h:60px;--btm-h:200px;--btm-scrub:270px;--btm-rename:310px;--transition:0.2s cubic-bezier(0.4,0,0.2,1);
 }
@@ -26,6 +27,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .menu-btn.open span:nth-child(2){opacity:0}
 .menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.pro-badge{margin-left:auto;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#000;font-size:9px;font-weight:800;padding:4px 10px;border-radius:var(--pill);letter-spacing:1px;cursor:pointer;border:none;font-family:'Inter',sans-serif;flex-shrink:0;z-index:1}
 
 /* VIDEO AREA */
 .video-area{position:fixed;top:var(--bar-h);left:0;right:0;bottom:var(--btm-h);background:#000;display:flex;align-items:center;justify-content:center;transition:bottom .3s ease}
@@ -119,6 +121,25 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
 .scene-footer.show{display:flex}
 
 /* PAYWALL SHEET */
+.paywall-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);z-index:500;display:none;align-items:flex-end;justify-content:center}
+.paywall-overlay.show{display:flex}
+.paywall-sheet{background:rgba(14,14,14,0.98);border-top:1px solid var(--border2);border-radius:26px 26px 0 0;padding:28px 24px 48px;width:100%;max-height:90vh;overflow-y:auto}
+.paywall-crown{font-size:44px;text-align:center;margin-bottom:8px}
+.paywall-title{font-size:22px;font-weight:900;text-align:center;letter-spacing:-0.5px;margin-bottom:6px}
+.paywall-title em{background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.paywall-sub{font-size:14px;color:var(--text3);text-align:center;line-height:1.5;margin-bottom:24px}
+.paywall-features{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.paywall-feat{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--text2)}
+.paywall-feat-icon{font-size:18px;width:28px;text-align:center;flex-shrink:0}
+.paywall-price{text-align:center;margin-bottom:20px}
+.paywall-amount{font-size:36px;font-weight:900;color:var(--gold)}
+.paywall-period{font-size:13px;color:var(--text3);margin-top:2px}
+.paywall-cta{width:100%;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#000;font-size:16px;font-weight:800;padding:16px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:12px;box-shadow:0 4px 24px rgba(255,215,0,0.3)}
+.paywall-code-row{display:flex;gap:8px;margin-bottom:12px}
+.paywall-code-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:12px 14px;outline:none;letter-spacing:1px;text-transform:uppercase}
+.paywall-code-input:focus{border-color:rgba(255,215,0,0.4)}
+.paywall-code-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:13px;font-weight:700;padding:12px 16px;border-radius:var(--radius-xs);cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap}
+.paywall-dismiss{width:100%;background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;padding:8px}
 
 /* MENU SHEET */
 .menu-sheet{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,12,0.97);backdrop-filter:blur(30px) saturate(200%);border-top:1px solid var(--border2);border-radius:26px 26px 0 0;z-index:300;padding:0 20px env(safe-area-inset-bottom,32px);transform:translateY(100%);transition:transform .35s cubic-bezier(0.32,0.72,0,1);max-height:85vh;overflow-y:auto}
@@ -207,7 +228,7 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
         <button class="action-btn" style="flex:0 0 auto;background:var(--surface);color:var(--text2);border:1px solid var(--border);font-size:13px;padding:15px 16px;box-shadow:none" onclick="closeScenePanel()">✕ Close</button>
       </div>
     </div>
-    <button class="action-btn" id="sceneBtn" style="display:none;background:linear-gradient(135deg,#00cc66,#00ff88);color:#000" onclick="runSceneDetection()">🎬 Auto-Detect Scenes</button>
+    <button class="action-btn" id="sceneBtn" style="display:none" onclick="handleSceneBtn()">🎬 Auto-Detect Scenes</button>
     <button class="action-btn" id="actionBtn" disabled>📷 Extract Frame</button>
   </div>
 </div>
@@ -228,7 +249,6 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
   <div class="scene-grid" id="sceneGrid"></div>
   <div class="scene-footer" id="sceneFooter" style="display:none"></div>
 </div>
-
     <div class="paywall-title">Back2Life <em>PRO</em></div>
     <div class="paywall-sub">Unlock Auto Scene Detection — the tool scans your entire video and grabs the first frame of every scene automatically.</div>
     <div class="paywall-features">
@@ -277,6 +297,45 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
 <div class="toast" id="toast"></div>
 
 <script>
+// ── PRO UNLOCK ──────────────────────────────────────────────────────────────
+const PRO_CODES = ['B2L-PRO-2026', 'B2LPRO2026', 'B2L-DEV-ASH'];
+const STRIPE_URL = 'https://buy.stripe.com/PLACEHOLDER'; // Replace with real Stripe link
+
+function isPro() {
+  return true;
+}
+function unlockPro() {
+  localStorage.setItem('b2l_pro', 'unlocked');
+}
+function redeemCode() {
+  const code = document.getElementById('unlockCodeInput').value.trim().toUpperCase().replace(/\s/g,'');
+  if (PRO_CODES.includes(code)) {
+    unlockPro();
+    closePaywall();
+    toast('✓ Pro unlocked! Scene detection is ready.');
+  } else {
+    document.getElementById('unlockCodeInput').style.borderColor = '#ff4444';
+    setTimeout(() => document.getElementById('unlockCodeInput').style.borderColor = '', 1500);
+    toast('❌ Invalid code — please try again');
+  }
+}
+function openStripe() {
+  window.open(STRIPE_URL, '_blank');
+}
+function showPaywall() {
+  document.getElementById('paywallOverlay').classList.add('show');
+}
+function closePaywall() {
+  document.getElementById('paywallOverlay').classList.remove('show');
+}
+
+document.getElementById('paywallOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('paywallOverlay')) closePaywall();
+});
+document.getElementById('unlockCodeInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') redeemCode();
+});
+
 // ── MENU ────────────────────────────────────────────────────────────────────
 const menuBtn = document.getElementById('menuBtn');
 const menuSheet = document.getElementById('menuSheet');
@@ -382,6 +441,7 @@ function resetExtract() {
 }
 
 // ── SCENE DETECTION ─────────────────────────────────────────────────────────
+function handleSceneBtn() {
   runSceneDetection();
 }
 
