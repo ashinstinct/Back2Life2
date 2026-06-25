@@ -487,12 +487,15 @@ async function runSceneDetection() {
 
   const canvas = document.getElementById('sceneCanvas');
   const ctx = canvas.getContext('2d');
-  // Use actual video dimensions for sampling — critical for portrait
+  // Use actual video dimensions for sampling
   const vW = videoEl.videoWidth || 720;
   const vH = videoEl.videoHeight || 1280;
-  // Sample at reduced size but keep exact same aspect ratio
-  const sW = Math.min(vW, 320);
-  const sH = Math.round(vH * (sW / vW));
+  const rotated = isRotated();
+  // If rotated, swap dims so sample canvas matches actual portrait orientation
+  const realW = rotated ? vH : vW;
+  const realH = rotated ? vW : vH;
+  const sW = Math.min(realW, 320);
+  const sH = Math.round(realH * (sW / realW));
   canvas.width = sW; canvas.height = sH;
 
   const SAMPLE_INTERVAL = 0.5; // seconds between samples
@@ -504,7 +507,9 @@ async function runSceneDetection() {
 
   // Capture first frame always
   await seekTo(0);
-  ctx.drawImage(videoEl, 0, 0, sW, sH);
+  if (rotated) {
+    ctx.save(); ctx.translate(sW/2, sH/2); ctx.rotate(Math.PI/2); ctx.drawImage(videoEl, -sH/2, -sW/2, sH, sW); ctx.restore();
+  } else { ctx.drawImage(videoEl, 0, 0, sW, sH); }
   const firstFrame = ctx.getImageData(0, 0, sW, sH);
   const firstDataURL = captureFullRes();
   addSceneCard(firstDataURL, 0, ++sceneCount, grid);
@@ -516,7 +521,9 @@ async function runSceneDetection() {
     if (t >= duration) break;
 
     await seekTo(t);
-    ctx.drawImage(videoEl, 0, 0, sW, sH);
+    if (rotated) {
+      ctx.save(); ctx.translate(sW/2, sH/2); ctx.rotate(Math.PI/2); ctx.drawImage(videoEl, -sH/2, -sW/2, sH, sW); ctx.restore();
+    } else { ctx.drawImage(videoEl, 0, 0, sW, sH); }
     const imgData = ctx.getImageData(0, 0, sW, sH);
     const diff = pixelDiff(prevData, imgData.data);
 
@@ -550,14 +557,43 @@ function seekTo(t) {
   });
 }
 
+function isRotated() {
+  // Android portrait videos often report as landscape with rotation metadata
+  // Detect by checking if the display aspect ratio looks portrait
+  const vw = videoEl.videoWidth || 720;
+  const vh = videoEl.videoHeight || 1280;
+  // If video appears landscape in DOM but plays as portrait, it's rotated
+  // We check actual rendered dimensions vs reported
+  const rect = videoEl.getBoundingClientRect();
+  if (rect.width > 0 && rect.height > 0) {
+    const renderedRatio = rect.width / rect.height;
+    const reportedRatio = vw / vh;
+    // If rendered looks portrait but reported looks landscape = rotated 90deg
+    return renderedRatio < 0.8 && reportedRatio > 1.2;
+  }
+  return false;
+}
+
 function captureFullRes() {
   const fc = document.getElementById('frameCanvas');
   const fctx = fc.getContext('2d');
   const vw = videoEl.videoWidth || 720;
   const vh = videoEl.videoHeight || 1280;
-  fc.width = vw;
-  fc.height = vh;
-  fctx.drawImage(videoEl, 0, 0, vw, vh);
+  const rotated = isRotated();
+  if (rotated) {
+    // Draw rotated 90deg clockwise: swap width/height on canvas
+    fc.width = vh;
+    fc.height = vw;
+    fctx.save();
+    fctx.translate(vh/2, vw/2);
+    fctx.rotate(Math.PI/2);
+    fctx.drawImage(videoEl, -vw/2, -vh/2, vw, vh);
+    fctx.restore();
+  } else {
+    fc.width = vw;
+    fc.height = vh;
+    fctx.drawImage(videoEl, 0, 0, vw, vh);
+  }
   return fc.toDataURL('image/png');
 }
 
