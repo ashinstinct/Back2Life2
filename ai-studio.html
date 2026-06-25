@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AI Studio — Back2Life.app</title>
+<meta name="description" content="Generate AI images and videos with GPT Image 2, Nano Banana Pro, Kling 3.0, Seedance 2.0 and more. Powered by fal.ai.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#080808;--surface:rgba(255,255,255,0.04);--surface2:rgba(255,255,255,0.07);--surface3:rgba(255,255,255,0.10);
+  --glass:rgba(16,16,16,0.88);--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.13);
+  --green:#00ff88;--green2:#00cc66;--green-dim:rgba(0,255,136,0.08);
+  --purple:#a855f7;--purple2:#7c3aed;--purple-dim:rgba(168,85,247,0.08);
+  --text:#f0f0f0;--text2:#aaa;--text3:#555;--red:#ff4444;
+  --radius:18px;--radius-sm:12px;--radius-xs:8px;--pill:999px;--bar-h:60px;
+  --transition:0.2s cubic-bezier(0.4,0,0.2,1);
+}
+html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden;touch-action:manipulation}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;padding:0 16px;height:var(--bar-h);background:rgba(8,8,8,0.95);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;gap:10px}
+.menu-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+.menu-btn span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .25s}
+.topbar-title{position:absolute;left:50%;transform:translateX(-50%);font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--green);white-space:nowrap;pointer-events:none}
+.api-key-btn{margin-left:auto;background:var(--surface2);border:1px solid var(--border);color:var(--text3);font-size:11px;font-weight:700;padding:6px 12px;border-radius:var(--pill);cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0;z-index:1;transition:all var(--transition)}
+.api-key-btn.set{color:var(--green);border-color:rgba(0,255,136,0.3)}
+
+/* MODE TABS */
+.mode-tabs{display:flex;background:rgba(255,255,255,0.04);border-bottom:1px solid var(--border);padding:8px 16px;gap:6px}
+.mode-tab{flex:1;background:none;border:1px solid var(--border);color:var(--text3);font-size:13px;font-weight:700;padding:10px 8px;border-radius:var(--radius-xs);cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition);text-align:center}
+.mode-tab.active.image{background:rgba(168,85,247,0.12);border-color:rgba(168,85,247,0.4);color:var(--purple)}
+.mode-tab.active.video{background:var(--green-dim);border-color:rgba(0,255,136,0.4);color:var(--green)}
+.mode-tab:active{opacity:0.7}
+
+main{flex:1;display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch}
+
+/* MODEL SELECTOR */
+.model-section{padding:14px 16px 0}
+.sect-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sect-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.model-scroll{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.model-scroll::-webkit-scrollbar{display:none}
+.model-chip{flex-shrink:0;background:var(--surface);border:1.5px solid var(--border);color:var(--text2);font-size:12px;font-weight:700;padding:8px 14px;border-radius:var(--pill);cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition);white-space:nowrap}
+.model-chip:active{opacity:0.7}
+.model-chip.selected.image{background:rgba(168,85,247,0.12);border-color:rgba(168,85,247,0.5);color:var(--purple)}
+.model-chip.selected.video{background:var(--green-dim);border-color:rgba(0,255,136,0.5);color:var(--green)}
+.model-chip .badge{font-size:8px;font-weight:800;padding:2px 5px;border-radius:3px;margin-left:4px;letter-spacing:0.5px;text-transform:uppercase}
+.model-chip .badge.pro{background:rgba(168,85,247,0.2);color:var(--purple)}
+.model-chip .badge.fast{background:rgba(0,255,136,0.15);color:var(--green)}
+.model-chip .badge.omni{background:rgba(255,170,0,0.15);color:#ffaa00}
+
+/* INPUT AREA */
+.input-section{padding:14px 16px}
+.prompt-wrap{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;transition:border-color var(--transition)}
+.prompt-wrap:focus-within{border-color:rgba(255,255,255,0.2)}
+.prompt-textarea{width:100%;background:none;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.5;padding:14px;outline:none;resize:none;min-height:100px;max-height:200px}
+.prompt-textarea::placeholder{color:var(--text3)}
+.prompt-actions{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-top:1px solid var(--border)}
+.char-count{font-size:11px;color:var(--text3)}
+.clear-btn{background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;padding:4px 8px}
+
+/* IMAGE UPLOAD (for i2v and start frame) */
+.upload-section{padding:0 16px 14px}
+.upload-area{border:1.5px dashed rgba(255,255,255,0.12);border-radius:var(--radius-sm);padding:20px;text-align:center;cursor:pointer;position:relative;transition:all var(--transition);background:var(--surface)}
+.upload-area:active{border-color:var(--green);background:var(--green-dim)}
+.upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-area-label{font-size:13px;color:var(--text3);font-weight:500}
+.upload-preview{position:relative;display:none}
+.upload-preview.show{display:block}
+.upload-preview img{width:100%;border-radius:var(--radius-xs);display:block;max-height:200px;object-fit:contain;background:#111}
+.upload-remove{position:absolute;top:8px;right:8px;background:rgba(255,68,68,0.85);border:none;border-radius:50%;width:28px;height:28px;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* SETTINGS */
+.settings-section{padding:0 16px 14px;display:flex;flex-direction:column;gap:10px}
+.setting-row{display:flex;align-items:center;gap:12px}
+.setting-label{font-size:12px;color:var(--text3);font-weight:600;min-width:70px}
+.setting-select{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:9px 12px;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none}
+.setting-select:focus{border-color:rgba(255,255,255,0.2)}
+.setting-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2)}
+.setting-toggle input{width:18px;height:18px;accent-color:var(--green);cursor:pointer;flex-shrink:0}
+
+/* GENERATE BUTTON */
+.generate-section{padding:0 16px 20px}
+.generate-btn{width:100%;padding:16px;border-radius:var(--radius-sm);border:none;font-size:15px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition);letter-spacing:0.2px}
+.generate-btn.image{background:linear-gradient(135deg,var(--purple2),var(--purple));color:#fff;box-shadow:0 4px 20px rgba(168,85,247,0.25)}
+.generate-btn.video{background:linear-gradient(135deg,var(--green2),var(--green));color:#000;box-shadow:0 4px 20px rgba(0,255,136,0.2)}
+.generate-btn:active{transform:scale(0.98)}
+.generate-btn:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* PROGRESS */
+.progress-section{padding:0 16px 14px;display:none}
+.progress-section.show{display:block}
+.progress-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px}
+.progress-label{font-size:13px;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0}
+.spinner.purple{border-top-color:var(--purple)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.progress-bar-bg{background:rgba(255,255,255,0.06);border-radius:var(--pill);height:4px;overflow:hidden}
+.progress-bar-fill{height:100%;border-radius:var(--pill);width:0%;transition:width 0.5s ease;box-shadow:0 0 8px rgba(0,255,136,0.4)}
+.progress-bar-fill.image{background:linear-gradient(90deg,var(--purple2),var(--purple));box-shadow:0 0 8px rgba(168,85,247,0.4)}
+.progress-bar-fill.video{background:linear-gradient(90deg,var(--green2),var(--green))}
+
+/* RESULTS GRID */
+.results-section{padding:0 16px 20px}
+.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.results-grid.single{grid-template-columns:1fr}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;position:relative}
+.result-card img{width:100%;height:auto;display:block;background:#111}
+.result-card video{width:100%;height:auto;display:block;background:#111;max-height:400px;object-fit:contain}
+.result-actions{display:flex;gap:6px;padding:8px}
+.result-dl{flex:1;background:var(--green-dim);border:1px solid rgba(0,255,136,0.2);color:var(--green);font-size:12px;font-weight:700;padding:8px;border-radius:var(--radius-xs);cursor:pointer;font-family:'Inter',sans-serif;text-align:center;text-decoration:none;transition:all var(--transition)}
+.result-dl:active{background:rgba(0,255,136,0.15)}
+.result-dl.purple{background:var(--purple-dim);border-color:rgba(168,85,247,0.2);color:var(--purple)}
+.result-use-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text3);font-size:12px;font-weight:700;padding:8px 12px;border-radius:var(--radius-xs);cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap}
+.result-model-tag{position:absolute;top:8px;left:8px;background:rgba(0,0,0,0.75);color:#fff;font-size:9px;font-weight:700;padding:3px 7px;border-radius:4px;letter-spacing:0.5px}
+.result-cost{font-size:10px;color:var(--text3);text-align:center;padding:0 8px 6px}
+.no-results{text-align:center;color:var(--text3);font-size:14px;padding:40px 20px}
+.no-results-icon{font-size:44px;margin-bottom:12px;opacity:0.4}
+
+/* API KEY SHEET */
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:200;display:none;align-items:flex-end}
+.sheet-overlay.show{display:flex}
+.api-sheet{background:rgba(14,14,14,0.98);border-top:1px solid var(--border2);border-radius:26px 26px 0 0;padding:20px 20px 48px;width:100%}
+.sheet-handle{width:36px;height:4px;background:rgba(255,255,255,0.12);border-radius:var(--pill);margin:0 auto 20px}
+.api-sheet-title{font-size:16px;font-weight:800;margin-bottom:6px}
+.api-sheet-sub{font-size:13px;color:var(--text3);margin-bottom:16px;line-height:1.5}
+.api-input-row{display:flex;gap:8px;margin-bottom:12px}
+.api-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:12px 14px;outline:none;letter-spacing:0.5px}
+.api-input:focus{border-color:rgba(0,255,136,0.4)}
+.api-save-btn{background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:14px;padding:12px 20px;border-radius:var(--radius-xs);border:none;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap}
+.api-link{font-size:12px;color:var(--text3);text-align:center}
+.api-link a{color:var(--green);text-decoration:none}
+.api-dismiss{width:100%;background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;padding:10px;margin-top:8px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(16,16,16,0.97);border:1px solid var(--border2);backdrop-filter:blur(20px);color:var(--text);font-size:13px;font-weight:600;padding:12px 22px;border-radius:var(--pill);opacity:0;transition:all 0.3s;z-index:400;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:99px}
+</style>
+<link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#080808">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="AI Studio">
+</head>
+<body>
+
+<header class="topbar">
+  <button id="menuBtn" style="background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px;flex-shrink:0;z-index:1">
+    <span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px"></span>
+    <span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px"></span>
+    <span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px"></span>
+  </button>
+  <span class="topbar-title">AI STUDIO</span>
+  <button class="api-key-btn" id="apiKeyBtn">🔑 API Key</button>
+</header>
+
+<!-- MODE TABS -->
+<div class="mode-tabs">
+  <button class="mode-tab active image" id="tabImage" onclick="setMode('image')">🖼️ Image</button>
+  <button class="mode-tab video" id="tabVideo" onclick="setMode('video')">🎬 Video</button>
+</div>
+
+<main id="mainContent">
+
+  <!-- MODEL SELECTOR -->
+  <div class="model-section">
+    <div class="sect-label">Model</div>
+    <div class="model-scroll" id="modelScroll"></div>
+  </div>
+
+  <!-- IMAGE UPLOAD (for image-to-video or image reference) -->
+  <div class="upload-section" id="uploadSection" style="margin-top:14px">
+    <div class="sect-label" id="uploadLabel">Start Image <span style="font-size:9px;color:var(--text3);font-weight:500;text-transform:none;letter-spacing:0;margin-left:4px">optional</span></div>
+    <div class="upload-preview" id="uploadPreview">
+      <img id="uploadImg" src="" alt="Start frame">
+      <button class="upload-remove" id="uploadRemove">✕</button>
+    </div>
+    <div class="upload-area" id="uploadArea">
+      <input type="file" id="imageFileInput" accept="image/*">
+      <div class="upload-area-label">📷 Tap to upload an image<br><span style="font-size:11px;color:var(--text3)">JPG, PNG, WEBP · Max 10MB</span></div>
+    </div>
+  </div>
+
+  <!-- PROMPT -->
+  <div class="input-section" id="promptSection">
+    <div class="sect-label">Prompt</div>
+    <div class="prompt-wrap">
+      <textarea class="prompt-textarea" id="promptInput" placeholder="Describe what you want to generate..." rows="4"></textarea>
+      <div class="prompt-actions">
+        <span class="char-count" id="charCount">0 / 2500</span>
+        <button class="clear-btn" onclick="document.getElementById('promptInput').value='';updateCharCount()">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="settings-section" id="settingsSection"></div>
+
+  <!-- GENERATE -->
+  <div class="generate-section">
+    <button class="generate-btn image" id="generateBtn" onclick="generate()">✨ Generate Image</button>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-section" id="progressSection">
+    <div class="progress-card">
+      <div class="progress-label">
+        <div class="spinner purple" id="progressSpinner"></div>
+        <span id="progressLabel">Generating…</span>
+      </div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill image" id="progressFill"></div></div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-section" id="resultsSection">
+    <div class="sect-label" id="resultsLabel" style="display:none">Results</div>
+    <div id="resultsGrid"></div>
+  </div>
+
+</main>
+
+<!-- API KEY SHEET -->
+<div class="sheet-overlay" id="apiSheet">
+  <div class="api-sheet">
+    <div class="sheet-handle"></div>
+    <div class="api-sheet-title">🔑 fal.ai API Key</div>
+    <div class="api-sheet-sub">Your API key is stored on this device only and never sent to our servers. It's used directly to call fal.ai on your behalf.</div>
+    <div class="api-input-row">
+      <input class="api-input" type="password" id="apiKeyInput" placeholder="fal_key_...">
+      <button class="api-save-btn" onclick="saveApiKey()">Save</button>
+    </div>
+    <div class="api-link">Get your key at <a href="https://fal.ai/dashboard/keys" target="_blank">fal.ai/dashboard/keys</a></div>
+    <button class="api-dismiss" onclick="closeApiSheet()">Dismiss</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- BURGER MENU -->
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<div id="navDrawer" style="position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid #2a2a2a;border-radius:20px 20px 0 0;z-index:1000;transform:translateY(100%);transition:transform .3s ease;padding:0 24px 40px;max-height:80vh;overflow-y:auto">
+  <div style="padding:10px 0 6px;text-align:center"><div style="width:36px;height:4px;background:#333;border-radius:2px;margin:0 auto"></div></div>
+  <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:16px 0 8px">Navigation</div>
+  <a href="/" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/home.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Home"></span>Home</a>
+  <a href="/#tutorials" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/tutorials.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Tutorials"></span>Tutorials</a>
+  <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:16px 0 8px;border-top:1px solid #1a1a1a"><img src="/icons/free-tools.png" style="width:16px;height:16px;border-radius:3px;vertical-align:middle;margin-right:6px">Free Tools</div>
+  <a href="/watermark" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/watermark.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Watermark"></span>Watermark Tool</a>
+  <a href="/video-splitter" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/video-splitter.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Video Splitter"></span>Video Splitter</a>
+  <a href="/frame-extractor" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/frame-extractor.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Frame Extractor"></span>Frame Extractor</a>
+  <a href="/audio-editor" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/audio-editor.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Audio Editor"></span>Audio Editor</a>
+  <a href="/audio-converter" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/audio-converter.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Audio Converter"></span>Audio Converter</a>
+  <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:16px 0 8px;border-top:1px solid #1a1a1a">AI Generation</div>
+  <a href="/ai-studio" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="font-size:20px;width:28px;text-align:center">✨</span>AI Studio</a>
+  <a href="/motion-control" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="font-size:20px;width:28px;text-align:center">🎭</span>Motion Control</a>
+  <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:16px 0 8px;border-top:1px solid #1a1a1a">Follow Us</div>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><img src="https://cdn.simpleicons.org/instagram/E1306C" width="20" height="20" alt="Instagram"></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><img src="https://cdn.simpleicons.org/tiktok/ffffff" width="20" height="20" alt="TikTok"></span>TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><img src="https://cdn.simpleicons.org/youtube/FF0000" width="20" height="20" alt="YouTube"></span>YouTube</a>
+  <a href="https://x.com/Back2LifeAI" target="_blank" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><img src="https://cdn.simpleicons.org/x/ffffff" width="20" height="20" alt="X"></span>X / Twitter</a>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" style="display:block;margin-top:20px;background:#00ff88;color:#000;font-weight:700;font-size:15px;padding:13px 24px;border-radius:10px;text-decoration:none;text-align:center">📸 Follow on Instagram</a>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────────
+let currentMode = 'image';
+let selectedModel = null;
+let uploadedImageUrl = null;
+let uploadedImageFile = null;
+let generating = false;
+let results = [];
+
+// ── MODEL DEFINITIONS ──────────────────────────────────────────────────────
+const IMAGE_MODELS = [
+  {
+    id: 'fal-ai/gpt-image-2',
+    name: 'GPT Image 2',
+    badge: 'pro',
+    description: 'OpenAI\'s latest — fine detail, accurate text',
+    supports: { t2i: true, i2i: false },
+    params: {
+      aspect_ratios: ['1024x1024','1024x1536','1536x1024','auto'],
+      quality: ['standard','hd'],
+      output_format: ['png','jpeg','webp']
+    },
+    cost: '$0.04–$0.19 / image'
+  },
+  {
+    id: 'fal-ai/nano-banana-pro',
+    name: 'Nano Banana Pro',
+    badge: 'omni',
+    description: 'Google\'s best — 4K, typography, consistency',
+    supports: { t2i: true, i2i: false },
+    params: {
+      aspect_ratios: ['1:1','4:3','3:4','16:9','9:16','21:9'],
+      num_images: [1,2,4]
+    },
+    cost: '$0.03–$0.12 / image'
+  },
+  {
+    id: 'fal-ai/nano-banana-2',
+    name: 'Nano Banana 2',
+    badge: 'fast',
+    description: 'Google Gemini Flash — fast, great text',
+    supports: { t2i: true, i2i: false },
+    params: {
+      aspect_ratios: ['1:1','4:3','3:4','16:9','9:16'],
+      num_images: [1,2,4]
+    },
+    cost: '$0.01–$0.04 / image'
+  }
+];
+
+const VIDEO_MODELS = [
+  {
+    id: 'fal-ai/kling-video/v2.5/pro/image-to-video',
+    name: 'Kling 2.5 Pro',
+    badge: null,
+    description: 'Fast, cost-effective — solid motion quality',
+    requires_image: true,
+    mode: 'i2v',
+    params: {
+      durations: ['5','10'],
+      aspect_ratios: ['16:9','9:16','1:1'],
+      audio: true
+    },
+    cost: '$0.07/s'
+  },
+  {
+    id: 'fal-ai/kling-video/v3/pro/image-to-video',
+    name: 'Kling 3.0 Pro',
+    badge: 'pro',
+    description: 'Top-tier 1080p — native audio, element support',
+    requires_image: false,
+    mode: 'both',
+    params: {
+      durations: ['5','10','15'],
+      aspect_ratios: ['16:9','9:16','1:1','4:3','3:4','21:9'],
+      audio: true
+    },
+    cost: '$0.112–0.168/s'
+  },
+  {
+    id: 'fal-ai/kling-video/v3/standard/text-to-video',
+    name: 'Kling 3.0 Std',
+    badge: 'fast',
+    description: 'Same quality as Pro, faster iteration',
+    requires_image: false,
+    mode: 'both',
+    params: {
+      durations: ['5','10','15'],
+      aspect_ratios: ['16:9','9:16','1:1','4:3','3:4'],
+      audio: true
+    },
+    cost: '$0.084/s'
+  },
+  {
+    id: 'fal-ai/kling-video/o3/pro/image-to-video',
+    name: 'Kling 3.0 Omni',
+    badge: 'omni',
+    description: 'O3 variant — multi-image elements, voice input',
+    requires_image: false,
+    mode: 'both',
+    params: {
+      durations: ['5','10','15'],
+      aspect_ratios: ['16:9','9:16','1:1'],
+      audio: true
+    },
+    cost: '$0.112–0.168/s'
+  },
+  {
+    id: 'fal-ai/kling-video/o1/video-to-video/edit',
+    name: 'Kling 3.0 Edit',
+    badge: 'omni',
+    description: 'Video editor — swap style, characters, environment',
+    requires_image: true,
+    image_label: 'Source Video URL or Image',
+    mode: 'i2v',
+    params: {
+      durations: ['5','10'],
+      aspect_ratios: ['16:9','9:16','1:1'],
+      audio: false
+    },
+    cost: '$0.168/s'
+  },
+  {
+    id: 'bytedance/seedance-2.0/text-to-video',
+    name: 'Seedance 2.0',
+    badge: 'pro',
+    description: 'ByteDance — unified audio+video, 720p',
+    requires_image: false,
+    mode: 'both',
+    params: {
+      durations: ['5','10','15'],
+      aspect_ratios: ['16:9','9:16','1:1','4:3','3:4','21:9'],
+      resolutions: ['480p','720p'],
+      audio: true
+    },
+    cost: '$0.30/s'
+  },
+  {
+    id: 'bytedance/seedance-2.0/fast/text-to-video',
+    name: 'Seedance 2.0 Fast',
+    badge: 'fast',
+    description: 'Lower latency, lower cost, great for iteration',
+    requires_image: false,
+    mode: 'both',
+    params: {
+      durations: ['5','10','15'],
+      aspect_ratios: ['16:9','9:16','1:1','4:3'],
+      resolutions: ['480p','720p'],
+      audio: true
+    },
+    cost: '$0.24/s'
+  },
+  {
+    id: 'bytedance/seedance-2.0/mini/text-to-video',
+    name: 'Seedance 2.0 Mini',
+    badge: 'fast',
+    description: 'Lightest tier — fastest, most affordable',
+    requires_image: false,
+    mode: 'both',
+    params: {
+      durations: ['5','10'],
+      aspect_ratios: ['16:9','9:16','1:1'],
+      resolutions: ['480p'],
+      audio: true
+    },
+    cost: '$0.12/s'
+  }
+];
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+function init() {
+  checkApiKey();
+  setMode('image');
+}
+
+function checkApiKey() {
+  const key = localStorage.getItem('fal_api_key');
+  const btn = document.getElementById('apiKeyBtn');
+  if (key) {
+    btn.textContent = '🔑 Key Set';
+    btn.classList.add('set');
+  } else {
+    btn.textContent = '🔑 API Key';
+    btn.classList.remove('set');
+  }
+}
+
+// ── MODE SWITCH ────────────────────────────────────────────────────────────
+function setMode(mode) {
+  currentMode = mode;
+  selectedModel = null;
+  results = [];
+
+  document.getElementById('tabImage').classList.toggle('active', mode === 'image');
+  document.getElementById('tabVideo').classList.toggle('active', mode === 'video');
+  document.getElementById('tabImage').classList.toggle('image', mode === 'image');
+  document.getElementById('tabVideo').classList.toggle('video', mode === 'video');
+
+  const genBtn = document.getElementById('generateBtn');
+  const spinner = document.getElementById('progressSpinner');
+  const fill = document.getElementById('progressFill');
+
+  if (mode === 'image') {
+    genBtn.textContent = '✨ Generate Image';
+    genBtn.className = 'generate-btn image';
+    spinner.className = 'spinner purple';
+    fill.className = 'progress-bar-fill image';
+    document.getElementById('uploadSection').style.display = 'none';
+  } else {
+    genBtn.textContent = '🎬 Generate Video';
+    genBtn.className = 'generate-btn video';
+    spinner.className = 'spinner';
+    fill.className = 'progress-bar-fill video';
+    document.getElementById('uploadSection').style.display = 'block';
+  }
+
+  renderModels();
+  renderSettings();
+  document.getElementById('resultsGrid').innerHTML = '';
+  document.getElementById('resultsLabel').style.display = 'none';
+  document.getElementById('progressSection').classList.remove('show');
+}
+
+// ── RENDER MODELS ──────────────────────────────────────────────────────────
+function renderModels() {
+  const models = currentMode === 'image' ? IMAGE_MODELS : VIDEO_MODELS;
+  const scroll = document.getElementById('modelScroll');
+  scroll.innerHTML = '';
+
+  models.forEach((m, i) => {
+    const chip = document.createElement('button');
+    chip.className = 'model-chip' + (i === 0 ? (currentMode === 'image' ? ' selected image' : ' selected video') : '');
+    chip.innerHTML = m.name + (m.badge ? `<span class="badge ${m.badge}">${m.badge}</span>` : '');
+    chip.addEventListener('click', () => selectModel(m, chip));
+    scroll.appendChild(chip);
+
+    if (i === 0) {
+      selectedModel = m;
+      if (currentMode === 'video') updateUploadForModel(m);
+    }
+  });
+
+  renderSettings();
+}
+
+function selectModel(model, chipEl) {
+  selectedModel = model;
+  document.querySelectorAll('.model-chip').forEach(c => {
+    c.classList.remove('selected','image','video');
+  });
+  chipEl.classList.add('selected', currentMode);
+
+  if (currentMode === 'video') updateUploadForModel(model);
+  renderSettings();
+}
+
+function updateUploadForModel(model) {
+  const uploadSection = document.getElementById('uploadSection');
+  const uploadLabel = document.getElementById('uploadLabel');
+  if (model.requires_image) {
+    uploadSection.style.display = 'block';
+    uploadLabel.innerHTML = (model.image_label || 'Start Image') + ' <span style="font-size:9px;color:var(--text3);font-weight:500;text-transform:none;letter-spacing:0;margin-left:4px">required</span>';
+  } else {
+    uploadSection.style.display = 'block';
+    uploadLabel.innerHTML = 'Start Image <span style="font-size:9px;color:var(--text3);font-weight:500;text-transform:none;letter-spacing:0;margin-left:4px">optional — adds image-to-video mode</span>';
+  }
+}
+
+// ── RENDER SETTINGS ────────────────────────────────────────────────────────
+function renderSettings() {
+  const section = document.getElementById('settingsSection');
+  section.innerHTML = '';
+  if (!selectedModel) return;
+
+  const p = selectedModel.params;
+
+  if (currentMode === 'image') {
+    // Aspect ratio
+    if (p.aspect_ratios) {
+      section.appendChild(makeSelect('aspect_ratio', 'Aspect', p.aspect_ratios, p.aspect_ratios[0]));
+    }
+    // Quality (GPT Image 2)
+    if (p.quality) {
+      section.appendChild(makeSelect('quality', 'Quality', p.quality, 'standard'));
+    }
+    // Number of images
+    if (p.num_images) {
+      section.appendChild(makeSelect('num_images', 'Count', p.num_images.map(String), '1'));
+    }
+    // Output format
+    if (p.output_format) {
+      section.appendChild(makeSelect('output_format', 'Format', p.output_format, 'png'));
+    }
+  } else {
+    // Duration
+    if (p.durations) {
+      section.appendChild(makeSelect('duration', 'Duration', p.durations.map(s => ({value:s,label:s+'s'})), p.durations[0]));
+    }
+    // Aspect ratio
+    if (p.aspect_ratios) {
+      section.appendChild(makeSelect('aspect_ratio', 'Aspect', p.aspect_ratios, p.aspect_ratios[0]));
+    }
+    // Resolution (Seedance)
+    if (p.resolutions) {
+      section.appendChild(makeSelect('resolution', 'Resolution', p.resolutions, p.resolutions[p.resolutions.length-1]));
+    }
+    // Audio toggle
+    if (p.audio !== undefined) {
+      section.appendChild(makeToggle('generate_audio', 'Audio', true));
+    }
+  }
+}
+
+function makeSelect(id, label, options, defaultVal) {
+  const row = document.createElement('div');
+  row.className = 'setting-row';
+  const lbl = document.createElement('span');
+  lbl.className = 'setting-label';
+  lbl.textContent = label;
+  const sel = document.createElement('select');
+  sel.className = 'setting-select';
+  sel.id = 'setting_' + id;
+  options.forEach(opt => {
+    const o = document.createElement('option');
+    if (typeof opt === 'object') { o.value = opt.value; o.textContent = opt.label; }
+    else { o.value = opt; o.textContent = opt; }
+    if ((typeof opt === 'object' ? opt.value : opt) === defaultVal) o.selected = true;
+    sel.appendChild(o);
+  });
+  row.appendChild(lbl);
+  row.appendChild(sel);
+  return row;
+}
+
+function makeToggle(id, label, defaultVal) {
+  const row = document.createElement('label');
+  row.className = 'setting-toggle';
+  const cb = document.createElement('input');
+  cb.type = 'checkbox';
+  cb.id = 'setting_' + id;
+  cb.checked = defaultVal;
+  row.appendChild(cb);
+  row.appendChild(document.createTextNode(label + ' generation'));
+  return row;
+}
+
+function getSetting(id) {
+  const el = document.getElementById('setting_' + id);
+  if (!el) return null;
+  if (el.type === 'checkbox') return el.checked;
+  return el.value;
+}
+
+// ── IMAGE UPLOAD ───────────────────────────────────────────────────────────
+document.getElementById('imageFileInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  uploadedImageFile = file;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    uploadedImageUrl = ev.target.result; // data URL — will upload to fal storage
+    document.getElementById('uploadImg').src = ev.target.result;
+    document.getElementById('uploadPreview').classList.add('show');
+    document.getElementById('uploadArea').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById('uploadRemove').addEventListener('click', () => {
+  uploadedImageUrl = null;
+  uploadedImageFile = null;
+  document.getElementById('uploadPreview').classList.remove('show');
+  document.getElementById('uploadArea').style.display = 'block';
+  document.getElementById('imageFileInput').value = '';
+  document.getElementById('uploadImg').src = '';
+});
+
+// ── PROMPT CHAR COUNT ──────────────────────────────────────────────────────
+document.getElementById('promptInput').addEventListener('input', updateCharCount);
+function updateCharCount() {
+  const len = document.getElementById('promptInput').value.length;
+  document.getElementById('charCount').textContent = len + ' / 2500';
+}
+
+// ── GENERATE ───────────────────────────────────────────────────────────────
+async function generate() {
+  const apiKey = localStorage.getItem('fal_api_key');
+  if (!apiKey) {
+    showToast('⚠️ Set your fal.ai API key first');
+    showApiSheet();
+    return;
+  }
+  if (!selectedModel) { showToast('⚠️ Select a model'); return; }
+  if (generating) return;
+
+  const prompt = document.getElementById('promptInput').value.trim();
+  if (!prompt) { showToast('⚠️ Enter a prompt'); return; }
+
+  if (currentMode === 'video' && selectedModel.requires_image && !uploadedImageFile) {
+    showToast('⚠️ This model requires an image');
+    return;
+  }
+
+  generating = true;
+  document.getElementById('generateBtn').disabled = true;
+  document.getElementById('progressSection').classList.add('show');
+  document.getElementById('progressLabel').textContent = 'Starting generation…';
+  startProgressAnimation();
+
+  try {
+    let imageUrl = null;
+
+    // Upload image to fal storage if provided
+    if (uploadedImageFile) {
+      document.getElementById('progressLabel').textContent = 'Uploading image…';
+      imageUrl = await uploadToFal(uploadedImageFile, apiKey);
+    }
+
+    let result;
+    if (currentMode === 'image') {
+      result = await generateImage(prompt, imageUrl, apiKey);
+    } else {
+      result = await generateVideo(prompt, imageUrl, apiKey);
+    }
+
+    stopProgressAnimation();
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('progressLabel').textContent = '✓ Done!';
+    setTimeout(() => document.getElementById('progressSection').classList.remove('show'), 1500);
+
+    renderResults(result);
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById('progressLabel').textContent = '⚠️ Error: ' + (err.message || 'Generation failed');
+    showToast('⚠️ ' + (err.message || 'Generation failed'));
+    stopProgressAnimation();
+  } finally {
+    generating = false;
+    document.getElementById('generateBtn').disabled = false;
+  }
+}
+
+// ── FAL UPLOAD ─────────────────────────────────────────────────────────────
+async function uploadToFal(file, apiKey) {
+  const res = await fetch('https://rest.alpha.fal.ai/storage/upload/initiate', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Key ' + apiKey,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ file_name: file.name, content_type: file.type })
+  });
+  if (!res.ok) throw new Error('Upload initiation failed: ' + res.status);
+  const { upload_url, file_url } = await res.json();
+
+  await fetch(upload_url, {
+    method: 'PUT',
+    headers: { 'Content-Type': file.type },
+    body: file
+  });
+
+  return file_url;
+}
+
+// ── FAL QUEUE HELPER ───────────────────────────────────────────────────────
+async function falRun(modelId, input, apiKey) {
+  // Submit request
+  const submitRes = await fetch(`https://queue.fal.run/${modelId}`, {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Key ' + apiKey,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(input)
+  });
+
+  if (!submitRes.ok) {
+    const err = await submitRes.json().catch(() => ({}));
+    throw new Error(err.detail || err.message || 'API error ' + submitRes.status);
+  }
+
+  const { request_id } = await submitRes.json();
+
+  // Poll for completion
+  document.getElementById('progressLabel').textContent = 'In queue…';
+  let poll_url = `https://queue.fal.run/${modelId}/requests/${request_id}/status`;
+  let attempts = 0;
+  const maxAttempts = 300; // 5 min max
+
+  while (attempts < maxAttempts) {
+    await new Promise(r => setTimeout(r, 2000));
+    const statusRes = await fetch(poll_url + '?logs=1', {
+      headers: { 'Authorization': 'Key ' + apiKey }
+    });
+    if (!statusRes.ok) throw new Error('Status check failed');
+    const status = await statusRes.json();
+
+    if (status.status === 'IN_QUEUE') {
+      document.getElementById('progressLabel').textContent = `Queue position: ${status.queue_position || '...'}`;
+    } else if (status.status === 'IN_PROGRESS') {
+      document.getElementById('progressLabel').textContent = 'Generating…';
+      // Show logs if available
+      if (status.logs && status.logs.length > 0) {
+        const lastLog = status.logs[status.logs.length - 1].message;
+        if (lastLog) document.getElementById('progressLabel').textContent = lastLog.substring(0, 60);
+      }
+    } else if (status.status === 'COMPLETED') {
+      // Fetch result
+      const resultRes = await fetch(`https://queue.fal.run/${modelId}/requests/${request_id}`, {
+        headers: { 'Authorization': 'Key ' + apiKey }
+      });
+      return await resultRes.json();
+    } else if (status.status === 'FAILED') {
+      throw new Error(status.error || 'Generation failed');
+    }
+
+    attempts++;
+  }
+
+  throw new Error('Timed out waiting for generation');
+}
+
+// ── IMAGE GENERATION ───────────────────────────────────────────────────────
+async function generateImage(prompt, imageUrl, apiKey) {
+  const modelId = selectedModel.id;
+  let input = { prompt };
+
+  if (modelId === 'fal-ai/gpt-image-2') {
+    input.aspect_ratio = getSetting('aspect_ratio') || 'auto';
+    input.quality = getSetting('quality') || 'standard';
+    input.output_format = getSetting('output_format') || 'png';
+    input.num_images = parseInt(getSetting('num_images') || '1');
+  } else if (modelId === 'fal-ai/nano-banana-pro') {
+    input.aspect_ratio = getSetting('aspect_ratio') || '1:1';
+    input.num_images = parseInt(getSetting('num_images') || '1');
+  } else if (modelId === 'fal-ai/nano-banana-2') {
+    input.aspect_ratio = getSetting('aspect_ratio') || '1:1';
+    input.num_images = parseInt(getSetting('num_images') || '1');
+  }
+
+  document.getElementById('progressLabel').textContent = 'Submitting to fal.ai…';
+  return await falRun(modelId, input, apiKey);
+}
+
+// ── VIDEO GENERATION ───────────────────────────────────────────────────────
+async function generateVideo(prompt, imageUrl, apiKey) {
+  const model = selectedModel;
+  const modelId = model.id;
+  let input = { prompt };
+
+  const duration = getSetting('duration') || '5';
+  const aspect_ratio = getSetting('aspect_ratio') || '16:9';
+  const generate_audio = getSetting('generate_audio') !== false;
+
+  // Build input based on model type
+  if (modelId.includes('kling-video/v2.5')) {
+    input.start_image_url = imageUrl;
+    input.duration = duration;
+    input.aspect_ratio = aspect_ratio;
+    input.cfg_scale = 0.5;
+  } else if (modelId.includes('kling-video/v3/pro/image-to-video') || modelId.includes('kling-video/v3/standard')) {
+    if (imageUrl) input.start_image_url = imageUrl;
+    input.duration = duration;
+    input.aspect_ratio = aspect_ratio;
+    input.generate_audio = generate_audio;
+    // Use correct endpoint for i2v vs t2v
+    if (imageUrl && modelId.includes('text-to-video')) {
+      // Switch to image-to-video endpoint
+      return await falRun(modelId.replace('text-to-video','image-to-video'), input, apiKey);
+    }
+  } else if (modelId.includes('kling-video/v3/pro')) {
+    if (imageUrl) input.start_image_url = imageUrl;
+    input.duration = duration;
+    input.aspect_ratio = aspect_ratio;
+    input.generate_audio = generate_audio;
+  } else if (modelId.includes('kling-video/o3')) {
+    // O3 uses image_url not start_image_url
+    if (imageUrl) input.image_url = imageUrl;
+    input.duration = duration;
+    input.aspect_ratio = aspect_ratio;
+    input.generate_audio = generate_audio;
+  } else if (modelId.includes('kling-video/o1/video-to-video/edit')) {
+    if (imageUrl) input.video_url = imageUrl; // For edit mode, image can be video
+    input.duration = duration;
+    input.aspect_ratio = aspect_ratio;
+    input.generate_audio = false;
+  } else if (modelId.includes('seedance')) {
+    const resolution = getSetting('resolution') || '720p';
+    if (imageUrl) {
+      // Switch to image-to-video if image provided
+      const i2vId = modelId.replace('text-to-video','image-to-video');
+      input.image_url = imageUrl;
+      input.duration = duration;
+      input.aspect_ratio = aspect_ratio;
+      input.resolution = resolution;
+      input.generate_audio = generate_audio;
+      return await falRun(i2vId, input, apiKey);
+    }
+    input.duration = duration;
+    input.aspect_ratio = aspect_ratio;
+    input.resolution = resolution;
+    input.generate_audio = generate_audio;
+  }
+
+  document.getElementById('progressLabel').textContent = 'Submitting to fal.ai…';
+  return await falRun(modelId, input, apiKey);
+}
+
+// ── RENDER RESULTS ─────────────────────────────────────────────────────────
+function renderResults(data) {
+  const grid = document.getElementById('resultsGrid');
+  const label = document.getElementById('resultsLabel');
+  grid.innerHTML = '';
+  label.style.display = 'flex';
+
+  // Normalise output — different models return different shapes
+  const items = [];
+
+  // Image outputs
+  if (data.images && data.images.length > 0) {
+    data.images.forEach(img => items.push({ type: 'image', url: img.url || img }));
+  } else if (data.image && data.image.url) {
+    items.push({ type: 'image', url: data.image.url });
+  }
+
+  // Video outputs
+  if (data.video && data.video.url) {
+    items.push({ type: 'video', url: data.video.url });
+  } else if (data.videos && data.videos.length > 0) {
+    data.videos.forEach(v => items.push({ type: 'video', url: v.url || v }));
+  }
+
+  if (items.length === 0) {
+    grid.innerHTML = '<div class="no-results"><div class="no-results-icon">⚠️</div><div>No output returned.<br>Check the console for details.</div></div>';
+    console.log('Full response:', data);
+    return;
+  }
+
+  const g = document.createElement('div');
+  g.className = 'results-grid' + (items.length === 1 ? ' single' : '');
+
+  items.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'result-card';
+
+    const tag = document.createElement('div');
+    tag.className = 'result-model-tag';
+    tag.textContent = selectedModel.name;
+    card.appendChild(tag);
+
+    if (item.type === 'image') {
+      const img = document.createElement('img');
+      img.src = item.url;
+      img.loading = 'lazy';
+      img.alt = 'Generated image';
+      card.appendChild(img);
+    } else {
+      const vid = document.createElement('video');
+      vid.src = item.url;
+      vid.controls = true;
+      vid.muted = false;
+      vid.playsinline = true;
+      vid.preload = 'metadata';
+      card.appendChild(vid);
+    }
+
+    const actions = document.createElement('div');
+    actions.className = 'result-actions';
+
+    const dl = document.createElement('a');
+    dl.href = item.url;
+    dl.download = `b2l_${selectedModel.name.replace(/\s/g,'_')}_${Date.now()}${idx}.${item.type === 'image' ? 'png' : 'mp4'}`;
+    dl.target = '_blank';
+    dl.className = 'result-dl' + (currentMode === 'image' ? ' purple' : '');
+    dl.textContent = '⬇ Download';
+    actions.appendChild(dl);
+
+    if (item.type === 'image' && currentMode === 'image') {
+      const useBtn = document.createElement('button');
+      useBtn.className = 'result-use-btn';
+      useBtn.textContent = '→ Use as Start';
+      useBtn.onclick = () => useAsStartImage(item.url);
+      actions.appendChild(useBtn);
+    }
+
+    card.appendChild(actions);
+
+    const cost = document.createElement('div');
+    cost.className = 'result-cost';
+    cost.textContent = selectedModel.cost;
+    card.appendChild(cost);
+
+    g.appendChild(card);
+  });
+
+  grid.appendChild(g);
+  grid.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function useAsStartImage(url) {
+  // Fetch the image and set it as the upload
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const file = new File([blob], 'generated.png', { type: 'image/png' });
+    uploadedImageFile = file;
+    uploadedImageUrl = url;
+    document.getElementById('uploadImg').src = url;
+    document.getElementById('uploadPreview').classList.add('show');
+    document.getElementById('uploadArea').style.display = 'none';
+    setMode('video');
+    showToast('✓ Image set as start frame — now generate a video!');
+  } catch(e) {
+    showToast('⚠️ Could not load image');
+  }
+}
+
+// ── PROGRESS ANIMATION ─────────────────────────────────────────────────────
+let progressInterval = null;
+let progressValue = 0;
+
+function startProgressAnimation() {
+  progressValue = 0;
+  document.getElementById('progressFill').style.width = '0%';
+  progressInterval = setInterval(() => {
+    // Fake slow progress — stops at 85% until real completion
+    if (progressValue < 85) {
+      progressValue += Math.random() * 2;
+      document.getElementById('progressFill').style.width = Math.min(progressValue, 85) + '%';
+    }
+  }, 800);
+}
+
+function stopProgressAnimation() {
+  if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
+  document.getElementById('progressFill').style.width = '100%';
+}
+
+// ── API KEY SHEET ──────────────────────────────────────────────────────────
+document.getElementById('apiKeyBtn').addEventListener('click', showApiSheet);
+
+function showApiSheet() {
+  const existing = localStorage.getItem('fal_api_key');
+  if (existing) document.getElementById('apiKeyInput').value = existing;
+  document.getElementById('apiSheet').classList.add('show');
+}
+
+function closeApiSheet() {
+  document.getElementById('apiSheet').classList.remove('show');
+}
+
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) { showToast('⚠️ Enter a valid API key'); return; }
+  localStorage.setItem('fal_api_key', key);
+  closeApiSheet();
+  checkApiKey();
+  showToast('✓ API key saved');
+}
+
+document.getElementById('apiSheet').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('apiSheet')) closeApiSheet();
+});
+
+document.getElementById('apiKeyInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') saveApiKey();
+});
+
+// ── BURGER MENU ────────────────────────────────────────────────────────────
+(function(){
+  var b = document.getElementById('menuBtn');
+  var d = document.getElementById('navDrawer');
+  var bd = document.getElementById('drawerBackdrop');
+  if(!b||!d||!bd) return;
+  document.body.appendChild(bd);
+  document.body.appendChild(d);
+  bd.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;display:none;backdrop-filter:blur(2px)';
+  function openD(){d.style.transform='translateY(0)';bd.style.display='block';document.body.style.overflow='hidden';}
+  function closeD(){d.style.transform='translateY(100%)';bd.style.display='none';document.body.style.overflow='';}
+  b.addEventListener('click', () => d.style.transform==='translateY(0)' ? closeD() : openD());
+  bd.addEventListener('click', closeD);
+  var ty=0;
+  d.addEventListener('touchstart',e=>{ty=e.touches[0].clientY;},{passive:true});
+  d.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-ty>50)closeD();},{passive:true});
+})();
+
+// ── TOAST ──────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ── START ──────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
