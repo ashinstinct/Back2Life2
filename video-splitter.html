@@ -169,6 +169,16 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
 
 <main>
 
+  <!-- FFMPEG STATUS -->
+  <div id="ffmpegStatus" style="display:none;align-items:center;gap:12px;background:var(--glass);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px">
+    <div style="width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0"></div>
+    <div style="flex:1">
+      <div id="ffmpegLabel" style="font-size:12px;color:var(--text2);margin-bottom:6px">Loading MP4 engine…</div>
+      <div style="background:rgba(255,255,255,0.06);border-radius:999px;height:4px;overflow:hidden"><div id="ffmpegFill" style="height:100%;background:linear-gradient(90deg,var(--green2),var(--green));width:0%;transition:width 0.3s;box-shadow:0 0 8px rgba(0,255,136,0.4)"></div></div>
+    </div>
+  </div>
+  <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+
   <!-- UPLOAD -->
   <div class="upload-zone" id="dropzone">
     <div class="upload-icon">✂️</div>
@@ -246,7 +256,7 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
   <!-- ACTIONS -->
   <div class="action-row" id="actionRow">
     <button class="btn-ghost" id="resetBtn">↺ Reset</button>
-    <button class="btn-main" id="splitBtn">✂️ Split &amp; Download</button>
+    <button class="btn-main" id="splitBtn">✂️ Split &amp; Download MP4</button>
   </div>
 
 </main>
@@ -289,6 +299,7 @@ const videoPreview   = document.getElementById('videoPreview');
 const settingsCard   = document.getElementById('settingsCard');
 const actionRow      = document.getElementById('actionRow');
 const splitBtn       = document.getElementById('splitBtn');
+splitBtn.disabled    = true; // enabled once FFmpeg loads
 const resetBtn       = document.getElementById('resetBtn');
 const progressWrap   = document.getElementById('progressWrap');
 const progressFill   = document.getElementById('progressFill');
@@ -408,132 +419,117 @@ function updateClipPreview() {
   clipsCard.classList.add('show');
 }
 
-// ── SPLIT — native Blob URL + seek approach, no FFmpeg needed ──
+// ── FFMPEG SETUP ──────────────────────────────────────────────────────────
+let ffmpeg = null;
+let ffmpegReady = false;
+
+async function loadFFmpeg() {
+  const status = document.getElementById('ffmpegStatus');
+  const fill   = document.getElementById('ffmpegFill');
+  const label  = document.getElementById('ffmpegLabel');
+  status.style.display = 'flex';
+  label.textContent = 'Loading MP4 engine…';
+  fill.style.width = '0%';
+  try {
+    const { FFmpeg } = FFmpegWASM;
+    const { toBlobURL } = FFmpegUtil;
+    ffmpeg = new FFmpeg();
+    ffmpeg.on('progress', ({ progress }) => {
+      if (splitting) {
+        fill.style.width = Math.round(progress * 100) + '%';
+      }
+    });
+    const base = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd';
+    fill.style.width = '30%';
+    label.textContent = 'Loading MP4 engine…';
+    await ffmpeg.load({
+      coreURL: await toBlobURL(`${base}/ffmpeg-core.js`, 'text/javascript'),
+      wasmURL: await toBlobURL(`${base}/ffmpeg-core.wasm`, 'application/wasm'),
+    });
+    ffmpegReady = true;
+    fill.style.width = '100%';
+    label.textContent = '✓ Ready';
+    setTimeout(() => { status.style.display = 'none'; }, 1200);
+    splitBtn.disabled = !videoFile;
+  } catch(e) {
+    label.textContent = '⚠️ Failed to load — check connection';
+    console.error(e);
+  }
+}
+
+// ── SPLIT ─────────────────────────────────────────────────────────────────
 splitBtn.addEventListener('click', doSplit);
 resetBtn.addEventListener('click', resetAll);
 
 async function doSplit() {
-  if (!videoFile || splitting) return;
+  if (!videoFile || !ffmpegReady || splitting) return;
   splitting = true;
   splitBtn.disabled = true;
   progressWrap.classList.add('visible');
 
-  const span    = endSec - startSec;
-  const count   = Math.ceil(span / clipDuration);
+  const span  = endSec - startSec;
+  const count = Math.ceil(span / clipDuration);
   const exportName = (document.getElementById('renameInput').value.trim() || originalName).replace(/[^a-zA-Z0-9_\-]/g, '_');
-  const ext     = videoFile.name.split('.').pop().toLowerCase();
 
-  progressLabel.textContent = `Preparing ${count} clip${count !== 1 ? 's' : ''}…`;
+  progressLabel.textContent = `Processing ${count} clip${count !== 1 ? 's' : ''} with FFmpeg…`;
   progressFill.style.width = '0%';
 
-  for (let i = 0; i < count; i++) {
-    const clipStart = startSec + i * clipDuration;
-    const clipEnd   = Math.min(clipStart + clipDuration, endSec);
-    const clipDur   = clipEnd - clipStart;
+  try {
+    const { fetchFile } = FFmpegUtil;
+    const inputExt = videoFile.name.split('.').pop().toLowerCase();
+    const inputName = 'input.' + inputExt;
+    await ffmpeg.writeFile(inputName, await fetchFile(videoFile));
 
-    // Update UI
-    progressLabel.textContent = `Exporting clip ${i+1} of ${count}…`;
-    progressFill.style.width  = ((i / count) * 95) + '%';
-    const statusEl = document.getElementById('cs' + i);
-    if (statusEl) { statusEl.textContent = '⏳'; statusEl.className = 'clip-status active'; }
+    for (let i = 0; i < count; i++) {
+      const s = startSec + i * clipDuration;
+      const e = Math.min(s + clipDuration, endSec);
+      const dur = e - s;
+      const outputName = `clip_${String(i+1).padStart(2,'0')}.mp4`;
+      const statusEl = document.getElementById('cs' + i);
+      if (statusEl) { statusEl.textContent = '⏳'; statusEl.className = 'clip-status active'; }
 
-    await exportClipBlob(srcURL, clipStart, clipDur, i + 1, count, ext, exportName);
+      progressLabel.textContent = `Exporting clip ${i+1} of ${count}…`;
+      progressFill.style.width = ((i / count) * 90) + '%';
 
-    if (statusEl) { statusEl.textContent = '✓'; statusEl.className = 'clip-status done'; }
+      await ffmpeg.exec([
+        '-ss', s.toFixed(3),
+        '-i', inputName,
+        '-t', dur.toFixed(3),
+        '-c', 'copy',
+        '-avoid_negative_ts', 'make_zero',
+        '-movflags', '+faststart',
+        outputName
+      ]);
+
+      const data = await ffmpeg.readFile(outputName);
+      const blob = new Blob([data.buffer], { type: 'video/mp4' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = `${exportName}_clip${String(i+1).padStart(2,'0')}_${fmtSafe(s)}-${fmtSafe(e)}.mp4`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 8000);
+      await ffmpeg.deleteFile(outputName);
+
+      if (statusEl) { statusEl.textContent = '✓'; statusEl.className = 'clip-status done'; }
+    }
+
+    await ffmpeg.deleteFile(inputName);
+    progressFill.style.width = '100%';
+    progressLabel.textContent = `✓ Done — ${count} clip${count !== 1 ? 's' : ''} downloaded as MP4`;
+    showToast(`✓ ${count} MP4 clip${count !== 1 ? 's' : ''} exported!`);
+    setTimeout(() => { progressWrap.classList.remove('visible'); splitting = false; splitBtn.disabled = false; }, 4000);
+
+  } catch(err) {
+    console.error(err);
+    progressLabel.textContent = '⚠️ Error — ' + err.message;
+    showToast('⚠️ Export failed');
+    splitting = false; splitBtn.disabled = false;
   }
-
-  URL.revokeObjectURL(srcURL);
-  progressFill.style.width  = '100%';
-  progressLabel.textContent = `✓ Done — ${count} clip${count !== 1 ? 's' : ''} downloaded`;
-  showToast(`✓ ${count} clip${count !== 1 ? 's' : ''} exported!`);
-  setTimeout(() => { progressWrap.classList.remove('visible'); splitting = false; splitBtn.disabled = false; }, 4000);
 }
 
-// Seek-and-record a single clip using MediaRecorder on a hidden video element
-function exportClipBlob(srcURL, startTime, duration, num, total, ext, exportName) {
-  return new Promise((resolve, reject) => {
-    const vid = document.createElement('video');
-    vid.src = srcURL;
-    vid.muted = false;
-    vid.playbackRate = 1;
-    vid.preload = 'auto';
-
-    vid.addEventListener('loadedmetadata', () => {
-      vid.currentTime = startTime;
-    }, { once: true });
-
-    vid.addEventListener('seeked', () => {
-      // Set up canvas to capture frames
-      const canvas = document.createElement('canvas');
-      canvas.width  = vid.videoWidth  || 1280;
-      canvas.height = vid.videoHeight || 720;
-      const ctx = canvas.getContext('2d');
-
-      // Capture video stream from canvas
-      const videoStream = canvas.captureStream(30);
-
-      // Try to capture audio too
-      let combinedStream = videoStream;
-      try {
-        const audioCtx = new AudioContext();
-        const src = audioCtx.createMediaElementSource(vid);
-        const dest = audioCtx.createMediaStreamDestination();
-        src.connect(dest);
-        src.connect(audioCtx.destination);
-        const audioTrack = dest.stream.getAudioTracks()[0];
-        if (audioTrack) {
-          combinedStream = new MediaStream([...videoStream.getTracks(), audioTrack]);
-        }
-      } catch(e) { /* audio capture not supported, video only */ }
-
-      // Pick best supported format
-      const mimeType = ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(t => MediaRecorder.isTypeSupported(t)) || 'video/webm';
-      const recorder = new MediaRecorder(combinedStream, { mimeType, videoBitsPerSecond: 10_000_000 });
-      const chunks   = [];
-
-      recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
-      recorder.onstop = () => {
-        const blob     = new Blob(chunks, { type: mimeType });
-        const blobURL  = URL.createObjectURL(blob);
-        const a        = document.createElement('a');
-        a.href         = blobURL;
-        a.download     = `${exportName || originalName}_clip${String(num).padStart(2,'0')}_${fmtSafe(startTime)}-${fmtSafe(startTime+duration)}.webm`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(blobURL), 8000);
-        vid.pause();
-        vid.remove();
-        resolve();
-      };
-
-      // Draw frames continuously
-      let drawing = true;
-      function drawLoop() {
-        if (!drawing) return;
-        ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
-        requestAnimationFrame(drawLoop);
-      }
-
-      recorder.start(100);
-      vid.play();
-      drawLoop();
-
-      // Stop exactly at clip end
-      const stopAt = startTime + duration;
-      const checkInterval = setInterval(() => {
-        if (vid.currentTime >= stopAt || vid.ended) {
-          clearInterval(checkInterval);
-          drawing = false;
-          recorder.stop();
-        }
-      }, 50);
-
-    }, { once: true });
-
-    vid.load();
-  });
-}
+// Load FFmpeg on page load
+loadFFmpeg();
 
 function resetAll() {
   if (splitting) return;
@@ -583,5 +579,7 @@ function showToast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
 }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.6/dist/umd/ffmpeg.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
 </body>
 </html>
