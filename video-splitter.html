@@ -159,6 +159,8 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Video Splitter">
 <link rel="manifest" href="/manifest.json">
+<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.6/dist/umd/ffmpeg.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/index.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -429,31 +431,49 @@ async function loadFFmpeg() {
   const label  = document.getElementById('ffmpegLabel');
   status.style.display = 'flex';
   label.textContent = 'Loading MP4 engine…';
-  fill.style.width = '0%';
+  fill.style.width = '10%';
   try {
     const { FFmpeg } = FFmpegWASM;
     const { toBlobURL } = FFmpegUtil;
     ffmpeg = new FFmpeg();
+    ffmpeg.on('log', ({ message }) => console.log('[ffmpeg]', message));
     ffmpeg.on('progress', ({ progress }) => {
       if (splitting) {
-        fill.style.width = Math.round(progress * 100) + '%';
+        progressFill.style.width = Math.round(progress * 100) + '%';
       }
     });
-    const base = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd';
     fill.style.width = '30%';
-    label.textContent = 'Loading MP4 engine…';
-    await ffmpeg.load({
-      coreURL: await toBlobURL(`${base}/ffmpeg-core.js`, 'text/javascript'),
-      wasmURL: await toBlobURL(`${base}/ffmpeg-core.wasm`, 'application/wasm'),
-    });
+    // Try unpkg first, fall back to jsdelivr
+    let loaded = false;
+    const cdns = [
+      'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd',
+      'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd',
+    ];
+    for (const base of cdns) {
+      try {
+        fill.style.width = '50%';
+        label.textContent = 'Loading MP4 engine…';
+        await ffmpeg.load({
+          coreURL: await toBlobURL(`${base}/ffmpeg-core.js`, 'text/javascript'),
+          wasmURL: await toBlobURL(`${base}/ffmpeg-core.wasm`, 'application/wasm'),
+        });
+        loaded = true;
+        break;
+      } catch(e2) {
+        console.warn('CDN failed, trying next:', base, e2);
+      }
+    }
+    if (!loaded) throw new Error('All CDNs failed');
     ffmpegReady = true;
     fill.style.width = '100%';
-    label.textContent = '✓ Ready';
-    setTimeout(() => { status.style.display = 'none'; }, 1200);
-    splitBtn.disabled = !videoFile;
+    label.textContent = '✓ MP4 engine ready';
+    setTimeout(() => { status.style.display = 'none'; }, 1500);
+    if (videoFile) splitBtn.disabled = false;
   } catch(e) {
-    label.textContent = '⚠️ Failed to load — check connection';
     console.error(e);
+    label.textContent = '⚠️ Could not load MP4 engine — tap to retry';
+    status.style.cursor = 'pointer';
+    status.onclick = () => { status.style.cursor = ''; status.onclick = null; loadFFmpeg(); };
   }
 }
 
@@ -579,7 +599,5 @@ function showToast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
 }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.6/dist/umd/ffmpeg.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
 </body>
 </html>
