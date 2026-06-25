@@ -190,6 +190,11 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
 
   <!-- SETTINGS -->
   <div class="settings-card" id="settingsCard">
+    <div class="sect-label">Output Filename</div>
+    <div style="display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);overflow:hidden;margin-bottom:20px;transition:border-color var(--transition)" id="renameWrap">
+      <input type="text" id="renameInput" placeholder="clip_name" spellcheck="false" autocorrect="off" style="flex:1;background:none;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;font-weight:500;padding:11px 14px;outline:none">
+      <span style="background:rgba(255,255,255,0.04);color:var(--text3);font-size:11px;font-weight:700;padding:11px 12px;border-left:1px solid var(--border);white-space:nowrap">_clip01.webm</span>
+    </div>
     <div class="sect-label">Clip Duration</div>
     <div class="segment-wrap">
       <button class="seg" data-dur="10">10s<small>Stories</small></button>
@@ -313,6 +318,10 @@ function handleFile(file) {
   if (!file || !file.type.startsWith('video/')) { showToast('⚠️ Please select a video file'); return; }
   videoFile = file;
   originalName = file.name.replace(/\.[^.]+$/, '');
+  document.getElementById('renameInput').value = originalName;
+  var ri = document.getElementById('renameInput');
+  ri.addEventListener('focus', function(){ document.getElementById('renameWrap').style.borderColor='rgba(0,255,136,0.4)'; });
+  ri.addEventListener('blur',  function(){ document.getElementById('renameWrap').style.borderColor=''; });
   const url = URL.createObjectURL(file);
   videoEl.src = url;
   videoEl.addEventListener('loadedmetadata', () => {
@@ -411,7 +420,7 @@ async function doSplit() {
 
   const span    = endSec - startSec;
   const count   = Math.ceil(span / clipDuration);
-  const srcURL  = URL.createObjectURL(videoFile);
+  const exportName = (document.getElementById('renameInput').value.trim() || originalName).replace(/[^a-zA-Z0-9_\-]/g, '_');
   const ext     = videoFile.name.split('.').pop().toLowerCase();
 
   progressLabel.textContent = `Preparing ${count} clip${count !== 1 ? 's' : ''}…`;
@@ -428,7 +437,7 @@ async function doSplit() {
     const statusEl = document.getElementById('cs' + i);
     if (statusEl) { statusEl.textContent = '⏳'; statusEl.className = 'clip-status active'; }
 
-    await exportClipBlob(srcURL, clipStart, clipDur, i + 1, count, ext);
+    await exportClipBlob(srcURL, clipStart, clipDur, i + 1, count, ext, exportName);
 
     if (statusEl) { statusEl.textContent = '✓'; statusEl.className = 'clip-status done'; }
   }
@@ -441,7 +450,7 @@ async function doSplit() {
 }
 
 // Seek-and-record a single clip using MediaRecorder on a hidden video element
-function exportClipBlob(srcURL, startTime, duration, num, total, ext) {
+function exportClipBlob(srcURL, startTime, duration, num, total, ext, exportName) {
   return new Promise((resolve, reject) => {
     const vid = document.createElement('video');
     vid.src = srcURL;
@@ -488,7 +497,7 @@ function exportClipBlob(srcURL, startTime, duration, num, total, ext) {
         const blobURL  = URL.createObjectURL(blob);
         const a        = document.createElement('a');
         a.href         = blobURL;
-        a.download     = `${originalName}_clip${String(num).padStart(2,'0')}_${fmtSafe(startTime)}-${fmtSafe(startTime+duration)}.webm`;
+        a.download     = `${exportName || originalName}_clip${String(num).padStart(2,'0')}_${fmtSafe(startTime)}-${fmtSafe(startTime+duration)}.webm`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
