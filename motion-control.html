@@ -20,8 +20,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-syst
 
 .topbar{display:flex;align-items:center;padding:0 16px;height:var(--bar-h);background:rgba(8,8,8,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;gap:10px}
 .topbar-title{position:absolute;left:50%;transform:translateX(-50%);font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--green);white-space:nowrap;pointer-events:none}
-.api-key-btn{margin-left:auto;background:var(--surface2);border:1px solid var(--border);color:var(--text3);font-size:11px;font-weight:700;padding:6px 12px;border-radius:var(--pill);cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0;z-index:1}
-.api-key-btn.set{color:var(--green);border-color:rgba(0,255,136,0.3)}
 
 main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;padding-bottom:40px}
 
@@ -93,19 +91,6 @@ main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;overflow-y:
 .note-box{background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.15);border-radius:var(--radius-xs);padding:12px 14px;font-size:12px;color:rgba(0,255,136,0.7);line-height:1.5}
 
 /* API KEY SHEET */
-.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:200;display:none;align-items:flex-end}
-.sheet-overlay.show{display:flex}
-.api-sheet{background:rgba(14,14,14,0.98);border-top:1px solid var(--border2);border-radius:26px 26px 0 0;padding:20px 20px 48px;width:100%}
-.sheet-handle{width:36px;height:4px;background:rgba(255,255,255,0.12);border-radius:var(--pill);margin:0 auto 20px}
-.api-sheet-title{font-size:16px;font-weight:800;margin-bottom:6px}
-.api-sheet-sub{font-size:13px;color:var(--text3);margin-bottom:16px;line-height:1.5}
-.api-input-row{display:flex;gap:8px;margin-bottom:12px}
-.api-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:12px 14px;outline:none}
-.api-input:focus{border-color:rgba(0,255,136,0.4)}
-.api-save-btn{background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:14px;padding:12px 20px;border-radius:var(--radius-xs);border:none;cursor:pointer;font-family:'Inter',sans-serif}
-.api-link{font-size:12px;color:var(--text3);text-align:center}
-.api-link a{color:var(--green);text-decoration:none}
-.api-dismiss{width:100%;background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;padding:10px;margin-top:8px}
 
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(16,16,16,0.97);border:1px solid var(--border2);backdrop-filter:blur(20px);color:var(--text);font-size:13px;font-weight:600;padding:12px 22px;border-radius:var(--pill);opacity:0;transition:all 0.3s;z-index:400;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -127,7 +112,6 @@ main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;overflow-y:
     <span style="display:block;width:22px;height:2px;background:#aaa;border-radius:2px"></span>
   </button>
   <span class="topbar-title">MOTION CONTROL</span>
-  <button class="api-key-btn" id="apiKeyBtn">🔑 API Key</button>
 </header>
 
 <main>
@@ -238,21 +222,6 @@ main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;overflow-y:
 
 </main>
 
-<!-- API KEY SHEET -->
-<div class="sheet-overlay" id="apiSheet">
-  <div class="api-sheet">
-    <div class="sheet-handle"></div>
-    <div class="api-sheet-title">🔑 fal.ai API Key</div>
-    <div class="api-sheet-sub">Your key is stored on this device only and never sent to our servers.</div>
-    <div class="api-input-row">
-      <input class="api-input" type="password" id="apiKeyInput" placeholder="fal_key_...">
-      <button class="api-save-btn" onclick="saveApiKey()">Save</button>
-    </div>
-    <div class="api-link">Get your key at <a href="https://fal.ai/dashboard/keys" target="_blank">fal.ai/dashboard/keys</a></div>
-    <button class="api-dismiss" onclick="closeApiSheet()">Dismiss</button>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <!-- BURGER MENU -->
@@ -283,32 +252,15 @@ main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;overflow-y:
 // ── STATE ──────────────────────────────────────────────────────────────────
 let charFile = null;
 let motionFile = null;
+// ── CONFIG ─────────────────────────────────────────────────────────────────
+const FAL_KEY = 'f9b3b700-5df2-48b2-82ed-60e2042db1b7:20f2c6a057d8e4a18dd9a47b24114ba1';
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let charFile = null;
+let motionFile = null;
 let selectedMCModel = 'fal-ai/kling-video/v3/standard/motion-control';
 let generating = false;
 let resultVideoUrl = null;
-
-// ── API KEY ────────────────────────────────────────────────────────────────
-function checkApiKey() {
-  const key = localStorage.getItem('fal_api_key');
-  const btn = document.getElementById('apiKeyBtn');
-  if (key) { btn.textContent = '🔑 Key Set'; btn.classList.add('set'); }
-  else { btn.textContent = '🔑 API Key'; btn.classList.remove('set'); }
-}
-document.getElementById('apiKeyBtn').addEventListener('click', showApiSheet);
-function showApiSheet() {
-  const k = localStorage.getItem('fal_api_key');
-  if (k) document.getElementById('apiKeyInput').value = k;
-  document.getElementById('apiSheet').classList.add('show');
-}
-function closeApiSheet() { document.getElementById('apiSheet').classList.remove('show'); }
-function saveApiKey() {
-  const k = document.getElementById('apiKeyInput').value.trim();
-  if (!k) { showToast('⚠️ Enter a valid API key'); return; }
-  localStorage.setItem('fal_api_key', k);
-  closeApiSheet(); checkApiKey(); showToast('✓ API key saved');
-}
-document.getElementById('apiSheet').addEventListener('click', e => { if(e.target===document.getElementById('apiSheet')) closeApiSheet(); });
-document.getElementById('apiKeyInput').addEventListener('keydown', e => { if(e.key==='Enter') saveApiKey(); });
 
 // ── MODEL SELECT ───────────────────────────────────────────────────────────
 function selectModelMC(btn) {
@@ -367,10 +319,10 @@ document.getElementById('motionRemove').addEventListener('click', e => {
 });
 
 // ── FAL UPLOAD ─────────────────────────────────────────────────────────────
-async function uploadToFal(file, apiKey) {
+async function uploadToFal(file) {
   const res = await fetch('https://rest.alpha.fal.ai/storage/upload/initiate', {
     method: 'POST',
-    headers: { 'Authorization': 'Key ' + apiKey, 'Content-Type': 'application/json' },
+    headers: { 'Authorization': 'Key ' + FAL_KEY, 'Content-Type': 'application/json' },
     body: JSON.stringify({ file_name: file.name, content_type: file.type })
   });
   if (!res.ok) throw new Error('Upload failed: ' + res.status);
@@ -380,10 +332,10 @@ async function uploadToFal(file, apiKey) {
 }
 
 // ── FAL QUEUE ──────────────────────────────────────────────────────────────
-async function falRun(modelId, input, apiKey) {
+async function falRun(modelId, input) {
   const submitRes = await fetch(`https://queue.fal.run/${modelId}`, {
     method: 'POST',
-    headers: { 'Authorization': 'Key ' + apiKey, 'Content-Type': 'application/json' },
+    headers: { 'Authorization': 'Key ' + FAL_KEY, 'Content-Type': 'application/json' },
     body: JSON.stringify(input)
   });
   if (!submitRes.ok) {
@@ -396,7 +348,7 @@ async function falRun(modelId, input, apiKey) {
   while (attempts < 300) {
     await new Promise(r => setTimeout(r, 2000));
     const statusRes = await fetch(`https://queue.fal.run/${modelId}/requests/${request_id}/status?logs=1`, {
-      headers: { 'Authorization': 'Key ' + apiKey }
+      headers: { 'Authorization': 'Key ' + FAL_KEY }
     });
     const status = await statusRes.json();
     if (status.status === 'IN_QUEUE') {
@@ -405,7 +357,7 @@ async function falRun(modelId, input, apiKey) {
       document.getElementById('progressLabel').textContent = 'Generating motion video…';
     } else if (status.status === 'COMPLETED') {
       const resultRes = await fetch(`https://queue.fal.run/${modelId}/requests/${request_id}`, {
-        headers: { 'Authorization': 'Key ' + apiKey }
+        headers: { 'Authorization': 'Key ' + FAL_KEY }
       });
       return await resultRes.json();
     } else if (status.status === 'FAILED') {
@@ -418,8 +370,6 @@ async function falRun(modelId, input, apiKey) {
 
 // ── GENERATE ───────────────────────────────────────────────────────────────
 async function generate() {
-  const apiKey = localStorage.getItem('fal_api_key');
-  if (!apiKey) { showToast('⚠️ Set your fal.ai API key first'); showApiSheet(); return; }
   if (!charFile) { showToast('⚠️ Upload a character image first'); return; }
   if (!motionFile) { showToast('⚠️ Upload a motion reference video first'); return; }
   if (generating) return;
@@ -430,7 +380,6 @@ async function generate() {
   document.getElementById('resultCard').classList.remove('show');
   document.getElementById('progressFill').style.width = '0%';
 
-  // Fake progress
   let pv = 0;
   const pInterval = setInterval(() => {
     if (pv < 80) { pv += Math.random() * 3; document.getElementById('progressFill').style.width = Math.min(pv,80)+'%'; }
@@ -438,40 +387,31 @@ async function generate() {
 
   try {
     document.getElementById('progressLabel').textContent = 'Uploading character image…';
-    const imageUrl = await uploadToFal(charFile, apiKey);
+    const imageUrl = await uploadToFal(charFile);
 
     document.getElementById('progressLabel').textContent = 'Uploading motion video…';
-    const videoUrl = await uploadToFal(motionFile, apiKey);
+    const videoUrl = await uploadToFal(motionFile);
 
     const orientation = document.getElementById('orientationSelect').value;
     const duration = parseInt(document.getElementById('durationSelect').value);
     const prompt = document.getElementById('promptInput').value.trim();
-
-    // Validate duration vs orientation
     const maxDuration = orientation === 'image' ? 10 : 30;
     const finalDuration = Math.min(duration, maxDuration);
 
-    const input = {
-      image_url: imageUrl,
-      video_url: videoUrl,
-      character_orientation: orientation,
-      duration: finalDuration,
-    };
+    const input = { image_url: imageUrl, video_url: videoUrl, character_orientation: orientation, duration: finalDuration };
     if (prompt) input.prompt = prompt;
 
     document.getElementById('progressLabel').textContent = 'Submitting to fal.ai…';
-    const result = await falRun(selectedMCModel, input, apiKey);
+    const result = await falRun(selectedMCModel, input);
 
     clearInterval(pInterval);
     document.getElementById('progressFill').style.width = '100%';
     document.getElementById('progressLabel').textContent = '✓ Done!';
     setTimeout(() => document.getElementById('progressCard').classList.remove('show'), 1500);
 
-    // Show result
     if (result.video && result.video.url) {
       resultVideoUrl = result.video.url;
-      const vid = document.getElementById('resultVideo');
-      vid.src = resultVideoUrl;
+      document.getElementById('resultVideo').src = resultVideoUrl;
       const dl = document.getElementById('resultDl');
       dl.href = resultVideoUrl;
       dl.download = `motion_control_${Date.now()}.mp4`;
@@ -517,8 +457,6 @@ function copyLink() {
 // ── TOAST ──────────────────────────────────────────────────────────────────
 let toastTimer;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3200);}
-
-checkApiKey();
 </script>
 </body>
 </html>
