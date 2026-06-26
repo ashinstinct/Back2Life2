@@ -188,16 +188,25 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
 </div>
 
 <!-- HERO VIDEO -->
-<div class="hero-video-wrap">
-  <iframe
-    id="heroIframe"
-    src="https://www.youtube.com/embed/lneLLi1PJY0?autoplay=1&mute=1&loop=1&playlist=lneLLi1PJY0&controls=1&modestbranding=1&rel=0&playsinline=1&showinfo=0&iv_load_policy=3&enablejsapi=1"
-    allow="autoplay; encrypted-media; fullscreen"
-    allowfullscreen
-    style="pointer-events:auto"
-    title="Back2Life.app — AI Video Tutorial">
-  </iframe>
+<div class="hero-video-wrap" id="heroVideoWrap" onclick="loadHeroVideo()" style="cursor:pointer;position:relative">
+  <img
+    src="https://i.ytimg.com/vi/lneLLi1PJY0/maxresdefault.jpg"
+    alt="Back2Life.app Tutorial"
+    style="width:100%;aspect-ratio:16/9;display:block;object-fit:cover">
+  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3)">
+    <div style="width:64px;height:64px;background:rgba(255,0,0,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,0.5)">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+    </div>
+  </div>
 </div>
+<script>
+function loadHeroVideo() {
+  var wrap = document.getElementById('heroVideoWrap');
+  wrap.onclick = null;
+  wrap.style.cursor = 'default';
+  wrap.innerHTML = '<iframe src="https://www.youtube.com/embed/lneLLi1PJY0?autoplay=1&rel=0&playsinline=1&modestbranding=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen style="display:block;width:100%;aspect-ratio:16/9;border:none"></iframe>';
+}
+</script>
 
 <!-- HERO -->
 <div class="hero">
