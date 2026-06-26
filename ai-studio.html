@@ -47,7 +47,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-syst
 .ref-thumb-remove{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.75);border:none;border-radius:50%;width:20px;height:20px;color:#fff;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 
 /* PROMPT AREA */
-.prompt-area{flex:1;padding:12px 16px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;min-height:0}
+.prompt-area{flex:1;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
 .prompt-box{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;transition:border-color var(--transition)}
 .prompt-box:focus-within{border-color:rgba(255,255,255,0.18)}
 .prompt-textarea{width:100%;background:none;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.55;padding:14px 16px;outline:none;resize:none;min-height:120px;max-height:200px}
@@ -204,7 +204,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-syst
     <span style="margin-left:auto;font-size:10px;color:var(--text3)" id="refsCount">0/12</span>
   </div>
   <div class="refs-scroll" id="refsScroll">
-    <div class="ref-add-btn" id="refAddBtn" onclick="document.getElementById('refFileInput').click()">
+    <div class="ref-add-btn" id="refAddBtn">
       <span class="ref-add-icon">+</span>
     </div>
     <input type="file" id="refFileInput" accept="image/*,video/*" multiple style="display:none">
@@ -241,9 +241,9 @@ html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-syst
 <!-- ACTION BAR -->
 <div class="action-bar">
   <div class="count-row">
-    <button class="count-btn" id="countMinus">−</button>
+    <button class="count-btn" id="countMinus" type="button">−</button>
     <span class="count-num" id="countNum">1</span>
-    <button class="count-btn" id="countPlus">+</button>
+    <button class="count-btn" id="countPlus" type="button">+</button>
   </div>
   <div class="settings-trigger" onclick="openSettings()">
     <span class="settings-trigger-icon">⚙</span>
@@ -1116,8 +1116,22 @@ function clearPrompt() {
 let toastTimer;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3200);}
 
-document.getElementById('countMinus').addEventListener('click', function(){ changeCount(-1); });
-document.getElementById('countPlus').addEventListener('click', function(){ changeCount(1); });
+// Count buttons - use both click and touchend for Android
+var minusBtn = document.getElementById('countMinus');
+var plusBtn = document.getElementById('countPlus');
+function handleMinus(e){ e.preventDefault(); e.stopPropagation(); changeCount(-1); }
+function handlePlus(e){ e.preventDefault(); e.stopPropagation(); changeCount(1); }
+minusBtn.addEventListener('click', handleMinus);
+plusBtn.addEventListener('click', handlePlus);
+minusBtn.addEventListener('touchend', handleMinus, {passive:false});
+plusBtn.addEventListener('touchend', handlePlus, {passive:false});
+
+// Ref add button - use touchend too
+var refBtn = document.getElementById('refAddBtn');
+function handleRefTap(e){ e.preventDefault(); e.stopPropagation(); document.getElementById('refFileInput').click(); }
+refBtn.addEventListener('click', handleRefTap);
+refBtn.addEventListener('touchend', handleRefTap, {passive:false});
+
 init();
 </script>
 </body>
