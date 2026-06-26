@@ -82,8 +82,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-syst
 
 /* BOTTOM ACTION BAR */
 .action-bar{flex-shrink:0;padding:10px 16px 20px;display:flex;align-items:center;gap:10px;border-top:1px solid var(--border)}
-.count-row{display:flex;align-items:center;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:var(--pill);padding:6px 10px}
-.count-btn{background:none;border:none;color:var(--text2);font-size:16px;cursor:pointer;padding:0 4px;font-family:'Inter',sans-serif;line-height:1}
+.count-row{display:flex;align-items:center;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--pill);padding:2px 4px}
+.count-btn{background:none;border:none;color:var(--text2);font-size:18px;cursor:pointer;padding:4px 10px;font-family:'Inter',sans-serif;line-height:1;min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
 .count-num{font-size:13px;font-weight:700;color:var(--text);min-width:18px;text-align:center}
 .settings-trigger{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--pill);padding:8px 14px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text2);flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;transition:all var(--transition)}
 .settings-trigger:active{background:var(--surface2)}
@@ -204,10 +204,10 @@ html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-syst
     <span style="margin-left:auto;font-size:10px;color:var(--text3)" id="refsCount">0/12</span>
   </div>
   <div class="refs-scroll" id="refsScroll">
-    <div class="ref-add-btn" id="refAddBtn">
-      <input type="file" id="refFileInput" accept="image/*,video/*" multiple>
+    <label class="ref-add-btn" id="refAddBtn" for="refFileInput" style="cursor:pointer">
       <span class="ref-add-icon">+</span>
-    </div>
+    </label>
+    <input type="file" id="refFileInput" accept="image/*,video/*" multiple style="display:none;position:absolute;left:-9999px">
   </div>
 </div>
 
@@ -579,9 +579,12 @@ document.getElementById('refFileInput').addEventListener('change', e => {
 
 function renderRefs() {
   const scroll = document.getElementById('refsScroll');
+  // Clear thumbnails but keep the add button and hidden input
   const addBtn = document.getElementById('refAddBtn');
+  const fileInput = document.getElementById('refFileInput');
   scroll.innerHTML = '';
   scroll.appendChild(addBtn);
+  // Re-append hidden input after scroll (outside scroll)
   uploadedFiles.forEach((f, i) => {
     const thumb = document.createElement('div');
     thumb.className = 'ref-thumb';
@@ -597,12 +600,12 @@ function renderRefs() {
     const rm = document.createElement('button');
     rm.className = 'ref-thumb-remove';
     rm.textContent = '✕';
-    rm.onclick = (e) => { e.stopPropagation(); uploadedFiles.splice(i,1); renderRefs(); };
+    rm.onclick = (e) => { e.stopPropagation(); e.preventDefault(); uploadedFiles.splice(i,1); renderRefs(); };
     thumb.appendChild(rm);
     scroll.insertBefore(thumb, addBtn);
   });
   document.getElementById('refsCount').textContent = uploadedFiles.length + '/12';
-  document.getElementById('refAddBtn').style.display = uploadedFiles.length >= 12 ? 'none' : '';
+  addBtn.style.display = uploadedFiles.length >= 12 ? 'none' : 'flex';
 }
 
 // ── SETTINGS SHEET ─────────────────────────────────────────────────────────
