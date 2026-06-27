@@ -45,14 +45,6 @@ main{padding:16px;display:flex;flex-direction:column;gap:14px;padding-bottom:40p
 .flip-btn.selected .flip-label{color:var(--green)}
 .flip-sub{font-size:10px;color:var(--text3)}
 
-/* PREVIEW SECTION */
-.preview-section{display:none;flex-direction:column;gap:10px}
-.preview-section.show{display:flex}
-.preview-label{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text3);text-transform:uppercase}
-.preview-wrap{position:relative;background:#111;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border)}
-.preview-canvas{width:100%;display:block;border-radius:var(--radius-sm)}
-.preview-badge{position:absolute;top:8px;left:8px;background:rgba(0,255,136,0.9);color:#000;font-size:9px;font-weight:800;padding:3px 8px;border-radius:4px;letter-spacing:0.5px}
-
 /* STATS */
 .stats{display:flex;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;display:none}
 .stat{text-align:center;flex:1}
@@ -86,6 +78,9 @@ main{padding:16px;display:flex;flex-direction:column;gap:14px;padding-bottom:40p
 .video-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .video-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);overflow:hidden;position:relative}
 .video-card video{width:100%;aspect-ratio:16/9;object-fit:contain;background:#111;display:block}
+.card-canvas{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#111;display:none}
+.card-canvas.show{display:block}
+.flip-badge{position:absolute;top:5px;right:5px;background:rgba(0,255,136,0.85);color:#000;font-size:8px;font-weight:800;padding:2px 6px;border-radius:3px;letter-spacing:0.5px;pointer-events:none}
 .video-card-name{padding:6px 8px;font-size:10px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .video-card-status{position:absolute;top:6px;right:6px;font-size:10px;font-weight:700;padding:3px 7px;border-radius:4px;background:rgba(0,0,0,0.8)}
 .status-done{color:var(--green)}
@@ -203,15 +198,6 @@ main{padding:16px;display:flex;flex-direction:column;gap:14px;padding-bottom:40p
 
   </div>
 
-  <!-- LIVE PREVIEW -->
-  <div class="preview-section" id="previewSection">
-    <div class="sect">Live Preview</div>
-    <div class="preview-wrap">
-      <canvas id="previewCanvas" class="preview-canvas"></canvas>
-      <div class="preview-badge" id="previewBadge">HORIZONTAL</div>
-    </div>
-  </div>
-
   <!-- RENAME -->
   <div class="sect">Output Filenames</div>
   <div class="rename-card">
@@ -292,8 +278,6 @@ let videos = [];
 let flipMode = 'horizontal';
 let processing = false;
 let doneCount = 0;
-let previewVid = null;
-let previewAnimFrame = null;
 let optMute = false;
 let optZip = false;
 
@@ -319,7 +303,6 @@ document.getElementById('videoFileInput').addEventListener('change', function(e)
   if (!files.length) return;
   files.forEach(f => videos.push({ file: f, url: URL.createObjectURL(f), name: f.name }));
   renderGrid();
-  startPreview();
   this.value = '';
 });
 
@@ -328,58 +311,77 @@ function selectFlip(mode, btn) {
   flipMode = mode;
   document.querySelectorAll('.flip-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
-  const labels = { horizontal:'HORIZONTAL', vertical:'VERTICAL', both:'BOTH 180°', rotate_cw:'ROTATE 90°' };
-  document.getElementById('previewBadge').textContent = labels[mode] || mode.toUpperCase();
-  // Preview updates automatically via animation loop
+  // Update badges on all cards — preview draws update automatically via animation loop
+  const label = { horizontal:'HORIZONTAL', vertical:'VERTICAL', both:'BOTH 180°', rotate_cw:'ROTATE 90°' }[mode] || mode.toUpperCase();
+  document.querySelectorAll('.flip-badge').forEach(b => b.textContent = label);
 }
 
 // ── LIVE PREVIEW ────────────────────────────────────────────────────────────
+// cardPreviews: [{vid, canvas, ctx, animFrame}] per loaded video
+let cardPreviews = [];
+
+function stopAllPreviews() {
+  cardPreviews.forEach(p => {
+    if (p.animFrame) cancelAnimationFrame(p.animFrame);
+    if (p.vid) { p.vid.pause(); try { p.vid.src = ''; } catch(e){} }
+  });
+  cardPreviews = [];
+}
+
 function startPreview() {
+  stopAllPreviews();
   if (videos.length === 0) return;
-  document.getElementById('previewSection').classList.add('show');
 
-  if (previewVid) { previewVid.pause(); previewVid.src = ''; }
-  if (previewAnimFrame) cancelAnimationFrame(previewAnimFrame);
+  videos.forEach((v, i) => {
+    const card = document.getElementById('card-' + i);
+    if (!card) return;
 
-  previewVid = document.createElement('video');
-  previewVid.src = videos[0].url;
-  previewVid.muted = true;
-  previewVid.loop = true;
-  previewVid.playsInline = true;
-  previewVid.autoplay = true;
-
-  const canvas = document.getElementById('previewCanvas');
-  const ctx = canvas.getContext('2d');
-
-  previewVid.addEventListener('loadedmetadata', function() {
-    const vw = this.videoWidth, vh = this.videoHeight;
-    const isRotate = flipMode === 'rotate_cw';
-    canvas.width = isRotate ? vh : vw;
-    canvas.height = isRotate ? vw : vh;
-    // Set display size
-    const maxW = canvas.parentElement.clientWidth;
-    canvas.style.width = maxW + 'px';
-    canvas.style.height = 'auto';
-
-    previewVid.play().catch(() => {});
-
-    function drawPreview() {
-      const mode = flipMode;
-      const W = previewVid.videoWidth, H = previewVid.videoHeight;
-      const isRot = mode === 'rotate_cw';
-      canvas.width = isRot ? H : W;
-      canvas.height = isRot ? W : H;
-      ctx.save();
-      if (mode === 'horizontal') { ctx.translate(W,0); ctx.scale(-1,1); }
-      else if (mode === 'vertical') { ctx.translate(0,H); ctx.scale(1,-1); }
-      else if (mode === 'both') { ctx.translate(W,H); ctx.scale(-1,-1); }
-      else if (mode === 'rotate_cw') { ctx.translate(H,0); ctx.rotate(Math.PI/2); }
-      ctx.drawImage(previewVid, 0, 0, W, H);
-      ctx.restore();
-      previewAnimFrame = requestAnimationFrame(drawPreview);
+    // Get or create canvas overlay on this card
+    let canvas = card.querySelector('.card-canvas');
+    if (!canvas) {
+      canvas = document.createElement('canvas');
+      canvas.className = 'card-canvas show';
+      card.insertBefore(canvas, card.firstChild);
+    } else {
+      canvas.classList.add('show');
     }
-    drawPreview();
-  }, { once: true });
+    const ctx = canvas.getContext('2d');
+
+    // Hide original video element, show canvas
+    const vidEl = card.querySelector('video');
+    if (vidEl) vidEl.style.opacity = '0';
+
+    const pVid = document.createElement('video');
+    pVid.src = v.url;
+    pVid.muted = true;
+    pVid.loop = true;
+    pVid.playsInline = true;
+
+    const preview = { vid: pVid, canvas, ctx, animFrame: null };
+    cardPreviews.push(preview);
+
+    pVid.addEventListener('loadedmetadata', function() {
+      pVid.play().catch(() => {});
+      function draw() {
+        const mode = flipMode;
+        const W = pVid.videoWidth, H = pVid.videoHeight;
+        const isRot = mode === 'rotate_cw';
+        canvas.width = isRot ? H : W;
+        canvas.height = isRot ? W : H;
+        ctx.save();
+        if (mode === 'horizontal') { ctx.translate(W,0); ctx.scale(-1,1); }
+        else if (mode === 'vertical') { ctx.translate(0,H); ctx.scale(1,-1); }
+        else if (mode === 'both') { ctx.translate(W,H); ctx.scale(-1,-1); }
+        else if (mode === 'rotate_cw') { ctx.translate(H,0); ctx.rotate(Math.PI/2); }
+        ctx.drawImage(pVid, 0, 0, pVid.videoWidth, pVid.videoHeight);
+        ctx.restore();
+        preview.animFrame = requestAnimationFrame(draw);
+      }
+      draw();
+    }, { once: true });
+
+    pVid.load();
+  });
 }
 
 // ── RENAME PREVIEW ──────────────────────────────────────────────────────────
@@ -403,7 +405,6 @@ function renderGrid() {
     document.getElementById('gridLabel').style.display = 'none';
     document.getElementById('processBtn').disabled = true;
     document.getElementById('clearBtn').style.display = 'none';
-    document.getElementById('previewSection').classList.remove('show');
     return;
   }
   statsBar.style.display = 'flex';
@@ -420,6 +421,13 @@ function renderGrid() {
     const card = document.createElement('div');
     card.className = 'video-card';
     card.id = 'card-' + i;
+    // Flip mode badge
+    const badge = document.createElement('div');
+    badge.className = 'flip-badge';
+    badge.id = 'badge-'+i;
+    badge.textContent = flipMode.replace('_',' ').toUpperCase();
+    card.appendChild(badge);
+    // Hidden video element (canvas previews on top)
     const vid = document.createElement('video');
     vid.src = v.url;
     vid.muted = true;
@@ -434,11 +442,13 @@ function renderGrid() {
     rm.className = 'video-card-remove';
     rm.type = 'button';
     rm.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10"><line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
-    rm.addEventListener('touchend', function(e){ e.preventDefault(); e.stopPropagation(); videos.splice(i,1); renderGrid(); if(videos.length>0) startPreview(); }, {passive:false});
-    rm.addEventListener('click', function(e){ e.stopPropagation(); videos.splice(i,1); renderGrid(); if(videos.length>0) startPreview(); });
+    rm.addEventListener('touchend', function(e){ e.preventDefault(); e.stopPropagation(); videos.splice(i,1); stopAllPreviews(); renderGrid(); }, {passive:false});
+    rm.addEventListener('click', function(e){ e.stopPropagation(); videos.splice(i,1); stopAllPreviews(); renderGrid(); });
     card.appendChild(rm);
     grid.appendChild(card);
   });
+  // Start live preview on all cards after DOM is ready
+  requestAnimationFrame(() => startPreview());
 }
 
 // ── PROCESS ALL ─────────────────────────────────────────────────────────────
@@ -674,8 +684,7 @@ function flipWithMediaRecorder(file, mode, mute) {
 
 // ── CLEAR ───────────────────────────────────────────────────────────────────
 function clearAll() {
-  if (previewAnimFrame) cancelAnimationFrame(previewAnimFrame);
-  if (previewVid) { previewVid.pause(); previewVid.src = ''; previewVid = null; }
+  stopAllPreviews();
   videos.forEach(v => URL.revokeObjectURL(v.url));
   videos = []; doneCount = 0;
   document.getElementById('progressCard').classList.remove('show');
