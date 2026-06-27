@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Batch Video Flipper — Back2Life.app</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#080808;--surface:rgba(255,255,255,0.04);--surface2:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --green:#00ff88;--green2:#00cc66;--green-dim:rgba(0,255,136,0.08);
+  --text:#f0f0f0;--text2:#aaa;--text3:#555;--red:#ff4444;
+  --radius:18px;--radius-sm:12px;--radius-xs:8px;--pill:999px;--bar-h:60px;
+}
+html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100dvh;overflow-x:hidden}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;padding:0 16px;height:var(--bar-h);background:rgba(8,8,8,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;gap:10px}
+.menu-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+.menu-btn span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px}
+.topbar-title{position:absolute;left:50%;transform:translateX(-50%);font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--green);white-space:nowrap;pointer-events:none}
+
+main{padding:16px;display:flex;flex-direction:column;gap:14px;padding-bottom:40px}
+
+/* UPLOAD ZONE */
+.upload-zone{border:1.5px dashed rgba(255,255,255,0.12);border-radius:var(--radius-sm);padding:32px 20px;text-align:center;cursor:pointer;position:relative;background:var(--surface);transition:all 0.2s}
+.upload-zone:active{border-color:var(--green);background:var(--green-dim)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone h3{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px}
+.upload-zone p{font-size:12px;color:var(--text3)}
+.chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.chip{font-size:10px;font-weight:700;color:var(--text3);border:1px solid #2a2a2a;border-radius:5px;padding:3px 8px}
+
+/* SECTION LABEL */
+.sect{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);display:flex;align-items:center;gap:8px}
+.sect::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* FLIP OPTIONS */
+.flip-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.flip-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:16px 12px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;text-align:center}
+.flip-btn.selected{background:var(--green-dim);border-color:rgba(0,255,136,0.4)}
+.flip-btn:active{opacity:0.7}
+.flip-icon{font-size:28px;margin-bottom:6px}
+.flip-label{font-size:13px;font-weight:700;color:var(--text2)}
+.flip-btn.selected .flip-label{color:var(--green)}
+.flip-sub{font-size:10px;color:var(--text3);margin-top:3px}
+
+/* RENAME SECTION */
+.rename-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px}
+.rename-row{display:flex;align-items:center;gap:8px;margin-top:10px}
+.rename-input{flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:10px 12px;outline:none}
+.rename-input:focus{border-color:rgba(0,255,136,0.35)}
+.rename-label{font-size:12px;color:var(--text3);font-weight:600;min-width:72px}
+.rename-preview{font-size:11px;color:var(--green);margin-top:8px;font-family:monospace}
+
+/* VIDEO GRID */
+.video-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.video-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);overflow:hidden;position:relative}
+.video-card video{width:100%;aspect-ratio:16/9;object-fit:contain;background:#111;display:block}
+.video-card-name{padding:6px 8px;font-size:10px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.video-card-status{position:absolute;top:6px;right:6px;font-size:10px;font-weight:700;padding:3px 7px;border-radius:4px;background:rgba(0,0,0,0.8)}
+.video-card-status.done{color:var(--green)}
+.video-card-status.processing{color:#ffd700}
+.video-card-remove{position:absolute;top:6px;left:6px;background:rgba(255,68,68,0.85);border:none;border-radius:50%;width:22px;height:22px;color:#fff;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* PROGRESS */
+.progress-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;display:none}
+.progress-card.show{display:block}
+.progress-label{font-size:13px;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--green);border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.progress-bg{background:rgba(255,255,255,0.06);border-radius:var(--pill);height:4px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--green2),var(--green));border-radius:var(--pill);width:0%;transition:width 0.3s}
+
+/* BUTTONS */
+.btn-primary{width:100%;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:15px;padding:15px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;box-shadow:0 4px 20px rgba(0,255,136,0.2)}
+.btn-primary:active{transform:scale(0.98)}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-secondary{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text2);font-weight:700;font-size:14px;padding:13px;border-radius:var(--radius-sm);cursor:pointer;font-family:'Inter',sans-serif}
+
+/* STATS BAR */
+.stats{display:flex;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px}
+.stat{text-align:center;flex:1}
+.stat-num{font-size:20px;font-weight:800;color:var(--green)}
+.stat-label{font-size:10px;color:var(--text3);margin-top:2px}
+
+/* IDEA BOX */
+.idea-box{background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.12);border-radius:var(--radius-xs);padding:12px 14px}
+.idea-title{font-size:11px;font-weight:800;color:var(--green);letter-spacing:0.5px;margin-bottom:8px}
+.idea-item{font-size:12px;color:var(--text3);padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);line-height:1.4}
+.idea-item:last-child{border-bottom:none}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(16,16,16,0.97);border:1px solid var(--border2);backdrop-filter:blur(20px);color:var(--text);font-size:13px;font-weight:600;padding:12px 22px;border-radius:var(--pill);opacity:0;transition:all 0.3s;z-index:400;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* BURGER */
+.drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:499;display:none;backdrop-filter:blur(2px)}
+.nav-drawer{position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid #2a2a2a;border-radius:20px 20px 0 0;z-index:500;transform:translateY(100%);transition:transform .3s ease;padding:0 24px 40px;max-height:80vh;overflow-y:auto}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:99px}
+</style>
+<link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#080808">
+<meta name="apple-mobile-web-app-capable" content="yes">
+</head>
+<body>
+
+<header class="topbar">
+  <button id="menuBtn" class="menu-btn"><span></span><span></span><span></span></button>
+  <span class="topbar-title">BATCH VIDEO FLIPPER</span>
+</header>
+
+<main>
+
+  <!-- UPLOAD -->
+  <label class="upload-zone" for="videoFileInput">
+    <input type="file" id="videoFileInput" accept="video/*" multiple>
+    <h3>📁 Tap to load videos</h3>
+    <p>Batch process hundreds at once</p>
+    <div class="chips"><span class="chip">MP4</span><span class="chip">MOV</span><span class="chip">WEBM</span><span class="chip">MKV</span></div>
+  </label>
+
+  <!-- STATS -->
+  <div class="stats" id="statsBar" style="display:none">
+    <div class="stat"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Loaded</div></div>
+    <div class="stat"><div class="stat-num" id="statDone">0</div><div class="stat-label">Done</div></div>
+    <div class="stat"><div class="stat-num" id="statSize">0 MB</div><div class="stat-label">Total Size</div></div>
+  </div>
+
+  <!-- FLIP MODE -->
+  <div class="sect">Flip Direction</div>
+  <div class="flip-grid">
+    <div class="flip-btn selected" id="btnHoriz" onclick="selectFlip('horizontal', this)">
+      <div class="flip-icon">↔️</div>
+      <div class="flip-label">Horizontal</div>
+      <div class="flip-sub">Mirror left ↔ right</div>
+    </div>
+    <div class="flip-btn" id="btnVert" onclick="selectFlip('vertical', this)">
+      <div class="flip-icon">↕️</div>
+      <div class="flip-label">Vertical</div>
+      <div class="flip-sub">Flip top ↕ bottom</div>
+    </div>
+  </div>
+  <div class="flip-grid">
+    <div class="flip-btn" id="btnBoth" onclick="selectFlip('both', this)">
+      <div class="flip-icon">🔄</div>
+      <div class="flip-label">Both</div>
+      <div class="flip-sub">180° rotation</div>
+    </div>
+    <div class="flip-btn" id="btnRotCW" onclick="selectFlip('rotate_cw', this)">
+      <div class="flip-icon">↩️</div>
+      <div class="flip-label">Rotate 90° CW</div>
+      <div class="flip-sub">Portrait → Landscape</div>
+    </div>
+  </div>
+
+  <!-- RENAME -->
+  <div class="sect">Output Filename</div>
+  <div class="rename-card">
+    <div style="font-size:12px;color:var(--text3);margin-bottom:10px">Each exported file will be numbered automatically</div>
+    <div class="rename-row">
+      <span class="rename-label">Prefix</span>
+      <input class="rename-input" type="text" id="prefixInput" value="flipped" placeholder="e.g. flipped, clip, video" oninput="updatePreview()">
+    </div>
+    <div class="rename-row">
+      <span class="rename-label">Start #</span>
+      <input class="rename-input" type="number" id="startNumInput" value="1" min="1" max="9999" oninput="updatePreview()">
+    </div>
+    <div class="rename-row">
+      <span class="rename-label">Padding</span>
+      <input class="rename-input" type="number" id="paddingInput" value="2" min="1" max="4" oninput="updatePreview()">
+    </div>
+    <div class="rename-preview" id="renamePreview">→ flipped_01.webm, flipped_02.webm…</div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-card" id="progressCard">
+    <div class="progress-label">
+      <div class="spinner"></div>
+      <span id="progressLabel">Processing…</span>
+    </div>
+    <div class="progress-bg"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <!-- ACTIONS -->
+  <button class="btn-primary" id="processBtn" onclick="processAll()" disabled>🔄 Flip & Export All</button>
+  <button class="btn-secondary" id="clearBtn" onclick="clearAll()" style="display:none">✕ Clear All</button>
+
+  <!-- VIDEO GRID -->
+  <div class="sect" id="gridLabel" style="display:none">Loaded Videos</div>
+  <div class="video-grid" id="videoGrid"></div>
+
+  <!-- IDEAS -->
+  <div class="sect">Coming Soon — Batch Tools</div>
+  <div class="idea-box">
+    <div class="idea-title">💡 Other batch operations we could add:</div>
+    <div class="idea-item">🔇 <strong>Mute all</strong> — strip audio from every video in one tap</div>
+    <div class="idea-item">✂️ <strong>Trim to duration</strong> — cut all videos to same length (5s, 10s, 30s)</div>
+    <div class="idea-item">📐 <strong>Resize / crop</strong> — resize all to 9:16, 16:9, 1:1 or custom px</div>
+    <div class="idea-item">🎨 <strong>Apply filter</strong> — greyscale, sepia, brightness boost on all</div>
+    <div class="idea-item">💧 <strong>Batch watermark</strong> — stamp logo on all (redirect to Watermark Tool)</div>
+    <div class="idea-item">🗜️ <strong>Compress all</strong> — reduce file size for upload limits</div>
+    <div class="idea-item">🔀 <strong>Reverse video</strong> — play every clip backwards</div>
+    <div class="idea-item">⚡ <strong>Speed change</strong> — 0.5× slow-mo or 2× fast-forward on all</div>
+    <div class="idea-item">🖼️ <strong>Extract thumbnail</strong> — grab frame 1 from every video</div>
+    <div class="idea-item">📦 <strong>Download as ZIP</strong> — package all outputs in a single download</div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<div class="nav-drawer" id="navDrawer">
+  <div style="padding:10px 0 6px;text-align:center"><div style="width:36px;height:4px;background:#333;border-radius:2px;margin:0 auto"></div></div>
+  <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:16px 0 8px">Navigation</div>
+  <a href="/" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span><img src="/icons/home.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Home</a>
+  <a href="/#tutorials" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span><img src="/icons/tutorials.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Tutorials</a>
+  <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:16px 0 8px;border-top:1px solid #1a1a1a"><img src="/icons/free-tools.png" style="width:16px;height:16px;border-radius:3px;vertical-align:middle;margin-right:6px">Free Tools</div>
+  <a href="/watermark" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span><img src="/icons/watermark.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Watermark Tool</a>
+  <a href="/video-splitter" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span><img src="/icons/video-splitter.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Video Splitter</a>
+  <a href="/frame-extractor" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span><img src="/icons/frame-extractor.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Frame Extractor</a>
+  <a href="/audio-editor" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span><img src="/icons/audio-editor.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Editor</a>
+  <a href="/audio-converter" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span><img src="/icons/audio-converter.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Converter</a>
+  <a href="/video-flipper" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="font-size:20px;width:28px;text-align:center">🔄</span>Batch Video Flipper</a>
+  <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:16px 0 8px;border-top:1px solid #1a1a1a">AI Generation</div>
+  <a href="/ai-studio" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="font-size:20px;width:28px;text-align:center">✨</span>AI Studio</a>
+  <a href="/motion-control" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="font-size:20px;width:28px;text-align:center">🎭</span>Motion Control</a>
+  <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:16px 0 8px;border-top:1px solid #1a1a1a">Follow Us</div>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="#E1306C"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="#ffffff"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.79a4.85 4.85 0 01-1.01-.1z"/></svg></span>TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none"><span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg></span>YouTube</a>
+</div>
+
+<canvas id="offscreen" style="display:none"></canvas>
+
+<script>
+let videos = []; // {file, url, name}
+let flipMode = 'horizontal';
+let processing = false;
+let doneCount = 0;
+
+// ── FILE INPUT ──────────────────────────────────────────────────────────────
+document.getElementById('videoFileInput').addEventListener('change', e => {
+  const files = Array.from(e.target.files).filter(f => f.type.startsWith('video/'));
+  if (!files.length) return;
+  files.forEach(f => videos.push({ file: f, url: URL.createObjectURL(f), name: f.name }));
+  renderGrid();
+  document.getElementById('videoFileInput').value = '';
+});
+
+// ── FLIP MODE ───────────────────────────────────────────────────────────────
+function selectFlip(mode, btn) {
+  flipMode = mode;
+  document.querySelectorAll('.flip-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+// ── RENAME PREVIEW ──────────────────────────────────────────────────────────
+function updatePreview() {
+  const prefix = document.getElementById('prefixInput').value.trim() || 'flipped';
+  const start = parseInt(document.getElementById('startNumInput').value) || 1;
+  const pad = parseInt(document.getElementById('paddingInput').value) || 2;
+  const n1 = String(start).padStart(pad, '0');
+  const n2 = String(start + 1).padStart(pad, '0');
+  document.getElementById('renamePreview').textContent = `→ ${prefix}_${n1}.webm, ${prefix}_${n2}.webm…`;
+}
+updatePreview();
+
+// ── RENDER GRID ─────────────────────────────────────────────────────────────
+function renderGrid() {
+  const grid = document.getElementById('videoGrid');
+  grid.innerHTML = '';
+  if (videos.length === 0) {
+    document.getElementById('statsBar').style.display = 'none';
+    document.getElementById('gridLabel').style.display = 'none';
+    document.getElementById('processBtn').disabled = true;
+    document.getElementById('clearBtn').style.display = 'none';
+    return;
+  }
+  document.getElementById('statsBar').style.display = 'flex';
+  document.getElementById('gridLabel').style.display = 'flex';
+  document.getElementById('processBtn').disabled = false;
+  document.getElementById('clearBtn').style.display = 'block';
+  document.getElementById('statTotal').textContent = videos.length;
+  const totalBytes = videos.reduce((s, v) => s + (v.file?.size || 0), 0);
+  document.getElementById('statSize').textContent = (totalBytes / 1024 / 1024).toFixed(1) + ' MB';
+
+  videos.forEach((v, i) => {
+    const card = document.createElement('div');
+    card.className = 'video-card';
+    card.id = 'card-' + i;
+    const vid = document.createElement('video');
+    vid.src = v.url;
+    vid.muted = true;
+    vid.preload = 'metadata';
+    vid.playsInline = true;
+    card.appendChild(vid);
+    const nameEl = document.createElement('div');
+    nameEl.className = 'video-card-name';
+    nameEl.textContent = v.name;
+    card.appendChild(nameEl);
+    const rm = document.createElement('button');
+    rm.className = 'video-card-remove';
+    rm.textContent = '✕';
+    rm.onclick = () => { videos.splice(i, 1); renderGrid(); };
+    card.appendChild(rm);
+    grid.appendChild(card);
+  });
+}
+
+// ── PROCESS ALL ─────────────────────────────────────────────────────────────
+async function processAll() {
+  if (!videos.length || processing) return;
+  processing = true;
+  doneCount = 0;
+  document.getElementById('processBtn').disabled = true;
+  document.getElementById('progressCard').classList.add('show');
+  document.getElementById('statDone').textContent = '0';
+
+  const prefix = document.getElementById('prefixInput').value.trim() || 'flipped';
+  const startNum = parseInt(document.getElementById('startNumInput').value) || 1;
+  const pad = parseInt(document.getElementById('paddingInput').value) || 2;
+
+  for (let i = 0; i < videos.length; i++) {
+    const v = videos[i];
+    const numStr = String(startNum + i).padStart(pad, '0');
+    const outName = `${prefix}_${numStr}.webm`;
+
+    document.getElementById('progressLabel').textContent = `Processing ${i + 1} of ${videos.length}: ${v.name}`;
+    document.getElementById('progressFill').style.width = ((i / videos.length) * 100) + '%';
+
+    // Show processing status on card
+    const card = document.getElementById('card-' + i);
+    if (card) {
+      const st = document.createElement('div');
+      st.className = 'video-card-status processing';
+      st.id = 'status-' + i;
+      st.textContent = '⏳';
+      card.appendChild(st);
+    }
+
+    try {
+      await flipAndDownload(v.file, outName, flipMode);
+      doneCount++;
+      document.getElementById('statDone').textContent = doneCount;
+      const stEl = document.getElementById('status-' + i);
+      if (stEl) { stEl.className = 'video-card-status done'; stEl.textContent = '✓'; }
+    } catch(e) {
+      console.error('Failed:', v.name, e);
+      const stEl = document.getElementById('status-' + i);
+      if (stEl) { stEl.className = 'video-card-status'; stEl.style.color = '#ff4444'; stEl.textContent = '⚠️'; }
+    }
+
+    // Small delay between downloads so browser doesn't block
+    await new Promise(r => setTimeout(r, 200));
+  }
+
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('progressLabel').textContent = `✓ Done — ${doneCount} of ${videos.length} exported`;
+  showToast(`✓ ${doneCount} video${doneCount !== 1 ? 's' : ''} flipped & saved!`);
+  processing = false;
+  document.getElementById('processBtn').disabled = false;
+}
+
+// ── FLIP ENGINE (Canvas + MediaRecorder) ────────────────────────────────────
+function flipAndDownload(file, outName, mode) {
+  return new Promise((resolve, reject) => {
+    const vid = document.createElement('video');
+    vid.muted = true;
+    vid.playsInline = true;
+    vid.preload = 'auto';
+    vid.src = URL.createObjectURL(file);
+
+    vid.addEventListener('loadedmetadata', () => {
+      const W = vid.videoWidth, H = vid.videoHeight;
+      const canvas = document.createElement('canvas');
+      // For rotation, swap dimensions
+      const isRotate = mode === 'rotate_cw';
+      canvas.width = isRotate ? H : W;
+      canvas.height = isRotate ? W : H;
+      const ctx = canvas.getContext('2d');
+
+      const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+        ? 'video/webm;codecs=vp9'
+        : 'video/webm';
+      const recorder = new MediaRecorder(canvas.captureStream(30), { mimeType, videoBitsPerSecond: 8_000_000 });
+      const chunks = [];
+      recorder.ondataavailable = e => { if (e.data?.size > 0) chunks.push(e.data); };
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = outName;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+        resolve();
+      };
+
+      function drawFrame() {
+        if (vid.ended || vid.paused && vid.currentTime >= vid.duration - 0.05) {
+          recorder.stop();
+          return;
+        }
+        ctx.save();
+        if (mode === 'horizontal') {
+          ctx.translate(W, 0); ctx.scale(-1, 1);
+        } else if (mode === 'vertical') {
+          ctx.translate(0, H); ctx.scale(1, -1);
+        } else if (mode === 'both') {
+          ctx.translate(W, H); ctx.scale(-1, -1);
+        } else if (mode === 'rotate_cw') {
+          ctx.translate(H, 0); ctx.rotate(Math.PI / 2);
+        }
+        ctx.drawImage(vid, 0, 0, W, H);
+        ctx.restore();
+        requestAnimationFrame(drawFrame);
+      }
+
+      recorder.start(100);
+      vid.play().then(() => {
+        drawFrame();
+      }).catch(reject);
+
+      vid.addEventListener('ended', () => { if (recorder.state !== 'inactive') recorder.stop(); });
+    }, { once: true });
+
+    vid.addEventListener('error', reject);
+    vid.load();
+  });
+}
+
+// ── CLEAR ───────────────────────────────────────────────────────────────────
+function clearAll() {
+  videos.forEach(v => URL.revokeObjectURL(v.url));
+  videos = [];
+  doneCount = 0;
+  document.getElementById('progressCard').classList.remove('show');
+  document.getElementById('statDone').textContent = '0';
+  renderGrid();
+}
+
+// ── BURGER MENU ─────────────────────────────────────────────────────────────
+(function(){
+  var b=document.getElementById('menuBtn'),d=document.getElementById('navDrawer'),bd=document.getElementById('drawerBackdrop');
+  document.body.appendChild(bd);document.body.appendChild(d);
+  function openD(){d.style.transform='translateY(0)';bd.style.display='block';document.body.style.overflow='hidden';}
+  function closeD(){d.style.transform='translateY(100%)';bd.style.display='none';document.body.style.overflow='';}
+  b.addEventListener('click',()=>d.style.transform==='translateY(0)'?closeD():openD());
+  bd.addEventListener('click',closeD);
+  var ty=0;
+  d.addEventListener('touchstart',e=>{ty=e.touches[0].clientY;},{passive:true});
+  d.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-ty>50)closeD();},{passive:true});
+})();
+
+// ── TOAST ────────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3200);}
+</script>
+</body>
+</html>
