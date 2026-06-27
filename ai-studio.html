@@ -321,6 +321,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-syst
 </div>
 
 <script>
+const SVG_MOTION_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg>';
+
 // ── API KEY (hidden from users) ────────────────────────────────────────────
 const FAL_KEY = 'f9b3b700-5df2-48b2-82ed-60e2042db1b7:20f2c6a057d8e4a18dd9a47b24114ba1';
 
@@ -627,7 +629,7 @@ function updateTopbar() {
   const rt = selectedModel.ref_type;
   if (selectedModel.is_r2v) {
     refsLabelText.textContent = 'Multi-modal refs (9 imgs · 3 vids · 3 audio) — use @Image1 @Video1 in prompt';
-    refsLabelIcon.textContent = '🎭';
+    refsLabelIcon.innerHTML = SVG_MOTION_ICON;
     refInput.accept = 'image/*,video/*,audio/*';
   } else if (rt === 'kling_v3') {
     refsLabelText.textContent = 'Start Frame · End Frame · Elements (@Element1 in prompt)';
