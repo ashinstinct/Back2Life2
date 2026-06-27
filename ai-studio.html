@@ -204,10 +204,10 @@ html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-syst
     <span style="margin-left:auto;font-size:10px;color:var(--text3)" id="refsCount">0/12</span>
   </div>
   <div class="refs-scroll" id="refsScroll">
-    <div class="ref-add-btn" id="refAddBtn">
-      <span class="ref-add-icon">+</span>
-    </div>
-    <input type="file" id="refFileInput" accept="image/*,video/*" multiple style="display:none">
+    <label class="ref-add-btn" id="refAddBtn" style="position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer">
+      <input type="file" id="refFileInput" accept="image/*,video/*" multiple style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;font-size:0;z-index:10">
+      <span class="ref-add-icon" style="pointer-events:none">+</span>
+    </label>
   </div>
 </div>
 
@@ -579,12 +579,11 @@ document.getElementById('refFileInput').addEventListener('change', e => {
 
 function renderRefs() {
   const scroll = document.getElementById('refsScroll');
-  // Clear thumbnails but keep the add button and hidden input
   const addBtn = document.getElementById('refAddBtn');
-  const fileInput = document.getElementById('refFileInput');
-  scroll.innerHTML = '';
-  scroll.appendChild(addBtn);
-  // Re-append hidden input after scroll (outside scroll)
+  // Remove only thumbnail cards, keep the label/addBtn
+  scroll.querySelectorAll('.ref-thumb').forEach(t => t.remove());
+  // Ensure addBtn is in scroll
+  if (!scroll.contains(addBtn)) scroll.appendChild(addBtn);
   uploadedFiles.forEach((f, i) => {
     const thumb = document.createElement('div');
     thumb.className = 'ref-thumb';
@@ -1126,11 +1125,7 @@ plusBtn.addEventListener('click', handlePlus);
 minusBtn.addEventListener('touchend', handleMinus, {passive:false});
 plusBtn.addEventListener('touchend', handlePlus, {passive:false});
 
-// Ref add button - use touchend too
-var refBtn = document.getElementById('refAddBtn');
-function handleRefTap(e){ e.preventDefault(); e.stopPropagation(); document.getElementById('refFileInput').click(); }
-refBtn.addEventListener('click', handleRefTap);
-refBtn.addEventListener('touchend', handleRefTap, {passive:false});
+// Ref add button handled natively by label element
 
 init();
 </script>
