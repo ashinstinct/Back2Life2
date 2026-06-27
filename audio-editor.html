@@ -31,7 +31,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 /* EMPTY STATE */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-height:60vh;text-align:center;padding:20px}
 .empty.hidden{display:none}
-.empty-icon{font-size:52px;opacity:.7;animation:pulse 2.4s ease-in-out infinite}
+.empty-icon{display:flex;align-items:center;justify-content:center;animation:pulse 2.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.07);opacity:1}}
 .empty-title{font-size:15px;font-weight:700;color:#bbb}
 .empty-sub{font-size:12px;color:#555;max-width:260px}
@@ -145,8 +145,8 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-ra
 </div>
 
 <div class="main">
-  <div class="empty" id="empty">
-    <div class="empty-icon">🎵</div>
+  <div class="empty" id="empty" onclick="document.getElementById('fileInput').click()" style="cursor:pointer">
+    <div class="empty-icon"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
     <div class="empty-title">Add an audio file to edit</div>
     <div class="empty-sub">Trim, fade, adjust volume &amp; speed. Export as MP3, WAV or AIFF.</div>
     <label for="fileInput" class="empty-btn" style="cursor:pointer">+ Add Audio</label>
@@ -158,6 +158,15 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-ra
 
     <div class="wave-wrap">
       <canvas class="wave-canvas" id="waveCanvas"></canvas>
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:4px 0 2px">
+        <button onclick="zoomWave(-1)" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#aaa;font-size:16px;font-weight:700;width:32px;height:28px;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;touch-action:manipulation">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <span id="zoomLabel" style="font-size:10px;color:#555;min-width:32px;text-align:center">1×</span>
+        <button onclick="zoomWave(1)" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#aaa;font-size:16px;font-weight:700;width:32px;height:28px;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;touch-action:manipulation">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
       <div class="trim-handles" id="trimHandles">
         <div class="trim-region" id="trimRegion"></div>
         <div class="trim-handle left" id="trimLeft"></div>
@@ -270,6 +279,8 @@ let audioCtx=null, audioBuffer=null, sourceNode=null, gainNode=null;
 let fileName='audio', playing=false, startedAt=0, pausedAt=0;
 let trimStart=0, trimEnd=1; // normalised 0..1
 let settings={vol:1, speed:1, fadeIn:0, fadeOut:0};
+let waveZoom = 1; // 1 = full view, 2 = 2x zoom, etc.
+let waveOffset = 0; // 0-1, scroll position
 let exportFormat='mp3', exportBitrate=192;
 
 const $=id=>document.getElementById(id);
@@ -314,19 +325,107 @@ function drawWave(){
   ctx.clearRect(0,0,w,h);
   if(!audioBuffer)return;
   const data=audioBuffer.getChannelData(0);
-  const step=Math.ceil(data.length/w);
+  const totalSamples=data.length;
+  const viewFraction=1/waveZoom;
+  const startSample=Math.floor(waveOffset*totalSamples);
+  const endSample=Math.min(totalSamples,Math.floor(startSample+totalSamples*viewFraction));
+  const visibleSamples=endSample-startSample;
+  const step=Math.max(1,Math.ceil(visibleSamples/w));
   const amp=h/2;
-  ctx.fillStyle='#00ff88';
+  const dur=audioBuffer.duration;
+  const startTime=(startSample/totalSamples)*dur;
+  const endTime=(endSample/totalSamples)*dur;
+
+  // Draw waveform
   for(let i=0;i<w;i++){
+    const idx=startSample+Math.floor(i/w*visibleSamples);
     let min=1,max=-1;
     for(let j=0;j<step;j++){
-      const d=data[i*step+j]||0;
+      const d=data[Math.min(totalSamples-1,idx+j)]||0;
       if(d<min)min=d; if(d>max)max=d;
     }
     const y1=(1+min)*amp, y2=(1+max)*amp;
-    ctx.fillRect(i,y1,1,Math.max(1,y2-y1));
+    const t=startTime+(i/w)*(endTime-startTime);
+    // Compute fade envelope at this time position
+    const fadeInDur=settings.fadeIn||0;
+    const fadeOutDur=settings.fadeOut||0;
+    const trimStartT=trimStart*dur, trimEndT=trimEnd*dur;
+    let envelope=1;
+    if(fadeInDur>0 && t>=trimStartT && t<trimStartT+fadeInDur)
+      envelope=Math.max(0,(t-trimStartT)/fadeInDur);
+    if(fadeOutDur>0 && t>trimEndT-fadeOutDur && t<=trimEndT)
+      envelope=Math.min(envelope,Math.max(0,(trimEndT-t)/fadeOutDur));
+    // Color: fade regions teal, normal green
+    if((fadeInDur>0&&t>=trimStartT&&t<trimStartT+fadeInDur)||(fadeOutDur>0&&t>trimEndT-fadeOutDur&&t<=trimEndT)){
+      ctx.fillStyle='rgba(0,200,255,0.85)';
+    } else {
+      ctx.fillStyle='#00ff88';
+    }
+    const adjAmp=(y2-y1)*envelope;
+    const midY=(y1+y2)/2;
+    ctx.fillRect(i,midY-adjAmp/2,1,Math.max(1,adjAmp));
+  }
+
+  // Draw fade curve overlays
+  ctx.lineWidth=2;
+  if(settings.fadeIn>0){
+    const fadeInEndX=((trimStart+(settings.fadeIn/dur))*dur-startTime)/(endTime-startTime)*w;
+    const trimStartX=(trimStart*dur-startTime)/(endTime-startTime)*w;
+    ctx.strokeStyle='rgba(0,200,255,0.9)';
+    ctx.beginPath();
+    ctx.moveTo(Math.max(0,trimStartX),h);
+    ctx.quadraticCurveTo((trimStartX+fadeInEndX)/2,h/2,Math.min(w,fadeInEndX),0);
+    ctx.stroke();
+  }
+  if(settings.fadeOut>0){
+    const fadeOutStartX=((trimEnd-(settings.fadeOut/dur))*dur-startTime)/(endTime-startTime)*w;
+    const trimEndX=(trimEnd*dur-startTime)/(endTime-startTime)*w;
+    ctx.strokeStyle='rgba(0,200,255,0.9)';
+    ctx.beginPath();
+    ctx.moveTo(Math.max(0,fadeOutStartX),0);
+    ctx.quadraticCurveTo((fadeOutStartX+trimEndX)/2,h/2,Math.min(w,trimEndX),h);
+    ctx.stroke();
   }
 }
+
+function zoomWave(dir){
+  const levels=[1,2,4,8,16];
+  const idx=levels.indexOf(waveZoom);
+  const newIdx=Math.max(0,Math.min(levels.length-1,idx+dir));
+  waveZoom=levels[newIdx];
+  // Keep offset within bounds
+  const maxOffset=1-1/waveZoom;
+  waveOffset=Math.max(0,Math.min(maxOffset,waveOffset));
+  document.getElementById('zoomLabel').textContent=waveZoom+'×';
+  drawWave();
+  updateTrimUI();
+}
+
+// Pinch-to-zoom on waveform canvas
+(function(){
+  let lastDist=0;
+  const cv=document.getElementById('waveCanvas');
+  cv.addEventListener('touchstart',function(e){
+    if(e.touches.length===2){
+      const dx=e.touches[0].clientX-e.touches[1].clientX;
+      const dy=e.touches[0].clientY-e.touches[1].clientY;
+      lastDist=Math.sqrt(dx*dx+dy*dy);
+    }
+  },{passive:true});
+  cv.addEventListener('touchmove',function(e){
+    if(e.touches.length===2){
+      const dx=e.touches[0].clientX-e.touches[1].clientX;
+      const dy=e.touches[0].clientY-e.touches[1].clientY;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(lastDist>0){
+        const ratio=dist/lastDist;
+        if(ratio>1.15) zoomWave(1);
+        else if(ratio<0.85) zoomWave(-1);
+        if(ratio>1.15||ratio<0.85) lastDist=dist;
+      }
+    }
+  },{passive:true});
+})();
 window.addEventListener('resize',()=>{if(audioBuffer){drawWave();updateTrimUI();}});
 
 // ══ TRIM HANDLES ══
@@ -407,8 +506,8 @@ function bindRange(id,valId,fmt,cb){
 }
 bindRange('volRange','volVal',v=>v+'%',v=>settings.vol=v/100);
 bindRange('spdRange','spdVal',v=>(v/100).toFixed(2).replace(/0$/,'')+'×',v=>settings.speed=v/100);
-bindRange('fadeInRange','fadeInVal',v=>(v/10).toFixed(1)+'s',v=>settings.fadeIn=v/10);
-bindRange('fadeOutRange','fadeOutVal',v=>(v/10).toFixed(1)+'s',v=>settings.fadeOut=v/10);
+bindRange('fadeInRange','fadeInVal',v=>(v/10).toFixed(1)+'s',v=>{settings.fadeIn=v/10;if(audioBuffer)drawWave();});
+bindRange('fadeOutRange','fadeOutVal',v=>(v/10).toFixed(1)+'s',v=>{settings.fadeOut=v/10;if(audioBuffer)drawWave();});
 
 function resetControls(){
   $('volRange').value=100;$('volVal').textContent='100%';

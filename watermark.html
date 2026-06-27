@@ -94,7 +94,7 @@ main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;overflow-y:
 .progress-label{font-size:12px;color:var(--text3);font-weight:500}
 
 /* SHEET OVERLAY */
-.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:100;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.25);z-index:100;opacity:0;pointer-events:none;transition:opacity 0.25s}
 .sheet-overlay.open{opacity:1;pointer-events:all}
 
 /* BOTTOM SHEET */
@@ -176,8 +176,8 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
 </header>
 
 <main>
-  <div class="upload-zone" id="dropzone">
-    <div class="upload-icon">🎬</div>
+  <label class="upload-zone" for="fileInput" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center"> id="dropzone">
+    <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,rgba(0,255,136,0.15),rgba(0,204,102,0.25));display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
     <div class="upload-title">Drop images or videos here</div>
     <div class="upload-sub">Supports JPG, PNG, MP4, MOV, WEBM<br>Batch upload 1–100+ files</div>
     <div class="chips"><span class="chip">JPG</span><span class="chip">PNG</span><span class="chip">MP4</span><span class="chip">MOV</span><span class="chip">WEBM</span></div>
@@ -208,8 +208,8 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
 
 <div class="bottom-sheet" id="sheet">
   <div class="sheet-handle"></div>
-  <div class="sheet-header" style="padding:4px 20px 8px">
-    <span class="sheet-title">⚙️ Watermark Settings</span>
+  <div class="sheet-header" style="padding:4px 20px 2px">
+    <span class="sheet-title" style="display:none"></span>
     <button class="sheet-close" id="closeSheet">✕</button>
   </div>
 
