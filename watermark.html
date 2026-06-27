@@ -98,8 +98,9 @@ main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;overflow-y:
 .sheet-overlay.open{opacity:1;pointer-events:all}
 
 /* BOTTOM SHEET */
-.bottom-sheet{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,12,0.97);backdrop-filter:blur(30px) saturate(200%);border-top:1px solid var(--border2);border-radius:26px 26px 0 0;z-index:101;padding:0 0 env(safe-area-inset-bottom,20px);transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);max-height:92dvh;overflow-y:auto}
-.bottom-sheet.open{transform:translateY(0)}
+.bottom-sheet{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,12,0.97);backdrop-filter:blur(30px) saturate(200%);border-top:1px solid var(--border2);border-radius:26px 26px 0 0;z-index:101;padding:0 0 env(safe-area-inset-bottom,20px);transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);max-height:92dvh;overflow-y:auto;will-change:transform}
+.bottom-sheet.open{transform:translateY(50%)}
+.bottom-sheet.open.full{transform:translateY(0)}
 .sheet-handle{width:36px;height:4px;background:rgba(255,255,255,0.12);border-radius:var(--pill);margin:14px auto 6px}
 .sheet-header{padding:6px 20px 16px;display:flex;align-items:center;justify-content:space-between}
 .sheet-title{font-size:18px;font-weight:800;letter-spacing:-0.3px}
@@ -207,7 +208,7 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
 
 <div class="bottom-sheet" id="sheet">
   <div class="sheet-handle"></div>
-  <div class="sheet-header">
+  <div class="sheet-header" style="padding:4px 20px 8px">
     <span class="sheet-title">⚙️ Watermark Settings</span>
     <button class="sheet-close" id="closeSheet">✕</button>
   </div>
@@ -537,7 +538,7 @@ renderGrid();
   <a href="/frame-extractor" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/frame-extractor.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Frame Extractor"></span>Frame Extractor</a>
   <a href="/audio-editor" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/audio-editor.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Audio Editor"></span>Audio Editor</a>
   <a href="/audio-converter" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/audio-converter.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Audio Converter"></span>Audio Converter</a>
-  <a href="/video-flipper" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/video-flipper.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Batch Flipper"></span>Batch Flipper</a>
+  <a href="/video-flipper" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/video-flipper.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Batch Flipper"></span>Batch Video Flipper</a>
   <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:16px 0 8px;border-top:1px solid #1a1a1a">AI Generation</div>
   <a href="/ai-studio" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg></span>AI Studio</a>
   <a href="/motion-control" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/><path d="M18 12l3 3-3 3"/></svg></span>Motion Control</a>
@@ -550,7 +551,58 @@ renderGrid();
 </div>
 <script>
 (function(){
-  var b = document.getElementById('menuBtn');
+  // ── SHEET SWIPE GESTURES ────────────────────────────────────────────────────
+(function(){
+  var sheet = document.getElementById('sheet');
+  var overlay = document.getElementById('sheetOverlay');
+  var startY = 0, startPct = 0, dragging = false;
+
+  function getPct() {
+    var t = window.getComputedStyle(sheet).transform;
+    if (!t || t === 'none') return sheet.classList.contains('open') ? 50 : 100;
+    var mat = t.match(/matrix.*\((.+)\)/);
+    if (!mat) return 50;
+    var vals = mat[1].split(', ');
+    var ty = parseFloat(vals[5]);
+    return (ty / window.innerHeight) * 100;
+  }
+
+  sheet.addEventListener('touchstart', function(e) {
+    var rect = sheet.getBoundingClientRect();
+    if (e.touches[0].clientY - rect.top > 52) return;
+    startY = e.touches[0].clientY;
+    startPct = sheet.classList.contains('full') ? 0 : 50;
+    dragging = true;
+    sheet.style.transition = 'none';
+  }, {passive:true});
+
+  document.addEventListener('touchmove', function(e) {
+    if (!dragging) return;
+    var dy = e.touches[0].clientY - startY;
+    var pct = Math.max(0, Math.min(100, startPct + (dy / window.innerHeight * 100)));
+    sheet.style.transform = 'translateY(' + pct + '%)';
+  }, {passive:true});
+
+  document.addEventListener('touchend', function(e) {
+    if (!dragging) return;
+    dragging = false;
+    sheet.style.transition = '';
+    sheet.style.transform = '';
+    var dy = e.changedTouches[0].clientY - startY;
+    if (dy > 80) {
+      if (sheet.classList.contains('full')) {
+        sheet.classList.remove('full'); // snap back to 50%
+      } else {
+        sheet.classList.remove('open','full');
+        overlay.classList.remove('open');
+      }
+    } else if (dy < -60) {
+      sheet.classList.add('full');
+    }
+  }, {passive:true});
+})();
+
+var b = document.getElementById('menuBtn');
   var d = document.getElementById('navDrawer');
   var bd = document.getElementById('drawerBackdrop');
   if(!b || !d || !bd) return;
