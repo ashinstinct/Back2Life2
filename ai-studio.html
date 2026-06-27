@@ -232,6 +232,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-syst
     <div class="prompt-footer">
       <span class="char-count" id="charCount">0 / 2500</span>
       <div class="prompt-tools">
+        <button class="prompt-tool-btn" id="enhanceBtn" onclick="enhancePrompt()" title="Enhance prompt with AI">✨</button>
         <button class="prompt-tool-btn" onclick="clearPrompt()" title="Clear">🗑</button>
       </div>
     </div>
@@ -249,6 +250,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-syst
     <span class="settings-trigger-icon">⚙</span>
     <span class="settings-trigger-text" id="settingsSummary">720p · 5s · Auto · SD 2.0 Fast</span>
   </div>
+  <button class="icon-btn" onclick="openHistory()" style="flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--pill);width:auto;padding:0 12px;height:44px;font-size:13px;font-weight:700;color:var(--text2);font-family:Inter,sans-serif;cursor:pointer">🕘</button>
   <button class="generate-btn" id="generateBtn" onclick="generate()">Generate</button>
 </div>
 
@@ -274,6 +276,21 @@ html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-syst
       <button class="sheet-close" onclick="closeModelSheet()">✕</button>
     </div>
     <div style="padding:0 16px 16px" id="modelListWrap"></div>
+  </div>
+</div>
+
+<!-- HISTORY PANEL -->
+<div class="sheet-overlay" id="historyOverlay">
+  <div class="settings-sheet" id="historySheet" style="max-height:85vh">
+    <div class="sheet-handle-wrap"><div class="sheet-handle"></div></div>
+    <div style="position:relative;padding:0 20px 4px">
+      <div class="sheet-title">Generation History</div>
+      <button class="sheet-close" onclick="closeHistory()">✕</button>
+    </div>
+    <div style="padding:10px 16px;display:flex;justify-content:flex-end">
+      <button onclick="clearHistory()" style="background:none;border:1px solid rgba(255,68,68,0.3);color:#ff4444;font-size:12px;font-weight:700;padding:6px 14px;border-radius:var(--pill);cursor:pointer;font-family:Inter,sans-serif">Clear All</button>
+    </div>
+    <div id="historyGrid" style="padding:0 12px 20px;display:grid;grid-template-columns:1fr 1fr;gap:8px;overflow-y:auto;max-height:60vh;-webkit-overflow-scrolling:touch"></div>
   </div>
 </div>
 
@@ -430,6 +447,27 @@ const VIDEO_MODELS = [
     }
   },
   {
+    id: 'bytedance/seedance-2.0/reference-to-video',
+    id_i2v: 'bytedance/seedance-2.0/reference-to-video',
+    id_fast: 'bytedance/seedance-2.0/fast/reference-to-video',
+    name: 'SD 2.0 Omni',
+    fullName: 'Seedance 2.0 Omni Reference',
+    icon: '🎭',
+    badge: 'omni',
+    desc: 'Multi-modal: up to 9 imgs + 3 vids + 3 audio — use @Image1 @Video1 @Audio1 in prompt',
+    cost: '$0.30/s',
+    is_r2v: true,
+    settings: {
+      resolution: { label: 'Resolution', type: 'chips',
+        options: [{value:'480p',label:'480p'},{value:'720p',label:'720p'},{value:'1080p',label:'1080p'}], default: '720p' },
+      duration: { label: 'Duration', type: 'duration',
+        options: ['auto','4','5','6','7','8','9','10','11','12','13','14','15'], default: '5' },
+      aspect_ratio: { label: 'Ratio', type: 'ratio',
+        options: ['auto','21:9','16:9','4:3','1:1','3:4','9:16'], default: 'auto' },
+      generate_audio: { label: 'Audio', type: 'toggle', default: true, desc: 'Native audio generation' },
+    }
+  },
+  {
     id: 'fal-ai/kling-video/v3/pro/text-to-video',
     id_i2v: 'fal-ai/kling-video/v3/pro/image-to-video',
     name: 'Kling 3.0 Pro',
@@ -551,8 +589,23 @@ function setMode(mode) {
 }
 
 function updateTopbar() {
-  document.getElementById('topbarModelName').textContent =
-    currentMode === 'image' ? selectedModel.name : selectedModel.name;
+  document.getElementById('topbarModelName').textContent = selectedModel.name;
+  // Update refs label for r2v mode
+  const refsCount = document.getElementById('refsCount');
+  const refsLabelText = document.getElementById('refsLabelText');
+  if (selectedModel.is_r2v) {
+    refsLabelText.textContent = 'Refs (9 imgs · 3 vids · 3 audio)';
+    document.getElementById('refsLabelIcon').textContent = '🎭';
+    document.getElementById('refFileInput').accept = 'image/*,video/*,audio/*';
+  } else if (currentMode === 'video') {
+    refsLabelText.textContent = 'Start Image / Video Ref';
+    document.getElementById('refsLabelIcon').textContent = '📎';
+    document.getElementById('refFileInput').accept = 'image/*,video/*';
+  } else {
+    refsLabelText.textContent = 'Image References';
+    document.getElementById('refsLabelIcon').textContent = '📎';
+    document.getElementById('refFileInput').accept = 'image/*';
+  }
 }
 
 // ── SETTINGS INIT ──────────────────────────────────────────────────────────
@@ -908,6 +961,8 @@ async function generate() {
     clearInterval(pInterval);
     setProgress(100, '✓ Done!');
     setTimeout(() => showProgressArea(false), 1200);
+    const prompt = document.getElementById('promptInput').value.trim();
+    saveToHistory(results, prompt, selectedModel.name);
     showResults(results);
 
   } catch(err) {
@@ -962,8 +1017,47 @@ async function generateVideos(prompt, refs) {
   let modelId = m.id;
   let input = { prompt };
 
-  const imageRef = refs.find(r => r.type === 'image');
-  const videoRef = refs.find(r => r.type === 'video');
+  const imageRefs = refs.filter(r => r.type === 'image');
+  const videoRefs = refs.filter(r => r.type === 'video');
+  const audioRefs = refs.filter(r => r.type === 'audio');
+  const imageRef = imageRefs[0];
+  const videoRef = videoRefs[0];
+
+  // ── SEEDANCE REFERENCE-TO-VIDEO (Omni) ──
+  if (m.is_r2v) {
+    // Build multimodal refs array and auto-inject tags into prompt if not already there
+    const multiRefs = [];
+    let enhancedPrompt = prompt;
+    imageRefs.slice(0,9).forEach((r, i) => {
+      multiRefs.push({type:'image', url: r.url});
+      if (!enhancedPrompt.includes(`@Image${i+1}`) && !enhancedPrompt.includes(`[Image${i+1}]`)) {
+        enhancedPrompt = `@Image${i+1} ` + enhancedPrompt;
+      }
+    });
+    videoRefs.slice(0,3).forEach((r, i) => {
+      multiRefs.push({type:'video', url: r.url});
+      if (!enhancedPrompt.includes(`@Video${i+1}`) && !enhancedPrompt.includes(`[Video${i+1}]`)) {
+        enhancedPrompt += ` @Video${i+1}`;
+      }
+    });
+    audioRefs.slice(0,3).forEach((r, i) => {
+      multiRefs.push({type:'audio', url: r.url});
+      if (!enhancedPrompt.includes(`@Audio${i+1}`) && !enhancedPrompt.includes(`[Audio${i+1}]`)) {
+        enhancedPrompt += ` @Audio${i+1}`;
+      }
+    });
+    input = {
+      prompt: enhancedPrompt,
+      references: multiRefs,
+      duration: s.duration || '5',
+      aspect_ratio: s.aspect_ratio || 'auto',
+      resolution: s.resolution || '720p',
+      generate_audio: s.generate_audio !== false,
+    };
+    const r2vData = await falRun(modelId, input);
+    if (r2vData.video?.url) return [{type:'video', url: r2vData.video.url}];
+    return [];
+  }
 
   if (modelId.includes('seedance')) {
     input.duration = s.duration || '5';
@@ -1087,11 +1181,120 @@ function setProgress(pct, text) {
   document.getElementById('progressText').textContent = text;
 }
 
-// ── PROMPT ─────────────────────────────────────────────────────────────────
-document.getElementById('promptInput').addEventListener('input', () => {
+// ── PROMPT ENHANCER ────────────────────────────────────────────────────────
+async function enhancePrompt() {
+  const input = document.getElementById('promptInput');
+  const btn = document.getElementById('enhanceBtn');
+  const raw = input.value.trim();
+  if (!raw) { showToast('⚠️ Enter a prompt first'); return; }
+  btn.textContent = '⏳';
+  btn.disabled = true;
+  try {
+    const mode = currentMode === 'image' ? 'image generation' : 'video generation';
+    const model = selectedModel?.name || '';
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 500,
+        messages: [{
+          role: 'user',
+          content: `You are an expert AI ${mode} prompt engineer. Enhance this prompt for ${model} to make it more cinematic, detailed and effective. Return ONLY the enhanced prompt, no explanation, no quotes:\n\n${raw}`
+        }]
+      })
+    });
+    const data = await res.json();
+    const enhanced = data.content?.[0]?.text?.trim();
+    if (enhanced) {
+      input.value = enhanced;
+      updateCharCount();
+      showToast('✨ Prompt enhanced!');
+    }
+  } catch(e) {
+    showToast('⚠️ Enhance failed');
+  } finally {
+    btn.textContent = '✨';
+    btn.disabled = false;
+  }
+}
+
+// ── HISTORY ────────────────────────────────────────────────────────────────
+const HISTORY_KEY = 'b2l_ai_history';
+const MAX_HISTORY = 50;
+
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch { return []; }
+}
+
+function saveToHistory(items, prompt, modelName) {
+  const history = getHistory();
+  const entry = {
+    id: Date.now(),
+    prompt: prompt.substring(0, 120),
+    model: modelName,
+    type: currentMode,
+    items: items.map(i => ({type: i.type, url: i.url})),
+    ts: new Date().toLocaleString()
+  };
+  history.unshift(entry);
+  if (history.length > MAX_HISTORY) history.pop();
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch {}
+}
+
+function openHistory() {
+  renderHistory();
+  document.getElementById('historyOverlay').classList.add('show');
+}
+function closeHistory() {
+  document.getElementById('historyOverlay').classList.remove('show');
+}
+function clearHistory() {
+  localStorage.removeItem(HISTORY_KEY);
+  renderHistory();
+  showToast('✓ History cleared');
+}
+document.getElementById('historyOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('historyOverlay')) closeHistory();
+});
+
+function renderHistory() {
+  const grid = document.getElementById('historyGrid');
+  const history = getHistory();
+  if (history.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text3);padding:40px 0;font-size:14px">No generations yet</div>';
+    return;
+  }
+  grid.innerHTML = '';
+  history.forEach(entry => {
+    const item = entry.items?.[0];
+    if (!item) return;
+    const card = document.createElement('div');
+    card.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);overflow:hidden;cursor:pointer;position:relative';
+    if (item.type === 'image') {
+      card.innerHTML = `<img src="${item.url}" style="width:100%;aspect-ratio:1;object-fit:cover;display:block">`;
+    } else {
+      card.innerHTML = `<video src="${item.url}" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block" muted playsinline></video>`;
+    }
+    card.innerHTML += `<div style="padding:6px 8px"><div style="font-size:9px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:0.5px">${entry.model}</div><div style="font-size:10px;color:var(--text3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${entry.prompt}</div><div style="font-size:9px;color:var(--text3);margin-top:2px">${entry.ts}</div></div>`;
+    // Tap to re-use prompt
+    card.addEventListener('click', () => {
+      document.getElementById('promptInput').value = entry.prompt;
+      updateCharCount();
+      closeHistory();
+      showToast('✓ Prompt restored');
+    });
+    grid.appendChild(card);
+  });
+}
+
+function updateCharCount() {
   const len = document.getElementById('promptInput').value.length;
   document.getElementById('charCount').textContent = len + ' / 2500';
-});
+}
+
+// ── PROMPT INPUT LISTENER ──────────────────────────────────────────────────
+document.getElementById('promptInput').addEventListener('input', updateCharCount);
 function clearPrompt() {
   document.getElementById('promptInput').value = '';
   document.getElementById('charCount').textContent = '0 / 2500';
@@ -1115,11 +1318,19 @@ function clearPrompt() {
 let toastTimer;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3200);}
 
-// Count buttons - use both click and touchend for Android
+// Count buttons - prevent keyboard opening on Android
 var minusBtn = document.getElementById('countMinus');
 var plusBtn = document.getElementById('countPlus');
-function handleMinus(e){ e.preventDefault(); e.stopPropagation(); changeCount(-1); }
-function handlePlus(e){ e.preventDefault(); e.stopPropagation(); changeCount(1); }
+function handleMinus(e){ 
+  e.preventDefault(); e.stopPropagation();
+  if(document.activeElement) document.activeElement.blur();
+  changeCount(-1); 
+}
+function handlePlus(e){ 
+  e.preventDefault(); e.stopPropagation();
+  if(document.activeElement) document.activeElement.blur();
+  changeCount(1); 
+}
 minusBtn.addEventListener('click', handleMinus);
 plusBtn.addEventListener('click', handlePlus);
 minusBtn.addEventListener('touchend', handleMinus, {passive:false});
