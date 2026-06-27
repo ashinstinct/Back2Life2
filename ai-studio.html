@@ -474,13 +474,32 @@ const VIDEO_MODELS = [
     fullName: 'Kling 3.0 Pro',
     icon: '🎬',
     badge: 'pro',
-    desc: 'Kuaishou — 1080p, native audio, elements',
+    desc: 'Kuaishou — up to 1080p, native audio, elements, multi-shot',
     cost: '$0.112–0.168/s',
     settings: {
+      resolution: { label: 'Resolution', type: 'chips',
+        options: [{value:'720p',label:'720p'},{value:'1080p',label:'1080p'}], default: '720p' },
       duration: { label: 'Duration', type: 'duration',
-        options: ['5','6','7','8','9','10','15'], default: '5' },
+        options: ['3','4','5','6','7','8','9','10','11','12','13','14','15'], default: '5' },
       aspect_ratio: { label: 'Ratio', type: 'ratio',
         options: ['16:9','9:16','1:1','4:3','3:4','21:9'], default: '16:9' },
+      generate_audio: { label: 'Audio', type: 'toggle', default: true, desc: 'Native audio (Chinese/English)' },
+    }
+  },
+  {
+    id: 'fal-ai/kling-video/v3/4k/text-to-video',
+    id_i2v: 'fal-ai/kling-video/v3/4k/image-to-video',
+    name: 'Kling 3.0 4K',
+    fullName: 'Kling 3.0 Native 4K',
+    icon: '🎬',
+    badge: 'omni',
+    desc: 'World's first native 4K — 3840×2160, 60fps, cinema-grade',
+    cost: '$0.42/s',
+    settings: {
+      duration: { label: 'Duration', type: 'duration',
+        options: ['3','4','5','6','7','8','9','10','11','12','13','14','15'], default: '5' },
+      aspect_ratio: { label: 'Ratio', type: 'ratio',
+        options: ['16:9','9:16','1:1'], default: '16:9' },
       generate_audio: { label: 'Audio', type: 'toggle', default: true, desc: 'Native audio (Chinese/English)' },
     }
   },
@@ -491,11 +510,13 @@ const VIDEO_MODELS = [
     fullName: 'Kling 3.0 Standard',
     icon: '🎬',
     badge: 'fast',
-    desc: 'Kuaishou — 1080p, fast iteration, same quality',
+    desc: 'Kuaishou — 720p/1080p, fast iteration, 3–15s',
     cost: '$0.084/s',
     settings: {
+      resolution: { label: 'Resolution', type: 'chips',
+        options: [{value:'720p',label:'720p'},{value:'1080p',label:'1080p'}], default: '720p' },
       duration: { label: 'Duration', type: 'duration',
-        options: ['5','6','7','8','9','10','15'], default: '5' },
+        options: ['3','4','5','6','7','8','9','10','11','12','13','14','15'], default: '5' },
       aspect_ratio: { label: 'Ratio', type: 'ratio',
         options: ['16:9','9:16','1:1','4:3','3:4'], default: '16:9' },
       generate_audio: { label: 'Audio', type: 'toggle', default: false, desc: 'Native audio generation' },
@@ -508,10 +529,12 @@ const VIDEO_MODELS = [
     fullName: 'Kling 2.5 Pro',
     icon: '🎬',
     badge: null,
-    desc: 'Kuaishou — 1080p, image-to-video, fast',
+    desc: 'Kuaishou — 720p/1080p, image-to-video, fast, 5 or 10s',
     cost: '$0.07/s',
     requires_image: true,
     settings: {
+      resolution: { label: 'Resolution', type: 'chips',
+        options: [{value:'720p',label:'720p'},{value:'1080p',label:'1080p'}], default: '720p' },
       duration: { label: 'Duration', type: 'duration',
         options: ['5','10'], default: '5' },
       aspect_ratio: { label: 'Ratio', type: 'ratio',
@@ -525,11 +548,13 @@ const VIDEO_MODELS = [
     fullName: 'Kling 3.0 Omni (O3)',
     icon: '🌀',
     badge: 'omni',
-    desc: 'Kuaishou — multi-image elements, voice input',
+    desc: 'Kuaishou — multi-image elements, voice input, 720p/1080p',
     cost: '$0.112–0.168/s',
     settings: {
+      resolution: { label: 'Resolution', type: 'chips',
+        options: [{value:'720p',label:'720p'},{value:'1080p',label:'1080p'}], default: '720p' },
       duration: { label: 'Duration', type: 'duration',
-        options: ['5','6','7','8','9','10','15'], default: '5' },
+        options: ['3','4','5','6','7','8','9','10','11','12','13','14','15'], default: '5' },
       aspect_ratio: { label: 'Ratio', type: 'ratio',
         options: ['16:9','9:16','1:1'], default: '16:9' },
       generate_audio: { label: 'Audio', type: 'toggle', default: true, desc: 'Native audio generation' },
@@ -864,7 +889,7 @@ function renderModelList() {
 
 // ── COUNT ──────────────────────────────────────────────────────────────────
 function changeCount(delta) {
-  genCount = Math.max(1, Math.min(currentMode === 'image' ? 4 : 1, genCount + delta));
+  genCount = Math.max(1, Math.min(4, genCount + delta));
   document.getElementById('countNum').textContent = genCount;
 }
 
@@ -1071,6 +1096,7 @@ async function generateVideos(prompt, refs) {
   } else if (modelId.includes('kling-video/v3') || modelId.includes('kling-video/v2.5') || modelId.includes('kling-video/o3')) {
     input.duration = s.duration || '5';
     input.aspect_ratio = s.aspect_ratio || '16:9';
+    if (s.resolution) input.resolution = s.resolution;
     if (s.generate_audio !== undefined) input.generate_audio = s.generate_audio;
     if (imageRef && m.id_i2v) {
       modelId = m.id_i2v;
@@ -1091,10 +1117,14 @@ async function generateVideos(prompt, refs) {
     else if (imageRef) input.video_url = imageRef.url;
   }
 
-  const data = await falRun(modelId, input);
-  if (data.video?.url) return [{type:'video', url: data.video.url}];
-  if (data.videos) return data.videos.map(v => ({type:'video', url: v.url || v}));
-  return [];
+  const results = [];
+  for (let i = 0; i < genCount; i++) {
+    if (i > 0) setProgress(10 + (i/genCount)*70, `Generating video ${i+1} of ${genCount}…`);
+    const data = await falRun(modelId, input);
+    if (data.video?.url) results.push({type:'video', url: data.video.url});
+    else if (data.videos) data.videos.forEach(v => results.push({type:'video', url: v.url || v}));
+  }
+  return results;
 }
 
 // ── RESULTS ────────────────────────────────────────────────────────────────
