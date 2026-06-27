@@ -158,21 +158,28 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-ra
 
     <div class="wave-wrap">
       <canvas class="wave-canvas" id="waveCanvas"></canvas>
-      <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:4px 0 2px">
-        <button onclick="zoomWave(-1)" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#aaa;font-size:16px;font-weight:700;width:32px;height:28px;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;touch-action:manipulation">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-        <span id="zoomLabel" style="font-size:10px;color:#555;min-width:32px;text-align:center">1×</span>
-        <button onclick="zoomWave(1)" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#aaa;font-size:16px;font-weight:700;width:32px;height:28px;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;touch-action:manipulation">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-      </div>
       <div class="trim-handles" id="trimHandles">
         <div class="trim-region" id="trimRegion"></div>
         <div class="trim-handle left" id="trimLeft"></div>
         <div class="trim-handle right" id="trimRight"></div>
         <div class="playhead" id="playhead"></div>
       </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:2px 0 4px">
+      <button onclick="scrollWave(-0.25)" id="scrollLeft" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#aaa;width:28px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;opacity:0.4" title="Scroll left">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button onclick="scrollWave(0.25)" id="scrollRight" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#aaa;width:28px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;opacity:0.4" title="Scroll right">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <div style="width:1px;height:16px;background:rgba(255,255,255,0.08)"></div>
+      <button onclick="zoomWave(-1)" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#aaa;width:28px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation" title="Zoom out">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <span id="zoomLabel" style="font-size:10px;color:#555;min-width:28px;text-align:center">1×</span>
+      <button onclick="zoomWave(1)" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#aaa;width:28px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation" title="Zoom in">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
     </div>
 
     <div class="transport">
@@ -279,8 +286,10 @@ let audioCtx=null, audioBuffer=null, sourceNode=null, gainNode=null;
 let fileName='audio', playing=false, startedAt=0, pausedAt=0;
 let trimStart=0, trimEnd=1; // normalised 0..1
 let settings={vol:1, speed:1, fadeIn:0, fadeOut:0};
-let waveZoom = 1; // 1 = full view, 2 = 2x zoom, etc.
-let waveOffset = 0; // 0-1, scroll position
+let waveZoom = 1;
+let waveOffset = 0;
+let seekOffset = 0;
+let playFromPos = 0; // actual start position (0-1 of total duration)
 let exportFormat='mp3', exportBitrate=192;
 
 const $=id=>document.getElementById(id);
@@ -393,25 +402,49 @@ function zoomWave(dir){
   const idx=levels.indexOf(waveZoom);
   const newIdx=Math.max(0,Math.min(levels.length-1,idx+dir));
   waveZoom=levels[newIdx];
-  // Keep offset within bounds
   const maxOffset=1-1/waveZoom;
   waveOffset=Math.max(0,Math.min(maxOffset,waveOffset));
   document.getElementById('zoomLabel').textContent=waveZoom+'×';
+  updateScrollBtns();
   drawWave();
   updateTrimUI();
 }
+function scrollWave(amount){
+  if(waveZoom<=1)return;
+  const maxOffset=1-1/waveZoom;
+  waveOffset=Math.max(0,Math.min(maxOffset,waveOffset+amount/waveZoom));
+  updateScrollBtns();
+  drawWave();
+  updateTrimUI();
+}
+function updateScrollBtns(){
+  const maxOffset=1-1/waveZoom;
+  const zoomed=waveZoom>1;
+  const sl=document.getElementById('scrollLeft');
+  const sr=document.getElementById('scrollRight');
+  if(sl) sl.style.opacity=zoomed&&waveOffset>0?'1':'0.3';
+  if(sr) sr.style.opacity=zoomed&&waveOffset<maxOffset?'1':'0.3';
+}
 
-// Pinch-to-zoom on waveform canvas
+// Waveform touch: tap to seek, swipe to scroll, pinch to zoom
 (function(){
-  let lastDist=0;
   const cv=document.getElementById('waveCanvas');
+  let lastDist=0, touchStartX=0, touchStartOffset=0, isSwiping=false, touchStartTime=0;
+
   cv.addEventListener('touchstart',function(e){
     if(e.touches.length===2){
       const dx=e.touches[0].clientX-e.touches[1].clientX;
       const dy=e.touches[0].clientY-e.touches[1].clientY;
       lastDist=Math.sqrt(dx*dx+dy*dy);
+      isSwiping=false;
+    } else if(e.touches.length===1){
+      touchStartX=e.touches[0].clientX;
+      touchStartOffset=waveOffset;
+      touchStartTime=Date.now();
+      isSwiping=false;
     }
   },{passive:true});
+
   cv.addEventListener('touchmove',function(e){
     if(e.touches.length===2){
       const dx=e.touches[0].clientX-e.touches[1].clientX;
@@ -419,11 +452,36 @@ function zoomWave(dir){
       const dist=Math.sqrt(dx*dx+dy*dy);
       if(lastDist>0){
         const ratio=dist/lastDist;
-        if(ratio>1.15) zoomWave(1);
-        else if(ratio<0.85) zoomWave(-1);
-        if(ratio>1.15||ratio<0.85) lastDist=dist;
+        if(ratio>1.12){zoomWave(1);lastDist=dist;}
+        else if(ratio<0.88){zoomWave(-1);lastDist=dist;}
+      }
+    } else if(e.touches.length===1 && waveZoom>1){
+      const dx=e.touches[0].clientX-touchStartX;
+      if(Math.abs(dx)>6) isSwiping=true;
+      if(isSwiping){
+        const W=cv.clientWidth;
+        const shift=-(dx/W)/waveZoom;
+        const maxOffset=1-1/waveZoom;
+        waveOffset=Math.max(0,Math.min(maxOffset,touchStartOffset+shift));
+        updateScrollBtns();
+        drawWave();
       }
     }
+  },{passive:true});
+
+  cv.addEventListener('touchend',function(e){
+    // Tap to seek (not a swipe, short duration)
+    if(!isSwiping && e.changedTouches.length===1 && Date.now()-touchStartTime<300){
+      const rect=cv.getBoundingClientRect();
+      const tapX=e.changedTouches[0].clientX-rect.left;
+      const frac=tapX/rect.width;
+      // Convert visible fraction to absolute position
+      const viewFraction=1/waveZoom;
+      const absPos=waveOffset+frac*viewFraction;
+      seekTo(Math.max(0,Math.min(1,absPos)));
+    }
+    isSwiping=false;
+    lastDist=0;
   },{passive:true});
 })();
 window.addEventListener('resize',()=>{if(audioBuffer){drawWave();updateTrimUI();}});
@@ -464,18 +522,40 @@ setupHandle($('trimRight'),false);
 // ══ PLAYBACK (preview with current settings) ══
 $('playBtn').addEventListener('click',()=>playing?stopPlayback():startPlayback());
 function startPlayback(){
+  startPlaybackFrom(trimStart);
+}
+function startPlaybackFrom(fromPos){
   if(!audioBuffer)return;
   if(audioCtx.state==='suspended')audioCtx.resume();
   sourceNode=audioCtx.createBufferSource();
   sourceNode.buffer=audioBuffer;
   sourceNode.playbackRate.value=settings.speed;
   gainNode=audioCtx.createGain();
-  gainNode.gain.value=settings.vol;
+  const dur=audioBuffer.duration;
+  const trimDur=(trimEnd-trimStart)*dur/settings.speed;
+  const now=audioCtx.currentTime;
+  const vol=settings.vol;
+  // Apply fade envelope in real-time during preview
+  gainNode.gain.cancelScheduledValues(now);
+  gainNode.gain.setValueAtTime(0.0001,now);
+  if(settings.fadeIn>0){
+    const fadeInEnd=now+settings.fadeIn;
+    gainNode.gain.linearRampToValueAtTime(vol,fadeInEnd);
+    gainNode.gain.setValueAtTime(vol,fadeInEnd);
+  } else {
+    gainNode.gain.setValueAtTime(vol,now);
+  }
+  if(settings.fadeOut>0){
+    const fo=Math.min(settings.fadeOut,trimDur);
+    gainNode.gain.setValueAtTime(vol,now+trimDur-fo);
+    gainNode.gain.linearRampToValueAtTime(0,now+trimDur);
+  }
   sourceNode.connect(gainNode).connect(audioCtx.destination);
-  const offset=trimStart*audioBuffer.duration;
-  const dur=(trimEnd-trimStart)*audioBuffer.duration;
-  sourceNode.start(0,offset,dur);
-  startedAt=audioCtx.currentTime;
+  const startSec=fromPos*dur;
+  const remainDur=(trimEnd*dur-startSec)/settings.speed;
+  sourceNode.start(now,startSec,Math.max(0,trimEnd*dur-startSec));
+  playFromPos=fromPos;
+  startedAt=now;
   playing=true;
   $('playIcon').innerHTML='<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
   sourceNode.onended=()=>{ if(playing)stopPlayback(); };
@@ -487,16 +567,30 @@ function stopPlayback(){
   $('playIcon').innerHTML='<path d="M8 5v14l11-7z"/>';
   $('playhead').style.display='none';
 }
+function seekTo(absPos){
+  // absPos: 0-1 of full audio duration
+  const wasPlaying=playing;
+  stopPlayback();
+  // Clamp to trim region
+  const seekPos=Math.max(trimStart,Math.min(trimEnd,absPos));
+  // Store seek offset so playback starts from here
+  seekOffset=seekPos;
+  $('curTime').textContent=fmtTime(seekPos*audioBuffer.duration);
+  // Show playhead at position
+  const wrap=$('trimHandles'), W=wrap.clientWidth;
+  $('playhead').style.display='block';
+  $('playhead').style.left=(seekPos*W)+'px';
+  if(wasPlaying) startPlaybackFrom(seekPos);
+}
 function tickPlayhead(){
   if(!playing)return;
-  const dur=(trimEnd-trimStart)*audioBuffer.duration/settings.speed;
   const elapsed=audioCtx.currentTime-startedAt;
-  const frac=Math.min(1,elapsed/dur);
+  const currentPos=Math.min(trimEnd,(playFromPos||trimStart)+elapsed*settings.speed/audioBuffer.duration);
   const wrap=$('trimHandles'), W=wrap.clientWidth;
   const ph=$('playhead');
   ph.style.display='block';
-  ph.style.left=((trimStart+(trimEnd-trimStart)*frac)*W)+'px';
-  $('curTime').textContent=fmtTime(trimStart*audioBuffer.duration+elapsed*settings.speed);
+  ph.style.left=(currentPos*W)+'px';
+  $('curTime').textContent=fmtTime(currentPos*audioBuffer.duration);
   requestAnimationFrame(tickPlayhead);
 }
 
@@ -574,18 +668,23 @@ async function renderEdited(){
   src.buffer=audioBuffer;
   src.playbackRate.value=settings.speed;
   const gain=offCtx.createGain();
-  const now=0;
   const vol=settings.vol;
-  gain.gain.setValueAtTime(vol,now);
-  // fades (in seconds of output timeline)
-  if(settings.fadeIn>0){
-    gain.gain.setValueAtTime(0,now);
-    gain.gain.linearRampToValueAtTime(vol,now+Math.min(settings.fadeIn,trimDur));
+  // Build gain automation from start to finish
+  gain.gain.cancelScheduledValues(0);
+  gain.gain.setValueAtTime(0.0001, 0);
+  const fi=settings.fadeIn>0 ? Math.min(settings.fadeIn, trimDur*0.9) : 0;
+  const fo=settings.fadeOut>0 ? Math.min(settings.fadeOut, trimDur*0.9) : 0;
+  if(fi>0){
+    // Fade in: silence → vol over fi seconds
+    gain.gain.linearRampToValueAtTime(vol, fi);
+  } else {
+    gain.gain.setValueAtTime(vol, 0);
   }
-  if(settings.fadeOut>0){
-    const fo=Math.min(settings.fadeOut,trimDur);
-    gain.gain.setValueAtTime(vol,now+trimDur-fo);
-    gain.gain.linearRampToValueAtTime(0,now+trimDur);
+  if(fo>0){
+    // Hold vol until fade-out starts, then ramp to 0
+    const foStart=Math.max(fi, trimDur-fo);
+    gain.gain.setValueAtTime(vol, foStart);
+    gain.gain.linearRampToValueAtTime(0.0001, trimDur);
   }
   src.connect(gain).connect(offCtx.destination);
   src.start(0,startSec,endSec-startSec);
