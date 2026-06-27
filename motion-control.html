@@ -49,7 +49,7 @@ main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;overflow-y:
 /* SETTINGS */
 .setting-row{display:flex;align-items:center;gap:12px}
 .setting-label{font-size:12px;color:var(--text3);font-weight:600;min-width:100px}
-.setting-select{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:10px 12px;outline:none;cursor:pointer;-webkit-appearance:none}
+
 .model-pills{display:flex;gap:6px;flex-wrap:wrap}
 .model-pill{background:var(--surface);border:1.5px solid var(--border);color:var(--text2);font-size:12px;font-weight:700;padding:8px 14px;border-radius:var(--pill);cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition)}
 .model-pill.selected{background:var(--green-dim);border-color:rgba(0,255,136,0.5);color:var(--green)}
@@ -94,6 +94,20 @@ main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;overflow-y:
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:99px}
 
 .tool-banner{width:100%;display:block;border-bottom:1px solid rgba(255,255,255,0.06)}
+
+/* Custom dark select — replaces native white popup */
+.custom-select{position:relative;flex:1}
+.custom-select-btn{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:10px 36px 10px 12px;outline:none;cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.custom-select-btn:active,.custom-select-btn.open{border-color:rgba(0,255,136,0.35)}
+.custom-select-chevron{flex-shrink:0;transition:transform 0.2s;opacity:0.5}
+.custom-select-btn.open .custom-select-chevron{transform:rotate(180deg)}
+.custom-select-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#161616;border:1px solid rgba(255,255,255,0.12);border-radius:var(--radius-xs);z-index:200;overflow:hidden;display:none;box-shadow:0 8px 32px rgba(0,0,0,0.6)}
+.custom-select-dropdown.open{display:block}
+.custom-select-option{padding:12px 14px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:background 0.15s;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.05);-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.custom-select-option:last-child{border-bottom:none}
+.custom-select-option:active,.custom-select-option:hover{background:rgba(255,255,255,0.06)}
+.custom-select-option.selected{color:var(--green)}
+.custom-select-option.selected::after{content:"✓";font-size:12px;color:var(--green)}
 </style>
 <link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -161,19 +175,31 @@ main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;overflow-y:
     <div class="sect-label">Settings</div>
     <div class="setting-row">
       <span class="setting-label">Orientation</span>
-      <select class="setting-select" id="orientationSelect">
-        <option value="video">Match video — best for complex motion</option>
-        <option value="image">Match image — best for camera movement</option>
-      </select>
+      <div class="custom-select" id="orientationSelectWrap">
+        <button class="custom-select-btn" id="orientationBtn" type="button" onclick="toggleCustomSelect('orientation')">
+          <span id="orientationLabel">Match video — best for complex motion</span>
+          <svg class="custom-select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="custom-select-dropdown" id="orientationDropdown">
+          <div class="custom-select-option selected" onclick="selectOption('orientation','video','Match video — best for complex motion',this)">Match video — best for complex motion</div>
+          <div class="custom-select-option" onclick="selectOption('orientation','image','Match image — best for camera movement',this)">Match image — best for camera movement</div>
+        </div>
+      </div>
     </div>
     <div class="setting-row">
       <span class="setting-label">Duration</span>
-      <select class="setting-select" id="durationSelect">
-        <option value="5">5 seconds</option>
-        <option value="10" selected>10 seconds</option>
-        <option value="15">15 seconds (video orientation only)</option>
-        <option value="30">30 seconds (video orientation only)</option>
-      </select>
+      <div class="custom-select" id="durationSelectWrap">
+        <button class="custom-select-btn" id="durationBtn" type="button" onclick="toggleCustomSelect('duration')">
+          <span id="durationLabel">10 seconds</span>
+          <svg class="custom-select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="custom-select-dropdown" id="durationDropdown">
+          <div class="custom-select-option" onclick="selectOption('duration','5','5 seconds',this)">5 seconds</div>
+          <div class="custom-select-option selected" onclick="selectOption('duration','10','10 seconds',this)">10 seconds</div>
+          <div class="custom-select-option" onclick="selectOption('duration','15','15 seconds (video orientation only)',this)">15 seconds (video orientation only)</div>
+          <div class="custom-select-option" onclick="selectOption('duration','30','30 seconds (video orientation only)',this)">30 seconds (video orientation only)</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -382,8 +408,8 @@ async function generate() {
     document.getElementById('progressLabel').textContent = 'Uploading motion video…';
     const videoUrl = await uploadToFal(motionFile);
 
-    const orientation = document.getElementById('orientationSelect').value;
-    const duration = parseInt(document.getElementById('durationSelect').value);
+    const orientation = customSelectValues.orientation || 'video';
+    const duration = parseInt(customSelectValues.duration || '10');
     const prompt = document.getElementById('promptInput').value.trim();
     const maxDuration = orientation === 'image' ? 10 : 30;
     const finalDuration = Math.min(duration, maxDuration);
@@ -443,6 +469,48 @@ function copyLink() {
   d.addEventListener('touchstart',e=>{ty=e.touches[0].clientY;},{passive:true});
   d.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-ty>50)closeD();},{passive:true});
 })();
+
+
+// ── CUSTOM SELECT DROPDOWNS ──────────────────────────────────────────────────
+const customSelectValues = { orientation: 'video', duration: '10' };
+
+function toggleCustomSelect(name) {
+  const btn = document.getElementById(name + 'Btn');
+  const dd = document.getElementById(name + 'Dropdown');
+  const isOpen = dd.classList.contains('open');
+  // Close all first
+  document.querySelectorAll('.custom-select-dropdown').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.custom-select-btn').forEach(b => b.classList.remove('open'));
+  if (!isOpen) {
+    dd.classList.add('open');
+    btn.classList.add('open');
+  }
+}
+
+function selectOption(name, value, label, el) {
+  customSelectValues[name] = value;
+  document.getElementById(name + 'Label').textContent = label;
+  // Update selected state
+  el.closest('.custom-select-dropdown').querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  // Close dropdown
+  document.getElementById(name + 'Dropdown').classList.remove('open');
+  document.getElementById(name + 'Btn').classList.remove('open');
+}
+
+// Close dropdowns when tapping outside
+document.addEventListener('touchend', function(e) {
+  if (!e.target.closest('.custom-select')) {
+    document.querySelectorAll('.custom-select-dropdown').forEach(d => d.classList.remove('open'));
+    document.querySelectorAll('.custom-select-btn').forEach(b => b.classList.remove('open'));
+  }
+}, { passive: true });
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.custom-select')) {
+    document.querySelectorAll('.custom-select-dropdown').forEach(d => d.classList.remove('open'));
+    document.querySelectorAll('.custom-select-btn').forEach(b => b.classList.remove('open'));
+  }
+});
 
 // ── TOAST ──────────────────────────────────────────────────────────────────
 let toastTimer;
