@@ -239,10 +239,20 @@ main{padding:16px;display:flex;flex-direction:column;gap:14px;padding-bottom:40p
     <div class="progress-bg"><div class="progress-fill" id="progressFill"></div></div>
   </div>
 
-  <button class="btn-primary" id="processBtn" onclick="processAll()" disabled>
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:middle;margin-right:6px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.9"/></svg>
-    Flip &amp; Export All
-  </button>
+  <div style="display:flex;gap:8px;align-items:stretch">
+    <button class="btn-primary" id="processBtn" onclick="processAll()" disabled style="flex:1">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:middle;margin-right:6px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.9"/></svg>
+      Flip &amp; Export
+    </button>
+    <button type="button" id="toggleMute" onclick="toggleOption('mute',this)" style="flex-shrink:0;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:0 14px;cursor:pointer;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--text3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;touch-action:manipulation;transition:all 0.2s;min-width:58px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+      MUTE
+    </button>
+    <button type="button" id="toggleZip" onclick="toggleOption('zip',this)" style="flex-shrink:0;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:0 14px;cursor:pointer;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--text3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;touch-action:manipulation;transition:all 0.2s;min-width:58px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      ZIP
+    </button>
+  </div>
   <button class="btn-secondary" id="clearBtn" onclick="clearAll()" style="display:none">Clear All</button>
 
   <div class="sect" id="gridLabel" style="display:none">Loaded Videos</div>
@@ -275,6 +285,7 @@ main{padding:16px;display:flex;flex-direction:column;gap:14px;padding-bottom:40p
 
 <!-- mp4-muxer for real MP4 export -->
 <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.0.0/build/mp4-muxer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
 <script>
 let videos = [];
@@ -283,6 +294,24 @@ let processing = false;
 let doneCount = 0;
 let previewVid = null;
 let previewAnimFrame = null;
+let optMute = false;
+let optZip = false;
+
+// ── TOGGLE OPTIONS ──────────────────────────────────────────────────────────
+function toggleOption(opt, btn) {
+  if (opt === 'mute') {
+    optMute = !optMute;
+    btn.style.background = optMute ? 'var(--green-dim)' : 'var(--surface)';
+    btn.style.borderColor = optMute ? 'rgba(0,255,136,0.4)' : 'var(--border)';
+    btn.style.color = optMute ? 'var(--green)' : 'var(--text3)';
+  } else if (opt === 'zip') {
+    optZip = !optZip;
+    btn.style.background = optZip ? 'var(--green-dim)' : 'var(--surface)';
+    btn.style.borderColor = optZip ? 'rgba(0,255,136,0.4)' : 'var(--border)';
+    btn.style.color = optZip ? 'var(--green)' : 'var(--text3)';
+    if (optZip) showToast('ZIP: all files will be bundled into one download');
+  }
+}
 
 // ── FILE INPUT ──────────────────────────────────────────────────────────────
 document.getElementById('videoFileInput').addEventListener('change', function(e) {
@@ -425,6 +454,10 @@ async function processAll() {
   const startNum = parseInt(document.getElementById('startNumInput').value) || 1;
   const pad = parseInt(document.getElementById('paddingInput').value) || 2;
 
+  // ZIP mode — collect all blobs then bundle
+  let zip = null;
+  if (optZip && typeof JSZip !== 'undefined') zip = new JSZip();
+
   for (let i = 0; i < videos.length; i++) {
     const v = videos[i];
     const numStr = String(startNum + i).padStart(pad, '0');
@@ -443,38 +476,51 @@ async function processAll() {
     }
 
     try {
-      await flipAndExport(v.file, outName, flipMode);
+      const blob = await flipToBlob(v.file, flipMode, optMute);
       doneCount++;
       document.getElementById('statDone').textContent = doneCount;
       const stEl = document.getElementById('status-'+i);
       if (stEl) { stEl.className = 'video-card-status status-done'; stEl.textContent = '✓'; }
+      if (zip) {
+        zip.file(outName, blob);
+      } else {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = outName;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+        await new Promise(r => setTimeout(r, 150));
+      }
     } catch(e) {
       console.error(v.name, e);
       const stEl = document.getElementById('status-'+i);
       if (stEl) { stEl.className = 'video-card-status status-err'; stEl.textContent = '⚠'; }
     }
-    await new Promise(r => setTimeout(r, 150));
+  }
+
+  if (zip && doneCount > 0) {
+    document.getElementById('progressLabel').textContent = 'Building ZIP…';
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(zipBlob);
+    a.download = `${prefix}_flipped.zip`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   }
 
   document.getElementById('progressFill').style.width = '100%';
-  document.getElementById('progressLabel').textContent = `✓ Done — ${doneCount} of ${videos.length} exported as MP4`;
-  showToast(`✓ ${doneCount} MP4 video${doneCount !== 1 ? 's' : ''} exported!`);
+  const zipNote = optZip ? ' as ZIP' : '';
+  const muteNote = optMute ? ' (muted)' : '';
+  document.getElementById('progressLabel').textContent = `✓ Done — ${doneCount} of ${videos.length} exported${zipNote}${muteNote}`;
+  showToast(`✓ ${doneCount} video${doneCount!==1?'s':''} exported${zipNote}!`);
   processing = false;
   document.getElementById('processBtn').disabled = false;
 }
 
-// ── FLIP & EXPORT as MP4 using mp4-muxer ────────────────────────────────────
-function flipAndExport(file, outName, mode) {
+// ── FLIP TO BLOB (returns Promise<Blob>) ─────────────────────────────────────
+function flipToBlob(file, mode, mute) {
   return new Promise((resolve, reject) => {
-    // Try WebCodecs + mp4-muxer first (fast, real MP4)
-    if (typeof VideoEncoder !== 'undefined' && typeof Mp4Muxer !== 'undefined') {
-      flipWithWebCodecs(file, outName, mode).then(resolve).catch(() => {
-        // Fallback to MediaRecorder WebM
-        flipWithMediaRecorder(file, outName.replace('.mp4','.webm'), mode).then(resolve).catch(reject);
-      });
-    } else {
-      flipWithMediaRecorder(file, outName.replace('.mp4','.webm'), mode).then(resolve).catch(reject);
-    }
+    flipWithMediaRecorder(file, mode, mute).then(resolve).catch(reject);
   });
 }
 
@@ -568,7 +614,7 @@ async function flipWithWebCodecs(file, outName, mode) {
   URL.revokeObjectURL(vid.src);
 }
 
-function flipWithMediaRecorder(file, outName, mode) {
+function flipWithMediaRecorder(file, mode, mute) {
   return new Promise((resolve, reject) => {
     const vid = document.createElement('video');
     vid.muted = true; vid.playsInline = true;
@@ -581,17 +627,26 @@ function flipWithMediaRecorder(file, outName, mode) {
       canvas.width = isRot ? H : W; canvas.height = isRot ? W : H;
       const ctx = canvas.getContext('2d');
 
+      // Build stream: video from canvas + optional audio from video
+      let stream = canvas.captureStream(30);
+      if (!mute) {
+        try {
+          const audioCtx = new AudioContext();
+          const src = audioCtx.createMediaElementSource(vid);
+          const dest = audioCtx.createMediaStreamDestination();
+          src.connect(dest); src.connect(audioCtx.destination);
+          const audioTrack = dest.stream.getAudioTracks()[0];
+          if (audioTrack) stream = new MediaStream([...stream.getTracks(), audioTrack]);
+        } catch(e) { /* audio capture not available */ }
+      }
+
       const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm';
-      const recorder = new MediaRecorder(canvas.captureStream(30), { mimeType, videoBitsPerSecond: 8_000_000 });
+      const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 8_000_000 });
       const chunks = [];
       recorder.ondataavailable = e => { if (e.data?.size > 0) chunks.push(e.data); };
       recorder.onstop = () => {
         const blob = new Blob(chunks, { type: 'video/webm' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob); a.download = outName;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-        resolve();
+        resolve(blob);
       };
 
       function draw() {
