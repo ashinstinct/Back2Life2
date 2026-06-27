@@ -11,12 +11,11 @@
   --bg:#080808;--surface:rgba(255,255,255,0.04);--surface2:rgba(255,255,255,0.07);
   --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
   --green:#00ff88;--green2:#00cc66;--green-dim:rgba(0,255,136,0.08);
-  --text:#f0f0f0;--text2:#aaa;--text3:#555;--red:#ff4444;
+  --text:#f0f0f0;--text2:#aaa;--text3:#555;
   --radius:18px;--radius-sm:12px;--radius-xs:8px;--pill:999px;--bar-h:60px;
 }
 html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100dvh;overflow-x:hidden}
 
-/* TOPBAR */
 .topbar{display:flex;align-items:center;padding:0 16px;height:var(--bar-h);background:rgba(8,8,8,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;gap:10px}
 .menu-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px;flex-shrink:0}
 .menu-btn span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px}
@@ -24,46 +23,49 @@ html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-syst
 
 main{padding:16px;display:flex;flex-direction:column;gap:14px;padding-bottom:40px}
 
-/* UPLOAD ZONE */
-.upload-zone{border:1.5px dashed rgba(255,255,255,0.12);border-radius:var(--radius-sm);padding:32px 20px;text-align:center;cursor:pointer;position:relative;background:var(--surface);transition:all 0.2s}
-.upload-zone:active{border-color:var(--green);background:var(--green-dim)}
-.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.upload-zone h3{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px}
+/* UPLOAD */
+.upload-zone{border:1.5px dashed rgba(255,255,255,0.12);border-radius:var(--radius-sm);padding:28px 20px;text-align:center;position:relative;background:var(--surface);transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:8px}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;z-index:2}
+.upload-icon{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,rgba(0,255,136,0.15),rgba(0,204,102,0.25));display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.upload-zone h3{font-size:15px;font-weight:700;color:var(--text)}
 .upload-zone p{font-size:12px;color:var(--text3)}
-.chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:10px}
-.chip{font-size:10px;font-weight:700;color:var(--text3);border:1px solid #2a2a2a;border-radius:5px;padding:3px 8px}
+.chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.chip{font-size:10px;font-weight:700;color:var(--text3);border:1px solid #222;border-radius:5px;padding:3px 8px}
 
-/* SECTION LABEL */
 .sect{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);display:flex;align-items:center;gap:8px}
 .sect::after{content:'';flex:1;height:1px;background:var(--border)}
 
-/* FLIP OPTIONS */
+/* FLIP GRID */
 .flip-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.flip-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:16px 12px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;text-align:center}
+.flip-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:16px 12px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;touch-action:manipulation}
 .flip-btn.selected{background:var(--green-dim);border-color:rgba(0,255,136,0.4)}
-.flip-btn:active{opacity:0.7}
-.flip-icon{font-size:28px;margin-bottom:6px}
+.flip-btn:active{opacity:0.7;transform:scale(0.97)}
+.flip-icon-wrap{width:44px;height:44px;display:flex;align-items:center;justify-content:center}
 .flip-label{font-size:13px;font-weight:700;color:var(--text2)}
 .flip-btn.selected .flip-label{color:var(--green)}
-.flip-sub{font-size:10px;color:var(--text3);margin-top:3px}
+.flip-sub{font-size:10px;color:var(--text3)}
 
-/* RENAME SECTION */
-.rename-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px}
-.rename-row{display:flex;align-items:center;gap:8px;margin-top:10px}
-.rename-input{flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:10px 12px;outline:none}
+/* PREVIEW SECTION */
+.preview-section{display:none;flex-direction:column;gap:10px}
+.preview-section.show{display:flex}
+.preview-label{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text3);text-transform:uppercase}
+.preview-wrap{position:relative;background:#111;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border)}
+.preview-canvas{width:100%;display:block;border-radius:var(--radius-sm)}
+.preview-badge{position:absolute;top:8px;left:8px;background:rgba(0,255,136,0.9);color:#000;font-size:9px;font-weight:800;padding:3px 8px;border-radius:4px;letter-spacing:0.5px}
+
+/* STATS */
+.stats{display:flex;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;display:none}
+.stat{text-align:center;flex:1}
+.stat-num{font-size:20px;font-weight:800;color:var(--green)}
+.stat-label{font-size:10px;color:var(--text3);margin-top:2px}
+
+/* RENAME */
+.rename-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;display:flex;flex-direction:column;gap:10px}
+.rename-row{display:flex;align-items:center;gap:8px}
+.rename-label{font-size:12px;color:var(--text3);font-weight:600;min-width:72px;flex-shrink:0}
+.rename-input{flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:10px 12px;outline:none;-webkit-appearance:none}
 .rename-input:focus{border-color:rgba(0,255,136,0.35)}
-.rename-label{font-size:12px;color:var(--text3);font-weight:600;min-width:72px}
-.rename-preview{font-size:11px;color:var(--green);margin-top:8px;font-family:monospace}
-
-/* VIDEO GRID */
-.video-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.video-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);overflow:hidden;position:relative}
-.video-card video{width:100%;aspect-ratio:16/9;object-fit:contain;background:#111;display:block}
-.video-card-name{padding:6px 8px;font-size:10px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.video-card-status{position:absolute;top:6px;right:6px;font-size:10px;font-weight:700;padding:3px 7px;border-radius:4px;background:rgba(0,0,0,0.8)}
-.video-card-status.done{color:var(--green)}
-.video-card-status.processing{color:#ffd700}
-.video-card-remove{position:absolute;top:6px;left:6px;background:rgba(255,68,68,0.85);border:none;border-radius:50%;width:22px;height:22px;color:#fff;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.rename-preview{font-size:11px;color:var(--green);font-family:monospace}
 
 /* PROGRESS */
 .progress-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;display:none}
@@ -75,32 +77,27 @@ main{padding:16px;display:flex;flex-direction:column;gap:14px;padding-bottom:40p
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--green2),var(--green));border-radius:var(--pill);width:0%;transition:width 0.3s}
 
 /* BUTTONS */
-.btn-primary{width:100%;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:15px;padding:15px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;box-shadow:0 4px 20px rgba(0,255,136,0.2)}
+.btn-primary{width:100%;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:15px;padding:15px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;box-shadow:0 4px 20px rgba(0,255,136,0.2);touch-action:manipulation}
 .btn-primary:active{transform:scale(0.98)}
 .btn-primary:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none}
-.btn-secondary{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text2);font-weight:700;font-size:14px;padding:13px;border-radius:var(--radius-sm);cursor:pointer;font-family:'Inter',sans-serif}
+.btn-secondary{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text2);font-weight:700;font-size:14px;padding:13px;border-radius:var(--radius-sm);cursor:pointer;font-family:'Inter',sans-serif;touch-action:manipulation}
 
-/* STATS BAR */
-.stats{display:flex;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px}
-.stat{text-align:center;flex:1}
-.stat-num{font-size:20px;font-weight:800;color:var(--green)}
-.stat-label{font-size:10px;color:var(--text3);margin-top:2px}
+/* VIDEO GRID */
+.video-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.video-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);overflow:hidden;position:relative}
+.video-card video{width:100%;aspect-ratio:16/9;object-fit:contain;background:#111;display:block}
+.video-card-name{padding:6px 8px;font-size:10px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.video-card-status{position:absolute;top:6px;right:6px;font-size:10px;font-weight:700;padding:3px 7px;border-radius:4px;background:rgba(0,0,0,0.8)}
+.status-done{color:var(--green)}
+.status-proc{color:#ffd700}
+.status-err{color:#ff4444}
+.video-card-remove{position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.15);border-radius:50%;width:22px;height:22px;color:var(--text2);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation}
 
-/* IDEA BOX */
-.idea-box{background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.12);border-radius:var(--radius-xs);padding:12px 14px}
-.idea-title{font-size:11px;font-weight:800;color:var(--green);letter-spacing:0.5px;margin-bottom:8px}
-.idea-item{font-size:12px;color:var(--text3);padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);line-height:1.4}
-.idea-item:last-child{border-bottom:none}
-
-/* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(16,16,16,0.97);border:1px solid var(--border2);backdrop-filter:blur(20px);color:var(--text);font-size:13px;font-weight:600;padding:12px 22px;border-radius:var(--pill);opacity:0;transition:all 0.3s;z-index:400;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* BURGER */
 .drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:499;display:none;backdrop-filter:blur(2px)}
 .nav-drawer{position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid #2a2a2a;border-radius:20px 20px 0 0;z-index:500;transform:translateY(100%);transition:transform .3s ease;padding:0 24px 40px;max-height:80vh;overflow-y:auto}
-::-webkit-scrollbar{width:3px}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:99px}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:99px}
 </style>
 <link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.json">
@@ -116,55 +113,111 @@ main{padding:16px;display:flex;flex-direction:column;gap:14px;padding-bottom:40p
 
 <main>
 
-  <!-- UPLOAD -->
   <label class="upload-zone" for="videoFileInput">
     <input type="file" id="videoFileInput" accept="video/*" multiple>
-    <h3>📁 Tap to load videos</h3>
-    <p>Batch process hundreds at once</p>
+    <div class="upload-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    </div>
+    <h3>Load videos to flip</h3>
+    <p>Batch process hundreds at once — all in your browser</p>
     <div class="chips"><span class="chip">MP4</span><span class="chip">MOV</span><span class="chip">WEBM</span><span class="chip">MKV</span></div>
   </label>
 
   <!-- STATS -->
-  <div class="stats" id="statsBar" style="display:none">
+  <div class="stats" id="statsBar">
     <div class="stat"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Loaded</div></div>
-    <div class="stat"><div class="stat-num" id="statDone">0</div><div class="stat-label">Done</div></div>
-    <div class="stat"><div class="stat-num" id="statSize">0 MB</div><div class="stat-label">Total Size</div></div>
+    <div class="stat"><div class="stat-num" id="statDone">0</div><div class="stat-label">Exported</div></div>
+    <div class="stat"><div class="stat-num" id="statSize">—</div><div class="stat-label">Total Size</div></div>
   </div>
 
-  <!-- FLIP MODE -->
+  <!-- FLIP BUTTONS -->
   <div class="sect">Flip Direction</div>
   <div class="flip-grid">
-    <div class="flip-btn selected" id="btnHoriz" onclick="selectFlip('horizontal', this)">
-      <div class="flip-icon">↔️</div>
+
+    <button class="flip-btn selected" id="btnH" type="button" onclick="selectFlip('horizontal',this)">
+      <div class="flip-icon-wrap">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <defs><linearGradient id="gh" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00cc66"/><stop offset="100%" stop-color="#00ff88"/></linearGradient></defs>
+          <!-- Two mirrored rectangles with center line -->
+          <rect x="3" y="10" width="14" height="20" rx="3" fill="url(#gh)" opacity="0.9"/>
+          <rect x="23" y="10" width="14" height="20" rx="3" fill="url(#gh)" opacity="0.4"/>
+          <line x1="20" y1="6" x2="20" y2="34" stroke="#00ff88" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <!-- Arrows -->
+          <polyline points="15,16 12,20 15,24" stroke="#00ff88" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <polyline points="25,16 28,20 25,24" stroke="#00ff88" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
       <div class="flip-label">Horizontal</div>
       <div class="flip-sub">Mirror left ↔ right</div>
-    </div>
-    <div class="flip-btn" id="btnVert" onclick="selectFlip('vertical', this)">
-      <div class="flip-icon">↕️</div>
+    </button>
+
+    <button class="flip-btn" id="btnV" type="button" onclick="selectFlip('vertical',this)">
+      <div class="flip-icon-wrap">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <defs><linearGradient id="gv" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00cc66"/><stop offset="100%" stop-color="#00ff88"/></linearGradient></defs>
+          <rect x="8" y="3" width="24" height="14" rx="3" fill="url(#gv)" opacity="0.9"/>
+          <rect x="8" y="23" width="24" height="14" rx="3" fill="url(#gv)" opacity="0.4"/>
+          <line x1="6" y1="20" x2="34" y2="20" stroke="#00ff88" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <polyline points="16,15 20,12 24,15" stroke="#00ff88" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <polyline points="16,25 20,28 24,25" stroke="#00ff88" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
       <div class="flip-label">Vertical</div>
-      <div class="flip-sub">Flip top ↕ bottom</div>
-    </div>
-  </div>
-  <div class="flip-grid">
-    <div class="flip-btn" id="btnBoth" onclick="selectFlip('both', this)">
-      <div class="flip-icon">🔄</div>
-      <div class="flip-label">Both</div>
-      <div class="flip-sub">180° rotation</div>
-    </div>
-    <div class="flip-btn" id="btnRotCW" onclick="selectFlip('rotate_cw', this)">
-      <div class="flip-icon">↩️</div>
+      <div class="flip-sub">Mirror top ↕ bottom</div>
+    </button>
+
+    <button class="flip-btn" id="btnB" type="button" onclick="selectFlip('both',this)">
+      <div class="flip-icon-wrap">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <defs><linearGradient id="gb" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00cc66"/><stop offset="100%" stop-color="#00ff88"/></linearGradient></defs>
+          <rect x="6" y="6" width="12" height="12" rx="2.5" fill="url(#gb)" opacity="0.9"/>
+          <rect x="22" y="22" width="12" height="12" rx="2.5" fill="url(#gb)" opacity="0.6"/>
+          <rect x="22" y="6" width="12" height="12" rx="2.5" fill="url(#gb)" opacity="0.25"/>
+          <rect x="6" y="22" width="12" height="12" rx="2.5" fill="url(#gb)" opacity="0.25"/>
+          <!-- Rotation arrows -->
+          <path d="M20 8 A12 12 0 0 1 32 20" stroke="#00ff88" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <polyline points="29,17 32,20 29,23" stroke="#00ff88" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M20 32 A12 12 0 0 1 8 20" stroke="#00ff88" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="flip-label">Both (180°)</div>
+      <div class="flip-sub">Full rotation</div>
+    </button>
+
+    <button class="flip-btn" id="btnR" type="button" onclick="selectFlip('rotate_cw',this)">
+      <div class="flip-icon-wrap">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <defs><linearGradient id="gr" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00cc66"/><stop offset="100%" stop-color="#00ff88"/></linearGradient></defs>
+          <!-- Portrait rect -->
+          <rect x="10" y="5" width="12" height="18" rx="2.5" fill="url(#gr)" opacity="0.5" stroke="#00ff88" stroke-width="1"/>
+          <!-- Landscape rect -->
+          <rect x="18" y="20" width="18" height="12" rx="2.5" fill="url(#gr)" opacity="0.9"/>
+          <!-- Rotation arc -->
+          <path d="M22 12 Q30 4 32 14" stroke="#00ff88" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <polyline points="29,11 32,14 29,17" stroke="#00ff88" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
       <div class="flip-label">Rotate 90° CW</div>
       <div class="flip-sub">Portrait → Landscape</div>
+    </button>
+
+  </div>
+
+  <!-- LIVE PREVIEW -->
+  <div class="preview-section" id="previewSection">
+    <div class="sect">Live Preview</div>
+    <div class="preview-wrap">
+      <canvas id="previewCanvas" class="preview-canvas"></canvas>
+      <div class="preview-badge" id="previewBadge">HORIZONTAL</div>
     </div>
   </div>
 
   <!-- RENAME -->
-  <div class="sect">Output Filename</div>
+  <div class="sect">Output Filenames</div>
   <div class="rename-card">
-    <div style="font-size:12px;color:var(--text3);margin-bottom:10px">Each exported file will be numbered automatically</div>
     <div class="rename-row">
       <span class="rename-label">Prefix</span>
-      <input class="rename-input" type="text" id="prefixInput" value="flipped" placeholder="e.g. flipped, clip, video" oninput="updatePreview()">
+      <input class="rename-input" type="text" id="prefixInput" value="flipped" placeholder="flipped" oninput="updatePreview()">
     </div>
     <div class="rename-row">
       <span class="rename-label">Start #</span>
@@ -174,7 +227,7 @@ main{padding:16px;display:flex;flex-direction:column;gap:14px;padding-bottom:40p
       <span class="rename-label">Padding</span>
       <input class="rename-input" type="number" id="paddingInput" value="2" min="1" max="4" oninput="updatePreview()">
     </div>
-    <div class="rename-preview" id="renamePreview">→ flipped_01.webm, flipped_02.webm…</div>
+    <div class="rename-preview" id="renamePreview">→ flipped_01.mp4, flipped_02.mp4…</div>
   </div>
 
   <!-- PROGRESS -->
@@ -186,29 +239,14 @@ main{padding:16px;display:flex;flex-direction:column;gap:14px;padding-bottom:40p
     <div class="progress-bg"><div class="progress-fill" id="progressFill"></div></div>
   </div>
 
-  <!-- ACTIONS -->
-  <button class="btn-primary" id="processBtn" onclick="processAll()" disabled>🔄 Flip & Export All</button>
-  <button class="btn-secondary" id="clearBtn" onclick="clearAll()" style="display:none">✕ Clear All</button>
+  <button class="btn-primary" id="processBtn" onclick="processAll()" disabled>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:middle;margin-right:6px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.9"/></svg>
+    Flip &amp; Export All
+  </button>
+  <button class="btn-secondary" id="clearBtn" onclick="clearAll()" style="display:none">Clear All</button>
 
-  <!-- VIDEO GRID -->
   <div class="sect" id="gridLabel" style="display:none">Loaded Videos</div>
   <div class="video-grid" id="videoGrid"></div>
-
-  <!-- IDEAS -->
-  <div class="sect">Coming Soon — Batch Tools</div>
-  <div class="idea-box">
-    <div class="idea-title">💡 Other batch operations we could add:</div>
-    <div class="idea-item">🔇 <strong>Mute all</strong> — strip audio from every video in one tap</div>
-    <div class="idea-item">✂️ <strong>Trim to duration</strong> — cut all videos to same length (5s, 10s, 30s)</div>
-    <div class="idea-item">📐 <strong>Resize / crop</strong> — resize all to 9:16, 16:9, 1:1 or custom px</div>
-    <div class="idea-item">🎨 <strong>Apply filter</strong> — greyscale, sepia, brightness boost on all</div>
-    <div class="idea-item">💧 <strong>Batch watermark</strong> — stamp logo on all (redirect to Watermark Tool)</div>
-    <div class="idea-item">🗜️ <strong>Compress all</strong> — reduce file size for upload limits</div>
-    <div class="idea-item">🔀 <strong>Reverse video</strong> — play every clip backwards</div>
-    <div class="idea-item">⚡ <strong>Speed change</strong> — 0.5× slow-mo or 2× fast-forward on all</div>
-    <div class="idea-item">🖼️ <strong>Extract thumbnail</strong> — grab frame 1 from every video</div>
-    <div class="idea-item">📦 <strong>Download as ZIP</strong> — package all outputs in a single download</div>
-  </div>
 
 </main>
 
@@ -225,7 +263,7 @@ main{padding:16px;display:flex;flex-direction:column;gap:14px;padding-bottom:40p
   <a href="/frame-extractor" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span><img src="/icons/frame-extractor.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Frame Extractor</a>
   <a href="/audio-editor" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span><img src="/icons/audio-editor.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Editor</a>
   <a href="/audio-converter" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span><img src="/icons/audio-converter.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Converter</a>
-  <a href="/video-flipper" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="font-size:20px;width:28px;text-align:center">🔄</span>Batch Video Flipper</a>
+  <a href="/video-flipper" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="font-size:20px;width:28px;text-align:center">🔄</span>Batch Flipper</a>
   <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:16px 0 8px;border-top:1px solid #1a1a1a">AI Generation</div>
   <a href="/ai-studio" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="font-size:20px;width:28px;text-align:center">✨</span>AI Studio</a>
   <a href="/motion-control" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="font-size:20px;width:28px;text-align:center">🎭</span>Motion Control</a>
@@ -235,21 +273,25 @@ main{padding:16px;display:flex;flex-direction:column;gap:14px;padding-bottom:40p
   <a href="https://youtube.com/@back2lifeai" target="_blank" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none"><span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg></span>YouTube</a>
 </div>
 
-<canvas id="offscreen" style="display:none"></canvas>
+<!-- mp4-muxer for real MP4 export -->
+<script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.0.0/build/mp4-muxer.min.js"></script>
 
 <script>
-let videos = []; // {file, url, name}
+let videos = [];
 let flipMode = 'horizontal';
 let processing = false;
 let doneCount = 0;
+let previewVid = null;
+let previewAnimFrame = null;
 
 // ── FILE INPUT ──────────────────────────────────────────────────────────────
-document.getElementById('videoFileInput').addEventListener('change', e => {
+document.getElementById('videoFileInput').addEventListener('change', function(e) {
   const files = Array.from(e.target.files).filter(f => f.type.startsWith('video/'));
   if (!files.length) return;
   files.forEach(f => videos.push({ file: f, url: URL.createObjectURL(f), name: f.name }));
   renderGrid();
-  document.getElementById('videoFileInput').value = '';
+  startPreview();
+  this.value = '';
 });
 
 // ── FLIP MODE ───────────────────────────────────────────────────────────────
@@ -257,6 +299,58 @@ function selectFlip(mode, btn) {
   flipMode = mode;
   document.querySelectorAll('.flip-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
+  const labels = { horizontal:'HORIZONTAL', vertical:'VERTICAL', both:'BOTH 180°', rotate_cw:'ROTATE 90°' };
+  document.getElementById('previewBadge').textContent = labels[mode] || mode.toUpperCase();
+  // Preview updates automatically via animation loop
+}
+
+// ── LIVE PREVIEW ────────────────────────────────────────────────────────────
+function startPreview() {
+  if (videos.length === 0) return;
+  document.getElementById('previewSection').classList.add('show');
+
+  if (previewVid) { previewVid.pause(); previewVid.src = ''; }
+  if (previewAnimFrame) cancelAnimationFrame(previewAnimFrame);
+
+  previewVid = document.createElement('video');
+  previewVid.src = videos[0].url;
+  previewVid.muted = true;
+  previewVid.loop = true;
+  previewVid.playsInline = true;
+  previewVid.autoplay = true;
+
+  const canvas = document.getElementById('previewCanvas');
+  const ctx = canvas.getContext('2d');
+
+  previewVid.addEventListener('loadedmetadata', function() {
+    const vw = this.videoWidth, vh = this.videoHeight;
+    const isRotate = flipMode === 'rotate_cw';
+    canvas.width = isRotate ? vh : vw;
+    canvas.height = isRotate ? vw : vh;
+    // Set display size
+    const maxW = canvas.parentElement.clientWidth;
+    canvas.style.width = maxW + 'px';
+    canvas.style.height = 'auto';
+
+    previewVid.play().catch(() => {});
+
+    function drawPreview() {
+      const mode = flipMode;
+      const W = previewVid.videoWidth, H = previewVid.videoHeight;
+      const isRot = mode === 'rotate_cw';
+      canvas.width = isRot ? H : W;
+      canvas.height = isRot ? W : H;
+      ctx.save();
+      if (mode === 'horizontal') { ctx.translate(W,0); ctx.scale(-1,1); }
+      else if (mode === 'vertical') { ctx.translate(0,H); ctx.scale(1,-1); }
+      else if (mode === 'both') { ctx.translate(W,H); ctx.scale(-1,-1); }
+      else if (mode === 'rotate_cw') { ctx.translate(H,0); ctx.rotate(Math.PI/2); }
+      ctx.drawImage(previewVid, 0, 0, W, H);
+      ctx.restore();
+      previewAnimFrame = requestAnimationFrame(drawPreview);
+    }
+    drawPreview();
+  }, { once: true });
 }
 
 // ── RENAME PREVIEW ──────────────────────────────────────────────────────────
@@ -266,7 +360,7 @@ function updatePreview() {
   const pad = parseInt(document.getElementById('paddingInput').value) || 2;
   const n1 = String(start).padStart(pad, '0');
   const n2 = String(start + 1).padStart(pad, '0');
-  document.getElementById('renamePreview').textContent = `→ ${prefix}_${n1}.webm, ${prefix}_${n2}.webm…`;
+  document.getElementById('renamePreview').textContent = `→ ${prefix}_${n1}.mp4, ${prefix}_${n2}.mp4…`;
 }
 updatePreview();
 
@@ -274,20 +368,24 @@ updatePreview();
 function renderGrid() {
   const grid = document.getElementById('videoGrid');
   grid.innerHTML = '';
+  const statsBar = document.getElementById('statsBar');
   if (videos.length === 0) {
-    document.getElementById('statsBar').style.display = 'none';
+    statsBar.style.display = 'none';
     document.getElementById('gridLabel').style.display = 'none';
     document.getElementById('processBtn').disabled = true;
     document.getElementById('clearBtn').style.display = 'none';
+    document.getElementById('previewSection').classList.remove('show');
     return;
   }
-  document.getElementById('statsBar').style.display = 'flex';
+  statsBar.style.display = 'flex';
   document.getElementById('gridLabel').style.display = 'flex';
   document.getElementById('processBtn').disabled = false;
   document.getElementById('clearBtn').style.display = 'block';
   document.getElementById('statTotal').textContent = videos.length;
-  const totalBytes = videos.reduce((s, v) => s + (v.file?.size || 0), 0);
-  document.getElementById('statSize').textContent = (totalBytes / 1024 / 1024).toFixed(1) + ' MB';
+  const totalBytes = videos.reduce((s,v) => s + (v.file?.size || 0), 0);
+  document.getElementById('statSize').textContent = totalBytes > 1048576
+    ? (totalBytes/1048576).toFixed(1)+' MB'
+    : (totalBytes/1024).toFixed(0)+' KB';
 
   videos.forEach((v, i) => {
     const card = document.createElement('div');
@@ -305,8 +403,10 @@ function renderGrid() {
     card.appendChild(nameEl);
     const rm = document.createElement('button');
     rm.className = 'video-card-remove';
-    rm.textContent = '✕';
-    rm.onclick = () => { videos.splice(i, 1); renderGrid(); };
+    rm.type = 'button';
+    rm.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10"><line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+    rm.addEventListener('touchend', function(e){ e.preventDefault(); e.stopPropagation(); videos.splice(i,1); renderGrid(); if(videos.length>0) startPreview(); }, {passive:false});
+    rm.addEventListener('click', function(e){ e.stopPropagation(); videos.splice(i,1); renderGrid(); if(videos.length>0) startPreview(); });
     card.appendChild(rm);
     grid.appendChild(card);
   });
@@ -328,103 +428,187 @@ async function processAll() {
   for (let i = 0; i < videos.length; i++) {
     const v = videos[i];
     const numStr = String(startNum + i).padStart(pad, '0');
-    const outName = `${prefix}_${numStr}.webm`;
+    const outName = `${prefix}_${numStr}.mp4`;
 
-    document.getElementById('progressLabel').textContent = `Processing ${i + 1} of ${videos.length}: ${v.name}`;
-    document.getElementById('progressFill').style.width = ((i / videos.length) * 100) + '%';
+    document.getElementById('progressLabel').textContent = `Processing ${i+1} of ${videos.length}: ${v.name}`;
+    document.getElementById('progressFill').style.width = ((i/videos.length)*100) + '%';
 
-    // Show processing status on card
-    const card = document.getElementById('card-' + i);
+    const card = document.getElementById('card-'+i);
     if (card) {
       const st = document.createElement('div');
-      st.className = 'video-card-status processing';
-      st.id = 'status-' + i;
+      st.className = 'video-card-status status-proc';
+      st.id = 'status-'+i;
       st.textContent = '⏳';
       card.appendChild(st);
     }
 
     try {
-      await flipAndDownload(v.file, outName, flipMode);
+      await flipAndExport(v.file, outName, flipMode);
       doneCount++;
       document.getElementById('statDone').textContent = doneCount;
-      const stEl = document.getElementById('status-' + i);
-      if (stEl) { stEl.className = 'video-card-status done'; stEl.textContent = '✓'; }
+      const stEl = document.getElementById('status-'+i);
+      if (stEl) { stEl.className = 'video-card-status status-done'; stEl.textContent = '✓'; }
     } catch(e) {
-      console.error('Failed:', v.name, e);
-      const stEl = document.getElementById('status-' + i);
-      if (stEl) { stEl.className = 'video-card-status'; stEl.style.color = '#ff4444'; stEl.textContent = '⚠️'; }
+      console.error(v.name, e);
+      const stEl = document.getElementById('status-'+i);
+      if (stEl) { stEl.className = 'video-card-status status-err'; stEl.textContent = '⚠'; }
     }
-
-    // Small delay between downloads so browser doesn't block
-    await new Promise(r => setTimeout(r, 200));
+    await new Promise(r => setTimeout(r, 150));
   }
 
   document.getElementById('progressFill').style.width = '100%';
-  document.getElementById('progressLabel').textContent = `✓ Done — ${doneCount} of ${videos.length} exported`;
-  showToast(`✓ ${doneCount} video${doneCount !== 1 ? 's' : ''} flipped & saved!`);
+  document.getElementById('progressLabel').textContent = `✓ Done — ${doneCount} of ${videos.length} exported as MP4`;
+  showToast(`✓ ${doneCount} MP4 video${doneCount !== 1 ? 's' : ''} exported!`);
   processing = false;
   document.getElementById('processBtn').disabled = false;
 }
 
-// ── FLIP ENGINE (Canvas + MediaRecorder) ────────────────────────────────────
-function flipAndDownload(file, outName, mode) {
+// ── FLIP & EXPORT as MP4 using mp4-muxer ────────────────────────────────────
+function flipAndExport(file, outName, mode) {
+  return new Promise((resolve, reject) => {
+    // Try WebCodecs + mp4-muxer first (fast, real MP4)
+    if (typeof VideoEncoder !== 'undefined' && typeof Mp4Muxer !== 'undefined') {
+      flipWithWebCodecs(file, outName, mode).then(resolve).catch(() => {
+        // Fallback to MediaRecorder WebM
+        flipWithMediaRecorder(file, outName.replace('.mp4','.webm'), mode).then(resolve).catch(reject);
+      });
+    } else {
+      flipWithMediaRecorder(file, outName.replace('.mp4','.webm'), mode).then(resolve).catch(reject);
+    }
+  });
+}
+
+async function flipWithWebCodecs(file, outName, mode) {
+  const vid = document.createElement('video');
+  vid.src = URL.createObjectURL(file);
+  vid.muted = true;
+  vid.playsInline = true;
+
+  await new Promise((res, rej) => {
+    vid.addEventListener('loadedmetadata', res, { once: true });
+    vid.addEventListener('error', rej, { once: true });
+    vid.load();
+  });
+
+  const vW = vid.videoWidth, vH = vid.videoHeight;
+  const isRot = mode === 'rotate_cw';
+  const outW = isRot ? vH : vW;
+  const outH = isRot ? vW : vH;
+  const fps = 30;
+
+  // Canvas for flipping
+  const canvas = document.createElement('canvas');
+  canvas.width = outW; canvas.height = outH;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+  // Mp4Muxer setup
+  const muxer = new Mp4Muxer.Muxer({
+    target: new Mp4Muxer.ArrayBufferTarget(),
+    video: { codec: 'avc', width: outW, height: outH },
+    fastStart: 'in-memory',
+  });
+
+  const encoder = new VideoEncoder({
+    output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
+    error: e => { throw e; }
+  });
+
+  encoder.configure({
+    codec: 'avc1.42001f',
+    width: outW, height: outH,
+    bitrate: 8_000_000,
+    framerate: fps,
+  });
+
+  vid.currentTime = 0;
+  await new Promise(r => vid.addEventListener('seeked', r, { once: true }));
+
+  const duration = vid.duration;
+  const frameInterval = 1 / fps;
+  let t = 0;
+  let frameCount = 0;
+
+  vid.play().catch(() => {});
+
+  while (t < duration) {
+    vid.currentTime = t;
+    await new Promise(r => vid.addEventListener('seeked', r, { once: true }));
+
+    ctx.save();
+    if (mode === 'horizontal') { ctx.translate(outW,0); ctx.scale(-1,1); }
+    else if (mode === 'vertical') { ctx.translate(0,outH); ctx.scale(1,-1); }
+    else if (mode === 'both') { ctx.translate(outW,outH); ctx.scale(-1,-1); }
+    else if (mode === 'rotate_cw') { ctx.translate(outW,0); ctx.rotate(Math.PI/2); }
+    ctx.drawImage(vid, 0, 0, vW, vH);
+    ctx.restore();
+
+    const imageBitmap = await createImageBitmap(canvas);
+    const videoFrame = new VideoFrame(imageBitmap, {
+      timestamp: Math.round(t * 1_000_000),
+      duration: Math.round(frameInterval * 1_000_000),
+    });
+    encoder.encode(videoFrame, { keyFrame: frameCount % 30 === 0 });
+    videoFrame.close();
+    imageBitmap.close();
+
+    t += frameInterval;
+    frameCount++;
+  }
+
+  await encoder.flush();
+  muxer.finalize();
+
+  const { buffer } = muxer.target;
+  const blob = new Blob([buffer], { type: 'video/mp4' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = outName;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+  URL.revokeObjectURL(vid.src);
+}
+
+function flipWithMediaRecorder(file, outName, mode) {
   return new Promise((resolve, reject) => {
     const vid = document.createElement('video');
-    vid.muted = true;
-    vid.playsInline = true;
-    vid.preload = 'auto';
+    vid.muted = true; vid.playsInline = true;
     vid.src = URL.createObjectURL(file);
 
     vid.addEventListener('loadedmetadata', () => {
       const W = vid.videoWidth, H = vid.videoHeight;
+      const isRot = mode === 'rotate_cw';
       const canvas = document.createElement('canvas');
-      // For rotation, swap dimensions
-      const isRotate = mode === 'rotate_cw';
-      canvas.width = isRotate ? H : W;
-      canvas.height = isRotate ? W : H;
+      canvas.width = isRot ? H : W; canvas.height = isRot ? W : H;
       const ctx = canvas.getContext('2d');
 
-      const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
-        ? 'video/webm;codecs=vp9'
-        : 'video/webm';
+      const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm';
       const recorder = new MediaRecorder(canvas.captureStream(30), { mimeType, videoBitsPerSecond: 8_000_000 });
       const chunks = [];
       recorder.ondataavailable = e => { if (e.data?.size > 0) chunks.push(e.data); };
       recorder.onstop = () => {
         const blob = new Blob(chunks, { type: 'video/webm' });
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = outName;
+        a.href = URL.createObjectURL(blob); a.download = outName;
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
         setTimeout(() => URL.revokeObjectURL(a.href), 5000);
         resolve();
       };
 
-      function drawFrame() {
-        if (vid.ended || vid.paused && vid.currentTime >= vid.duration - 0.05) {
-          recorder.stop();
-          return;
-        }
+      function draw() {
+        if (vid.ended || (vid.paused && vid.currentTime >= vid.duration - 0.05)) { recorder.stop(); return; }
         ctx.save();
-        if (mode === 'horizontal') {
-          ctx.translate(W, 0); ctx.scale(-1, 1);
-        } else if (mode === 'vertical') {
-          ctx.translate(0, H); ctx.scale(1, -1);
-        } else if (mode === 'both') {
-          ctx.translate(W, H); ctx.scale(-1, -1);
-        } else if (mode === 'rotate_cw') {
-          ctx.translate(H, 0); ctx.rotate(Math.PI / 2);
-        }
-        ctx.drawImage(vid, 0, 0, W, H);
+        const cW = canvas.width, cH = canvas.height;
+        if (mode === 'horizontal') { ctx.translate(cW,0); ctx.scale(-1,1); ctx.drawImage(vid,0,0,cW,cH); }
+        else if (mode === 'vertical') { ctx.translate(0,cH); ctx.scale(1,-1); ctx.drawImage(vid,0,0,cW,cH); }
+        else if (mode === 'both') { ctx.translate(cW,cH); ctx.scale(-1,-1); ctx.drawImage(vid,0,0,cW,cH); }
+        else if (mode === 'rotate_cw') { ctx.translate(cH,0); ctx.rotate(Math.PI/2); ctx.drawImage(vid,0,0,W,H); }
+        else { ctx.drawImage(vid,0,0,cW,cH); }
         ctx.restore();
-        requestAnimationFrame(drawFrame);
+        requestAnimationFrame(draw);
       }
 
       recorder.start(100);
-      vid.play().then(() => {
-        drawFrame();
-      }).catch(reject);
-
+      vid.play().then(() => draw()).catch(reject);
       vid.addEventListener('ended', () => { if (recorder.state !== 'inactive') recorder.stop(); });
     }, { once: true });
 
@@ -435,18 +619,19 @@ function flipAndDownload(file, outName, mode) {
 
 // ── CLEAR ───────────────────────────────────────────────────────────────────
 function clearAll() {
+  if (previewAnimFrame) cancelAnimationFrame(previewAnimFrame);
+  if (previewVid) { previewVid.pause(); previewVid.src = ''; previewVid = null; }
   videos.forEach(v => URL.revokeObjectURL(v.url));
-  videos = [];
-  doneCount = 0;
+  videos = []; doneCount = 0;
   document.getElementById('progressCard').classList.remove('show');
   document.getElementById('statDone').textContent = '0';
   renderGrid();
 }
 
-// ── BURGER MENU ─────────────────────────────────────────────────────────────
+// ── BURGER ───────────────────────────────────────────────────────────────────
 (function(){
   var b=document.getElementById('menuBtn'),d=document.getElementById('navDrawer'),bd=document.getElementById('drawerBackdrop');
-  document.body.appendChild(bd);document.body.appendChild(d);
+  document.body.appendChild(bd); document.body.appendChild(d);
   function openD(){d.style.transform='translateY(0)';bd.style.display='block';document.body.style.overflow='hidden';}
   function closeD(){d.style.transform='translateY(100%)';bd.style.display='none';document.body.style.overflow='';}
   b.addEventListener('click',()=>d.style.transform==='translateY(0)'?closeD():openD());
@@ -456,7 +641,6 @@ function clearAll() {
   d.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-ty>50)closeD();},{passive:true});
 })();
 
-// ── TOAST ────────────────────────────────────────────────────────────────────
 let toastTimer;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3200);}
 </script>
