@@ -624,23 +624,26 @@ renderGrid();
     return (ty / window.innerHeight) * 100;
   }
 
+  // Only start a swipe gesture from the drag handle (top 52px of sheet)
   sheet.addEventListener('touchstart', function(e) {
     var rect = sheet.getBoundingClientRect();
-    if (e.touches[0].clientY - rect.top > 52) return;
-    startY = e.touches[0].clientY;
-    startPct = sheet.classList.contains('full') ? 0 : 50;
+    var touchY = e.touches[0].clientY;
+    if (touchY - rect.top > 52) { dragging = false; return; }
+    startY = touchY;
+    startPct = sheet.classList.contains('full') ? 0 : 15;
     dragging = true;
     sheet.style.transition = 'none';
   }, {passive:true});
 
-  document.addEventListener('touchmove', function(e) {
-    if (!dragging) return;
+  // Stop scroll touches inside the sheet body from reaching document handlers
+  sheet.addEventListener('touchmove', function(e) {
+    if (!dragging) { e.stopPropagation(); return; }
     var dy = e.touches[0].clientY - startY;
     var pct = Math.max(0, Math.min(100, startPct + (dy / window.innerHeight * 100)));
     sheet.style.transform = 'translateY(' + pct + '%)';
   }, {passive:true});
 
-  document.addEventListener('touchend', function(e) {
+  sheet.addEventListener('touchend', function(e) {
     if (!dragging) return;
     dragging = false;
     sheet.style.transition = '';
@@ -648,7 +651,7 @@ renderGrid();
     var dy = e.changedTouches[0].clientY - startY;
     if (dy > 80) {
       if (sheet.classList.contains('full')) {
-        sheet.classList.remove('full'); // snap back to 50%
+        sheet.classList.remove('full'); // snap back to half
       } else {
         sheet.classList.remove('open','full');
         overlay.classList.remove('open');
