@@ -105,8 +105,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
   
 </div>
 
-<img src="/img/banners/audio-converter-banner.png" alt="" style="width:100%;display:block;margin-top:var(--bar);border-bottom:1px solid rgba(255,255,255,0.06)">
 <div class="main">
+  <img src="/img/banners/audio-converter-banner.png" alt="" style="width:calc(100% + 28px);display:block;margin:-16px -14px 16px -14px;border-bottom:1px solid rgba(255,255,255,0.06)">
   <div class="empty" id="empty" onclick="document.getElementById('fileInput').click()" style="cursor:pointer">
     <div class="empty-icon" style="display:flex;align-items:center;justify-content:center"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg></div>
     <div class="empty-title">Add an audio or video file</div>
@@ -199,6 +199,7 @@ $('fileInput').addEventListener('change',async e=>{
   showSpinner(isVideo?'Extracting audio from video…':'Loading audio…');
   try{
     if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended')await audioCtx.resume();
     const buf=await file.arrayBuffer();
     audioBuffer=await audioCtx.decodeAudioData(buf);
     $('empty').classList.add('hidden');
