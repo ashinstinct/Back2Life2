@@ -148,7 +148,7 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
   <a href="/" style="position:absolute;left:50%;transform:translateX(-50%);text-decoration:none;white-space:nowrap"><span style="font-size:17px;font-weight:900;color:#fff;letter-spacing:-0.5px">Back2Life</span><span style="font-size:17px;font-weight:900;color:#00ff88;letter-spacing:-0.5px">.app</span></a>
   <button class="topbar-upload" id="topUploadBtn">+ VIDEO<input type="file" accept="video/*" id="videoInputTop"></button>
 </div>
-<img src="/img/banners/frame-extractor-banner.png" alt="Frame Extractor" style="width:100%;display:block;border-bottom:1px solid rgba(255,255,255,0.06)">
+<img src="/img/banners/frame-extractor-banner.png" alt="Frame Extractor" style="width:100%;display:block;margin-top:var(--bar-h);border-bottom:1px solid rgba(255,255,255,0.06)">
 
 <div class="video-area" id="videoArea">
   <div class="upload-placeholder" id="uploadPlaceholder">
@@ -191,7 +191,7 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
         <span class="rename-ext">.png</span>
       </div>
     </div>
-    <button class="action-btn" id="actionBtn" disabled>📷 Extract Frame</button>
+    <button class="action-btn" id="actionBtn" disabled><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Extract Frame</button>
   </div>
 </div>
 
@@ -290,7 +290,7 @@ actionBtn.addEventListener('click',()=>{
   actionBtn.className='action-btn dl';actionBtn.textContent='⬇ Download PNG';toast('✓ Frame ready — edit name then download');
 });
 function downloadFrame(){const name=document.getElementById('renameInput').value.trim()||'frame';const a=document.createElement('a');a.href=extractedDataURL;a.download=name+'.png';document.body.appendChild(a);a.click();document.body.removeChild(a);toast('⬇ Saved '+name+'.png');resetExtract()}
-function resetExtract(){extractedDataURL=null;document.getElementById('renameSection').classList.remove('show');actionBtn.className='action-btn';actionBtn.textContent='📷 Extract Frame';actionBtn.disabled=!videoLoaded;setMode(mode||'start')}
+function resetExtract(){extractedDataURL=null;document.getElementById('renameSection').classList.remove('show');actionBtn.className='action-btn';actionBtn.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Extract Frame';actionBtn.disabled=!videoLoaded;setMode(mode||'start')}
 function fmtTime(s){return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0')}
 function fmtTimecode(s){const m=Math.floor(s/60),sec=Math.floor(s%60),ms=Math.round((s%1)*1000);return m+':'+String(sec).padStart(2,'0')+'.'+String(ms).padStart(3,'0')}
 function shareTo(platform){
