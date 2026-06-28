@@ -134,7 +134,8 @@
   .storyboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 24px 0; }
   .sb-card { background: #111; border: 1px solid #222; border-radius: 12px; overflow: hidden; transition: border-color 0.2s; }
   .sb-card:hover { border-color: #ff4488; }
-  .sb-img-wrap { position: relative; aspect-ratio: 16/9; overflow: hidden; background: #1a1a1a; display: flex; align-items: center; justify-content: center; }
+  .sb-img-wrap { position: relative; overflow: hidden; }
+  .sb-img-wrap img { width: 100%; height: auto; display: block; }
   .sb-timecode { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.75); color: #ff4488; font-size: 11px; font-weight: 700; font-family: monospace; padding: 3px 8px; border-radius: 4px; letter-spacing: 1px; }
   .sb-scene-label { font-size: 13px; color: #555; text-align: center; padding: 20px; }
   .sb-info { padding: 14px 16px; }
@@ -539,42 +540,32 @@ Audio: Wind rush and screaming on the fall, thunderous impact, stone dust settli
       <div class="storyboard-grid">
         <div class="sb-card">
           <div class="sb-img-wrap">
-            <img src="/img/tut02-sb7.jpg?v=1" alt="Falling from the sky clutching the cat">
+            <img src="/img/tut02-sb1.jpg?v=1" alt="Aerial overhead view of impact on temple floor">
             <span class="sb-timecode">00:00</span>
           </div>
           <div class="sb-info">
-            <div class="sb-title">The Fall</div>
-            <div class="sb-caption">Camera opens high in the sky. Man falls backwards screaming, clutching the kitten to his chest. Ruined marble temple far below.</div>
+            <div class="sb-title">The Impact</div>
+            <div class="sb-caption">Aerial camera looks straight down as he slams into the temple floor — thunderous shockwave, stone dust explosion, rolling to protect the cat.</div>
           </div>
         </div>
         <div class="sb-card">
           <div class="sb-img-wrap">
-            <img src="/img/tut02-sb1.jpg?v=1" alt="Aerial overhead view of impact on temple floor">
+            <img src="/img/tut02-sb2.jpg?v=1" alt="Angel warrior with wings and golden swords standing with battle-lion roaring">
             <span class="sb-timecode">00:03</span>
           </div>
           <div class="sb-info">
-            <div class="sb-title">The Impact</div>
-            <div class="sb-caption">He slams into the temple floor — thunderous shockwave, stone dust explosion. Rolls protecting the cat. Camera looks straight down.</div>
+            <div class="sb-title">The Transformation</div>
+            <div class="sb-caption">White-and-gold angel armor fully assembled. Massive white feathered wings spread wide. Two glowing golden swords drawn. The battle-lion roars beside him.</div>
           </div>
         </div>
         <div class="sb-card">
           <div class="sb-img-wrap">
-            <img src="/img/tut02-sb6.jpg?v=1" alt="Rolling across the ground protecting the cat">
-            <span class="sb-timecode">00:04</span>
-          </div>
-          <div class="sb-info">
-            <div class="sb-title">The Roll</div>
-            <div class="sb-caption">Rolling hard across the cracked marble, body curled around the cat, stone debris flying as the dust cloud billows.</div>
-          </div>
-        </div>
-        <div class="sb-card">
-          <div class="sb-img-wrap">
-            <img src="/img/tut02-sb5.jpg?v=1" alt="Kneeling in temple ruins holding crystal with cat">
+            <img src="/img/tut02-sb3.jpg?v=1" alt="Angel warrior and battle-lion charging directly at camera">
             <span class="sb-timecode">00:06</span>
           </div>
           <div class="sb-info">
-            <div class="sb-title">The Crystal</div>
-            <div class="sb-caption">Rises to half-kneel. Cat beside him. Right hand raises a glowing golden crystal shard to eye level. Both turn and look at each other.</div>
+            <div class="sb-title">The Charge</div>
+            <div class="sb-caption">Both charge directly at the lens. Camera sweeps low and accelerates forward — blinding golden energy explosion obliterates the frame.</div>
           </div>
         </div>
         <div class="sb-card">
@@ -584,27 +575,37 @@ Audio: Wind rush and screaming on the fall, thunderous impact, stone dust settli
           </div>
           <div class="sb-info">
             <div class="sb-title">The Activation</div>
-            <div class="sb-caption">Eyes blaze solid gold. Crystal light blazes between clenched fingers. Sonic boom shockwave detonates outward in a ring — cat watches wide-eyed.</div>
+            <div class="sb-caption">Eyes blaze solid gold. Crystal light blazes between clenched fingers. Sonic boom shockwave detonates outward — cat watches wide-eyed.</div>
           </div>
         </div>
         <div class="sb-card">
           <div class="sb-img-wrap">
-            <img src="/img/tut02-sb2.jpg?v=1" alt="Angel warrior with wings and golden swords standing with battle-lion">
+            <img src="/img/tut02-sb5.jpg?v=1" alt="Kneeling in temple ruins holding crystal with cat">
             <span class="sb-timecode">00:12</span>
           </div>
           <div class="sb-info">
-            <div class="sb-title">The Transformation</div>
-            <div class="sb-caption">White-and-gold angel armor fully assembled. Massive white feathered wings spread wide. Two glowing golden swords drawn. The kitten has become a massive battle-lion — roaring beside him.</div>
+            <div class="sb-title">The Crystal</div>
+            <div class="sb-caption">Rises to half-kneel. Cat beside him. Right hand raises a glowing golden crystal shard to eye level. Both turn and look at each other.</div>
           </div>
         </div>
         <div class="sb-card">
           <div class="sb-img-wrap">
-            <img src="/img/tut02-sb3.jpg?v=1" alt="Angel warrior and battle-lion charging directly at camera">
-            <span class="sb-timecode">00:16</span>
+            <img src="/img/tut02-sb6.jpg?v=1" alt="Rolling across the ground protecting the cat">
+            <span class="sb-timecode">00:15</span>
           </div>
           <div class="sb-info">
-            <div class="sb-title">The Charge</div>
-            <div class="sb-caption">Both charge directly at the lens. Camera sweeps low and accelerates forward — blinding golden energy explosion obliterates the frame.</div>
+            <div class="sb-title">The Roll</div>
+            <div class="sb-caption">Rolling hard across the cracked marble, body curled around the cat, stone debris flying as the dust cloud billows outward.</div>
+          </div>
+        </div>
+        <div class="sb-card">
+          <div class="sb-img-wrap">
+            <img src="/img/tut02-sb7.jpg?v=1" alt="Falling from the sky clutching the cat">
+            <span class="sb-timecode">00:18</span>
+          </div>
+          <div class="sb-info">
+            <div class="sb-title">The Fall</div>
+            <div class="sb-caption">Camera opens high in the sky. Man falls backwards screaming, clutching the kitten to his chest. Ruined marble temple far below.</div>
           </div>
         </div>
       </div>
