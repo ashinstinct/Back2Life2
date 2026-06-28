@@ -41,7 +41,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .upload-placeholder{display:flex;flex-direction:column;align-items:center;gap:12px;color:var(--text3);text-align:center;padding:0 32px;cursor:pointer;position:relative;-webkit-user-select:none;user-select:none}
 .upload-placeholder input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;font-size:0;z-index:2}
 .upload-placeholder.hidden{display:none}
-.upl-icon{font-size:56px;opacity:.85;cursor:pointer;position:relative;z-index:3;animation:pulse 2.4s ease-in-out infinite;filter:drop-shadow(0 0 16px rgba(0,255,136,0.3))}
+.upl-icon{display:flex;align-items:center;justify-content:center;opacity:.85;cursor:pointer;position:relative;z-index:3;animation:pulse 2.4s ease-in-out infinite;filter:drop-shadow(0 0 16px rgba(0,255,136,0.3))}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.06);opacity:1}}
 .upl-title{font-size:16px;font-weight:800;color:#ccc;letter-spacing:-0.3px}
 .upl-sub{font-size:12px;color:#444}
@@ -153,7 +153,7 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
 <div class="video-area" id="videoArea">
   <div class="upload-placeholder" id="uploadPlaceholder">
     <input type="file" accept="video/*" id="videoInputMain">
-    <div class="upl-icon" id="uplIcon">🎬</div>
+    <div class="upl-icon" id="uplIcon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="15" height="16" rx="2"/><path d="m17 8 5-3v14l-5-3"/><line x1="7" y1="12" x2="11" y2="12"/><line x1="9" y1="10" x2="9" y2="14"/></svg></div>
     <div class="upl-title">Tap to load a video</div>
     <div class="upl-sub">Stays on your device — nothing uploaded</div>
     <div class="upl-chips"><span class="upl-chip">MP4</span><span class="upl-chip">MOV</span><span class="upl-chip">WebM</span><span class="upl-chip">MKV</span></div>
