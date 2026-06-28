@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Falling to Earth & Morphing to Superheroes — AI Video Tutorial | Back2Life.app</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #0f0f0f; color: #e8e8e8; line-height: 1.7; }
+
+  /* HERO */
+  .hero {
+    padding-top: 20px !important;
+    background: linear-gradient(135deg, #1a0a0a 0%, #2a0a1e 40%, #1a0a2e 100%);
+    padding: 60px 40px 50px;
+    text-align: center;
+    border-bottom: 2px solid #ff4488;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, rgba(255,68,136,0.08) 0%, transparent 70%);
+  }
+  .brand-tag {
+    display: inline-block;
+    background: linear-gradient(90deg, #ff4488, #ff8844);
+    color: #000;
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+  }
+  .hero h1 { font-size: clamp(28px, 5vw, 52px); font-weight: 800; color: #fff; margin-bottom: 16px; line-height: 1.15; }
+  .hero h1 span { color: #ff4488; }
+  .hero-sub { font-size: 18px; color: #aaa; max-width: 620px; margin: 0 auto 32px; }
+  .hero-meta { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; }
+  .meta-pill { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); padding: 8px 20px; border-radius: 30px; font-size: 13px; color: #ccc; }
+  .meta-pill span { color: #ff4488; font-weight: 600; }
+
+  /* SOCIAL BAR */
+  .social-bar { background: #111; border-bottom: 1px solid #222; padding: 16px 40px; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  .social-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 2px; margin-right: 8px; }
+  .social-link { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; text-decoration: none; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1); color: #ccc; }
+  .social-link:hover { transform: translateY(-1px); border-color: #ff4488; color: #ff4488; }
+  .social-link.ig:hover { border-color: #e1306c; color: #e1306c; }
+  .social-link.tt:hover { border-color: #69c9d0; color: #69c9d0; }
+  .social-link.yt:hover { border-color: #ff0000; color: #ff0000; }
+
+  /* MAIN LAYOUT */
+  .container { max-width: 860px; margin: 0 auto; padding: 60px 32px; }
+
+  /* OVERVIEW BOX */
+  .overview-box { background: linear-gradient(135deg, rgba(255,68,136,0.06), rgba(255,136,68,0.04)); border: 1px solid rgba(255,68,136,0.2); border-radius: 16px; padding: 32px 36px; margin-bottom: 56px; }
+  .overview-box h2 { font-size: 20px; color: #ff4488; margin-bottom: 16px; }
+  .overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .overview-item { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: #ccc; }
+  .overview-item .dot { color: #ff4488; font-size: 18px; margin-top: -2px; flex-shrink: 0; }
+
+  /* TOOLS NEEDED */
+  .tools-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 56px; }
+  .tool-card { flex: 1; min-width: 160px; background: #161616; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; text-align: center; }
+  .tool-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .tool-desc { font-size: 12px; color: #777; }
+  .tool-icon-svg { display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+
+  /* STEP SECTIONS */
+  .step-section { margin-bottom: 64px; }
+  .step-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #222; }
+  .step-number { width: 48px; height: 48px; background: linear-gradient(135deg, #ff4488, #ff8844); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: #000; flex-shrink: 0; }
+  .step-title-block h2 { font-size: 24px; font-weight: 700; color: #fff; }
+  .step-title-block p { font-size: 14px; color: #888; margin-top: 2px; }
+
+  /* INSTRUCTION STEPS */
+  .instruction { margin-bottom: 20px; }
+  .instruction-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: rgba(255,68,136,0.12); border: 1px solid rgba(255,68,136,0.3); border-radius: 50%; font-size: 12px; font-weight: 700; color: #ff4488; flex-shrink: 0; margin-right: 12px; margin-bottom: 6px; float: left; }
+  .instruction p { color: #ccc; font-size: 15px; overflow: hidden; }
+  .instruction p strong { color: #fff; }
+  .clearfix::after { content: ''; display: table; clear: both; }
+
+  /* PROMPT BLOCKS */
+  .prompt-block { background: #0a0a0a; border: 1px solid #2a2a2a; border-left: 3px solid #ff4488; border-radius: 10px; padding: 24px 28px; margin: 20px 0; position: relative; }
+  .prompt-block .prompt-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #ff4488; margin-bottom: 14px; }
+  .prompt-block pre { font-family: 'Courier New', monospace; font-size: 13px; color: #f0c8d8; white-space: pre-wrap; word-break: break-word; line-height: 1.8; }
+  .copy-btn { position: absolute; top: 14px; right: 14px; background: rgba(255,68,136,0.1); border: 1px solid rgba(255,68,136,0.3); color: #ff4488; font-size: 12px; font-weight: 600; font-family: 'Inter', sans-serif; padding: 5px 14px; border-radius: 6px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+  .copy-btn:hover { background: rgba(255,68,136,0.2); border-color: #ff4488; }
+  .copy-btn.copied { background: rgba(255,68,136,0.25); }
+  .copy-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+  /* CALLOUTS */
+  .callout { display: flex; gap: 14px; align-items: flex-start; background: rgba(0,200,255,0.05); border: 1px solid rgba(0,200,255,0.2); border-radius: 10px; padding: 18px 22px; margin: 20px 0; }
+  .callout-icon { font-size: 20px; flex-shrink: 0; }
+  .callout p { font-size: 14px; color: #b0d4e0; }
+  .callout p strong { color: #00ccff; }
+  .callout.tip { background: rgba(255,200,0,0.05); border-color: rgba(255,200,0,0.2); }
+  .callout.tip p { color: #d4c07a; }
+  .callout.tip p strong { color: #ffc800; }
+  .callout.warning { background: rgba(255,68,136,0.05); border-color: rgba(255,68,136,0.2); }
+  .callout.warning p { color: #d4a0b8; }
+  .callout.warning p strong { color: #ff4488; }
+
+  /* SETTINGS TABLE */
+  .settings-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+  .settings-table th { background: #161616; color: #888; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 12px 16px; text-align: left; border-bottom: 1px solid #2a2a2a; }
+  .settings-table td { padding: 12px 16px; border-bottom: 1px solid #1a1a1a; color: #ccc; vertical-align: top; }
+  .settings-table td:first-child { color: #fff; font-weight: 500; }
+  .settings-table td .val { display: inline-block; background: rgba(255,68,136,0.1); color: #ff4488; font-family: monospace; font-size: 13px; padding: 2px 10px; border-radius: 5px; }
+  .settings-table tr:last-child td { border-bottom: none; }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid #1e1e1e; margin: 56px 0; }
+
+  /* MEDIA BLOCKS */
+  .media-block { margin: 24px 0; border-radius: 12px; overflow: hidden; border: 1px solid #2a2a2a; }
+  .media-label { background: #161616; padding: 10px 18px; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #ff4488; border-bottom: 1px solid #2a2a2a; }
+  .media-caption { background: #0f0f0f; padding: 12px 18px; font-size: 13px; color: #666; border-top: 1px solid #1a1a1a; }
+  .media-block img { width: 100%; display: block; }
+  .media-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+
+  /* VIDEO EMBED */
+  .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; border: 1px solid #2a2a2a; }
+  .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+  /* CHARACTER SHEET FULL WIDTH */
+  .char-sheet { width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid #2a2a2a; margin: 24px 0; }
+  .char-sheet img { width: 100%; display: block; }
+
+  /* STORYBOARD */
+  .storyboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 24px 0; }
+  .sb-card { background: #111; border: 1px solid #222; border-radius: 12px; overflow: hidden; transition: border-color 0.2s; }
+  .sb-card:hover { border-color: #ff4488; }
+  .sb-img-wrap { position: relative; aspect-ratio: 16/9; overflow: hidden; background: #1a1a1a; display: flex; align-items: center; justify-content: center; }
+  .sb-timecode { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.75); color: #ff4488; font-size: 11px; font-weight: 700; font-family: monospace; padding: 3px 8px; border-radius: 4px; letter-spacing: 1px; }
+  .sb-scene-label { font-size: 13px; color: #555; text-align: center; padding: 20px; }
+  .sb-info { padding: 14px 16px; }
+  .sb-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+  .sb-caption { font-size: 12px; color: #777; line-height: 1.5; }
+  .storyboard-grid .sb-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+  /* FINAL CTA */
+  .final-cta { background: linear-gradient(135deg, #1a0a0a, #2a0a1e); border: 1px solid rgba(255,68,136,0.2); border-radius: 20px; padding: 48px 40px; text-align: center; margin-top: 40px; }
+  .final-cta h2 { font-size: 28px; color: #fff; margin-bottom: 12px; }
+  .final-cta h2 span { color: #ff4488; }
+  .final-cta p { color: #888; margin-bottom: 32px; font-size: 15px; }
+  .social-grid { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .cta-social { display: inline-flex; align-items: center; gap: 7px; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.12); color: #ccc; }
+  .cta-social:hover { transform: translateY(-2px); color: #ff4488; border-color: #ff4488; }
+
+  /* SITE NAV */
+  .site-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,10,10,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);padding:0 16px;height:56px;display:flex;align-items:center;gap:10px}
+  .site-nav-logo{font-size:18px;font-weight:800;color:#fff;text-decoration:none;letter-spacing:-.2px;flex-shrink:0}
+  .site-nav-logo em{color:#00ff88;font-style:normal}
+  .site-spacer{flex:1}
+  .site-nav-back{font-size:13px;font-weight:500;color:#888;text-decoration:none;flex-shrink:0;transition:color .2s}
+  .site-nav-back:hover{color:#ff4488}
+  .site-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;z-index:1;flex-shrink:0}
+  .site-burger span{display:block;width:20px;height:2px;background:#aaa;border-radius:2px;transition:all .3s}
+  .site-burger.open span{background:#ff4488}
+  .site-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .site-burger.open span:nth-child(2){opacity:0}
+  .site-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  .site-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:290;display:none;backdrop-filter:blur(2px)}
+  .site-backdrop.open{display:block}
+  .site-drawer{position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid #2a2a2a;border-radius:20px 20px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s ease;padding:0 20px 40px;max-height:80vh;overflow-y:auto}
+  .site-drawer.open{transform:translateY(0)}
+  .drawer-handle-wrap{padding:10px 0 6px;text-align:center}
+  .drawer-handle{width:36px;height:4px;background:#333;border-radius:2px;margin:0 auto}
+  .drawer-sl{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:14px 0 7px;border-top:1px solid #1a1a1a;margin-top:4px}
+  .drawer-sl:first-of-type{border-top:none;margin-top:0;padding-top:4px}
+  .drawer-a{display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ddd;text-decoration:none;border-bottom:1px solid #222;transition:color .2s}
+  .drawer-a:active{color:#ff4488}
+  .drawer-a .ico{width:26px;text-align:center;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .drawer-cta{display:block;margin-top:20px;background:#00ff88;color:#000;font-weight:700;font-size:14px;padding:13px;border-radius:10px;text-decoration:none;text-align:center}
+  @media(max-width:768px){.site-nav-back{display:none}.site-burger{display:flex}}
+  @media(max-width:600px){.overview-grid{grid-template-columns:1fr}.hero{padding:20px 20px 32px}.container{padding:40px 20px}.final-cta{padding:36px 20px}.media-row{grid-template-columns:1fr}.storyboard-grid{grid-template-columns:1fr}}
+</style>
+<link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<meta name="theme-color" content="#0f0505">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Back2Life">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="/manifest.json">
+<meta name="vercel-toolbar" content="off">
+</head>
+<body>
+
+<nav class="site-nav">
+  <button class="site-burger" id="sBurger"><span></span><span></span><span></span></button>
+  <a href="/" class="site-nav-logo">Back2Life<em>.app</em></a>
+  <div class="site-spacer"></div>
+  <a href="/" class="site-nav-back">← Tutorials</a>
+</nav>
+<div class="site-backdrop" id="sBackdrop"></div>
+<div class="site-drawer" id="sDrawer">
+  <div class="drawer-handle-wrap"><div class="drawer-handle"></div></div>
+  <div class="drawer-sl">Navigation</div>
+  <a href="/" class="drawer-a"><span class="ico"><img src="/icons/home.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Home"></span>Home</a>
+  <a href="/#tutorials" class="drawer-a"><span class="ico"><img src="/icons/tutorials.png" alt="Tutorials" style="width:28px;height:28px;border-radius:6px;display:block"></span>Tutorials</a>
+  <div class="drawer-sl"><img src="/icons/free-tools.png" style="width:16px;height:16px;border-radius:3px;vertical-align:middle;margin-right:6px">Free Tools</div>
+  <a href="/watermark" class="drawer-a"><span class="ico"><img src="/icons/watermark.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Watermark"></span>Watermark Tool</a>
+  <a href="/video-splitter" class="drawer-a"><span class="ico"><img src="/icons/video-splitter.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Video Splitter"></span>Video Splitter</a>
+  <a href="/frame-extractor" class="drawer-a"><span class="ico"><img src="/icons/frame-extractor.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Frame Extractor"></span>Frame Extractor</a>
+  <a href="/audio-editor" class="drawer-a"><span class="ico"><img src="/icons/audio-editor.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Audio Editor"></span>Audio Editor</a>
+  <a href="/audio-converter" class="drawer-a"><span class="ico"><img src="/icons/audio-converter.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Audio Converter"></span>Audio Converter</a>
+  <div class="drawer-sl">AI Generation</div>
+  <a href="/video-flipper" class="drawer-a"><span class="ico"><img src="/icons/video-flipper.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Batch Flipper"></span>Batch Video Flipper</a>
+  <a href="/ai-studio" class="drawer-a"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg></span>AI Studio</a>
+  <a href="/motion-control" class="drawer-a"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/><path d="M18 12l3 3-3 3"/></svg></span>Motion Control</a>
+  <div class="drawer-sl">Follow Us</div>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="#E1306C" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="#E1306C" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="#E1306C"/></svg></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.17 8.17 0 004.78 1.52V7.1a4.85 4.85 0 01-1.01-.41z" fill="white"/></svg></span>TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24"><path d="M23.5 6.19a3 3 0 00-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 00.5 6.19 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.81 3 3 0 002.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 002.12-2.12A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.81z" fill="#FF0000"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="white"/></svg></span>YouTube</a>
+  <a href="https://x.com/Back2LifeAI" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="white"/></svg></span>X / Twitter</a>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-cta">Follow on Instagram</a>
+</div>
+
+<!-- HERO IMAGE -->
+<div style="width:100%;background:#1a0505;overflow:hidden;margin-top:56px;border-bottom:1px solid rgba(255,68,136,0.2)">
+  <img src="/img/tut02-character-sheet.jpg?v=1" alt="Falling to Earth — Character Sheet" style="width:100%;display:block;max-height:340px;object-fit:cover;object-position:center 15%">
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="position:relative;z-index:1">
+    <div class="brand-tag">BACK2LIFE.APP TUTORIAL</div>
+    <h1>Falling to Earth &<br><span>Morphing to Superheroes</span></h1>
+    <p class="hero-sub">Create a cinematic AI video where your character plummets from the sky, slams into a ruined temple, and transforms into a white-winged angel warrior — alongside a battle-lion — using Seedance 2.0</p>
+    <div class="hero-meta">
+      <div class="meta-pill">Tool: <span>Seedance 2.0 Fast</span></div>
+      <div class="meta-pill">Quality: <span>480p · 16:9</span></div>
+      <div class="meta-pill">Difficulty: <span>Intermediate</span></div>
+      <div class="meta-pill">Time: <span>~20 mins</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SOCIAL BAR -->
+<div class="social-bar">
+  <span class="social-label">Follow</span>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="social-link ig">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg>
+    Instagram
+  </a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="social-link tt">
+    <svg width="14" height="14" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.17 8.17 0 004.78 1.52V7.1a4.85 4.85 0 01-1.01-.41z" fill="currentColor"/></svg>
+    TikTok
+  </a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="social-link yt">
+    <svg width="14" height="14" viewBox="0 0 24 24"><path d="M23.5 6.19a3 3 0 00-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 00.5 6.19 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.81 3 3 0 002.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 002.12-2.12A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.81z" fill="currentColor"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="white"/></svg>
+    YouTube
+  </a>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+  <!-- WHAT YOU'LL CREATE -->
+  <div class="overview-box">
+    <h2>What You'll Create</h2>
+    <p style="color:#ccc;font-size:15px;margin-bottom:20px">A single continuous unbroken cinematic shot — no cuts, no edits, no angle changes. Your character falls screaming from the sky clutching a kitten, slams into a ruined marble temple, rises to examine a glowing crystal, and transforms into a white-winged angel warrior while the kitten simultaneously morphs into a massive battle-lion beside him.</p>
+    <div class="overview-grid">
+      <div class="overview-item"><span class="dot">▸</span><span>Nano Banana Pro character sheet from a selfie</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>Character reference upload to Seedance 2.0</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>Single-shot cinematic epic prompt engineering</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>Dual simultaneous transformation sequence</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>Dynamic orbiting camera with zero cuts</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>Full orchestral audio direction in the prompt</span></div>
+    </div>
+  </div>
+
+  <!-- TOOLS NEEDED -->
+  <div class="tools-row">
+    <div class="tool-card">
+      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff4488" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></div>
+      <div class="tool-name">Nano Banana Pro</div>
+      <div class="tool-desc">Higgsfield.ai — free tier available</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff4488" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.889L15 14"/><rect x="1" y="6" width="15" height="12" rx="2"/></svg></div>
+      <div class="tool-name">Seedance 2.0 Fast</div>
+      <div class="tool-desc">Higgsfield.ai — 480p 16:9</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff4488" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      <div class="tool-name">Your Selfie</div>
+      <div class="tool-desc">Clear front-facing photo — good lighting</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff4488" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+      <div class="tool-name">Kitten Photo</div>
+      <div class="tool-desc">Optional — or describe your own animal</div>
+    </div>
+  </div>
+
+  <!-- EXAMPLE OUTPUT -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number" style="font-size:14px;font-weight:800">OUT</div>
+      <div class="step-title-block">
+        <h2>Example Output</h2>
+        <p>The AI-generated video created with this exact prompt and character reference</p>
+      </div>
+    </div>
+    <div class="media-block">
+      <div class="media-label">Generated Video — Seedance 2.0 Fast · 480p · 16:9</div>
+      <div class="video-wrap" style="border-radius:0;border:none">
+        <iframe src="https://www.youtube.com/embed/8vWEVLtCbaY?rel=0&modestbranding=1" allowfullscreen></iframe>
+      </div>
+      <div class="media-caption">Generated with Seedance 2.0 Fast at 480p 16:9 using the prompt and character reference below. One continuous unbroken shot — no editing required.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 1 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">1</div>
+      <div class="step-title-block">
+        <h2>Create Your Character Sheet</h2>
+        <p>Use Nano Banana Pro in Higgsfield to generate a multi-angle reference sheet from a selfie</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>Go to <strong>Higgsfield.ai</strong> and tap <strong>Create Image</strong>. Select the <strong>Nano Banana Pro</strong> model.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>Upload a <strong>clear, well-lit selfie</strong> as your reference image. Front-facing works best — avoid sunglasses or heavy shadows.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">3</span>
+      <p>Use the prompt below to generate a full <strong>four-angle character sheet with face closeup</strong>. This is your identity reference for the video generation.</p>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Prompt — Step 1: Character Sheet</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>Character reference sheet, white background, four views of the same man: front facing, three-quarter left, back view, three-quarter right — plus one large face closeup portrait on the right side. Battle-worn middle-aged man, silver cropped hair, grey stubble beard, olive green casual shirt, dark jeans, white sneakers. Clean product photography lighting. Turnaround sheet style.</pre>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>Pro tip:</strong> Enable <strong>Unlimited mode</strong> and <strong>2K quality</strong> in Nano Banana Pro for the sharpest character sheet. The more detail in this reference, the better Seedance 2.0 will reproduce your face in the video.</p>
+    </div>
+
+    <!-- Character sheet image -->
+    <div class="char-sheet">
+      <div class="media-label">Example Character Sheet — Generated with Nano Banana Pro</div>
+      <img src="/img/tut02-character-sheet.jpg?v=1" alt="Battle-worn middle-aged man character sheet — four angles plus face closeup">
+      <div class="media-caption">Four-angle turnaround plus face closeup. This exact image was used as the character reference in Step 3.</div>
+    </div>
+
+    <div class="instruction clearfix" style="margin-top:24px">
+      <span class="instruction-num">4</span>
+      <p><strong>Download the character sheet</strong> once you're happy with the result. You'll upload this in Step 3 as your Seedance reference image.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 2 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">2</div>
+      <div class="step-title-block">
+        <h2>Prepare Your Animal Reference</h2>
+        <p>Optional but recommended — a photo of the animal you want to transform into a battle creature</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>Find or take a <strong>clear photo of your chosen animal</strong>. In this example we used a fluffy grey-and-white Persian/Exotic Shorthair kitten with a flat face.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>The animal's <strong>colouring and markings</strong> will be preserved in the battle-creature transformation — so a distinctive-looking animal makes for a more striking result.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">3</span>
+      <p>You can also <strong>skip the photo</strong> and describe the animal purely in the prompt — Seedance will generate it from your description.</p>
+    </div>
+
+    <div class="media-row">
+      <div class="media-block" style="margin:0">
+        <div class="media-label">The Kitten — Before Transformation</div>
+        <img src="/img/tut02-kitten.jpg?v=1" alt="Fluffy grey-and-white Persian kitten with flat face" style="width:100%;display:block;aspect-ratio:3/4;object-fit:cover">
+        <div class="media-caption">Grey tabby markings on top, white chest and face — a Persian/Exotic Shorthair with a flat face. These exact markings were described in the prompt and carried into the battle-lion transformation.</div>
+      </div>
+      <div style="background:#111;border:1px solid #222;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:32px;text-align:center;gap:16px">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ff4488" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        <p style="color:#555;font-size:13px;line-height:1.6">The same colouring — grey tabby on top, white underneath — is carried across into the battle-lion form in the video</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 3 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">3</div>
+      <div class="step-title-block">
+        <h2>Set Up Seedance 2.0</h2>
+        <p>Upload your character sheet reference and configure the generation settings</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>In <strong>Higgsfield.ai</strong>, tap <strong>Create Video</strong> and select <strong>Seedance 2.0 Fast</strong>.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>Tap the <strong>image upload / reference button</strong> and upload your <strong>character sheet from Step 1</strong>. Set the role to <strong>Reference Image</strong> or <strong>Omni</strong>.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">3</span>
+      <p>Configure your generation settings using the table below before pasting the prompt.</p>
+    </div>
+
+    <table class="settings-table">
+      <thead>
+        <tr><th>Setting</th><th>Value</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Model</td><td><span class="val">Seedance 2.0 Fast</span></td><td>Optimised for cinematic motion and character consistency</td></tr>
+        <tr><td>Resolution</td><td><span class="val">480p</span></td><td>Fast generation — ideal for testing and iterating</td></tr>
+        <tr><td>Aspect Ratio</td><td><span class="val">16:9</span></td><td>Cinematic widescreen format</td></tr>
+        <tr><td>Reference Role</td><td><span class="val">Omni / Reference Image</span></td><td>Locks the character's face and clothing across all frames</td></tr>
+        <tr><td>Audio</td><td><span class="val">Enabled</span></td><td>The prompt includes full audio direction — enable for best results</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <p><strong>Important:</strong> This is a single continuous shot prompt — no cuts or edits. Do not trim or edit the output. The prompt is engineered to tell Seedance 2.0 exactly how the camera moves, so what you get is the final video.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 4 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">4</div>
+      <div class="step-title-block">
+        <h2>Paste the Prompt & Generate</h2>
+        <p>The full cinematic prompt — copy exactly as written for best results</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>Copy the full prompt below and paste it into the Seedance 2.0 prompt field. <strong>Do not shorten or paraphrase it</strong> — the length and specificity is intentional.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>Replace <strong>"the fluffy grey-and-white flat-faced Persian kitten"</strong> with your own animal description if you're using a different creature.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">3</span>
+      <p>Tap <strong>Generate</strong>. At 480p Fast the generation typically takes <strong>2–4 minutes</strong>.</p>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Full Seedance 2.0 Prompt — Paste Exactly As Written</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>ONE single continuous unbroken camera shot — zero cuts, zero edits, zero angle changes. The camera floats, orbits, pushes, and pulls dynamically but never cuts.
+
+The camera opens high in the sky looking down as the man falls backwards through the air screaming, legs kicking wildly, clutching the fluffy grey-and-white flat-faced Persian kitten tightly to his chest — casual olive green shirt and dark jeans. The ruined white marble temple rushes up far below. The camera falls with him tracking the descent until he slams into the temple floor with a thunderous shockwave explosion of stone dust and debris, rolling hard across the ground protecting the cat. The camera floats down and around him as he rises into a half-kneeling position — one knee on the ground, one foot flat — cat tucked under his left arm, right hand raising a glowing golden crystal shard to eye level. The camera slowly pushes in toward his face keeping the cat fully visible in frame beside him as he examines the crystal. Both the man and the cat slowly turn their heads toward each other. He smirks and says: Ok, are you ready? The camera holds this two-shot — both faces visible — as he turns back and grips the crystal with his fist. The camera pushes closer as his eyes ignite with blazing solid gold light, crystal light blazing between his clenched fingers. A sonic boom shockwave of energy detonates outward in a ring. The camera pulls back wide in a smooth continuous arc keeping both man and cat in frame simultaneously as white-and-gold angel plate armor snaps onto the man piece by piece with crackling energy — chest plate slamming on, shoulders locking in, gauntlets clicking — while at the exact same time beside him the fluffy grey-and-white kitten on the ground begins to pulse with golden light and rapidly grow and morph, fur expanding, body stretching, flat face widening into a massive mean powerful battle-lion with the same grey tabby and white coloring — both transformations happening together in the same continuous frame. The camera orbits around them both as the man screams, massive white feathered wings ripping from his back unfurling wide, and he draws two glowing golden swords. The battle-lion beside him throws back its huge grey-and-white head and roars, shaking the broken columns. The camera sweeps low and accelerates forward as both man and lion charge directly at the lens together, a blinding explosion of golden energy and white light obliterating the frame.
+
+Setting: Colossal ruined white marble temple, cracked columns, ancient stone carvings, golden god-rays, warm amber light throughout.
+
+Audio: Wind rush and screaming on the fall, thunderous impact, stone dust settling, soft tense silence as he examines the crystal, deep bass pulse as the crystal activates, crackling energy building, sonic boom detonation, metallic armor-snap impacts one by one, lion transformation roar building underneath, full orchestral swell, wings ripping sound, two sword draws, lion full roar shaking the air, choir hit, epic percussion as they charge, massive energy explosion finale.</pre>
+    </div>
+
+    <div class="callout">
+      <span class="callout-icon">💬</span>
+      <p><strong>The dialogue line</strong> "Ok, are you ready?" has been written without special characters or capitals as required by Seedance 2.0 for best speech generation. Do not add punctuation marks around it.</p>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">🎬</span>
+      <p><strong>Why so long?</strong> Seedance 2.0 reads the entire prompt before generating. The more specific your camera directions, action sequence, and audio cues, the more cinematic the result. Short prompts produce generic outputs — long, detailed prompts produce scenes like this.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 5 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">5</div>
+      <div class="step-title-block">
+        <h2>Download & Share</h2>
+        <p>No editing needed — what you get is the final video</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>Once generation completes, <strong>preview the video</strong> in Higgsfield. If the result isn't quite right, try regenerating — results vary between runs. The prompt is designed to give you the best odds of a strong output.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>Tap <strong>Download</strong> to save the MP4. At 480p this is a small file — ideal for <strong>TikTok, Instagram Reels, and YouTube Shorts</strong>.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">3</span>
+      <p>Want a higher quality version? Re-run the same prompt in <strong>Seedance 2.0 Fast at 1080p</strong> once you're happy with the composition.</p>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">🚀</span>
+      <p><strong>Posting tip:</strong> Use the hook <strong>"I told Seedance 2.0 to make me a superhero"</strong> or <strong>"AI turned my cat into a battle-lion"</strong> for maximum engagement. The kitten transformation moment is the viral hook — make sure it's in the first 3 seconds of your cut.</p>
+    </div>
+
+    <!-- Storyboard of what happens in the video -->
+    <div style="margin-top:32px">
+      <p style="font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ff4488;margin-bottom:16px">Scene Breakdown</p>
+      <div class="storyboard-grid">
+        <div class="sb-card">
+          <div class="sb-img-wrap">
+            <span class="sb-timecode">00:00</span>
+            <div class="sb-scene-label">Sky — falling backwards</div>
+          </div>
+          <div class="sb-info">
+            <div class="sb-title">The Fall</div>
+            <div class="sb-caption">Camera opens high in the sky. Man falls backwards screaming, clutching the kitten to his chest. Ruined marble temple far below.</div>
+          </div>
+        </div>
+        <div class="sb-card">
+          <div class="sb-img-wrap">
+            <span class="sb-timecode">00:03</span>
+            <div class="sb-scene-label">Temple floor impact</div>
+          </div>
+          <div class="sb-info">
+            <div class="sb-title">The Impact</div>
+            <div class="sb-caption">He slams into the temple floor — thunderous shockwave, stone dust explosion. Rolls protecting the cat.</div>
+          </div>
+        </div>
+        <div class="sb-card">
+          <div class="sb-img-wrap">
+            <span class="sb-timecode">00:06</span>
+            <div class="sb-scene-label">Half-kneeling — crystal raised</div>
+          </div>
+          <div class="sb-info">
+            <div class="sb-title">The Crystal</div>
+            <div class="sb-caption">Rises to half-kneel. Cat under his left arm. Right hand raises a glowing golden crystal shard to eye level. Both turn and look at each other.</div>
+          </div>
+        </div>
+        <div class="sb-card">
+          <div class="sb-img-wrap">
+            <span class="sb-timecode">00:09</span>
+            <div class="sb-scene-label">Eyes ignite — sonic boom</div>
+          </div>
+          <div class="sb-info">
+            <div class="sb-title">The Activation</div>
+            <div class="sb-caption">Eyes blaze gold. Crystal light blazes between clenched fingers. Sonic boom shockwave detonates outward in a ring.</div>
+          </div>
+        </div>
+        <div class="sb-card">
+          <div class="sb-img-wrap">
+            <span class="sb-timecode">00:12</span>
+            <div class="sb-scene-label">Dual transformation</div>
+          </div>
+          <div class="sb-info">
+            <div class="sb-title">The Transformation</div>
+            <div class="sb-caption">White-and-gold angel armor snaps on piece by piece. Simultaneously the kitten morphs into a massive grey-and-white battle-lion — both transformations in the same frame.</div>
+          </div>
+        </div>
+        <div class="sb-card">
+          <div class="sb-img-wrap">
+            <span class="sb-timecode">00:16</span>
+            <div class="sb-scene-label">Wings unfurl — charge</div>
+          </div>
+          <div class="sb-info">
+            <div class="sb-title">The Charge</div>
+            <div class="sb-caption">Massive white feathered wings rip from his back. Two golden swords drawn. Battle-lion roars. Both charge directly at the lens — blinding gold explosion obliterates the frame.</div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:#444;text-align:center;margin-top:12px">Scene storyboard — add your own screenshots from the generated video here</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- VARIATIONS -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number" style="font-size:14px;font-weight:800">+</div>
+      <div class="step-title-block">
+        <h2>Variations & Ideas</h2>
+        <p>Ways to remix this concept with different characters and settings</p>
+      </div>
+    </div>
+
+    <table class="settings-table">
+      <thead><tr><th>Swap This</th><th>For This</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td>Persian kitten</td><td>Golden retriever puppy</td><td>Battle-wolf transformation instead of lion</td></tr>
+        <tr><td>Persian kitten</td><td>Black cat</td><td>Shadow panther — darker energy palette</td></tr>
+        <tr><td>Angel plate armor</td><td>Dark obsidian demon armor</td><td>Villain origin story — swap to red/black energy</td></tr>
+        <tr><td>White feathered wings</td><td>Mechanical metal wings</td><td>Sci-fi mech suit transformation</td></tr>
+        <tr><td>Ruined white marble temple</td><td>Destroyed futuristic city</td><td>Cyberpunk superhero origin</td></tr>
+        <tr><td>Golden crystal shard</td><td>Glowing blue orb</td><td>Ice/water elemental transformation</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FINAL CTA -->
+  <div class="final-cta">
+    <h2>Share Your <span>Creation</span></h2>
+    <p>Generated your superhero origin story? Tag us — we repost the best results across all our channels.</p>
+    <div class="social-grid">
+      <a href="https://www.instagram.com/back2life.ai" target="_blank" class="cta-social">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg>
+        @back2life.ai
+      </a>
+      <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="cta-social">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.17 8.17 0 004.78 1.52V7.1a4.85 4.85 0 01-1.01-.41z" fill="currentColor"/></svg>
+        @back2life.ai
+      </a>
+      <a href="https://youtube.com/@back2lifeai" target="_blank" class="cta-social">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M23.5 6.19a3 3 0 00-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 00.5 6.19 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.81 3 3 0 002.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 002.12-2.12A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.81z" fill="currentColor"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="white"/></svg>
+        YouTube
+      </a>
+      <a href="https://x.com/Back2LifeAI" target="_blank" class="cta-social">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="currentColor"/></svg>
+        @Back2LifeAI
+      </a>
+    </div>
+    <div style="margin-top:28px">
+      <a href="/" style="display:inline-block;color:#ff4488;font-size:14px;font-weight:600;text-decoration:none;border:1px solid rgba(255,68,136,0.3);padding:10px 24px;border-radius:8px;transition:all .2s">← Back to all tutorials</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Burger menu
+const burger=document.getElementById('sBurger'),backdrop=document.getElementById('sBackdrop'),drawer=document.getElementById('sDrawer');
+function openDrawer(){burger.classList.add('open');backdrop.classList.add('open');drawer.classList.add('open');document.body.style.overflow='hidden'}
+function closeDrawer(){burger.classList.remove('open');backdrop.classList.remove('open');drawer.classList.remove('open');document.body.style.overflow=''}
+burger.addEventListener('click',()=>drawer.classList.contains('open')?closeDrawer():openDrawer());
+backdrop.addEventListener('click',closeDrawer);
+
+// Copy buttons
+function copyPrompt(btn){
+  const pre=btn.closest('.prompt-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent.trim()).then(()=>{
+    const orig=btn.innerHTML;
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Copied!';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.innerHTML=orig;btn.classList.remove('copied')},2000);
+  });
+}
+</script>
+</body>
+</html>
