@@ -115,7 +115,7 @@ main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;overflow-y:
 .wm-upload-area{border:1.5px dashed rgba(0,255,136,0.2);border-radius:var(--radius-sm);padding:22px;text-align:center;cursor:pointer;transition:all var(--transition);position:relative;background:rgba(0,255,136,0.02)}
 .wm-upload-area:active{border-color:var(--green);background:var(--green-dim)}
 .wm-upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.wm-upload-icon{font-size:28px;margin-bottom:6px}
+.wm-upload-icon{display:flex;align-items:center;justify-content:center;margin-bottom:6px}
 .wm-upload-area strong{font-size:14px;color:var(--text);display:block;margin-bottom:4px;font-weight:700}
 .wm-upload-area p{font-size:12px;color:var(--text3)}
 .wm-preview-box{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);padding:12px;margin-top:10px}
@@ -185,8 +185,8 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
     <div class="upload-sub">Supports JPG, PNG, MP4, MOV, WEBM<br>Batch upload 1–100+ files</div>
     <div class="chips"><span class="chip">JPG</span><span class="chip">PNG</span><span class="chip">MP4</span><span class="chip">MOV</span><span class="chip">WEBM</span></div>
     <div style="display:flex;gap:10px;width:100%;margin-top:4px">
-      <button class="upload-cta" type="button" id="chooseVideosBtn" style="flex:1;background:linear-gradient(135deg,var(--green2),var(--green))">🎬 Videos</button>
-      <button class="upload-cta" type="button" id="choosePhotosBtn" style="flex:1;background:rgba(255,255,255,0.08);color:var(--text);box-shadow:none;border:1px solid rgba(255,255,255,0.12)">🖼️ Photos</button>
+      <button class="upload-cta" type="button" id="chooseVideosBtn" style="flex:1;background:linear-gradient(135deg,var(--green2),var(--green));display:flex;align-items:center;justify-content:center;gap:7px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="15" height="16" rx="2"/><path d="m17 8 5-3v14l-5-3"/></svg>Videos</button>
+      <button class="upload-cta" type="button" id="choosePhotosBtn" style="flex:1;background:rgba(255,255,255,0.08);color:var(--text);box-shadow:none;border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;gap:7px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>Photos</button>
     </div>
     <input type="file" id="fileInput" multiple accept="video/*,image/*" style="display:none">
     <input type="file" id="videoInput" multiple accept="video/*" style="display:none">
@@ -221,7 +221,7 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
     <div class="sect-label">Watermark 1 — Primary</div>
     <div class="wm-upload-area" id="wm1Upload">
       <input type="file" id="wm1Input" accept="image/*">
-      <div class="wm-upload-icon">🖼️</div>
+      <div class="wm-upload-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></div>
       <strong>Upload Logo / Image</strong>
       <p>PNG with transparency recommended</p>
     </div>
@@ -268,7 +268,7 @@ input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.15)}
     <div class="sect-label">Watermark 2 — Secondary <span style="color:var(--green);font-size:9px;margin-left:6px;font-weight:800">OPTIONAL</span></div>
     <div class="wm-upload-area" id="wm2Upload">
       <input type="file" id="wm2Input" accept="image/*">
-      <div class="wm-upload-icon">➕</div>
+      <div class="wm-upload-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div>
       <strong>Upload Second Logo</strong>
       <p>Shown alongside Watermark 1</p>
     </div>
@@ -458,7 +458,11 @@ function renderGrid(){
     wrap.appendChild(overlay);card.appendChild(wrap);
     const strip=document.createElement('div');strip.className='pos-strip';
     ['tc','mc','as'].forEach(p=>{
-      const pb=document.createElement('button');pb.className='pos-btn'+(item.pos===p?' active':'');pb.textContent=p==='tc'?'▲ Top':p==='mc'?'● Mid':'⬆ Social';
+      const pb=document.createElement('button');pb.className='pos-btn'+(item.pos===p?' active':'');
+      if(p==='tc'){pb.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Top';}
+      else if(p==='mc'){pb.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="4"/></svg>Mid';}
+      else{pb.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Social';}
+      pb.style.display='flex';pb.style.alignItems='center';pb.style.gap='4px';
       pb.addEventListener('click',e=>{e.stopPropagation();state.files[idx].pos=p;renderGrid()});strip.appendChild(pb);
     });
     card.appendChild(strip);mediaGrid.appendChild(card);
