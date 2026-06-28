@@ -50,7 +50,7 @@ main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;padding-bot
 .upload-zone{border:2px dashed rgba(0,255,136,0.18);border-radius:var(--radius);background:radial-gradient(ellipse at 50% 0%,rgba(0,255,136,0.04) 0%,transparent 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:44px 24px;cursor:pointer;text-align:center;transition:all var(--transition);position:relative}
 .upload-zone.drag-over{border-color:rgba(0,255,136,0.4);background:var(--green-dim)}
 .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.upload-icon{font-size:48px;filter:drop-shadow(0 0 20px rgba(0,255,136,0.3));animation:pulse 2.4s ease-in-out infinite}
+.upload-icon{display:flex;align-items:center;justify-content:center;animation:pulse 2.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 .upload-title{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-0.3px}
 .upload-sub{font-size:13px;color:var(--text3);line-height:1.5}
@@ -174,7 +174,7 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
 
   <!-- UPLOAD -->
   <div class="upload-zone" id="dropzone">
-    <div class="upload-icon">✂️</div>
+    <div class="upload-icon"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 12px rgba(0,255,136,0.4))"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg></div>
     <div class="upload-title">Drop a video to split</div>
     <div class="upload-sub">Slice into 10s, 15s, 20s, 30s or 1-min clips<br>Perfect for Stories, Reels &amp; TikTok</div>
     <div class="chips"><span class="chip">MP4</span><span class="chip">MOV</span><span class="chip">WebM</span><span class="chip">MKV</span></div>
@@ -249,7 +249,7 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
   <!-- ACTIONS -->
   <div class="action-row" id="actionRow">
     <button class="btn-ghost" id="resetBtn">↺ Reset</button>
-    <button class="btn-main" id="splitBtn">✂️ Split &amp; Download</button>
+    <button class="btn-main" id="splitBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>Split &amp; Download</button>
   </div>
 
 </main>
