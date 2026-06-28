@@ -15,7 +15,7 @@
   --green-glow:0 0 24px rgba(0,255,136,0.25);--text:#f0f0f0;--text2:#aaa;--text3:#555;--red:#ff4444;
   --radius:18px;--radius-sm:12px;--radius-xs:8px;--pill:999px;--bar-h:60px;--transition:0.2s cubic-bezier(0.4,0,0.2,1);
 }
-html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden;touch-action:manipulation;overflow-y:auto;}
+html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden;touch-action:manipulation;overflow-y:auto;overscroll-behavior-y:none;}
 
 /* TOPBAR */
 .topbar{display:flex;align-items:center;padding:0 16px;height:var(--bar-h);background:rgba(8,8,8,0.92);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;gap:10px;position:sticky}
@@ -633,15 +633,17 @@ renderGrid();
     startPct = sheet.classList.contains('full') ? 0 : 15;
     dragging = true;
     sheet.style.transition = 'none';
-  }, {passive:true});
+    e.preventDefault(); // block pull-to-refresh from drag handle
+  }, {passive:false});
 
-  // Stop scroll touches inside the sheet body from reaching document handlers
+  // passive:false so we can preventDefault and block Chrome pull-to-refresh
   sheet.addEventListener('touchmove', function(e) {
     if (!dragging) { e.stopPropagation(); return; }
+    e.preventDefault(); // critical - stops pull-to-refresh during sheet drag
     var dy = e.touches[0].clientY - startY;
     var pct = Math.max(0, Math.min(100, startPct + (dy / window.innerHeight * 100)));
     sheet.style.transform = 'translateY(' + pct + '%)';
-  }, {passive:true});
+  }, {passive:false});
 
   sheet.addEventListener('touchend', function(e) {
     if (!dragging) return;
