@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Watermark Tool — Back2Life.app</title>
 <meta name="description" content="Batch watermark images & videos. Dual logos, 10 positions, TikTok/Reels safe zone. Free & browser-based.">
 <style>
@@ -98,8 +98,8 @@ main{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;overflow-y:
 .sheet-overlay.open{opacity:1;pointer-events:all}
 
 /* BOTTOM SHEET */
-.bottom-sheet{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,12,0.97);backdrop-filter:blur(30px) saturate(200%);border-top:1px solid var(--border2);border-radius:26px 26px 0 0;z-index:101;padding:0 0 env(safe-area-inset-bottom,20px);transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);max-height:92dvh;overflow-y:auto;will-change:transform}
-.bottom-sheet.open{transform:translateY(50%)}
+.bottom-sheet{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,12,0.97);backdrop-filter:blur(30px) saturate(200%);border-top:1px solid var(--border2);border-radius:26px 26px 0 0;z-index:101;padding:0 0 calc(env(safe-area-inset-bottom,0px) + 32px);transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);max-height:92dvh;overflow-y:auto;will-change:transform}
+.bottom-sheet.open{transform:translateY(15%)}
 .bottom-sheet.open.full{transform:translateY(0)}
 .sheet-handle{width:36px;height:4px;background:rgba(255,255,255,0.12);border-radius:var(--pill);margin:14px auto 6px}
 .sheet-header{padding:6px 20px 16px;display:flex;align-items:center;justify-content:space-between}
@@ -475,21 +475,22 @@ processBtn.addEventListener('click',processAll);
 async function processAll(){
   if(!state.wm1){showToast('Upload a watermark first in Settings');return}
   if(state.files.length===0){showToast('No files to process');return}
-  const imageFiles=state.files.filter(f=>f.type==='image');
-  const videoFiles=state.files.filter(f=>f.type==='video');
-  if(videoFiles.length>0)showToast('⚠️ '+videoFiles.length+' video'+(videoFiles.length>1?'s':'')+' skipped — videos need server processing');
-  if(imageFiles.length===0){showToast('No images to process');return}
+  const allFiles=state.files;
   progressWrap.classList.add('visible');processBtn.disabled=true;
   await loadWmImages();
-  for(let i=0;i<imageFiles.length;i++){
-    progressLabel.textContent='Processing '+(i+1)+' of '+imageFiles.length+'…';
-    progressFill.style.width=((i/imageFiles.length)*100)+'%';
-    await processImage(imageFiles[i]);await new Promise(r=>setTimeout(r,30));
+  for(let i=0;i<allFiles.length;i++){
+    const item=allFiles[i];
+    progressLabel.textContent='Processing '+(i+1)+' of '+allFiles.length+'…';
+    progressFill.style.width=((i/allFiles.length)*100)+'%';
+    if(item.type==='image'){await processImage(item);}
+    else if(item.type==='video'){await processVideo(item);}
+    await new Promise(r=>setTimeout(r,30));
   }
   progressFill.style.width='100%';
-  progressLabel.textContent='✓ Done — '+imageFiles.length+' image'+(imageFiles.length>1?'s':'')+' saved';
+  const total=allFiles.length;
+  progressLabel.textContent='✓ Done — '+total+' file'+(total>1?'s':'')+' saved';
   setTimeout(()=>{progressWrap.classList.remove('visible');processBtn.disabled=false},3000);
-  showToast('✓ '+imageFiles.length+' image'+(imageFiles.length>1?'s':'')+' watermarked & downloaded');
+  showToast('✓ '+total+' file'+(total>1?'s':'')+' watermarked & downloaded');
 }
 
 function loadWmImages(){
@@ -500,6 +501,17 @@ function loadWmImages(){
   });return Promise.all(p);
 }
 
+function drawWatermarks(ctx,W,H,item){
+  [state.wm1,state.wm2].forEach((wm,wmIdx)=>{
+    if(!wm||!wm.imgEl)return;
+    const pos=wmIdx===0?(item.pos||wm.pos):wm.pos;
+    const wmW=Math.round(W*wm.size);const wmH=Math.round(wm.imgEl.naturalHeight*(wmW/wm.imgEl.naturalWidth));
+    const pad=Math.round(W*0.03);let x,y;
+    switch(pos){case'tl':x=pad;y=pad;break;case'tc':x=(W-wmW)/2;y=pad;break;case'tr':x=W-wmW-pad;y=pad;break;case'ml':x=pad;y=(H-wmH)/2;break;case'mc':x=(W-wmW)/2;y=(H-wmH)/2;break;case'mr':x=W-wmW-pad;y=(H-wmH)/2;break;case'bl':x=pad;y=H-wmH-pad;break;case'bc':x=(W-wmW)/2;y=H-wmH-pad;break;case'br':x=W-wmW-pad;y=H-wmH-pad;break;case'as':x=(W-wmW)/2;y=H-(H*0.22)-wmH/2;break;default:x=(W-wmW)/2;y=(H-wmH)/2}
+    ctx.globalAlpha=wm.opacity;ctx.drawImage(wm.imgEl,x,y,wmW,wmH);ctx.globalAlpha=1;
+  });
+}
+
 async function processImage(item){
   return new Promise(resolve=>{
     const img=new Image();
@@ -507,18 +519,57 @@ async function processImage(item){
       const W=img.naturalWidth,H=img.naturalHeight;
       const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
       const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,W,H);
-      [state.wm1,state.wm2].forEach((wm,wmIdx)=>{
-        if(!wm||!wm.imgEl)return;
-        const pos=wmIdx===0?(item.pos||wm.pos):wm.pos;
-        const wmW=Math.round(W*wm.size);const wmH=Math.round(wm.imgEl.naturalHeight*(wmW/wm.imgEl.naturalWidth));
-        const pad=Math.round(W*0.03);let x,y;
-        switch(pos){case'tl':x=pad;y=pad;break;case'tc':x=(W-wmW)/2;y=pad;break;case'tr':x=W-wmW-pad;y=pad;break;case'ml':x=pad;y=(H-wmH)/2;break;case'mc':x=(W-wmW)/2;y=(H-wmH)/2;break;case'mr':x=W-wmW-pad;y=(H-wmH)/2;break;case'bl':x=pad;y=H-wmH-pad;break;case'bc':x=(W-wmW)/2;y=H-wmH-pad;break;case'br':x=W-wmW-pad;y=H-wmH-pad;break;case'as':x=(W-wmW)/2;y=H-(H*0.22)-wmH/2;break;default:x=(W-wmW)/2;y=(H-wmH)/2}
-        ctx.globalAlpha=wm.opacity;ctx.drawImage(wm.imgEl,x,y,wmW,wmH);ctx.globalAlpha=1;
-      });
+      drawWatermarks(ctx,W,H,item);
       canvas.toBlob(blob=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='wm_'+item.file.name.replace(/\.[^.]+$/,'')+'.png';a.click();resolve()},'image/png');
     };img.src=item.url;
   });
 }
+
+async function processVideo(item){
+  return new Promise(resolve=>{
+    const vid=document.createElement('video');
+    vid.muted=true;vid.playsInline=true;vid.crossOrigin='anonymous';
+    vid.onloadedmetadata=()=>{
+      const W=vid.videoWidth,H=vid.videoHeight;
+      const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
+      const ctx=canvas.getContext('2d');
+      let stream;
+      try{stream=canvas.captureStream(0);}catch(e){resolve();return;}
+      // Merge audio if supported
+      let outStream=stream;
+      try{
+        const audioCtx=new AudioContext();
+        const src=audioCtx.createMediaElementSource(vid);
+        const dest=audioCtx.createMediaStreamDestination();
+        src.connect(dest);src.connect(audioCtx.destination);
+        const combined=new MediaStream([...stream.getVideoTracks(),...dest.stream.getAudioTracks()]);
+        outStream=combined;
+      }catch(e){}
+      const mimeType=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')?'video/webm;codecs=vp8,opus':'video/webm';
+      const rec=new MediaRecorder(outStream,{mimeType,videoBitsPerSecond:8000000});
+      const chunks=[];
+      rec.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
+      rec.onstop=()=>{
+        const blob=new Blob(chunks,{type:'video/webm'});
+        const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+        a.download='wm_'+item.file.name.replace(/\.[^.]+$/,'')+'.webm';a.click();resolve();
+      };
+      function renderFrame(){
+        if(vid.paused||vid.ended){rec.stop();return;}
+        ctx.drawImage(vid,0,0,W,H);
+        drawWatermarks(ctx,W,H,item);
+        canvas.captureStream(0).getVideoTracks()[0];
+        requestAnimationFrame(renderFrame);
+      }
+      rec.start();
+      vid.play().then(()=>{renderFrame();});
+      vid.onended=()=>{if(rec.state==='recording')rec.stop();};
+    };
+    vid.src=item.url;
+    vid.load();
+  });
+}
+
 
 function shareTo(platform){
   const url=encodeURIComponent(window.location.href);
