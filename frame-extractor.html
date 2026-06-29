@@ -13,7 +13,7 @@
   --glass:rgba(16,16,16,0.88);--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.13);
   --green:#00ff88;--green2:#00cc66;--green-dim:rgba(0,255,136,0.08);--green-glow:0 0 20px rgba(0,255,136,0.3);
   --text:#f0f0f0;--text2:#aaa;--text3:#555;--red:#ff4444;
-  --radius:18px;--radius-sm:12px;--radius-xs:8px;--pill:999px;--bar-h:60px;--banner-h:90px;--btm-h:200px;--btm-scrub:270px;--btm-rename:310px;--transition:0.2s cubic-bezier(0.4,0,0.2,1);
+  --radius:18px;--radius-sm:12px;--radius-xs:8px;--pill:999px;--bar-h:60px;--banner-h:0px;--btm-h:200px;--btm-scrub:270px;--btm-rename:310px;--transition:0.2s cubic-bezier(0.4,0,0.2,1);
 }
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;touch-action:manipulation}
 
@@ -149,7 +149,7 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
   <a href="/" style="position:absolute;left:50%;transform:translateX(-50%);text-decoration:none;white-space:nowrap"><span style="font-size:17px;font-weight:900;color:#fff;letter-spacing:-0.5px">Back2Life</span><span style="font-size:17px;font-weight:900;color:#00ff88;letter-spacing:-0.5px">.app</span></a>
   <button class="topbar-upload" id="topUploadBtn">+ VIDEO<input type="file" accept="video/*" id="videoInputTop"></button>
 </div>
-<img id="toolBanner" src="/img/banners/frame-extractor-banner.png" alt="Frame Extractor" style="width:100%;display:block;margin-top:var(--bar-h);border-bottom:1px solid rgba(255,255,255,0.06)">
+<img id="toolBanner" src="/img/banners/frame-extractor-banner.png" alt="Frame Extractor" style="width:100%;display:block;margin-top:var(--bar-h);border-bottom:1px solid rgba(255,255,255,0.06);object-fit:cover">
 
 <div class="video-area" id="videoArea">
   <div class="upload-placeholder" id="uploadPlaceholder">
@@ -225,6 +225,17 @@ input[type=range].scrubber:active::-webkit-slider-thumb{transform:scale(1.15)}
 <div class="toast" id="toast"></div>
 
 <script>
+// Measure actual banner height and set CSS variable so video-area top offset is correct
+function updateBannerHeight(){
+  var b=document.getElementById('toolBanner');
+  if(!b||b.style.display==='none')return;
+  var h=b.getBoundingClientRect().height;
+  document.documentElement.style.setProperty('--banner-h', h+'px');
+}
+var _tb=document.getElementById('toolBanner');
+if(_tb){_tb.addEventListener('load',updateBannerHeight);if(_tb.complete)updateBannerHeight();}
+window.addEventListener('resize',updateBannerHeight);
+
 let videoLoaded=false,duration=0,fps=30,frameCount=0,currentFrame=0,mode=null,extractedDataURL=null,originalFileName='frame';
 const menuBtn=document.getElementById('menuBtn'),menuSheet=document.getElementById('menuSheet'),backdrop=document.getElementById('backdrop');
 function openMenu(){menuSheet.classList.add('open');backdrop.classList.add('show');menuBtn.classList.add('open');document.body.style.overflow='hidden'}
