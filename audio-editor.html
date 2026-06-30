@@ -51,7 +51,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 
 /* EDITOR */
 .editor{display:block}
-.track-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;word-break:break-word}
+.track-name-input{display:block;width:100%;font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;background:none;border:none;border-bottom:1px solid transparent;font-family:'Inter',sans-serif;padding:2px 0 4px;outline:none}
+.track-name-input:focus{border-bottom:1px solid var(--green)}
 .track-info{font-size:11px;color:#555;margin-bottom:14px}
 
 /* WAVEFORM */
@@ -158,6 +159,9 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
 .tb-field{flex:1;text-align:center}
 .tb-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--green);margin-bottom:4px}
 .tb-val{font-size:12.5px;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+.tb-input{width:100%;background:none;border:none;border-bottom:1px solid transparent;text-align:center;font-family:'Inter',sans-serif;outline:none;padding:2px 0}
+.tb-input:focus{border-bottom:1px solid var(--green);color:var(--green)}
+.tb-input:disabled{opacity:.4}
 .tb-btn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;color:#aaa;flex-shrink:0}
 .tb-btn[disabled]{opacity:.4;pointer-events:none}
 .tb-play{width:50px;height:50px;background:linear-gradient(135deg,var(--green2),var(--green));box-shadow:0 6px 20px rgba(0,255,136,0.3);flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none}
@@ -191,7 +195,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
   </div>
 
   <div class="editor" id="editor">
-    <div class="track-name" id="trackName" style="display:none">—</div>
+    <input type="text" class="track-name-input" id="trackName" style="display:none" autocorrect="off" spellcheck="false" placeholder="Untitled">
     <div class="track-info" id="trackInfo" style="display:none;margin-bottom:14px">—</div>
 
     <div class="wave-wrap" id="waveWrap" style="display:none">
@@ -265,10 +269,14 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
       </div>
     </div>
 
-    <div class="ctrl-card" id="panelVolSpeed" style="display:none">
-      <div class="ctrl-card-title">Volume &amp; Speed</div>
+    <div class="ctrl-card" id="panelVolume" style="display:none">
+      <div class="ctrl-card-title">Volume</div>
       <div class="ctrl-row"><span class="ctrl-name">Volume</span><span class="ctrl-val" id="volVal">100%</span></div>
       <input type="range" id="volRange" min="0" max="300" value="100">
+    </div>
+
+    <div class="ctrl-card" id="panelSpeed" style="display:none">
+      <div class="ctrl-card-title">Speed</div>
       <div class="ctrl-row"><span class="ctrl-name">Speed</span><span class="ctrl-val" id="spdVal">1.0×</span></div>
       <input type="range" id="spdRange" min="25" max="300" value="100">
     </div>
@@ -327,11 +335,11 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
     </div>
 
     <div class="transport-bar">
-      <div class="tb-field"><div class="tb-label">Start</div><div class="tb-val" id="startVal">00:00.00</div></div>
+      <div class="tb-field"><div class="tb-label">Start</div><input type="text" class="tb-val tb-input" id="startVal" value="00:00.00" inputmode="decimal" autocorrect="off" spellcheck="false" disabled></div>
       <button class="tb-btn" id="skipBackBtn" disabled><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 20L9 12l10-8v16z"/><path d="M5 19V5"/></svg></button>
       <button class="tb-play" id="playBtn" disabled><svg viewBox="0 0 24 24" id="playIcon"><path d="M8 5v14l11-7z"/></svg></button>
       <button class="tb-btn" id="skipFwdBtn" disabled><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4l10 8-10 8V4z"/><path d="M19 5v14"/></svg></button>
-      <div class="tb-field"><div class="tb-label">End</div><div class="tb-val" id="endVal">00:00.00</div></div>
+      <div class="tb-field"><div class="tb-label">End</div><input type="text" class="tb-val tb-input" id="endVal" value="00:00.00" inputmode="decimal" autocorrect="off" spellcheck="false" disabled></div>
     </div>
     <div style="display:none">
       <span id="curTime">0:00</span><span id="totTime">0:00</span><span id="trimTime">0:00</span>
@@ -418,6 +426,7 @@ let reversedBufferCache=null;
 let waveZoom = 1;
 let waveOffset = 0;
 let seekOffset = 0;
+let currentFX = null;
 let playFromPos = 0; // actual start position (0-1 of total duration)
 let exportFormat='mp3', exportBitrate=192;
 
@@ -442,10 +451,10 @@ $('fileInput').addEventListener('change', async e=>{
     $('waveZoomRow').style.display='flex';
     $('trackName').style.display='block';
     $('trackInfo').style.display='block';
-    $('trackName').textContent=file.name;
+    $('trackName').value=fileName;
     $('trackInfo').textContent=`${fmtTime(audioBuffer.duration)} · ${audioBuffer.numberOfChannels===2?'Stereo':'Mono'} · ${Math.round(audioBuffer.sampleRate/1000)}kHz`;
-    $('exportName').value=fileName+'-edited';
-    ['skipBackBtn','playBtn','skipFwdBtn','resetBtn','exportBtn'].forEach(id=>$(id).disabled=false);
+    $('exportName').value=fileName;
+    ['skipBackBtn','playBtn','skipFwdBtn','resetBtn','exportBtn','startVal','endVal'].forEach(id=>$(id).disabled=false);
     document.querySelectorAll('.tool-btn').forEach(b=>b.disabled=false);
     drawWave();
     updateTrimUI();
@@ -632,8 +641,8 @@ function updateTrimUI(){
   if(audioBuffer){
     const trimDur=(trimEnd-trimStart)*audioBuffer.duration;
     $('trimTime').textContent=fmtTime(trimDur);
-    $('startVal').textContent=fmtTimeMs(trimStart*audioBuffer.duration);
-    $('endVal').textContent=fmtTimeMs(trimEnd*audioBuffer.duration);
+    $('startVal').value=fmtTimeMs(trimStart*audioBuffer.duration);
+    $('endVal').value=fmtTimeMs(trimEnd*audioBuffer.duration);
   }
 }
 function setupHandle(handle,isLeft){
@@ -659,7 +668,8 @@ setupHandle($('trimRight'),false);
 // ══ PLAYBACK (preview with current settings) ══
 $('playBtn').addEventListener('click',()=>playing?stopPlayback():startPlayback());
 function startPlayback(){
-  startPlaybackFrom(trimStart);
+  const startPos = (seekOffset>=trimStart && seekOffset<trimEnd) ? seekOffset : trimStart;
+  startPlaybackFrom(startPos);
 }
 function startPlaybackFrom(fromPos){
   if(!audioBuffer)return;
@@ -669,6 +679,7 @@ function startPlaybackFrom(fromPos){
   sourceNode.playbackRate.value=settings.speed;
   gainNode=audioCtx.createGain();
   const fx=buildEffectsChain(audioCtx);
+  currentFX=fx;
   const dur=audioBuffer.duration;
   const trimDur=(trimEnd-trimStart)*dur/settings.speed;
   const now=audioCtx.currentTime;
@@ -697,12 +708,13 @@ function startPlaybackFrom(fromPos){
   startedAt=now;
   playing=true;
   $('playIcon').innerHTML='<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
-  sourceNode.onended=()=>{ if(playing)stopPlayback(); };
+  sourceNode.onended=()=>{ if(playing){ seekOffset=trimStart; stopPlayback(); } };
   requestAnimationFrame(tickPlayhead);
 }
 function stopPlayback(){
   if(sourceNode){try{sourceNode.stop();}catch(e){}}
   playing=false;
+  currentFX=null;
   $('playIcon').innerHTML='<path d="M8 5v14l11-7z"/>';
   $('playhead').style.display='none';
 }
@@ -737,8 +749,8 @@ function tickPlayhead(){
 function bindRange(id,valId,fmt,cb){
   $(id).addEventListener('input',e=>{const v=+e.target.value;$(valId).textContent=fmt(v);cb(v);});
 }
-bindRange('volRange','volVal',v=>v+'%',v=>settings.vol=v/100);
-bindRange('spdRange','spdVal',v=>(v/100).toFixed(2).replace(/0$/,'')+'×',v=>settings.speed=v/100);
+bindRange('volRange','volVal',v=>v+'%',v=>{settings.vol=v/100;applyLiveVolume();});
+bindRange('spdRange','spdVal',v=>(v/100).toFixed(2).replace(/0$/,'')+'×',v=>{settings.speed=v/100;applyLiveSpeed();});
 bindRange('fadeInRange','fadeInVal',v=>(v/10).toFixed(1)+'s',v=>{settings.fadeIn=v/10;if(audioBuffer)drawWave();});
 bindRange('fadeOutRange','fadeOutVal',v=>(v/10).toFixed(1)+'s',v=>{settings.fadeOut=v/10;if(audioBuffer)drawWave();});
 
@@ -761,11 +773,11 @@ function resetEffectControls(){
 }
 
 // ══ EFFECT CONTROLS ══
-bindRange('eqLowRange','eqLowVal',v=>(v/10>0?'+':'')+(v/10).toFixed(1)+' dB',v=>settings.eqLow=v/10);
-bindRange('eqMidRange','eqMidVal',v=>(v/10>0?'+':'')+(v/10).toFixed(1)+' dB',v=>settings.eqMid=v/10);
-bindRange('eqHighRange','eqHighVal',v=>(v/10>0?'+':'')+(v/10).toFixed(1)+' dB',v=>settings.eqHigh=v/10);
-bindRange('hpRange','hpVal',v=>v==0?'Off':v+' Hz',v=>settings.highpass=v);
-bindRange('compRange','compVal',v=>v==0?'Off':v+'%',v=>settings.compAmt=v/100);
+bindRange('eqLowRange','eqLowVal',v=>(v/10>0?'+':'')+(v/10).toFixed(1)+' dB',v=>{settings.eqLow=v/10;applyLiveEffects();});
+bindRange('eqMidRange','eqMidVal',v=>(v/10>0?'+':'')+(v/10).toFixed(1)+' dB',v=>{settings.eqMid=v/10;applyLiveEffects();});
+bindRange('eqHighRange','eqHighVal',v=>(v/10>0?'+':'')+(v/10).toFixed(1)+' dB',v=>{settings.eqHigh=v/10;applyLiveEffects();});
+bindRange('hpRange','hpVal',v=>v==0?'Off':v+' Hz',v=>{settings.highpass=v;applyLiveEffects();});
+bindRange('compRange','compVal',v=>v==0?'Off':v+'%',v=>{settings.compAmt=v/100;applyLiveEffects();});
 bindRange('gateRange','gateVal',v=>v==0?'Off':v+'%',v=>settings.gateAmt=v/100);
 
 $('normalizeBtn').addEventListener('click',()=>{
@@ -784,6 +796,7 @@ $('normalizeBtn').addEventListener('click',()=>{
   $('volRange').value=Math.round(settings.vol*100);
   $('volVal').textContent=Math.round(settings.vol*100)+'%';
   $('normStatus').textContent='Applied ('+gainMult.toFixed(2)+'×)';
+  applyLiveVolume();
   toast('✓ Normalized — volume set to '+Math.round(settings.vol*100)+'%');
 });
 
@@ -818,43 +831,49 @@ function getPlaybackBuffer(){
 // Builds the shared effects chain (highpass -> 3-band EQ -> compressor) on a given context.
 // Returns {input, output} nodes to splice into a signal path.
 function buildEffectsChain(ctx){
-  const nodes=[];
-  if(settings.highpass>0){
-    const hp=ctx.createBiquadFilter();
-    hp.type='highpass'; hp.frequency.value=settings.highpass; hp.Q.value=0.707;
-    nodes.push(hp);
-  }
-  if(settings.eqLow!==0){
-    const lo=ctx.createBiquadFilter();
-    lo.type='lowshelf'; lo.frequency.value=250; lo.gain.value=settings.eqLow;
-    nodes.push(lo);
-  }
-  if(settings.eqMid!==0){
-    const mid=ctx.createBiquadFilter();
-    mid.type='peaking'; mid.frequency.value=1500; mid.Q.value=0.9; mid.gain.value=settings.eqMid;
-    nodes.push(mid);
-  }
-  if(settings.eqHigh!==0){
-    const hi=ctx.createBiquadFilter();
-    hi.type='highshelf'; hi.frequency.value=4000; hi.gain.value=settings.eqHigh;
-    nodes.push(hi);
-  }
-  if(settings.compAmt>0){
-    const comp=ctx.createDynamicsCompressor();
-    comp.threshold.value=-6-(settings.compAmt*30); // -6 to -36 dB
-    comp.knee.value=12;
-    comp.ratio.value=2+(settings.compAmt*10); // 2:1 to 12:1
-    comp.attack.value=0.003;
-    comp.release.value=0.25;
-    nodes.push(comp);
-  }
-  if(nodes.length===0){
-    // pass-through gain node so callers always get a valid input/output
-    const passthrough=ctx.createGain();
-    return {input:passthrough, output:passthrough};
-  }
+  const hp=ctx.createBiquadFilter();
+  hp.type='highpass'; hp.frequency.value=settings.highpass; hp.Q.value=0.707;
+
+  const lo=ctx.createBiquadFilter();
+  lo.type='lowshelf'; lo.frequency.value=250; lo.gain.value=settings.eqLow;
+
+  const mid=ctx.createBiquadFilter();
+  mid.type='peaking'; mid.frequency.value=1500; mid.Q.value=0.9; mid.gain.value=settings.eqMid;
+
+  const hi=ctx.createBiquadFilter();
+  hi.type='highshelf'; hi.frequency.value=4000; hi.gain.value=settings.eqHigh;
+
+  const comp=ctx.createDynamicsCompressor();
+  comp.threshold.value=-6-(settings.compAmt*30); // -6 to -36 dB
+  comp.knee.value=12;
+  comp.ratio.value=1+(settings.compAmt*11); // 1:1 (no-op) up to 12:1
+  comp.attack.value=0.003;
+  comp.release.value=0.25;
+
+  const nodes=[hp,lo,mid,hi,comp];
   for(let i=0;i<nodes.length-1;i++) nodes[i].connect(nodes[i+1]);
-  return {input:nodes[0], output:nodes[nodes.length-1]};
+  return {input:hp, output:comp, hp, lo, mid, hi, comp};
+}
+
+// Applies any settings that changed live (while audio is currently playing) directly to
+// the active node graph so the user hears the change instantly, no stop/replay needed.
+function applyLiveEffects(){
+  if(!playing || !currentFX) return;
+  currentFX.hp.frequency.value=settings.highpass;
+  currentFX.lo.gain.value=settings.eqLow;
+  currentFX.mid.gain.value=settings.eqMid;
+  currentFX.hi.gain.value=settings.eqHigh;
+  currentFX.comp.threshold.value=-6-(settings.compAmt*30);
+  currentFX.comp.ratio.value=1+(settings.compAmt*11);
+}
+function applyLiveVolume(){
+  if(!playing || !gainNode) return;
+  gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+  gainNode.gain.setValueAtTime(settings.vol, audioCtx.currentTime);
+}
+function applyLiveSpeed(){
+  if(!playing || !sourceNode) return;
+  sourceNode.playbackRate.value=settings.speed;
 }
 
 // Simple noise gate applied directly to a rendered AudioBuffer (post-process, used at export
@@ -879,11 +898,11 @@ function applyNoiseGate(buffer, amount){
 
 
 const toolPanels={
-  fade:'panelFade', volume:'panelVolSpeed', speed:'panelVolSpeed',
+  fade:'panelFade', volume:'panelVolume', speed:'panelSpeed',
   eq:'panelEQ', noise:'panelNoise', normalize:'panelNormalize', compressor:'panelCompressor',
   denoise:'panelDenoise', reverse:'panelReverse'
 };
-const allPanels=['panelFade','panelVolSpeed','panelEQ','panelNoise','panelNormalize','panelCompressor','panelDenoise','panelReverse'];
+const allPanels=['panelFade','panelVolume','panelSpeed','panelEQ','panelNoise','panelNormalize','panelCompressor','panelDenoise','panelReverse'];
 document.querySelectorAll('.tool-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
@@ -897,8 +916,10 @@ document.querySelectorAll('.tool-btn').forEach(btn=>{
 // ══ SKIP BUTTONS ══
 $('skipBackBtn').addEventListener('click',()=>{ if(audioBuffer) seekTo(trimStart); });
 $('skipFwdBtn').addEventListener('click',()=>{ if(audioBuffer) seekTo(Math.max(trimStart,trimEnd-0.001)); });
+$('trackName').addEventListener('input',()=>{ $('exportName').value=$('trackName').value.trim(); });
+
 $('resetBtn').addEventListener('click',()=>{
-  trimStart=0;trimEnd=1;settings={vol:1,speed:1,fadeIn:0,fadeOut:0,eqLow:0,eqMid:0,eqHigh:0,highpass:0,compAmt:0,gateAmt:0,reverse:false};reversedBufferCache=null;resetEffectControls();
+  trimStart=0;trimEnd=1;seekOffset=0;settings={vol:1,speed:1,fadeIn:0,fadeOut:0,eqLow:0,eqMid:0,eqHigh:0,highpass:0,compAmt:0,gateAmt:0,reverse:false};reversedBufferCache=null;resetEffectControls();
   resetControls();updateTrimUI();updateTimes();toast('Reset to original');
 });
 
@@ -1100,6 +1121,46 @@ async function encodeWebM(buffer){
 // ══ HELPERS ══
 function fmtTime(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+String(sec).padStart(2,'0');}
 function fmtTimeMs(s){if(isNaN(s)||s<0)s=0;const m=Math.floor(s/60),sec=Math.floor(s%60),cs=Math.floor((s-Math.floor(s))*100);return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')+'.'+String(cs).padStart(2,'0');}
+function parseTimeStr(str){
+  str=(str||'').trim();
+  if(!str) return null;
+  // formats: "mm:ss.cc", "mm:ss", "ss.cc", "ss"
+  const parts=str.split(':');
+  let secs=0;
+  if(parts.length===2){
+    const m=parseFloat(parts[0]), s=parseFloat(parts[1]);
+    if(isNaN(m)||isNaN(s)) return null;
+    secs=m*60+s;
+  } else if(parts.length===1){
+    secs=parseFloat(parts[0]);
+    if(isNaN(secs)) return null;
+  } else return null;
+  return Math.max(0,secs);
+}
+function commitStartEdit(){
+  if(!audioBuffer) return;
+  const secs=parseTimeStr($('startVal').value);
+  if(secs===null){ $('startVal').value=fmtTimeMs(trimStart*audioBuffer.duration); return; }
+  let frac=Math.min(secs/audioBuffer.duration, trimEnd-0.01);
+  frac=Math.max(0,frac);
+  trimStart=frac;
+  if(seekOffset<trimStart) seekOffset=trimStart;
+  updateTrimUI(); drawWave();
+}
+function commitEndEdit(){
+  if(!audioBuffer) return;
+  const secs=parseTimeStr($('endVal').value);
+  if(secs===null){ $('endVal').value=fmtTimeMs(trimEnd*audioBuffer.duration); return; }
+  let frac=Math.max(secs/audioBuffer.duration, trimStart+0.01);
+  frac=Math.min(1,frac);
+  trimEnd=frac;
+  if(seekOffset>trimEnd) seekOffset=trimStart;
+  updateTrimUI(); drawWave();
+}
+$('startVal').addEventListener('blur',commitStartEdit);
+$('startVal').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); $('startVal').blur(); } });
+$('endVal').addEventListener('blur',commitEndEdit);
+$('endVal').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); $('endVal').blur(); } });
 function showSpinner(label){$('spinLabel').textContent=label||'Working…';$('overlaySpin').classList.add('show');}
 function hideSpinner(){$('overlaySpin').classList.remove('show');}
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
