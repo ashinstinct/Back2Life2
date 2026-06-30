@@ -3,11 +3,11 @@
   "cleanUrls": true,
   "functions": {
     "api/shorts/analyze.py": {
-      "runtime": "vercel-python@3.0.0",
+      "runtime": "@vercel/python",
       "maxDuration": 60
     },
     "api/shorts/render.py": {
-      "runtime": "vercel-python@3.0.0",
+      "runtime": "@vercel/python",
       "maxDuration": 60
     }
   },
