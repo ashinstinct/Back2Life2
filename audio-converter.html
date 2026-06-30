@@ -77,48 +77,49 @@ body{display:flex;flex-direction:column;height:100dvh}
 .add-btn{display:inline-block;background:var(--gdim);border:1px solid rgba(0,255,136,.25);border-radius:var(--pill);color:var(--green);font-size:11px;font-weight:800;letter-spacing:.5px;padding:7px 14px;cursor:pointer;font-family:'Inter',sans-serif}
 
 /* ══════════════════════════════════════════
-   RADIAL DOCK
-   Fixed panel at bottom. When closed: only
-   the trigger button is visible. When open:
-   backdrop + format buttons fan out.
+   RADIAL DOCK - redesigned
 ══════════════════════════════════════════ */
 #radialDock{
   position:fixed;bottom:0;left:0;right:0;
-  /* max height = backdrop radius + trigger area */
-  height:var(--dock-h, 260px);
+  height:var(--dock-h, 280px);
   pointer-events:none;
   z-index:80;
 }
 
-/* dark gradient semicircle backdrop */
+/* SOLID black gradient semicircle backdrop */
 .rad-bg{
-  position:absolute;bottom:0;left:50%;
+  position:absolute;
+  bottom:0;left:50%;
   transform:translateX(-50%) scaleY(0);
   transform-origin:bottom center;
-  width:var(--backdrop-w, 110%);
-  height:var(--backdrop-h, 260px);
-  border-radius:50% 50% 0 0 / 60% 60% 0 0;
-  background:radial-gradient(ellipse 90% 100% at 50% 100%,
-    rgba(14,14,18,0.99) 60%,
-    rgba(10,10,14,0.85) 85%,
-    transparent 100%);
-  transition:transform .45s cubic-bezier(.4,0,.2,1), opacity .35s;
+  width:130%;
+  height:100%;
+  border-radius:50% 50% 0 0 / 55% 55% 0 0;
+  background:
+    radial-gradient(ellipse 100% 100% at 50% 105%,
+      #0d0d0f 0%,
+      #0a0a0c 55%,
+      rgba(8,8,10,0.96) 80%,
+      transparent 100%);
+  transition:transform .42s cubic-bezier(.4,0,.2,1), opacity .3s;
   opacity:0;
   pointer-events:none;
+  /* glow rim */
+  box-shadow:inset 0 1px 0 rgba(0,255,136,0.1);
 }
-.rad-bg::after{
-  content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
-  background:linear-gradient(90deg,transparent 0%,rgba(0,255,136,.1) 30%,rgba(0,255,136,.18) 50%,rgba(0,255,136,.1) 70%,transparent 100%);
+.rad-bg::before{
+  content:'';position:absolute;top:0;left:15%;right:15%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,255,136,.15) 30%,rgba(0,255,136,.25) 50%,rgba(0,255,136,.15) 70%,transparent);
 }
 #radialDock.open .rad-bg{
   transform:translateX(-50%) scaleY(1);
   opacity:1;
 }
 
-/* ── TRIGGER / PLAY BUTTON ── */
+/* ── TRIGGER BUTTON (CONVERT pill → play circle) ── */
 .rad-trigger{
   position:absolute;
-  bottom:var(--trigger-b, 20px);
+  bottom:var(--trigger-b, 22px);
   left:50%;
   transform:translateX(-50%);
   pointer-events:all;
@@ -126,49 +127,49 @@ body{display:flex;flex-direction:column;height:100dvh}
   display:flex;align-items:center;justify-content:center;gap:8px;
   font-family:'Inter',sans-serif;
   overflow:hidden;
-  /* closed state: green pill */
-  width:160px;height:54px;border-radius:var(--pill);
+  /* closed state */
+  width:162px;height:54px;border-radius:999px;
   background:linear-gradient(135deg,var(--green2),var(--green));
   color:#000;font-weight:800;font-size:14px;
   box-shadow:0 6px 24px rgba(0,255,136,.45),0 2px 8px rgba(0,0,0,.4);
   transition:
-    width .35s cubic-bezier(.4,0,.2,1),
-    height .35s cubic-bezier(.4,0,.2,1),
-    border-radius .35s cubic-bezier(.4,0,.2,1),
-    box-shadow .35s;
+    width .38s cubic-bezier(.4,0,.2,1),
+    height .38s cubic-bezier(.4,0,.2,1),
+    border-radius .38s cubic-bezier(.4,0,.2,1),
+    bottom .38s cubic-bezier(.4,0,.2,1),
+    box-shadow .3s;
 }
 .rad-trigger::before{
   content:'';position:absolute;top:0;left:0;right:0;height:50%;
   background:linear-gradient(180deg,rgba(255,255,255,.28) 0%,transparent 100%);
   pointer-events:none;z-index:1;
 }
-.rad-trigger svg{position:relative;z-index:2;flex-shrink:0}
-.rad-trigger span{position:relative;z-index:2}
-/* open state: shrinks to play circle */
+.rad-trigger svg,.rad-trigger span{position:relative;z-index:2;flex-shrink:0}
+/* open state: moves to arc center, becomes play circle */
 #radialDock.open .rad-trigger{
-  width:70px;height:70px;border-radius:50%;
-  box-shadow:0 0 0 4px rgba(0,255,136,.25), 0 8px 28px rgba(0,255,136,.5);
+  width:76px;height:76px;border-radius:50%;
+  bottom:var(--trigger-open-b, 16px);
+  box-shadow:0 0 0 4px rgba(0,255,136,.25),0 0 28px rgba(0,255,136,.55),inset 0 1px 0 rgba(255,255,255,.3);
 }
-.trigger-label{transition:opacity .2s, width .3s;white-space:nowrap}
+/* update bottom position via JS (set on open) */
+.trigger-label{white-space:nowrap;transition:opacity .18s}
 #radialDock.open .trigger-label{display:none}
 .trigger-play{display:none}
 #radialDock.open .trigger-play{display:flex;align-items:center;justify-content:center}
 #radialDock.open .trigger-convert-icon{display:none}
 
-/* ── FORMAT + BITRATE BUTTONS (placed by JS) ── */
-.rad-fmt, .rad-br{
+/* ── FORMAT BUTTONS (arc) ── */
+.rad-fmt{
   position:absolute;
   border:none;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
   font-family:'Inter',sans-serif;
   overflow:hidden;
   pointer-events:none;
-  /* gloss shine */
-  background:#111;
-  border:1px solid rgba(255,255,255,0.13);
   border-radius:50%;
-  box-shadow:0 4px 16px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08);
-  /* closed → origin at trigger center */
+  background:#111;
+  border:1px solid rgba(255,255,255,0.14);
+  box-shadow:0 4px 16px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.09);
   opacity:0;
   transition:
     transform .4s cubic-bezier(.34,1.56,.64,1),
@@ -176,27 +177,59 @@ body{display:flex;flex-direction:column;height:100dvh}
     background .2s,
     box-shadow .2s;
 }
-.rad-fmt::before,.rad-br::before{
+.rad-fmt::before{
   content:'';position:absolute;top:0;left:0;right:0;height:45%;
   background:linear-gradient(180deg,rgba(255,255,255,.12) 0%,transparent 100%);
   border-radius:50% 50% 0 0;pointer-events:none;z-index:1;
 }
-.rad-fmt-name,.rad-br-name{font-size:13px;font-weight:800;color:rgba(255,255,255,.55);position:relative;z-index:2;line-height:1}
-.rad-fmt-sub,.rad-br-sub{font-size:9px;color:rgba(255,255,255,.25);position:relative;z-index:2;line-height:1}
-/* active */
-.rad-fmt.active,.rad-br.active{
-  background:var(--green);
-  border-color:var(--green);
+.rad-fmt-name{font-size:14px;font-weight:800;color:rgba(255,255,255,.6);position:relative;z-index:2;line-height:1}
+.rad-fmt-sub{font-size:9px;color:rgba(255,255,255,.28);position:relative;z-index:2;line-height:1}
+.rad-fmt.active{
+  background:var(--green);border-color:var(--green);
   box-shadow:0 0 0 3px rgba(0,255,136,.25),0 6px 22px rgba(0,255,136,.5),inset 0 1px 0 rgba(255,255,255,.3);
 }
-.rad-fmt.active::before,.rad-br.active::before{background:linear-gradient(180deg,rgba(255,255,255,.28) 0%,transparent 100%)}
-.rad-fmt.active .rad-fmt-name,.rad-br.active .rad-br-name{color:#000}
-.rad-fmt.active .rad-fmt-sub,.rad-br.active .rad-br-sub{color:rgba(0,0,0,.5)}
-/* open → final position */
-#radialDock.open .rad-fmt,
-#radialDock.open .rad-br{opacity:1;pointer-events:all}
-/* brute-force tap zone */
-.rad-fmt:active,.rad-br:active{filter:brightness(1.15)}
+.rad-fmt.active::before{background:linear-gradient(180deg,rgba(255,255,255,.28) 0%,transparent 100%)}
+.rad-fmt.active .rad-fmt-name{color:#000}
+.rad-fmt.active .rad-fmt-sub{color:rgba(0,0,0,.5)}
+#radialDock.open .rad-fmt{opacity:1;pointer-events:all}
+.rad-fmt:active{filter:brightness(1.12)}
+
+/* ── BITRATE ROW (rectangular pills, below play button) ── */
+.br-row{
+  position:absolute;
+  left:50%;transform:translateX(-50%);
+  display:flex;gap:8px;align-items:center;justify-content:center;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .28s ease .1s, transform .32s cubic-bezier(.4,0,.2,1) .08s;
+  transform:translateY(12px);
+}
+#radialDock.open .br-row.visible{
+  opacity:1;pointer-events:all;transform:translateY(0);
+}
+.br-pill{
+  position:relative;overflow:hidden;
+  background:#111;border:1px solid rgba(255,255,255,.14);
+  border-radius:10px;padding:9px 18px;
+  cursor:pointer;font-family:'Inter',sans-serif;
+  transition:background .18s, border-color .18s, box-shadow .18s;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+}
+.br-pill::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,.1) 0%,transparent 100%);
+  pointer-events:none;
+}
+.br-pill-label{font-size:13px;font-weight:800;color:rgba(255,255,255,.55);position:relative;z-index:1}
+.br-pill-sub{font-size:9px;color:rgba(255,255,255,.25);position:relative;z-index:1;display:block;text-align:center}
+.br-pill.active{
+  background:var(--green);border-color:var(--green);
+  box-shadow:0 0 0 2px rgba(0,255,136,.2),0 4px 16px rgba(0,255,136,.4),inset 0 1px 0 rgba(255,255,255,.25);
+}
+.br-pill.active::before{background:linear-gradient(180deg,rgba(255,255,255,.22) 0%,transparent 100%)}
+.br-pill.active .br-pill-label{color:#000}
+.br-pill.active .br-pill-sub{color:rgba(0,0,0,.5)}
+.br-pill:active{filter:brightness(1.1)}
 
 /* ── NAV / TOAST / OVERLAYS ── */
 .nav-sheet{position:fixed;bottom:0;left:0;right:0;background:#161616;border-top:1px solid var(--border);border-radius:26px 26px 0 0;z-index:220;transform:translateY(100%);transition:transform .3s ease;max-height:80vh;overflow-y:auto;padding:0 20px calc(40px + env(safe-area-inset-bottom,0px));box-shadow:0 -20px 60px rgba(0,0,0,.6)}
@@ -286,13 +319,18 @@ body{display:flex;flex-direction:column;height:100dvh}
 <div id="radialDock">
   <div class="rad-bg"></div>
 
-  <!-- TRIGGER BUTTON — Convert pill (closed) / Play button (open) -->
+  <!-- Bitrate row (rectangular pills, shown below center when MP3 active) -->
+  <div class="br-row" id="brRow">
+    <button class="br-pill" data-br="128"><span class="br-pill-label">128</span><span class="br-pill-sub">kbps</span></button>
+    <button class="br-pill active" data-br="192"><span class="br-pill-label">192</span><span class="br-pill-sub">kbps</span></button>
+    <button class="br-pill" data-br="320"><span class="br-pill-label">320</span><span class="br-pill-sub">kbps</span></button>
+  </div>
+
+  <!-- TRIGGER — Convert pill (closed) / Play button (open) -->
   <button class="rad-trigger" id="radTrigger">
-    <!-- Convert icon (shown when closed) -->
     <svg class="trigger-convert-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg>
     <span class="trigger-label">CONVERT</span>
-    <!-- Play icon (shown when open) -->
-    <svg class="trigger-play" id="playIcon" width="22" height="22" viewBox="0 0 24 24" fill="#000"><path id="playPath" d="M8 5v14l11-7z"/></svg>
+    <svg class="trigger-play" id="playIcon" width="24" height="24" viewBox="0 0 24 24" fill="#000"><path id="playPath" d="M8 5v14l11-7z"/></svg>
   </button>
 </div>
 
@@ -337,57 +375,49 @@ const FORMATS=[
   {fmt:'flac', label:'FLAC', sub:'Compressed',angle:54},
   {fmt:'ogg',  label:'OGG',  sub:'Open',     angle:23},
 ];
-const BITRATES=[
-  {br:128,label:'128',sub:'kbps',angle:145},
-  {br:192,label:'192',sub:'kbps',angle:90},
-  {br:320,label:'320',sub:'kbps',angle:35},
-];
+
+// Wire bitrate pill row
+document.querySelectorAll('.br-pill').forEach(btn=>{
+  btn.addEventListener('click',()=>selectBitrate(+btn.dataset.br));
+});
 
 // ─── BUILD RADIAL MENU ────────────────────────
 function buildRadial(){
   const dock=$('radialDock');
-  // remove old buttons
-  dock.querySelectorAll('.rad-fmt,.rad-br').forEach(el=>el.remove());
+  dock.querySelectorAll('.rad-fmt').forEach(el=>el.remove());
 
   const sw=window.innerWidth;
-  const safeB=parseInt(getComputedStyle(document.documentElement).paddingBottom||0)||0;
-  const FMT_R = Math.min(Math.round(sw*0.37), 150);  // outer arc radius
-  const BR_R  = Math.round(FMT_R * 0.58);             // inner bitrate arc radius
-  const FMT_BTN = Math.min(Math.round(sw*0.175), 74); // format button size
-  const BR_BTN  = Math.round(FMT_BTN * 0.76);         // bitrate button size
+  const FMT_R   = Math.min(Math.round(sw*0.38), 155);  // arc radius
+  const FMT_BTN = Math.min(Math.round(sw*0.178), 74);  // button diameter
 
-  // Trigger sits at horizontal center, bottom: 20 + safeB
-  const triggerB = 20; // px from screen bottom (CSS handles safe-area)
-  const triggerR = 35; // radius of the trigger circle when open
-  const pivotB   = triggerB + triggerR; // pivot bottom offset
+  // Trigger sits at bottom center. When open, it moves up to become the arc center.
+  // Arc center = play button center.
+  const triggerB   = 22;           // px from bottom when closed
+  const triggerR   = 38;           // radius of play circle when open
+  // We want the arc center to sit at FMT_R above the bottom so the outermost
+  // buttons (at 90°, straight up) are FMT_R above the center, fitting nicely.
+  const arcCenterB = Math.round(triggerR + 16); // how far above screen bottom the arc center sits
+  const triggerOpenB = arcCenterB - triggerR;   // where the trigger bottom edge is when open
 
-  // Dock height: enough to fit the tallest button (MP3 at 90°)
-  const dockH = Math.round(pivotB + FMT_R + FMT_BTN/2 + 12);
+  // Dock height = arc center bottom + arc radius + button radius + padding
+  const dockH = Math.round(arcCenterB + FMT_R + FMT_BTN/2 + 20);
   dock.style.setProperty('--dock-h', dockH+'px');
-  dock.style.setProperty('--backdrop-h', dockH+'px');
-  dock.style.setProperty('--backdrop-w', (sw*1.1)+'px');
   dock.style.setProperty('--trigger-b', triggerB+'px');
-  dock.style.setProperty('--toast-b', (dockH+20)+'px');
-  document.documentElement.style.setProperty('--toast-b', (dockH+60)+'px');
-  // update scroll padding so content isn't hidden behind dock
+  dock.style.setProperty('--trigger-open-b', triggerOpenB+'px');
   $('mainScroll').style.paddingBottom = (dockH+20)+'px';
+  document.documentElement.style.setProperty('--toast-b', (dockH+60)+'px');
 
-  // cx = screen center; format buttons use bottom/left positioning
   const cx = sw / 2;
 
   // ── FORMAT BUTTONS ──
   FORMATS.forEach((f,i)=>{
     const rad = f.angle * Math.PI/180;
     const bx  = cx + FMT_R * Math.cos(rad);
-    const by  = pivotB + FMT_R * Math.sin(rad);
+    const by  = arcCenterB + FMT_R * Math.sin(rad);  // from bottom of screen
 
-    // closed: button starts scaled to 0 at trigger center
-    // open: button moves to (bx, by) at scale 1
-    // We achieve this by using transform for the fan animation:
-    // The button is always at its final (bx,by) position.
-    // Closed state: scale(0) + translate back toward center.
-    const dx = cx - bx; // offset to move toward center
-    const dy = -(by - pivotB); // offset downward
+    // Closed: buttons collapse to center (arc origin)
+    const dx = cx - bx;
+    const dy = -(by - arcCenterB);
 
     const btn=document.createElement('button');
     btn.className='rad-fmt'+(f.fmt===outFormat?' active':'');
@@ -395,66 +425,62 @@ function buildRadial(){
     btn.style.cssText=`
       left:${bx}px; bottom:${by}px;
       width:${FMT_BTN}px; height:${FMT_BTN}px;
-      transition-delay:${i*0.045}s;
-      --dx:${dx}px; --dy:${dy}px;
-      transform:translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.1);
+      transition-delay:${i*0.048}s;
+      transform:translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.05);
     `;
     btn.innerHTML=`<span class="rad-fmt-name">${f.label}</span><span class="rad-fmt-sub">${f.sub}</span>`;
     btn.addEventListener('click',()=>selectFormat(f.fmt));
     dock.appendChild(btn);
   });
 
-  // ── BITRATE BUTTONS ──
-  BITRATES.forEach((b,i)=>{
-    const rad = b.angle * Math.PI/180;
-    const bx  = cx + BR_R * Math.cos(rad);
-    const by  = pivotB + BR_R * Math.sin(rad);
-    const dx  = cx - bx;
-    const dy  = -(by - pivotB);
+  // ── BITRATE ROW positioning (below center) ──
+  // Position it below the arc center
+  const brBottom = Math.max(4, arcCenterB - triggerR - 14);
+  $('brRow').style.bottom = brBottom + 'px';
 
-    const btn=document.createElement('button');
-    btn.className='rad-br'+(b.br===outBitrate?' active':'');
-    btn.dataset.br=b.br;
-    btn.style.cssText=`
-      left:${bx}px; bottom:${by}px;
-      width:${BR_BTN}px; height:${BR_BTN}px;
-      transition-delay:${(FORMATS.length + i)*0.045}s;
-      --dx:${dx}px; --dy:${dy}px;
-      transform:translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.1);
-      display:${outFormat==='mp3'?'flex':'none'};
-    `;
-    btn.innerHTML=`<span class="rad-br-name">${b.label}</span><span class="rad-br-sub">${b.sub}</span>`;
-    btn.addEventListener('click',()=>selectBitrate(b.br));
-    dock.appendChild(btn);
-  });
+  // ── Move trigger to arc center when open ──
+  dock.style.setProperty('--trigger-open-b', triggerOpenB+'px');
 }
 
 // ─── OPEN / CLOSE ─────────────────────────────
 function openMenu(){
   menuOpen=true;
-  $('radialDock').classList.add('open');
+  const dock=$('radialDock');
+  dock.classList.add('open');
   $('menuOverlay').classList.add('show');
-  // animate buttons to open state
-  $('radialDock').querySelectorAll('.rad-fmt,.rad-br').forEach(btn=>{
-    const show = btn.classList.contains('rad-br') ? outFormat==='mp3' : true;
-    if(show){
-      btn.style.display='flex';
-      btn.style.transform='translate(-50%,-50%) scale(1)';
-      btn.style.opacity='1';
-    }
+  // Move trigger to arc center
+  const openB = dock.style.getPropertyValue('--trigger-open-b') || '16px';
+  $('radTrigger').style.bottom = openB;
+  // Hide banner
+  const banner=document.querySelector('.scroll img');
+  if(banner) banner.style.display='none';
+  // Animate format buttons open
+  dock.querySelectorAll('.rad-fmt').forEach(btn=>{
+    btn.style.transform='translate(-50%,-50%) scale(1)';
+    btn.style.opacity='1';
   });
+  // Show bitrate row if MP3
+  if(outFormat==='mp3') $('brRow').classList.add('visible');
 }
 function closeMenu(){
   menuOpen=false;
-  $('radialDock').querySelectorAll('.rad-fmt,.rad-br').forEach(btn=>{
-    btn.style.transform=`translate(calc(-50% + ${btn.style.getPropertyValue('--dx') || btn.style.cssText.match(/--dx:(.*?);/)?.[1]||'0px'}), calc(-50% + ${btn.style.cssText.match(/--dy:(.*?);/)?.[1]||'0px'})) scale(0.1)`;
+  const dock=$('radialDock');
+  // Fold buttons back to center
+  dock.querySelectorAll('.rad-fmt').forEach(btn=>{
+    const m=btn.style.cssText.match(/translate\(calc\(-50% \+ (-?[\d.]+px),\s*calc\(-50% \+ (-?[\d.]+px)/);
+    const dx=m?m[1]:'0px', dy=m?m[2]:'0px';
+    btn.style.transform=`translate(calc(-50% + ${dx}), calc(-50% + ${dy})) scale(0.05)`;
     btn.style.opacity='0';
   });
+  $('brRow').classList.remove('visible');
   setTimeout(()=>{
-    $('radialDock').classList.remove('open');
+    dock.classList.remove('open');
     $('menuOverlay').classList.remove('show');
+    $('radTrigger').style.bottom='';
     if(playing) stopPlayback();
-  },350);
+    const banner=document.querySelector('.scroll img');
+    if(banner) banner.style.display='';
+  },390);
 }
 
 $('radTrigger').addEventListener('click',()=>{
@@ -473,23 +499,16 @@ $('menuOverlay').addEventListener('click',closeMenu);
 function selectFormat(fmt){
   outFormat=fmt;
   $('radialDock').querySelectorAll('.rad-fmt').forEach(b=>b.classList.toggle('active',b.dataset.fmt===fmt));
-  // show/hide bitrate buttons
-  $('radialDock').querySelectorAll('.rad-br').forEach(btn=>{
-    if(fmt==='mp3'){
-      btn.style.display='flex';
-      btn.style.transform='translate(-50%,-50%) scale(1)';
-      btn.style.opacity='1';
-    } else {
-      btn.style.transform=`translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(0.1)`;
-      btn.style.opacity='0';
-      setTimeout(()=>{ btn.style.display='none'; },300);
-    }
-  });
+  if(fmt==='mp3'){
+    if(menuOpen) $('brRow').classList.add('visible');
+  } else {
+    $('brRow').classList.remove('visible');
+  }
   updateBanner();
 }
 function selectBitrate(br){
   outBitrate=br;
-  $('radialDock').querySelectorAll('.rad-br').forEach(b=>b.classList.toggle('active',+b.dataset.br===br));
+  document.querySelectorAll('.br-pill').forEach(b=>b.classList.toggle('active',+b.dataset.br===br));
   updateBanner();
 }
 function updateBanner(){
