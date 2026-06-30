@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="vercel-toolbar" content="off">
 <title>Audio Converter — Back2Life.app</title>
 <meta name="description" content="Convert audio between WAV, AIFF, FLAC, MP3. Extract audio from video. Free browser tool.">
 <meta property="og:title" content="Audio Converter — Back2Life.app">
@@ -21,110 +20,156 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#080808;--surface:rgba(255,255,255,0.04);--s2:rgba(255,255,255,0.06);--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
-  --green:#00ff88;--green2:#00cc66;--gdim:rgba(0,255,136,.09);
-  --text:#f0f0f0;--text2:#aaa;--text3:#555;--bar:60px;--radius-lg:20px;--radius-sm:14px;--pill:999px;
+  --bg:#080808;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);
+  --green:#00ff88;--green2:#00cc66;--gdim:rgba(0,255,136,.1);
+  --text:#f0f0f0;--text2:#aaa;--text3:#555;
+  --pill:999px;--radius-lg:20px;--bar:60px;
 }
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden;touch-action:manipulation}
 body{display:flex;flex-direction:column;height:100dvh}
 
 /* ── TOPBAR ── */
-.topbar{flex-shrink:0;height:var(--bar);background:rgba(8,8,8,0.92);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;padding-top:env(safe-area-inset-top,0px);position:relative;z-index:100;gap:8px}
+.topbar{flex-shrink:0;height:var(--bar);background:rgba(8,8,8,0.95);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;padding-top:env(safe-area-inset-top,0px);position:relative;z-index:100}
 .menu-btn{background:none;border:none;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px;z-index:1;flex-shrink:0}
 .menu-btn span{display:block;width:20px;height:2px;background:#aaa;border-radius:2px;transition:all .25s}
 .menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg);background:var(--green)}
 .menu-btn.open span:nth-child(2){opacity:0}
 .menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);background:var(--green)}
 
-/* ── SCROLL ── */
-.scroll{flex:1;overflow-y:auto;padding:20px 14px 0;-webkit-overflow-scrolling:touch}
+/* ── SCROLL AREA ── */
+.scroll{flex:1;overflow-y:auto;padding:18px 14px 0;-webkit-overflow-scrolling:touch;padding-bottom:320px}
 .scroll::-webkit-scrollbar{display:none}
 
 /* ── EDITABLE FILENAME ── */
 .track-name-input{display:block;width:100%;font-size:15px;font-weight:700;color:#fff;background:none;border:none;border-bottom:1px solid transparent;font-family:'Inter',sans-serif;padding:2px 0 4px;outline:none;margin-bottom:3px}
 .track-name-input:focus{border-bottom:1px solid var(--green)}
-.track-info{font-size:11px;color:var(--text3);margin-bottom:14px}
-.track-section{display:none;margin-bottom:2px}
-.track-section.show{display:block}
+.track-section{display:none}
+.track-section.show{display:block;margin-bottom:14px}
+.track-info{font-size:11px;color:var(--text3)}
 
-/* ── WAVEFORM CARD ── */
-.wave-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,0.25)}
-.wave-canvas{width:100%;height:110px;border-radius:12px;display:block;background:#050505}
+/* ── WAVEFORM ── */
+.wave-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:14px;display:none;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.wave-card.show{display:block}
+.wave-canvas{width:100%;height:100px;border-radius:12px;display:block;background:#050505;cursor:pointer}
+.wave-inner{position:relative}
+.playhead{position:absolute;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 6px rgba(255,255,255,.7);pointer-events:none;display:none;left:0}
 
-/* ── TRANSPORT ── */
-.transport-bar{display:flex;align-items:center;gap:10px;background:#000;border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:14px}
-.tb-field{flex:1;text-align:center}
-.tb-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--green);margin-bottom:4px}
-.tb-val{font-size:12.5px;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
-.tb-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;color:#aaa;flex-shrink:0}
-.tb-btn:disabled{opacity:.4;pointer-events:none}
-.tb-play{width:54px;height:54px;background:linear-gradient(135deg,var(--green2),var(--green));box-shadow:0 6px 20px rgba(0,255,136,0.3);flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer}
-.tb-play svg{width:18px;height:18px;fill:#000;margin-left:2px}
-.tb-play:disabled{opacity:.4;pointer-events:none;box-shadow:none}
-.playhead{position:absolute;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 6px rgba(255,255,255,.7);pointer-events:none;display:none}
-.trim-handles{position:absolute;top:0;bottom:0;left:0;right:0;pointer-events:none}
+/* ── TIME ROW ── */
+.time-row{display:none;justify-content:space-between;align-items:center;margin-bottom:6px;padding:0 2px}
+.time-row.show{display:flex}
+.time-lbl{font-size:11px;color:var(--text2);font-variant-numeric:tabular-nums;font-weight:600}
 
 /* ── EMPTY STATE ── */
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:220px;text-align:center;padding:24px 20px;border:1.5px dashed var(--border2);border-radius:var(--radius-lg);margin-bottom:16px}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:180px;text-align:center;padding:24px 20px;border:1.5px dashed var(--border2);border-radius:var(--radius-lg);margin-bottom:16px}
 .empty.hidden{display:none}
 .empty-icon{animation:pulse 2.4s ease-in-out infinite}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.07);opacity:1}}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.08);opacity:1}}
 .empty-title{font-size:15px;font-weight:700;color:#ddd}
-.empty-sub{font-size:12px;color:var(--text3);max-width:260px}
-.empty-btn{display:inline-block;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;box-shadow:0 6px 22px rgba(0,255,136,0.3);font-weight:800;font-size:14px;padding:13px 30px;border-radius:var(--pill);border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px}
-.add-btn{display:inline-block;background:var(--gdim);border:1px solid rgba(0,255,136,0.25);border-radius:var(--pill);color:var(--green);font-size:11px;font-weight:800;letter-spacing:.5px;padding:7px 14px;cursor:pointer;font-family:'Inter',sans-serif}
+.empty-sub{font-size:12px;color:var(--text3);max-width:260px;line-height:1.5}
+.empty-btn{display:inline-block;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;box-shadow:0 6px 22px rgba(0,255,136,.3);font-weight:800;font-size:14px;padding:13px 30px;border-radius:var(--pill);border:none;cursor:pointer;font-family:'Inter',sans-serif;position:relative;overflow:hidden}
+.empty-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.22) 0%,transparent 100%);pointer-events:none}
 
-/* ── FORMAT BUTTONS: single row, black with shine, green when active ── */
-.convert-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px}
-.sect-label{font-size:10px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--green);margin-bottom:12px}
-.fmt-row{display:flex;gap:8px}
-.fmt-btn{
-  flex:1;position:relative;overflow:hidden;
-  background:#000;border:1px solid rgba(255,255,255,0.12);
-  border-radius:12px;padding:12px 4px;cursor:pointer;text-align:center;
-  transition:all .15s;font-family:'Inter',sans-serif;
+/* ── STATUS BANNER (selected format info) ── */
+.status-banner{display:none;align-items:center;justify-content:space-between;background:var(--gdim);border:1px solid rgba(0,255,136,.2);border-radius:14px;padding:10px 14px;margin-bottom:14px}
+.status-banner.show{display:flex}
+.status-fmt{font-size:16px;font-weight:900;color:var(--green);letter-spacing:-.3px}
+.status-sub{font-size:11px;color:var(--text2)}
+.convert-trigger{background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:13px;padding:9px 18px;border-radius:var(--pill);border:none;cursor:pointer;font-family:'Inter',sans-serif;position:relative;overflow:hidden;box-shadow:0 4px 14px rgba(0,255,136,.3)}
+.convert-trigger::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.22) 0%,transparent 100%)}
+.convert-trigger:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── RADIAL SEMICIRCLE DOCK ── */
+.radial-dock{
+  position:fixed;bottom:0;left:0;right:0;
+  height:280px;
+  pointer-events:none;
+  z-index:50;
 }
-/* glossy highlight pseudo-element */
-.fmt-btn::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:50%;
-  background:linear-gradient(180deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0) 100%);
-  border-radius:12px 12px 0 0;pointer-events:none;
+.radial-backdrop{
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:600px;height:300px;
+  background:radial-gradient(ellipse at bottom center, rgba(20,20,24,0.98) 60%, transparent 100%);
+  border-radius:300px 300px 0 0;
+  border-top:1px solid rgba(255,255,255,0.06);
 }
-.fmt-btn-name{font-size:14px;font-weight:800;color:rgba(255,255,255,0.6);position:relative;z-index:1;line-height:1.2}
-.fmt-btn-desc{font-size:9px;color:rgba(255,255,255,0.28);margin-top:3px;position:relative;z-index:1}
-.fmt-btn.active{
+/* glow ring accent */
+.radial-backdrop::after{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:400px;height:200px;
+  background:radial-gradient(ellipse at bottom center, rgba(0,255,136,0.04) 0%, transparent 70%);
+  border-radius:200px 200px 0 0;
+}
+/* all radial items are positioned absolutely relative to the dock */
+.rad-btn{
+  position:absolute;
+  width:68px;height:68px;border-radius:50%;
+  background:#111;border:1px solid rgba(255,255,255,0.12);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  cursor:pointer;pointer-events:all;
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+  transform:translate(-50%,-50%);
+  /* gloss shine */
+  overflow:hidden;
+  box-shadow:0 4px 16px rgba(0,0,0,.5);
+}
+.rad-btn::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:48%;
+  background:linear-gradient(180deg,rgba(255,255,255,0.13) 0%,rgba(255,255,255,0) 100%);
+  border-radius:50% 50% 0 0;pointer-events:none;z-index:1;
+}
+.rad-btn-label{font-size:12px;font-weight:800;color:rgba(255,255,255,0.55);position:relative;z-index:2;line-height:1}
+.rad-btn-sub{font-size:9px;color:rgba(255,255,255,0.28);position:relative;z-index:2;line-height:1}
+.rad-btn svg{position:relative;z-index:2}
+.rad-btn.active{
   background:var(--green);border-color:var(--green);
-  box-shadow:0 4px 18px rgba(0,255,136,0.4);
+  box-shadow:0 0 0 3px rgba(0,255,136,.25), 0 6px 22px rgba(0,255,136,.45);
 }
-.fmt-btn.active::before{background:linear-gradient(180deg,rgba(255,255,255,0.25) 0%,rgba(255,255,255,0) 100%)}
-.fmt-btn.active .fmt-btn-name{color:#000}
-.fmt-btn.active .fmt-btn-desc{color:rgba(0,0,0,0.5)}
+.rad-btn.active::before{background:linear-gradient(180deg,rgba(255,255,255,0.28) 0%,transparent 100%)}
+.rad-btn.active .rad-btn-label{color:#000}
+.rad-btn.active .rad-btn-sub{color:rgba(0,0,0,0.55)}
+.rad-btn:active{transform:translate(-50%,-50%) scale(.93)}
 
-/* ── BITRATE FIELD ── */
-.bitrate-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px}
-.seg{display:flex;background:rgba(0,0,0,0.3);border:1px solid var(--border2);border-radius:var(--radius-sm);overflow:hidden}
-.seg button{flex:1;background:none;border:none;color:var(--text3);font-size:12px;font-weight:700;padding:11px 4px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
-.seg button.active{background:var(--gdim);color:var(--green)}
-
-/* ── FILENAME FIELD ── */
-.name-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px}
-.field-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
-.text-input{width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:13px 14px;outline:none}
-.text-input:focus{border-color:var(--green)}
-
-/* ── CONVERT BUTTON ── */
-.convert-btn{
-  width:100%;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;
-  box-shadow:0 6px 22px rgba(0,255,136,0.3);
-  font-weight:800;font-size:15px;padding:15px;border-radius:var(--pill);
-  border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:80px;
-  position:relative;overflow:hidden;
+/* play button — center pivot */
+.rad-play{
+  position:absolute;
+  width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(135deg,var(--green2),var(--green));
+  box-shadow:0 0 0 4px rgba(0,255,136,.2), 0 8px 28px rgba(0,255,136,.45);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;pointer-events:all;
+  transition:all .2s;transform:translate(-50%,-50%);overflow:hidden;border:none;
 }
-.convert-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,0.22) 0%,transparent 100%);pointer-events:none}
-.convert-btn:disabled{opacity:.4;cursor:not-allowed}
+.rad-play::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.28) 0%,transparent 100%);pointer-events:none}
+.rad-play:disabled{opacity:.4;pointer-events:none;box-shadow:none}
+.rad-play svg{width:22px;height:22px;fill:#000;position:relative;z-index:1;margin-left:2px}
+.rad-play:active{transform:translate(-50%,-50%) scale(.93)}
+
+/* inner arc bitrate buttons (appear when MP3 active) */
+.rad-inner{
+  position:absolute;
+  width:52px;height:52px;border-radius:50%;
+  background:#0a0a0a;border:1px solid rgba(255,255,255,0.15);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  cursor:pointer;pointer-events:all;
+  transition:all .25s cubic-bezier(.4,0,.2,1);
+  transform:translate(-50%,-50%) scale(0);
+  opacity:0;overflow:hidden;
+  box-shadow:0 4px 12px rgba(0,0,0,.5);
+}
+.rad-inner.visible{transform:translate(-50%,-50%) scale(1);opacity:1}
+.rad-inner::before{content:'';position:absolute;top:0;left:0;right:0;height:48%;background:linear-gradient(180deg,rgba(255,255,255,.1) 0%,transparent 100%);border-radius:50% 50% 0 0;pointer-events:none}
+.rad-inner-label{font-size:11px;font-weight:800;color:rgba(255,255,255,.6);position:relative;z-index:1}
+.rad-inner-sub{font-size:8px;color:rgba(255,255,255,.3);position:relative;z-index:1}
+.rad-inner.active{background:rgba(0,255,136,.18);border-color:var(--green);box-shadow:0 0 0 2px rgba(0,255,136,.3)}
+.rad-inner.active .rad-inner-label{color:var(--green)}
+.rad-inner.active .rad-inner-sub{color:rgba(0,255,136,.6)}
+.rad-inner:active{transform:translate(-50%,-50%) scale(.91)}
+
+/* add-audio pill in topbar */
+.add-btn{display:inline-block;background:var(--gdim);border:1px solid rgba(0,255,136,.25);border-radius:var(--pill);color:var(--green);font-size:11px;font-weight:800;letter-spacing:.5px;padding:7px 14px;cursor:pointer;font-family:'Inter',sans-serif}
 
 /* ── NAV SHEET ── */
-.nav-sheet{position:fixed;bottom:0;left:0;right:0;background:#161616;border-top:1px solid var(--border);border-radius:26px 26px 0 0;z-index:220;transform:translateY(100%);transition:transform .3s ease;max-height:80vh;overflow-y:auto;padding:0 20px calc(40px + env(safe-area-inset-bottom,0px));box-shadow:0 -20px 60px rgba(0,0,0,0.5)}
+.nav-sheet{position:fixed;bottom:0;left:0;right:0;background:#161616;border-top:1px solid var(--border);border-radius:26px 26px 0 0;z-index:220;transform:translateY(100%);transition:transform .3s ease;max-height:80vh;overflow-y:auto;padding:0 20px calc(40px + env(safe-area-inset-bottom,0px));box-shadow:0 -20px 60px rgba(0,0,0,.6)}
 .nav-sheet.open{transform:translateY(0)}
 .nav-handle-wrap{padding:12px 0 6px;text-align:center}
 .nav-handle{width:38px;height:5px;background:#3a3a3a;border-radius:3px;margin:0 auto}
@@ -132,16 +177,14 @@ body{display:flex;flex-direction:column;height:100dvh}
 .nav-sl:first-of-type{border-top:none;margin-top:0;padding-top:4px}
 .nav-a{display:flex;align-items:center;gap:14px;padding:12px 0;font-size:15px;font-weight:500;color:#ddd;text-decoration:none;border-bottom:1px solid #222}
 .nav-a:active{color:var(--green)}
-.nav-a .ico{width:26px;display:flex;align-items:center;justify-content:center}
 .nav-cta{display:block;margin-top:20px;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:700;font-size:14px;padding:13px;border-radius:var(--pill);text-decoration:none;text-align:center}
-
-/* ── OVERLAY ── */
+/* ── OVERLAYS ── */
 .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(2px);z-index:190;display:none;pointer-events:none}
 .backdrop.open{display:block;pointer-events:all}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(8px);background:#181818;border:1px solid var(--green);color:var(--green);font-size:12px;font-weight:600;padding:10px 18px;border-radius:var(--pill);opacity:0;transition:all .3s;z-index:300;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+.toast{position:fixed;bottom:calc(290px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) translateY(8px);background:#181818;border:1px solid var(--green);color:var(--green);font-size:12px;font-weight:600;padding:10px 18px;border-radius:var(--pill);opacity:0;transition:all .3s;z-index:300;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.err{border-color:#ff4466;color:#ff4466}
-.overlay-spin{position:fixed;inset:0;background:rgba(10,10,10,.85);z-index:400;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.overlay-spin{position:fixed;inset:0;background:rgba(10,10,10,.88);z-index:400;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 .overlay-spin.show{display:flex}
 .spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -151,7 +194,6 @@ body{display:flex;flex-direction:column;height:100dvh}
 <link rel="icon" href="/favicon.ico">
 <meta name="theme-color" content="#080808">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Audio Converter">
 </head>
 <body>
 
@@ -159,83 +201,59 @@ body{display:flex;flex-direction:column;height:100dvh}
 
 <div class="topbar">
   <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
-  <a href="/" style="position:absolute;left:50%;transform:translateX(-50%);text-decoration:none;white-space:nowrap"><span style="font-size:17px;font-weight:900;color:#fff;letter-spacing:-0.5px">Back2Life</span><span style="font-size:17px;font-weight:900;color:#00ff88;letter-spacing:-0.5px">.app</span></a>
+  <a href="/" style="position:absolute;left:50%;transform:translateX(-50%);text-decoration:none;white-space:nowrap">
+    <span style="font-size:17px;font-weight:900;color:#fff;letter-spacing:-0.5px">Back2Life</span><span style="font-size:17px;font-weight:900;color:#00ff88;letter-spacing:-0.5px">.app</span>
+  </a>
   <div style="flex:1"></div>
   <label for="fileInput" class="add-btn">+ AUDIO</label>
 </div>
 
 <div class="scroll">
-
-  <!-- Track name -->
+  <!-- Editable filename -->
   <div class="track-section" id="trackSection">
     <input type="text" class="track-name-input" id="trackName" autocorrect="off" spellcheck="false" placeholder="Untitled">
     <div class="track-info" id="trackInfo">—</div>
   </div>
 
   <!-- Waveform -->
-  <div class="wave-card" id="waveCard" style="display:none">
-    <div style="position:relative">
+  <div class="wave-card" id="waveCard">
+    <div class="wave-inner" id="waveInner">
       <canvas class="wave-canvas" id="waveCanvas"></canvas>
-      <div class="trim-handles" id="trimHandles">
-        <div class="playhead" id="playhead"></div>
-      </div>
+      <div class="playhead" id="playhead"></div>
     </div>
   </div>
-
-  <!-- Transport -->
-  <div class="transport-bar" id="transportBar" style="display:none">
-    <div class="tb-field"><div class="tb-label">Time</div><div class="tb-val" id="curTime">00:00</div></div>
-    <button class="tb-btn" id="skipBackBtn" disabled>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 20L9 12l10-8v16z"/><path d="M5 19V5"/></svg>
-    </button>
-    <button class="tb-play" id="playBtn" disabled>
-      <svg viewBox="0 0 24 24" id="playIcon"><path d="M8 5v14l11-7z"/></svg>
-    </button>
-    <button class="tb-btn" id="skipFwdBtn" disabled>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4l10 8-10 8V4z"/><path d="M19 5v14"/></svg>
-    </button>
-    <div class="tb-field"><div class="tb-label">Duration</div><div class="tb-val" id="totTime">00:00</div></div>
+  <div class="time-row" id="timeRow">
+    <span class="time-lbl" id="curTime">0:00</span>
+    <span class="time-lbl" id="totTime">0:00</span>
   </div>
 
   <!-- Empty state -->
   <div class="empty" id="empty">
     <div class="empty-icon">
-      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="opacity:.7"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg>
+      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="opacity:.75">
+        <polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/>
+        <path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/>
+      </svg>
     </div>
     <div class="empty-title">Add an audio or video file</div>
-    <div class="empty-sub">Convert between formats, or extract audio from video.</div>
+    <div class="empty-sub">Use the format wheel below to pick your output — or tap here to load a file first.</div>
     <label for="fileInput" class="empty-btn">+ Add File</label>
   </div>
 
-  <!-- Format picker -->
-  <div class="convert-section" id="convertSection" style="display:none">
-    <div class="sect-label">Convert To</div>
-    <div class="fmt-row">
-      <button class="fmt-btn active" data-fmt="mp3"><div class="fmt-btn-name">MP3</div><div class="fmt-btn-desc">Universal</div></button>
-      <button class="fmt-btn" data-fmt="wav"><div class="fmt-btn-name">WAV</div><div class="fmt-btn-desc">Lossless</div></button>
-      <button class="fmt-btn" data-fmt="aiff"><div class="fmt-btn-name">AIFF</div><div class="fmt-btn-desc">Apple</div></button>
-      <button class="fmt-btn" data-fmt="flac"><div class="fmt-btn-name">FLAC</div><div class="fmt-btn-desc">Compressed</div></button>
+  <!-- Status banner -->
+  <div class="status-banner" id="statusBanner">
+    <div>
+      <div class="status-fmt" id="statusFmt">MP3</div>
+      <div class="status-sub" id="statusSub">192 kbps · tap Convert to download</div>
     </div>
+    <button class="convert-trigger" id="convertBtn" disabled>Convert</button>
   </div>
+</div>
 
-  <!-- Bitrate -->
-  <div class="bitrate-card" id="bitrateCard" style="display:none">
-    <div class="field-label">MP3 Bitrate</div>
-    <div class="seg" id="bitrateSeg">
-      <button data-br="128">128 kbps</button>
-      <button data-br="192" class="active">192 kbps</button>
-      <button data-br="320">320 kbps</button>
-    </div>
-  </div>
-
-  <!-- Filename + Convert -->
-  <div class="name-card" id="nameCard" style="display:none">
-    <div class="field-label">Save As</div>
-    <input class="text-input" type="text" id="exportName" placeholder="converted-audio" autocorrect="off" spellcheck="false">
-  </div>
-
-  <button class="convert-btn" id="convertBtn" disabled style="display:none">Convert &amp; Download</button>
-
+<!-- ── RADIAL DOCK ── -->
+<div class="radial-dock" id="radialDock">
+  <div class="radial-backdrop"></div>
+  <!-- Format buttons, inner bitrate buttons, and play button are injected by JS -->
 </div>
 
 <div class="backdrop" id="backdrop"></div>
@@ -243,260 +261,350 @@ body{display:flex;flex-direction:column;height:100dvh}
 <div class="nav-sheet" id="navSheet">
   <div class="nav-handle-wrap"><div class="nav-handle"></div></div>
   <div class="nav-sl">Navigation</div>
-  <a href="/" class="nav-a"><span class="ico"><img src="/icons/home.png" alt="" style="width:28px;height:28px;border-radius:6px"></span>Home</a>
+  <a href="/" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/home.png" style="width:28px;height:28px;border-radius:6px"></span>Home</a>
   <div class="nav-sl">Free Tools</div>
-  <a href="/watermark" class="nav-a"><span class="ico"><img src="/icons/watermark.png" alt="" style="width:28px;height:28px;border-radius:6px"></span>Watermark Tool</a>
-  <a href="/video-splitter" class="nav-a"><span class="ico"><img src="/icons/video-splitter.png" alt="" style="width:28px;height:28px;border-radius:6px"></span>Video Splitter</a>
-  <a href="/frame-extractor" class="nav-a"><span class="ico"><img src="/icons/frame-extractor.png" alt="" style="width:28px;height:28px;border-radius:6px"></span>Frame Extractor</a>
-  <a href="/audio-editor" class="nav-a"><span class="ico"><img src="/icons/audio-editor.png" alt="" style="width:28px;height:28px;border-radius:6px"></span>Audio Editor</a>
-  <a href="/audio-converter" class="nav-a"><span class="ico"><img src="/icons/audio-converter.png" alt="" style="width:28px;height:28px;border-radius:6px"></span>Audio Converter</a>
-  <a href="/video-flipper" class="nav-a"><span class="ico"><img src="/icons/video-flipper.png" alt="" style="width:28px;height:28px;border-radius:6px"></span>Batch Video Flipper</a>
+  <a href="/watermark" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/watermark.png" style="width:28px;height:28px;border-radius:6px"></span>Watermark Tool</a>
+  <a href="/video-splitter" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/video-splitter.png" style="width:28px;height:28px;border-radius:6px"></span>Video Splitter</a>
+  <a href="/frame-extractor" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/frame-extractor.png" style="width:28px;height:28px;border-radius:6px"></span>Frame Extractor</a>
+  <a href="/audio-editor" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/audio-editor.png" style="width:28px;height:28px;border-radius:6px"></span>Audio Editor</a>
+  <a href="/audio-converter" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/audio-converter.png" style="width:28px;height:28px;border-radius:6px"></span>Audio Converter</a>
+  <a href="/video-flipper" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/video-flipper.png" style="width:28px;height:28px;border-radius:6px"></span>Batch Video Flipper</a>
   <div class="nav-sl">AI Generation</div>
-  <a href="/ai-studio" class="nav-a"><span class="ico" style="display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg></span>AI Studio</a>
-  <a href="/motion-control" class="nav-a"><span class="ico" style="display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/><path d="M18 12l3 3-3 3"/></svg></span>Motion Control</a>
+  <a href="/ai-studio" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg></span>AI Studio</a>
+  <a href="/motion-control" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg></span>Motion Control</a>
   <div class="nav-sl">Follow Us</div>
-  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-a"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="#E1306C"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></span>Instagram</a>
-  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="nav-a"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.79a4.85 4.85 0 01-1.01-.1z"/></svg></span>TikTok</a>
-  <a href="https://youtube.com/@back2lifeai" target="_blank" class="nav-a"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg></span>YouTube</a>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-a"><span style="width:28px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="#E1306C"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="nav-a"><span style="width:28px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.79a4.85 4.85 0 01-1.01-.1z"/></svg></span>TikTok</a>
   <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-cta">Follow on Instagram</a>
 </div>
 
-<div class="overlay-spin" id="overlaySpin"><div class="spinner"></div><div class="spin-label" id="spinLabel">Converting…</div></div>
+<div class="overlay-spin" id="overlaySpin"><div class="spinner"></div><div class="spin-label" id="spinLabel">Working…</div></div>
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
 <script>
 const $=id=>document.getElementById(id);
-let audioCtx=null, audioBuffer=null, sourceNode=null, gainNode=null;
-let sourceFileName='audio', isVideo=false;
-let outFormat='mp3', outBitrate=192;
-let playing=false, startedAt=0, seekPos=0;
 
-// ── FILE LOAD ──
-$('fileInput').addEventListener('change',async e=>{
-  const file=e.target.files[0];
-  if(!file)return;
-  sourceFileName=file.name.replace(/\.[^.]+$/,'');
-  isVideo=file.type.startsWith('video/');
-  showSpinner(isVideo?'Extracting audio…':'Loading audio…');
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+let audioCtx=null, audioBuffer=null, sourceNode=null;
+let playing=false, startedAt=0, seekPos=0;
+let isVideo=false, sourceFileName='audio';
+let outFormat='mp3', outBitrate=192;
+
+/* ═══════════════════════════════════════
+   BUILD RADIAL DOCK
+═══════════════════════════════════════ */
+const FORMATS = [
+  { fmt:'wav',  label:'WAV',  sub:'Lossless',  angle:158 },
+  { fmt:'aiff', label:'AIFF', sub:'Apple',     angle:126 },
+  { fmt:'mp3',  label:'MP3',  sub:'Universal', angle:90  },
+  { fmt:'flac', label:'FLAC', sub:'Compressed',angle:54  },
+  { fmt:'ogg',  label:'OGG',  sub:'Open',      angle:22  },
+];
+const BITRATES = [
+  { br:128, label:'128', sub:'kbps', angle:135 },
+  { br:192, label:'192', sub:'kbps', angle:90  },
+  { br:320, label:'320', sub:'kbps', angle:45  },
+];
+const OUTER_R = 148;
+const INNER_R = 88;
+
+function buildRadial(){
+  const dock = $('radialDock');
+  const dockH = dock.offsetHeight || 280;
+  const dockW = dock.offsetWidth || window.innerWidth;
+  // origin: bottom center of dock
+  const cx = dockW / 2;
+  const cy = dockH; // bottom edge of dock
+
+  // ── FORMAT BUTTONS (outer arc) ──
+  FORMATS.forEach(f => {
+    const rad = f.angle * Math.PI / 180;
+    const bx = cx + OUTER_R * Math.cos(rad);
+    const by = cy - OUTER_R * Math.sin(rad);
+
+    const btn = document.createElement('button');
+    btn.className = 'rad-btn' + (f.fmt === outFormat ? ' active' : '');
+    btn.dataset.fmt = f.fmt;
+    btn.style.left = bx + 'px';
+    btn.style.top  = by + 'px';
+    btn.innerHTML  = `<span class="rad-btn-label">${f.label}</span><span class="rad-btn-sub">${f.sub}</span>`;
+    btn.addEventListener('click', () => selectFormat(f.fmt));
+    dock.appendChild(btn);
+  });
+
+  // ── BITRATE INNER BUTTONS ──
+  BITRATES.forEach(b => {
+    const rad = b.angle * Math.PI / 180;
+    const bx = cx + INNER_R * Math.cos(rad);
+    const by = cy - INNER_R * Math.sin(rad);
+
+    const btn = document.createElement('button');
+    btn.className = 'rad-inner' + (b.br === outBitrate ? ' active' : '');
+    btn.dataset.br = b.br;
+    btn.style.left = bx + 'px';
+    btn.style.top  = by + 'px';
+    btn.innerHTML  = `<span class="rad-inner-label">${b.label}</span><span class="rad-inner-sub">${b.sub}</span>`;
+    btn.addEventListener('click', () => selectBitrate(b.br));
+    dock.appendChild(btn);
+  });
+
+  // ── PLAY BUTTON (center pivot) ──
+  const safeB = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sab') || '0') || 0;
+  const playBtn = document.createElement('button');
+  playBtn.id = 'radPlayBtn';
+  playBtn.className = 'rad-play';
+  playBtn.disabled = true;
+  playBtn.style.left = cx + 'px';
+  playBtn.style.top  = (cy - 2) + 'px'; // 2px above bottom edge
+  playBtn.innerHTML  = `<svg id="radPlayIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+  playBtn.addEventListener('click', () => playing ? stopPlayback() : startPlayback());
+  dock.appendChild(playBtn);
+
+  // show/hide inner bitrates based on initial format
+  updateBitrateVisibility();
+}
+
+function selectFormat(fmt){
+  outFormat = fmt;
+  document.querySelectorAll('.rad-btn').forEach(b => b.classList.toggle('active', b.dataset.fmt === fmt));
+  updateBitrateVisibility();
+  updateStatusBanner();
+}
+
+function selectBitrate(br){
+  outBitrate = br;
+  document.querySelectorAll('.rad-inner').forEach(b => b.classList.toggle('active', +b.dataset.br === br));
+  updateStatusBanner();
+}
+
+function updateBitrateVisibility(){
+  const show = outFormat === 'mp3';
+  document.querySelectorAll('.rad-inner').forEach(b => b.classList.toggle('visible', show));
+}
+
+function updateStatusBanner(){
+  if(!audioBuffer){ $('statusBanner').classList.remove('show'); return; }
+  $('statusBanner').classList.add('show');
+  $('statusFmt').textContent = outFormat.toUpperCase();
+  let sub = '';
+  if(outFormat==='mp3') sub = outBitrate+' kbps · tap Convert to download';
+  else if(outFormat==='wav') sub = 'Lossless PCM · tap Convert to download';
+  else if(outFormat==='aiff') sub = 'Lossless Apple · tap Convert to download';
+  else if(outFormat==='flac') sub = 'Lossless compressed (exported as WAV) · tap Convert';
+  else if(outFormat==='ogg') sub = 'Exported as WAV (OGG needs native) · tap Convert';
+  $('statusSub').textContent = sub;
+}
+
+/* ═══════════════════════════════════════
+   FILE LOAD
+═══════════════════════════════════════ */
+$('fileInput').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if(!file) return;
+  sourceFileName = file.name.replace(/\.[^.]+$/, '');
+  isVideo = file.type.startsWith('video/');
+  showSpinner(isVideo ? 'Extracting audio…' : 'Loading audio…');
   try{
-    if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    if(audioCtx.state==='suspended')await audioCtx.resume();
-    const buf=await file.arrayBuffer();
-    audioBuffer=await audioCtx.decodeAudioData(buf);
+    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') await audioCtx.resume();
+    const buf = await file.arrayBuffer();
+    audioBuffer = await audioCtx.decodeAudioData(buf);
+
     $('empty').classList.add('hidden');
     $('trackSection').classList.add('show');
-    $('waveCard').style.display='block';
-    $('transportBar').style.display='flex';
-    $('convertSection').style.display='block';
-    $('bitrateCard').style.display=outFormat==='mp3'?'block':'none';
-    $('nameCard').style.display='block';
-    $('convertBtn').style.display='block';
-    $('convertBtn').disabled=false;
-    $('playBtn').disabled=false;
-    $('skipBackBtn').disabled=false;
-    $('skipFwdBtn').disabled=false;
-    $('trackName').value=sourceFileName;
-    $('trackInfo').textContent=`${fmtTime(audioBuffer.duration)} · ${audioBuffer.numberOfChannels===2?'Stereo':'Mono'} · ${Math.round(audioBuffer.sampleRate/1000)}kHz${isVideo?' · audio extracted':''}`;
-    $('exportName').value=sourceFileName+(isVideo?'-audio':'');
-    $('totTime').textContent=fmtTime(audioBuffer.duration);
-    seekPos=0;
+    $('waveCard').classList.add('show');
+    $('timeRow').classList.add('show');
+    $('trackName').value = sourceFileName;
+    $('trackInfo').textContent = `${fmtTime(audioBuffer.duration)} · ${audioBuffer.numberOfChannels===2?'Stereo':'Mono'} · ${Math.round(audioBuffer.sampleRate/1000)}kHz${isVideo?' · audio extracted':''}`;
+    $('totTime').textContent = fmtTime(audioBuffer.duration);
+    seekPos = 0;
     drawWave();
-  }catch(err){
-    toast('Could not read this file',true);
+    $('radPlayBtn').disabled = false;
+    $('convertBtn').disabled = false;
+    updateStatusBanner();
+  } catch(err){
+    toast('Could not read this file', true);
     $('empty').classList.remove('hidden');
   }
   hideSpinner();
-  e.target.value='';
+  e.target.value = '';
 });
 
-$('trackName').addEventListener('input',()=>{ $('exportName').value=$('trackName').value.trim(); });
+$('trackName').addEventListener('input', () => {});
 
-// ── WAVEFORM ──
+/* ═══════════════════════════════════════
+   WAVEFORM
+═══════════════════════════════════════ */
 function drawWave(){
-  const canvas=$('waveCanvas');
-  if(!audioBuffer||!canvas)return;
-  const W=canvas.offsetWidth*window.devicePixelRatio||canvas.offsetWidth;
-  const H=canvas.offsetHeight*window.devicePixelRatio||canvas.offsetHeight;
-  canvas.width=W; canvas.height=H;
-  const ctx=canvas.getContext('2d');
+  const canvas = $('waveCanvas');
+  if(!audioBuffer || !canvas) return;
+  const W = canvas.offsetWidth * (window.devicePixelRatio||1);
+  const H = canvas.offsetHeight * (window.devicePixelRatio||1);
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
   ctx.clearRect(0,0,W,H);
-  const data=audioBuffer.getChannelData(0);
-  const step=Math.ceil(data.length/W);
-  const mid=H/2;
-  const grad=ctx.createLinearGradient(0,0,0,H);
-  grad.addColorStop(0,'rgba(0,255,136,0.85)');
-  grad.addColorStop(0.5,'rgba(0,255,136,0.55)');
-  grad.addColorStop(1,'rgba(0,200,100,0.3)');
-  ctx.fillStyle=grad;
+  const data = audioBuffer.getChannelData(0);
+  const step = Math.ceil(data.length / W);
+  const mid = H / 2;
+  const grad = ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'rgba(0,255,136,0.9)');
+  grad.addColorStop(0.5,'rgba(0,255,136,0.6)');
+  grad.addColorStop(1,'rgba(0,200,100,0.25)');
+  ctx.fillStyle = grad;
   for(let i=0;i<W;i++){
-    let min=1,max=-1;
-    for(let j=0;j<step;j++){const v=data[i*step+j]||0;if(v<min)min=v;if(v>max)max=v;}
-    const yTop=mid*(1-max), yBot=mid*(1-min);
-    ctx.fillRect(i,yTop,1.5,Math.max(1,yBot-yTop));
+    let mn=1, mx=-1;
+    for(let j=0;j<step;j++){const v=data[i*step+j]||0; if(v<mn)mn=v; if(v>mx)mx=v;}
+    const yTop = mid*(1-mx), yBot = mid*(1-mn);
+    ctx.fillRect(i, yTop, 1.5, Math.max(1, yBot-yTop));
   }
-  // position tap handler
-  canvas.onclick=e=>{
-    const rect=canvas.getBoundingClientRect();
-    const frac=(e.clientX-rect.left)/rect.width;
-    seekPos=frac*audioBuffer.duration;
-    updatePlayhead(frac);
-    $('curTime').textContent=fmtTime(seekPos);
-    if(playing){ stopPlayback(); startPlayback(); }
-  };
 }
 
-function updatePlayhead(frac){
-  const ph=$('playhead');
-  const wrap=$('trimHandles');
-  ph.style.display='block';
-  ph.style.left=(frac*wrap.clientWidth)+'px';
-}
-
-// ── PLAYBACK ──
-$('playBtn').addEventListener('click',()=>playing?stopPlayback():startPlayback());
-$('skipBackBtn').addEventListener('click',()=>{
-  if(!audioBuffer)return;
-  seekPos=0; updatePlayhead(0); $('curTime').textContent=fmtTime(0);
+// tap waveform to seek
+$('waveCanvas').addEventListener('click', e => {
+  if(!audioBuffer) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const frac = (e.clientX - rect.left) / rect.width;
+  seekPos = frac * audioBuffer.duration;
+  updatePlayhead(frac);
+  $('curTime').textContent = fmtTime(seekPos);
   if(playing){ stopPlayback(); startPlayback(); }
 });
-$('skipFwdBtn').addEventListener('click',()=>{
-  if(!audioBuffer)return;
-  seekPos=Math.max(0,audioBuffer.duration-0.01);
-  updatePlayhead(1); $('curTime').textContent=fmtTime(seekPos);
-  if(playing){ stopPlayback(); }
-});
 
+function updatePlayhead(frac){
+  const ph = $('playhead'), inner = $('waveInner');
+  ph.style.display = 'block';
+  ph.style.left = (frac * inner.clientWidth) + 'px';
+}
+
+/* ═══════════════════════════════════════
+   PLAYBACK
+═══════════════════════════════════════ */
 function startPlayback(){
-  if(!audioBuffer)return;
-  if(audioCtx.state==='suspended')audioCtx.resume();
-  sourceNode=audioCtx.createBufferSource();
-  sourceNode.buffer=audioBuffer;
-  gainNode=audioCtx.createGain();
-  gainNode.gain.value=1;
-  sourceNode.connect(gainNode).connect(audioCtx.destination);
+  if(!audioBuffer) return;
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  sourceNode = audioCtx.createBufferSource();
+  sourceNode.buffer = audioBuffer;
+  sourceNode.connect(audioCtx.destination);
   sourceNode.start(0, seekPos);
-  startedAt=audioCtx.currentTime - seekPos;
-  playing=true;
-  $('playIcon').innerHTML='<rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/>';
-  sourceNode.onended=()=>{ if(playing){ seekPos=0; stopPlayback(); } };
+  startedAt = audioCtx.currentTime - seekPos;
+  playing = true;
+  $('radPlayIcon').innerHTML = '<rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/>';
+  sourceNode.onended = () => { if(playing){ seekPos=0; stopPlayback(); }};
   requestAnimationFrame(tick);
 }
-
 function stopPlayback(){
-  if(sourceNode){ try{sourceNode.stop();}catch(e){} }
-  playing=false;
-  $('playIcon').innerHTML='<path d="M8 5v14l11-7z"/>';
+  if(sourceNode){ try{sourceNode.stop();}catch(e){}}
+  playing = false;
+  $('radPlayIcon').innerHTML = '<path d="M8 5v14l11-7z"/>';
 }
-
 function tick(){
-  if(!playing)return;
-  const t=audioCtx.currentTime - startedAt;
-  seekPos=Math.min(t, audioBuffer.duration);
-  const frac=seekPos/audioBuffer.duration;
-  updatePlayhead(frac);
-  $('curTime').textContent=fmtTime(seekPos);
+  if(!playing) return;
+  const t = audioCtx.currentTime - startedAt;
+  seekPos = Math.min(t, audioBuffer.duration);
+  updatePlayhead(seekPos / audioBuffer.duration);
+  $('curTime').textContent = fmtTime(seekPos);
   requestAnimationFrame(tick);
 }
 
-// ── FORMAT BUTTONS ──
-document.querySelectorAll('.fmt-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    outFormat=btn.dataset.fmt;
-    $('bitrateCard').style.display=outFormat==='mp3'?'block':'none';
-  });
-});
-document.querySelectorAll('#bitrateSeg button').forEach(b=>{
-  b.addEventListener('click',()=>{
-    document.querySelectorAll('#bitrateSeg button').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active'); outBitrate=+b.dataset.br;
-  });
-});
-
-// ── CONVERT ──
-$('convertBtn').addEventListener('click',async()=>{
-  if(!audioBuffer)return;
+/* ═══════════════════════════════════════
+   CONVERT
+═══════════════════════════════════════ */
+$('convertBtn').addEventListener('click', async () => {
+  if(!audioBuffer) return;
   showSpinner('Converting to '+outFormat.toUpperCase()+'…');
   try{
-    const name=($('exportName').value.trim()||'converted-audio');
-    await exportFile(audioBuffer,outFormat,name,outBitrate);
+    const name = ($('trackName').value.trim() || 'converted-audio');
+    await exportFile(audioBuffer, outFormat, name, outBitrate);
     toast('✓ Downloaded '+name+'.'+outFormat);
-  }catch(err){ toast('Conversion failed',true); }
+  } catch(err){ toast('Conversion failed', true); }
   hideSpinner();
 });
 
-// ── NAV ──
-const backdrop=$('backdrop');
-$('menuBtn').addEventListener('click',()=>{
-  const open=$('navSheet').classList.contains('open');
-  if(open){ $('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open'); }
-  else{ $('navSheet').classList.add('open');backdrop.classList.add('open');$('menuBtn').classList.add('open'); }
-});
-backdrop.addEventListener('click',()=>{ $('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open'); });
-let ty=0;
-$('navSheet').addEventListener('touchstart',e=>ty=e.touches[0].clientY,{passive:true});
-$('navSheet').addEventListener('touchend',e=>{ if(e.changedTouches[0].clientY-ty>60){ $('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open'); } },{passive:true});
-
-// ── ENCODERS (unchanged) ──
-async function exportFile(buffer,format,name,bitrate){
-  let blob,ext=format;
-  if(format==='mp3'){blob=encodeMP3(buffer,bitrate);}
-  else if(format==='wav'){blob=encodeWAV(buffer);}
-  else if(format==='aiff'){blob=encodeAIFF(buffer);}
-  else if(format==='flac'){blob=encodeWAV(buffer);ext='wav';toast('FLAC needs native — exported WAV instead');}
-  triggerDownload(blob,name+'.'+ext);
+/* ═══════════════════════════════════════
+   ENCODERS
+═══════════════════════════════════════ */
+async function exportFile(buffer, format, name, bitrate){
+  let blob, ext=format;
+  if(format==='mp3'){ blob=encodeMP3(buffer,bitrate); }
+  else if(format==='wav'){ blob=encodeWAV(buffer); }
+  else if(format==='aiff'){ blob=encodeAIFF(buffer); }
+  else { blob=encodeWAV(buffer); ext='wav'; toast('Exported as WAV (needs native encoder for '+format.toUpperCase()+')');}
+  triggerDownload(blob, name+'.'+ext);
 }
-function triggerDownload(blob,filename){
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
+function triggerDownload(blob, filename){
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(a.href),15000);
 }
 function encodeWAV(buffer){
   const numCh=buffer.numberOfChannels,sr=buffer.sampleRate,len=buffer.length*numCh*2+44;
-  const ab=new ArrayBuffer(len),view=new DataView(ab);
-  const ws=(o,s)=>{for(let i=0;i<s.length;i++)view.setUint8(o+i,s.charCodeAt(i));};
-  ws(0,'RIFF');view.setUint32(4,len-8,true);ws(8,'WAVE');ws(12,'fmt ');view.setUint32(16,16,true);
-  view.setUint16(20,1,true);view.setUint16(22,numCh,true);view.setUint32(24,sr,true);
-  view.setUint32(28,sr*numCh*2,true);view.setUint16(32,numCh*2,true);view.setUint16(34,16,true);
-  ws(36,'data');view.setUint32(40,len-44,true);
+  const ab=new ArrayBuffer(len),v=new DataView(ab);
+  const ws=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
+  ws(0,'RIFF');v.setUint32(4,len-8,true);ws(8,'WAVE');ws(12,'fmt ');v.setUint32(16,16,true);
+  v.setUint16(20,1,true);v.setUint16(22,numCh,true);v.setUint32(24,sr,true);
+  v.setUint32(28,sr*numCh*2,true);v.setUint16(32,numCh*2,true);v.setUint16(34,16,true);
+  ws(36,'data');v.setUint32(40,len-44,true);
   let off=44;const ch=[];for(let c=0;c<numCh;c++)ch.push(buffer.getChannelData(c));
-  for(let i=0;i<buffer.length;i++)for(let c=0;c<numCh;c++){let s=Math.max(-1,Math.min(1,ch[c][i]));view.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;}
-  return new Blob([view],{type:'audio/wav'});
+  for(let i=0;i<buffer.length;i++)for(let c=0;c<numCh;c++){let s=Math.max(-1,Math.min(1,ch[c][i]));v.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;}
+  return new Blob([v],{type:'audio/wav'});
 }
 function encodeAIFF(buffer){
-  const numCh=buffer.numberOfChannels,sr=buffer.sampleRate,frames=buffer.length,dataLen=frames*numCh*2;
-  const ab=new ArrayBuffer(54+dataLen),view=new DataView(ab);
-  const ws=(o,s)=>{for(let i=0;i<s.length;i++)view.setUint8(o+i,s.charCodeAt(i));};
-  ws(0,'FORM');view.setUint32(4,46+dataLen,false);ws(8,'AIFF');ws(12,'COMM');view.setUint32(16,18,false);
-  view.setUint16(20,numCh,false);view.setUint32(22,frames,false);view.setUint16(26,16,false);
-  const setExt=(o,v)=>{const e=Math.floor(Math.log2(v));const m=v/Math.pow(2,e);view.setUint16(o,16383+e,false);view.setUint32(o+2,(Math.floor(m*Math.pow(2,31))>>>0),false);view.setUint32(o+6,0,false);};
-  setExt(28,sr);ws(38,'SSND');view.setUint32(42,8+dataLen,false);view.setUint32(46,0,false);view.setUint32(50,0,false);
+  const numCh=buffer.numberOfChannels,sr=buffer.sampleRate,frames=buffer.length,dLen=frames*numCh*2;
+  const ab=new ArrayBuffer(54+dLen),v=new DataView(ab);
+  const ws=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
+  ws(0,'FORM');v.setUint32(4,46+dLen,false);ws(8,'AIFF');ws(12,'COMM');v.setUint32(16,18,false);
+  v.setUint16(20,numCh,false);v.setUint32(22,frames,false);v.setUint16(26,16,false);
+  const setExt=(o,val)=>{const e=Math.floor(Math.log2(val));const m=val/Math.pow(2,e);v.setUint16(o,16383+e,false);v.setUint32(o+2,(Math.floor(m*Math.pow(2,31))>>>0),false);v.setUint32(o+6,0,false);};
+  setExt(28,sr);ws(38,'SSND');v.setUint32(42,8+dLen,false);v.setUint32(46,0,false);v.setUint32(50,0,false);
   let off=54;const ch=[];for(let c=0;c<numCh;c++)ch.push(buffer.getChannelData(c));
-  for(let i=0;i<frames;i++)for(let c=0;c<numCh;c++){let s=Math.max(-1,Math.min(1,ch[c][i]));view.setInt16(off,s<0?s*0x8000:s*0x7FFF,false);off+=2;}
-  return new Blob([view],{type:'audio/aiff'});
+  for(let i=0;i<frames;i++)for(let c=0;c<numCh;c++){let s=Math.max(-1,Math.min(1,ch[c][i]));v.setInt16(off,s<0?s*0x8000:s*0x7FFF,false);off+=2;}
+  return new Blob([v],{type:'audio/aiff'});
 }
-function encodeMP3(buffer,kbps){
+function encodeMP3(buffer, kbps){
   const numCh=buffer.numberOfChannels,sr=buffer.sampleRate;
   const enc=new lamejs.Mp3Encoder(numCh,sr,kbps);
   const bs=1152,data=[];
   const left=f16(buffer.getChannelData(0));
   const right=numCh>1?f16(buffer.getChannelData(1)):null;
   for(let i=0;i<left.length;i+=bs){
-    const l=left.subarray(i,i+bs);let chunk;
-    if(right){const r=right.subarray(i,i+bs);chunk=enc.encodeBuffer(l,r);}else chunk=enc.encodeBuffer(l);
+    const l=left.subarray(i,i+bs);
+    const chunk=right?enc.encodeBuffer(l,right.subarray(i,i+bs)):enc.encodeBuffer(l);
     if(chunk.length)data.push(chunk);
   }
   const end=enc.flush();if(end.length)data.push(end);
   return new Blob(data,{type:'audio/mp3'});
 }
-function f16(f32){const i16=new Int16Array(f32.length);for(let i=0;i<f32.length;i++){let s=Math.max(-1,Math.min(1,f32[i]));i16[i]=s<0?s*0x8000:s*0x7FFF;}return i16;}
+function f16(f32){const i=new Int16Array(f32.length);for(let j=0;j<f32.length;j++){let s=Math.max(-1,Math.min(1,f32[j]));i[j]=s<0?s*0x8000:s*0x7FFF;}return i;}
 
+/* ═══════════════════════════════════════
+   NAV
+═══════════════════════════════════════ */
+const backdrop=$('backdrop');
+$('menuBtn').addEventListener('click',()=>{
+  const open=$('navSheet').classList.contains('open');
+  $('navSheet').classList.toggle('open',!open);
+  backdrop.classList.toggle('open',!open);
+  $('menuBtn').classList.toggle('open',!open);
+});
+backdrop.addEventListener('click',()=>{ $('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open'); });
+
+/* ═══════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════ */
 function fmtTime(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+String(sec).padStart(2,'0');}
 function showSpinner(l){$('spinLabel').textContent=l||'Working…';$('overlaySpin').classList.add('show');}
 function hideSpinner(){$('overlaySpin').classList.remove('show');}
 function toast(msg,err){const t=$('toast');t.textContent=msg;t.className='toast show'+(err?' err':'');setTimeout(()=>t.classList.remove('show'),3200);}
+
+/* ── INIT ── */
+window.addEventListener('load', buildRadial);
+window.addEventListener('resize', () => {
+  document.querySelectorAll('.rad-btn,.rad-inner,.rad-play').forEach(el => el.remove());
+  buildRadial();
+});
 </script>
 </body>
 </html>
