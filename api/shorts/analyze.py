@@ -6,6 +6,13 @@ import subprocess
 import tempfile
 import uuid
 import requests
+import yt_dlp
+
+try:
+    import imageio_ffmpeg
+    FFMPEG_BIN = imageio_ffmpeg.get_ffmpeg_exe()
+except Exception:
+    FFMPEG_BIN = None
 
 MAX_DURATION_SECONDS = 200  # ~3.3 min hard cap to stay inside function time limits
 
@@ -19,25 +26,47 @@ HIGHLIGHT_KEYWORDS = [
 ]
 
 
-def run(cmd, timeout=45):
-    return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
-
-
 def get_video_meta(url):
-    res = run(["yt-dlp", "-j", "--no-playlist", url], timeout=30)
-    if res.returncode != 0:
-        raise RuntimeError("Could not read that video. Check the URL is a public YouTube link.")
-    info = json.loads(res.stdout)
+    ydl_opts = {"quiet": True, "no_warnings": True, "noplaylist": True, "skip_download": True}
+    if FFMPEG_BIN:
+        ydl_opts["ffmpeg_location"] = FFMPEG_BIN
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=False)
+    except Exception as e:
+        raise RuntimeError("Could not read that video. Check the URL is a public YouTube link.") from e
     return info.get("title", "Untitled"), float(info.get("duration") or 0)
 
 
-def download_audio(url, out_path):
-    res = run([
-        "yt-dlp", "-x", "--audio-format", "mp3", "--audio-quality", "5",
-        "--no-playlist", "-o", out_path, url
-    ], timeout=55)
-    if res.returncode != 0:
-        raise RuntimeError("Failed to download audio from that video.")
+def download_audio(url, out_dir, uid):
+    out_tmpl = os.path.join(out_dir, f"audio-{uid}.%(ext)s")
+    ydl_opts = {
+        "quiet": True,
+        "no_warnings": True,
+        "noplaylist": True,
+        "format": "bestaudio/best",
+        "outtmpl": out_tmpl,
+        "postprocessors": [{
+            "key": "FFmpegExtractAudio",
+            "preferredcodec": "mp3",
+            "preferredquality": "5",
+        }],
+    }
+    if FFMPEG_BIN:
+        ydl_opts["ffmpeg_location"] = FFMPEG_BIN
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+    except Exception as e:
+        raise RuntimeError("Failed to download audio from that video.") from e
+
+    expected = os.path.join(out_dir, f"audio-{uid}.mp3")
+    if os.path.exists(expected):
+        return expected
+    matches = [f for f in os.listdir(out_dir) if f.startswith(f"audio-{uid}")]
+    if matches:
+        return os.path.join(out_dir, matches[0])
+    raise RuntimeError("Audio download produced no file.")
 
 
 def transcribe(audio_path):
@@ -141,16 +170,8 @@ class handler(BaseHTTPRequestHandler):
                 return
 
             tmp_dir = tempfile.mkdtemp()
-            audio_base = os.path.join(tmp_dir, f"audio-{uuid.uuid4().hex}.%(ext)s")
-            download_audio(url, audio_base)
-
-            audio_path = audio_base.replace("%(ext)s", "mp3")
-            if not os.path.exists(audio_path):
-                matches = [f for f in os.listdir(tmp_dir) if f.endswith(".mp3")]
-                if not matches:
-                    self._send(500, {"error": "Audio download produced no file."})
-                    return
-                audio_path = os.path.join(tmp_dir, matches[0])
+            uid = uuid.uuid4().hex
+            audio_path = download_audio(url, tmp_dir, uid)
 
             segments = transcribe(audio_path)
             clips = find_highlights(segments, duration, num_clips, clip_duration)

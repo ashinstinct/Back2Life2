@@ -5,6 +5,7 @@ import re
 import subprocess
 import tempfile
 import uuid
+import yt_dlp
 
 try:
     import imageio_ffmpeg
@@ -52,19 +53,38 @@ def build_srt(segments, clip_start, clip_end, srt_path):
     return idx > 1
 
 
-def download_section(url, start, end, out_path):
-    section = f"*{start}-{end}"
-    res = run([
-        "yt-dlp",
-        "--download-sections", section,
-        "-f", "bv*[height<=1080][ext=mp4]+ba[ext=m4a]/best[ext=mp4]/best",
-        "--merge-output-format", "mp4",
-        "--no-playlist",
-        "-o", out_path,
-        url
-    ], timeout=55)
-    if res.returncode != 0 or not os.path.exists(out_path):
-        raise RuntimeError("Could not download that section of the video.")
+def download_section(url, start, end, out_dir, uid):
+    out_tmpl = os.path.join(out_dir, f"src-{uid}.%(ext)s")
+
+    def ranges_fn(info_dict, ydl):
+        return [{"start_time": start, "end_time": end}]
+
+    ydl_opts = {
+        "quiet": True,
+        "no_warnings": True,
+        "noplaylist": True,
+        "format": "bv*[height<=1080][ext=mp4]+ba[ext=m4a]/best[ext=mp4]/best",
+        "outtmpl": out_tmpl,
+        "merge_output_format": "mp4",
+        "download_ranges": ranges_fn,
+        "force_keyframes_at_cuts": True,
+    }
+    if FFMPEG_BIN:
+        ydl_opts["ffmpeg_location"] = FFMPEG_BIN
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+    except Exception as e:
+        raise RuntimeError("Could not download that section of the video.") from e
+
+    expected = os.path.join(out_dir, f"src-{uid}.mp4")
+    if os.path.exists(expected):
+        return expected
+    matches = [f for f in os.listdir(out_dir) if f.startswith(f"src-{uid}")]
+    if matches:
+        return os.path.join(out_dir, matches[0])
+    raise RuntimeError("Could not download that section of the video.")
 
 
 def render_vertical(src_path, out_path, srt_path, has_captions):
@@ -126,11 +146,10 @@ class handler(BaseHTTPRequestHandler):
 
             tmp_dir = tempfile.mkdtemp()
             uid = uuid.uuid4().hex
-            src_path = os.path.join(tmp_dir, f"src-{uid}.mp4")
             srt_path = os.path.join(tmp_dir, f"cap-{uid}.srt")
             out_path = os.path.join(tmp_dir, f"out-{uid}.mp4")
 
-            download_section(url, start, end, src_path)
+            src_path = download_section(url, start, end, tmp_dir, uid)
 
             # yt-dlp's --download-sections gives us roughly [start,end] starting near 0
             has_captions = build_srt(segments, start, end, srt_path)
