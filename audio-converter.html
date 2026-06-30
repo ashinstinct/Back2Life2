@@ -16,88 +16,136 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Audio Converter — Back2Life.app">
 <meta name="twitter:description" content="Convert audio between WAV, AIFF, FLAC, MP3. Extract audio from video. Free browser tool.">
-<meta name="twitter:image" content="https://back2lifeapp.vercel.app/og-image.png">>
+<meta name="twitter:image" content="https://back2lifeapp.vercel.app/og-image.png">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--bg:#080808;--surface:rgba(16,16,16,0.88);--s2:rgba(255,255,255,0.07);--border:#2a2a2a;--green:#00ff88;--gdim:rgba(0,255,136,.08);--text:#e0e0e0;--muted:#888;--bar:52px}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow:hidden;touch-action:manipulation}
-.topbar{position:fixed;top:0;left:0;right:0;height:var(--bar);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:0 14px;z-index:100}
-.topbar-title{font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--green);position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;pointer-events:none}
+:root{
+  --bg:#080808;--surface:rgba(255,255,255,0.04);--s2:rgba(255,255,255,0.06);--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --green:#00ff88;--green2:#00cc66;--gdim:rgba(0,255,136,.09);
+  --text:#f0f0f0;--text2:#aaa;--text3:#555;--bar:60px;--radius-lg:20px;--radius-sm:14px;--pill:999px;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden;touch-action:manipulation}
+body{display:flex;flex-direction:column;height:100dvh}
+
+/* ── TOPBAR ── */
+.topbar{flex-shrink:0;height:var(--bar);background:rgba(8,8,8,0.92);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;padding-top:env(safe-area-inset-top,0px);position:relative;z-index:100;gap:8px}
 .menu-btn{background:none;border:none;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px;z-index:1;flex-shrink:0}
 .menu-btn span{display:block;width:20px;height:2px;background:#aaa;border-radius:2px;transition:all .25s}
-.menu-btn.open span{background:var(--green)}
-.menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg);background:var(--green)}
 .menu-btn.open span:nth-child(2){opacity:0}
-.menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);background:var(--green)}
 
-.add-btn{background:none;border:1px solid var(--border);border-radius:7px;color:#aaa;font-size:11px;font-weight:700;letter-spacing:.5px;padding:6px 11px;cursor:pointer;font-family:'Inter',sans-serif}
-.add-btn:active{border-color:var(--green);color:var(--green)}
-.main{position:fixed;top:var(--bar);left:0;right:0;bottom:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 14px 40px}
+/* ── SCROLL ── */
+.scroll{flex:1;overflow-y:auto;padding:20px 14px 0;-webkit-overflow-scrolling:touch}
+.scroll::-webkit-scrollbar{display:none}
 
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;height:calc(100dvh - var(--bar) - 40px);text-align:center;padding:20px}
+/* ── EDITABLE FILENAME ── */
+.track-name-input{display:block;width:100%;font-size:15px;font-weight:700;color:#fff;background:none;border:none;border-bottom:1px solid transparent;font-family:'Inter',sans-serif;padding:2px 0 4px;outline:none;margin-bottom:3px}
+.track-name-input:focus{border-bottom:1px solid var(--green)}
+.track-info{font-size:11px;color:var(--text3);margin-bottom:14px}
+.track-section{display:none;margin-bottom:2px}
+.track-section.show{display:block}
+
+/* ── WAVEFORM CARD ── */
+.wave-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,0.25)}
+.wave-canvas{width:100%;height:110px;border-radius:12px;display:block;background:#050505}
+
+/* ── TRANSPORT ── */
+.transport-bar{display:flex;align-items:center;gap:10px;background:#000;border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:14px}
+.tb-field{flex:1;text-align:center}
+.tb-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--green);margin-bottom:4px}
+.tb-val{font-size:12.5px;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+.tb-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;color:#aaa;flex-shrink:0}
+.tb-btn:disabled{opacity:.4;pointer-events:none}
+.tb-play{width:54px;height:54px;background:linear-gradient(135deg,var(--green2),var(--green));box-shadow:0 6px 20px rgba(0,255,136,0.3);flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer}
+.tb-play svg{width:18px;height:18px;fill:#000;margin-left:2px}
+.tb-play:disabled{opacity:.4;pointer-events:none;box-shadow:none}
+.playhead{position:absolute;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 6px rgba(255,255,255,.7);pointer-events:none;display:none}
+.trim-handles{position:absolute;top:0;bottom:0;left:0;right:0;pointer-events:none}
+
+/* ── EMPTY STATE ── */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:220px;text-align:center;padding:24px 20px;border:1.5px dashed var(--border2);border-radius:var(--radius-lg);margin-bottom:16px}
 .empty.hidden{display:none}
-.empty-icon{font-size:52px;opacity:.7;animation:pulse 2.4s ease-in-out infinite}
+.empty-icon{animation:pulse 2.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.07);opacity:1}}
-.empty-title{font-size:15px;font-weight:700;color:#bbb}
-.empty-sub{font-size:12px;color:#555;max-width:280px}
-.empty-btn{background:var(--green);color:#000;font-weight:800;font-size:14px;padding:12px 28px;border-radius:10px;border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px}
-.empty-chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:6px}
-.empty-chip{font-size:10px;font-weight:600;color:#555;border:1px solid #333;border-radius:4px;padding:2px 8px}
+.empty-title{font-size:15px;font-weight:700;color:#ddd}
+.empty-sub{font-size:12px;color:var(--text3);max-width:260px}
+.empty-btn{display:inline-block;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;box-shadow:0 6px 22px rgba(0,255,136,0.3);font-weight:800;font-size:14px;padding:13px 30px;border-radius:var(--pill);border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px}
+.add-btn{display:inline-block;background:var(--gdim);border:1px solid rgba(0,255,136,0.25);border-radius:var(--pill);color:var(--green);font-size:11px;font-weight:800;letter-spacing:.5px;padding:7px 14px;cursor:pointer;font-family:'Inter',sans-serif}
 
-.panel{display:none}
-.panel.show{display:block}
-.file-card{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
-.file-icon{font-size:28px;flex-shrink:0}
-.file-meta{flex:1;min-width:0}
-.file-name{font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.file-detail{font-size:11px;color:#555;margin-top:2px}
-.file-x{background:none;border:none;color:#555;font-size:18px;cursor:pointer;flex-shrink:0;padding:4px}
+/* ── FORMAT BUTTONS: single row, black with shine, green when active ── */
+.convert-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px}
+.sect-label{font-size:10px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--green);margin-bottom:12px}
+.fmt-row{display:flex;gap:8px}
+.fmt-btn{
+  flex:1;position:relative;overflow:hidden;
+  background:#000;border:1px solid rgba(255,255,255,0.12);
+  border-radius:12px;padding:12px 4px;cursor:pointer;text-align:center;
+  transition:all .15s;font-family:'Inter',sans-serif;
+}
+/* glossy highlight pseudo-element */
+.fmt-btn::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0) 100%);
+  border-radius:12px 12px 0 0;pointer-events:none;
+}
+.fmt-btn-name{font-size:14px;font-weight:800;color:rgba(255,255,255,0.6);position:relative;z-index:1;line-height:1.2}
+.fmt-btn-desc{font-size:9px;color:rgba(255,255,255,0.28);margin-top:3px;position:relative;z-index:1}
+.fmt-btn.active{
+  background:var(--green);border-color:var(--green);
+  box-shadow:0 4px 18px rgba(0,255,136,0.4);
+}
+.fmt-btn.active::before{background:linear-gradient(180deg,rgba(255,255,255,0.25) 0%,rgba(255,255,255,0) 100%)}
+.fmt-btn.active .fmt-btn-name{color:#000}
+.fmt-btn.active .fmt-btn-desc{color:rgba(0,0,0,0.5)}
 
-.sect-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin:18px 0 10px}
-.fmt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.fmt-opt{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;text-align:center;transition:all .15s}
-.fmt-opt.active{background:var(--gdim);border-color:var(--green)}
-.fmt-opt-name{font-size:15px;font-weight:800;color:var(--text)}
-.fmt-opt.active .fmt-opt-name{color:var(--green)}
-.fmt-opt-desc{font-size:9px;color:#555;margin-top:3px}
-
-.field{margin-top:18px}
-.field-label{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#666;margin-bottom:7px}
-.text-input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:11px 13px;outline:none}
-.text-input:focus{border-color:var(--green)}
-.seg{display:flex;background:#111;border:1px solid var(--border);border-radius:8px;overflow:hidden}
-.seg button{flex:1;background:none;border:none;color:#777;font-size:12px;font-weight:700;padding:10px 4px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+/* ── BITRATE FIELD ── */
+.bitrate-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px}
+.seg{display:flex;background:rgba(0,0,0,0.3);border:1px solid var(--border2);border-radius:var(--radius-sm);overflow:hidden}
+.seg button{flex:1;background:none;border:none;color:var(--text3);font-size:12px;font-weight:700;padding:11px 4px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
 .seg button.active{background:var(--gdim);color:var(--green)}
 
-.convert-btn{width:100%;background:var(--green);color:#000;font-weight:800;font-size:15px;padding:15px;border-radius:12px;border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-top:24px}
+/* ── FILENAME FIELD ── */
+.name-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px}
+.field-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.text-input{width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:13px 14px;outline:none}
+.text-input:focus{border-color:var(--green)}
+
+/* ── CONVERT BUTTON ── */
+.convert-btn{
+  width:100%;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;
+  box-shadow:0 6px 22px rgba(0,255,136,0.3);
+  font-weight:800;font-size:15px;padding:15px;border-radius:var(--pill);
+  border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:80px;
+  position:relative;overflow:hidden;
+}
+.convert-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,0.22) 0%,transparent 100%);pointer-events:none}
 .convert-btn:disabled{opacity:.4;cursor:not-allowed}
 
-/* NAV SHEET */
-.nav-sheet{position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid var(--border);border-radius:20px 20px 0 0;z-index:220;transform:translateY(100%);transition:transform .3s ease;max-height:80vh;overflow-y:auto;padding:0 20px 40px}
+/* ── NAV SHEET ── */
+.nav-sheet{position:fixed;bottom:0;left:0;right:0;background:#161616;border-top:1px solid var(--border);border-radius:26px 26px 0 0;z-index:220;transform:translateY(100%);transition:transform .3s ease;max-height:80vh;overflow-y:auto;padding:0 20px calc(40px + env(safe-area-inset-bottom,0px));box-shadow:0 -20px 60px rgba(0,0,0,0.5)}
 .nav-sheet.open{transform:translateY(0)}
-.nav-handle-wrap{padding:10px 0 6px;text-align:center}
-.nav-handle{width:36px;height:4px;background:#3a3a3a;border-radius:2px;margin:0 auto}
-.nav-sl{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--green);padding:14px 0 7px;border-top:1px solid var(--border);margin-top:4px}
+.nav-handle-wrap{padding:12px 0 6px;text-align:center}
+.nav-handle{width:38px;height:5px;background:#3a3a3a;border-radius:3px;margin:0 auto}
+.nav-sl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);padding:14px 0 7px;border-top:1px solid var(--border);margin-top:4px}
 .nav-sl:first-of-type{border-top:none;margin-top:0;padding-top:4px}
 .nav-a{display:flex;align-items:center;gap:14px;padding:12px 0;font-size:15px;font-weight:500;color:#ddd;text-decoration:none;border-bottom:1px solid #222}
 .nav-a:active{color:var(--green)}
-.nav-a .ico{width:26px;text-align:center;display:flex;align-items:center;justify-content:center}
-.nav-a .ico svg{width:20px;height:20px;display:block}
-.nav-cta{display:block;margin-top:20px;background:var(--green);color:#000;font-weight:700;font-size:14px;padding:13px;border-radius:10px;text-decoration:none;text-align:center}
+.nav-a .ico{width:26px;display:flex;align-items:center;justify-content:center}
+.nav-cta{display:block;margin-top:20px;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:700;font-size:14px;padding:13px;border-radius:var(--pill);text-decoration:none;text-align:center}
 
+/* ── OVERLAY ── */
 .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(2px);z-index:190;display:none;pointer-events:none}
 .backdrop.open{display:block;pointer-events:all}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(8px);background:#181818;border:1px solid var(--green);color:var(--green);font-size:12px;font-weight:600;padding:10px 18px;border-radius:8px;opacity:0;transition:all .3s;z-index:300;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(8px);background:#181818;border:1px solid var(--green);color:var(--green);font-size:12px;font-weight:600;padding:10px 18px;border-radius:var(--pill);opacity:0;transition:all .3s;z-index:300;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.err{border-color:#ff4466;color:#ff4466}
 .overlay-spin{position:fixed;inset:0;background:rgba(10,10,10,.85);z-index:400;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 .overlay-spin.show{display:flex}
 .spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.spin-label{font-size:13px;color:var(--muted)}
-
-.tool-banner{width:100%;display:block;border-bottom:1px solid rgba(255,255,255,0.06)}
+.spin-label{font-size:13px;color:var(--text2)}
 </style>
 <link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
 <link rel="icon" href="/favicon.ico">
@@ -107,63 +155,87 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 </head>
 <body>
 
-<input type="file" accept="audio/*,video/*" id="fileInput" style="position:fixed;top:-100px;left:-100px;width:1px;height:1px;opacity:0">
+<input type="file" accept="audio/*,video/*" id="fileInput" style="display:none">
 
 <div class="topbar">
   <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
   <a href="/" style="position:absolute;left:50%;transform:translateX(-50%);text-decoration:none;white-space:nowrap"><span style="font-size:17px;font-weight:900;color:#fff;letter-spacing:-0.5px">Back2Life</span><span style="font-size:17px;font-weight:900;color:#00ff88;letter-spacing:-0.5px">.app</span></a>
-  <a href="/" style="position:absolute;left:50%;transform:translateX(-50%);text-decoration:none;white-space:nowrap"><span style="font-size:17px;font-weight:900;color:#fff;letter-spacing:-0.5px">Back2Life</span><span style="font-size:17px;font-weight:900;color:#00ff88;letter-spacing:-0.5px">.app</span></a>
-  
+  <div style="flex:1"></div>
+  <label for="fileInput" class="add-btn">+ AUDIO</label>
 </div>
 
-<div class="main">
-  <img src="/img/banners/audio-converter-banner.png" alt="" style="width:calc(100% + 28px);display:block;margin:-16px -14px 16px -14px;border-bottom:1px solid rgba(255,255,255,0.06)">
-  <div class="empty" id="empty" onclick="document.getElementById('fileInput').click()" style="cursor:pointer">
-    <div class="empty-icon" style="display:flex;align-items:center;justify-content:center"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg></div>
+<div class="scroll">
+
+  <!-- Track name -->
+  <div class="track-section" id="trackSection">
+    <input type="text" class="track-name-input" id="trackName" autocorrect="off" spellcheck="false" placeholder="Untitled">
+    <div class="track-info" id="trackInfo">—</div>
+  </div>
+
+  <!-- Waveform -->
+  <div class="wave-card" id="waveCard" style="display:none">
+    <div style="position:relative">
+      <canvas class="wave-canvas" id="waveCanvas"></canvas>
+      <div class="trim-handles" id="trimHandles">
+        <div class="playhead" id="playhead"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transport -->
+  <div class="transport-bar" id="transportBar" style="display:none">
+    <div class="tb-field"><div class="tb-label">Time</div><div class="tb-val" id="curTime">00:00</div></div>
+    <button class="tb-btn" id="skipBackBtn" disabled>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 20L9 12l10-8v16z"/><path d="M5 19V5"/></svg>
+    </button>
+    <button class="tb-play" id="playBtn" disabled>
+      <svg viewBox="0 0 24 24" id="playIcon"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button class="tb-btn" id="skipFwdBtn" disabled>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4l10 8-10 8V4z"/><path d="M19 5v14"/></svg>
+    </button>
+    <div class="tb-field"><div class="tb-label">Duration</div><div class="tb-val" id="totTime">00:00</div></div>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty" id="empty">
+    <div class="empty-icon">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="opacity:.7"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg>
+    </div>
     <div class="empty-title">Add an audio or video file</div>
-    <div class="empty-sub">Convert between formats, or extract the audio track from a video.</div>
-    <label for="fileInput" class="empty-btn" style="cursor:pointer">+ Add File</label>
-    <div class="empty-chips">
-      <span class="empty-chip">MP3</span><span class="empty-chip">WAV</span>
-      <span class="empty-chip">AIFF</span><span class="empty-chip">FLAC</span>
-      <span class="empty-chip">MP4</span><span class="empty-chip">MOV</span>
-    </div>
+    <div class="empty-sub">Convert between formats, or extract audio from video.</div>
+    <label for="fileInput" class="empty-btn">+ Add File</label>
   </div>
 
-  <div class="panel" id="panel">
-    <div class="file-card">
-      <div class="file-icon" id="fileIcon">🎵</div>
-      <div class="file-meta">
-        <div class="file-name" id="fileName">—</div>
-        <div class="file-detail" id="fileDetail">—</div>
-      </div>
-      <button class="file-x" id="fileX">✕</button>
-    </div>
-
+  <!-- Format picker -->
+  <div class="convert-section" id="convertSection" style="display:none">
     <div class="sect-label">Convert To</div>
-    <div class="fmt-grid">
-      <div class="fmt-opt active" data-fmt="mp3"><div class="fmt-opt-name">MP3</div><div class="fmt-opt-desc">Compressed · universal</div></div>
-      <div class="fmt-opt" data-fmt="wav"><div class="fmt-opt-name">WAV</div><div class="fmt-opt-desc">Lossless · uncompressed</div></div>
-      <div class="fmt-opt" data-fmt="aiff"><div class="fmt-opt-name">AIFF</div><div class="fmt-opt-desc">Lossless · Apple</div></div>
-      <div class="fmt-opt" data-fmt="flac"><div class="fmt-opt-name">FLAC</div><div class="fmt-opt-desc">Lossless · compressed</div></div>
+    <div class="fmt-row">
+      <button class="fmt-btn active" data-fmt="mp3"><div class="fmt-btn-name">MP3</div><div class="fmt-btn-desc">Universal</div></button>
+      <button class="fmt-btn" data-fmt="wav"><div class="fmt-btn-name">WAV</div><div class="fmt-btn-desc">Lossless</div></button>
+      <button class="fmt-btn" data-fmt="aiff"><div class="fmt-btn-name">AIFF</div><div class="fmt-btn-desc">Apple</div></button>
+      <button class="fmt-btn" data-fmt="flac"><div class="fmt-btn-name">FLAC</div><div class="fmt-btn-desc">Compressed</div></button>
     </div>
-
-    <div class="field" id="bitrateField">
-      <div class="field-label">MP3 Bitrate</div>
-      <div class="seg" id="bitrateSeg">
-        <button data-br="128">128 kbps</button>
-        <button data-br="192" class="active">192 kbps</button>
-        <button data-br="320">320 kbps</button>
-      </div>
-    </div>
-
-    <div class="field">
-      <div class="field-label">Filename</div>
-      <input class="text-input" type="text" id="exportName" placeholder="converted-audio" autocorrect="off" spellcheck="false">
-    </div>
-
-    <button class="convert-btn" id="convertBtn">Convert &amp; Download</button>
   </div>
+
+  <!-- Bitrate -->
+  <div class="bitrate-card" id="bitrateCard" style="display:none">
+    <div class="field-label">MP3 Bitrate</div>
+    <div class="seg" id="bitrateSeg">
+      <button data-br="128">128 kbps</button>
+      <button data-br="192" class="active">192 kbps</button>
+      <button data-br="320">320 kbps</button>
+    </div>
+  </div>
+
+  <!-- Filename + Convert -->
+  <div class="name-card" id="nameCard" style="display:none">
+    <div class="field-label">Save As</div>
+    <input class="text-input" type="text" id="exportName" placeholder="converted-audio" autocorrect="off" spellcheck="false">
+  </div>
+
+  <button class="convert-btn" id="convertBtn" disabled style="display:none">Convert &amp; Download</button>
+
 </div>
 
 <div class="backdrop" id="backdrop"></div>
@@ -171,83 +243,179 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 <div class="nav-sheet" id="navSheet">
   <div class="nav-handle-wrap"><div class="nav-handle"></div></div>
   <div class="nav-sl">Navigation</div>
-  <a href="/" class="nav-a"><span class="ico"><img src="/icons/home.png" alt="Home" style="width:28px;height:28px;border-radius:6px;display:block"></span>Home</a>
-  <a href="/#tutorials" class="nav-a"><span class="ico"><img src="/icons/tutorials.png" alt="Tutorials" style="width:28px;height:28px;border-radius:6px;display:block"></span>Tutorials</a>
-  <div class="nav-sl"><img src="/icons/free-tools.png" style="width:16px;height:16px;border-radius:3px;vertical-align:middle;margin-right:6px">Free Tools</div>
-  <a href="/watermark" class="nav-a"><span class="ico"><img src="/icons/watermark.png" alt="Watermark Tool" style="width:28px;height:28px;border-radius:6px;display:block"></span>Watermark Tool</a>
-  <a href="/video-splitter" class="nav-a"><span class="ico"><img src="/icons/video-splitter.png" alt="Video Splitter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Video Splitter</a>
-  <a href="/frame-extractor" class="nav-a"><span class="ico"><img src="/icons/frame-extractor.png" alt="Frame Extractor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Frame Extractor</a>
-  <a href="/audio-editor" class="nav-a"><span class="ico"><img src="/icons/audio-editor.png" alt="Audio Editor" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Editor</a>
-  <a href="/audio-converter" class="nav-a"><span class="ico"><img src="/icons/audio-converter.png" alt="Audio Converter" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Converter</a>
-    <a href="/video-flipper" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/video-flipper.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Batch Flipper"></span>Batch Video Flipper</a>
-<a href="/video-flipper" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/video-flipper.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Batch Flipper"></span>Batch Video Flipper</a>
+  <a href="/" class="nav-a"><span class="ico"><img src="/icons/home.png" alt="" style="width:28px;height:28px;border-radius:6px"></span>Home</a>
+  <div class="nav-sl">Free Tools</div>
+  <a href="/watermark" class="nav-a"><span class="ico"><img src="/icons/watermark.png" alt="" style="width:28px;height:28px;border-radius:6px"></span>Watermark Tool</a>
+  <a href="/video-splitter" class="nav-a"><span class="ico"><img src="/icons/video-splitter.png" alt="" style="width:28px;height:28px;border-radius:6px"></span>Video Splitter</a>
+  <a href="/frame-extractor" class="nav-a"><span class="ico"><img src="/icons/frame-extractor.png" alt="" style="width:28px;height:28px;border-radius:6px"></span>Frame Extractor</a>
+  <a href="/audio-editor" class="nav-a"><span class="ico"><img src="/icons/audio-editor.png" alt="" style="width:28px;height:28px;border-radius:6px"></span>Audio Editor</a>
+  <a href="/audio-converter" class="nav-a"><span class="ico"><img src="/icons/audio-converter.png" alt="" style="width:28px;height:28px;border-radius:6px"></span>Audio Converter</a>
+  <a href="/video-flipper" class="nav-a"><span class="ico"><img src="/icons/video-flipper.png" alt="" style="width:28px;height:28px;border-radius:6px"></span>Batch Video Flipper</a>
   <div class="nav-sl">AI Generation</div>
-  <a href="/ai-studio" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg></span>AI Studio</a>
-  <a href="/motion-control" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/><path d="M18 12l3 3-3 3"/></svg></span>Motion Control</a>
+  <a href="/ai-studio" class="nav-a"><span class="ico" style="display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg></span>AI Studio</a>
+  <a href="/motion-control" class="nav-a"><span class="ico" style="display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/><path d="M18 12l3 3-3 3"/></svg></span>Motion Control</a>
   <div class="nav-sl">Follow Us</div>
   <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-a"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="#E1306C"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></span>Instagram</a>
-  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="nav-a"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="#ffffff"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.79a4.85 4.85 0 01-1.01-.1z"/></svg></span>TikTok</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="nav-a"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.79a4.85 4.85 0 01-1.01-.1z"/></svg></span>TikTok</a>
   <a href="https://youtube.com/@back2lifeai" target="_blank" class="nav-a"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg></span>YouTube</a>
-  <a href="https://x.com/Back2LifeAI" target="_blank" class="nav-a"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="#ffffff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>X / Twitter</a>
-    <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-cta">Follow on Instagram</a>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-cta">Follow on Instagram</a>
 </div>
-
 
 <div class="overlay-spin" id="overlaySpin"><div class="spinner"></div><div class="spin-label" id="spinLabel">Converting…</div></div>
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
 <script>
-let audioCtx=null, audioBuffer=null, sourceFileName='audio', isVideo=false;
-let outFormat='mp3', outBitrate=192;
 const $=id=>document.getElementById(id);
+let audioCtx=null, audioBuffer=null, sourceNode=null, gainNode=null;
+let sourceFileName='audio', isVideo=false;
+let outFormat='mp3', outBitrate=192;
+let playing=false, startedAt=0, seekPos=0;
 
+// ── FILE LOAD ──
 $('fileInput').addEventListener('change',async e=>{
   const file=e.target.files[0];
   if(!file)return;
   sourceFileName=file.name.replace(/\.[^.]+$/,'');
   isVideo=file.type.startsWith('video/');
-  showSpinner(isVideo?'Extracting audio from video…':'Loading audio…');
+  showSpinner(isVideo?'Extracting audio…':'Loading audio…');
   try{
     if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
     if(audioCtx.state==='suspended')await audioCtx.resume();
     const buf=await file.arrayBuffer();
     audioBuffer=await audioCtx.decodeAudioData(buf);
     $('empty').classList.add('hidden');
-    $('panel').classList.add('show');
-    $('fileIcon').textContent=isVideo?'🎬':'🎵';
-    $('fileName').textContent=file.name;
-    $('fileDetail').textContent=`${fmtTime(audioBuffer.duration)} · ${audioBuffer.numberOfChannels===2?'Stereo':'Mono'} · ${Math.round(audioBuffer.sampleRate/1000)}kHz${isVideo?' · audio extracted':''}`;
-    $('exportName').value=sourceFileName+(isVideo?'-audio':'-converted');
+    $('trackSection').classList.add('show');
+    $('waveCard').style.display='block';
+    $('transportBar').style.display='flex';
+    $('convertSection').style.display='block';
+    $('bitrateCard').style.display=outFormat==='mp3'?'block':'none';
+    $('nameCard').style.display='block';
+    $('convertBtn').style.display='block';
+    $('convertBtn').disabled=false;
+    $('playBtn').disabled=false;
+    $('skipBackBtn').disabled=false;
+    $('skipFwdBtn').disabled=false;
+    $('trackName').value=sourceFileName;
+    $('trackInfo').textContent=`${fmtTime(audioBuffer.duration)} · ${audioBuffer.numberOfChannels===2?'Stereo':'Mono'} · ${Math.round(audioBuffer.sampleRate/1000)}kHz${isVideo?' · audio extracted':''}`;
+    $('exportName').value=sourceFileName+(isVideo?'-audio':'');
+    $('totTime').textContent=fmtTime(audioBuffer.duration);
+    seekPos=0;
+    drawWave();
   }catch(err){
-    console.error(err);
-    toast(isVideo?'Could not extract audio from this video':'Could not read this audio file',true);
+    toast('Could not read this file',true);
+    $('empty').classList.remove('hidden');
   }
   hideSpinner();
   e.target.value='';
 });
 
-$('fileX').addEventListener('click',()=>{
-  audioBuffer=null;
-  $('panel').classList.remove('show');
-  $('empty').classList.remove('hidden');
+$('trackName').addEventListener('input',()=>{ $('exportName').value=$('trackName').value.trim(); });
+
+// ── WAVEFORM ──
+function drawWave(){
+  const canvas=$('waveCanvas');
+  if(!audioBuffer||!canvas)return;
+  const W=canvas.offsetWidth*window.devicePixelRatio||canvas.offsetWidth;
+  const H=canvas.offsetHeight*window.devicePixelRatio||canvas.offsetHeight;
+  canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  const data=audioBuffer.getChannelData(0);
+  const step=Math.ceil(data.length/W);
+  const mid=H/2;
+  const grad=ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'rgba(0,255,136,0.85)');
+  grad.addColorStop(0.5,'rgba(0,255,136,0.55)');
+  grad.addColorStop(1,'rgba(0,200,100,0.3)');
+  ctx.fillStyle=grad;
+  for(let i=0;i<W;i++){
+    let min=1,max=-1;
+    for(let j=0;j<step;j++){const v=data[i*step+j]||0;if(v<min)min=v;if(v>max)max=v;}
+    const yTop=mid*(1-max), yBot=mid*(1-min);
+    ctx.fillRect(i,yTop,1.5,Math.max(1,yBot-yTop));
+  }
+  // position tap handler
+  canvas.onclick=e=>{
+    const rect=canvas.getBoundingClientRect();
+    const frac=(e.clientX-rect.left)/rect.width;
+    seekPos=frac*audioBuffer.duration;
+    updatePlayhead(frac);
+    $('curTime').textContent=fmtTime(seekPos);
+    if(playing){ stopPlayback(); startPlayback(); }
+  };
+}
+
+function updatePlayhead(frac){
+  const ph=$('playhead');
+  const wrap=$('trimHandles');
+  ph.style.display='block';
+  ph.style.left=(frac*wrap.clientWidth)+'px';
+}
+
+// ── PLAYBACK ──
+$('playBtn').addEventListener('click',()=>playing?stopPlayback():startPlayback());
+$('skipBackBtn').addEventListener('click',()=>{
+  if(!audioBuffer)return;
+  seekPos=0; updatePlayhead(0); $('curTime').textContent=fmtTime(0);
+  if(playing){ stopPlayback(); startPlayback(); }
+});
+$('skipFwdBtn').addEventListener('click',()=>{
+  if(!audioBuffer)return;
+  seekPos=Math.max(0,audioBuffer.duration-0.01);
+  updatePlayhead(1); $('curTime').textContent=fmtTime(seekPos);
+  if(playing){ stopPlayback(); }
 });
 
-document.querySelectorAll('.fmt-opt').forEach(opt=>{
-  opt.addEventListener('click',()=>{
-    document.querySelectorAll('.fmt-opt').forEach(o=>o.classList.remove('active'));
-    opt.classList.add('active');
-    outFormat=opt.dataset.fmt;
-    $('bitrateField').style.display=outFormat==='mp3'?'block':'none';
+function startPlayback(){
+  if(!audioBuffer)return;
+  if(audioCtx.state==='suspended')audioCtx.resume();
+  sourceNode=audioCtx.createBufferSource();
+  sourceNode.buffer=audioBuffer;
+  gainNode=audioCtx.createGain();
+  gainNode.gain.value=1;
+  sourceNode.connect(gainNode).connect(audioCtx.destination);
+  sourceNode.start(0, seekPos);
+  startedAt=audioCtx.currentTime - seekPos;
+  playing=true;
+  $('playIcon').innerHTML='<rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/>';
+  sourceNode.onended=()=>{ if(playing){ seekPos=0; stopPlayback(); } };
+  requestAnimationFrame(tick);
+}
+
+function stopPlayback(){
+  if(sourceNode){ try{sourceNode.stop();}catch(e){} }
+  playing=false;
+  $('playIcon').innerHTML='<path d="M8 5v14l11-7z"/>';
+}
+
+function tick(){
+  if(!playing)return;
+  const t=audioCtx.currentTime - startedAt;
+  seekPos=Math.min(t, audioBuffer.duration);
+  const frac=seekPos/audioBuffer.duration;
+  updatePlayhead(frac);
+  $('curTime').textContent=fmtTime(seekPos);
+  requestAnimationFrame(tick);
+}
+
+// ── FORMAT BUTTONS ──
+document.querySelectorAll('.fmt-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    outFormat=btn.dataset.fmt;
+    $('bitrateCard').style.display=outFormat==='mp3'?'block':'none';
   });
 });
 document.querySelectorAll('#bitrateSeg button').forEach(b=>{
   b.addEventListener('click',()=>{
     document.querySelectorAll('#bitrateSeg button').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');outBitrate=+b.dataset.br;
+    b.classList.add('active'); outBitrate=+b.dataset.br;
   });
 });
 
+// ── CONVERT ──
 $('convertBtn').addEventListener('click',async()=>{
   if(!audioBuffer)return;
   showSpinner('Converting to '+outFormat.toUpperCase()+'…');
@@ -255,23 +423,23 @@ $('convertBtn').addEventListener('click',async()=>{
     const name=($('exportName').value.trim()||'converted-audio');
     await exportFile(audioBuffer,outFormat,name,outBitrate);
     toast('✓ Downloaded '+name+'.'+outFormat);
-  }catch(err){console.error(err);toast('Conversion failed — try a shorter file',true);}
+  }catch(err){ toast('Conversion failed',true); }
   hideSpinner();
 });
 
-// ══ NAV ══
+// ── NAV ──
 const backdrop=$('backdrop');
 $('menuBtn').addEventListener('click',()=>{
   const open=$('navSheet').classList.contains('open');
-  if(open){$('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open');}
-  else{$('navSheet').classList.add('open');backdrop.classList.add('open');$('menuBtn').classList.add('open');}
+  if(open){ $('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open'); }
+  else{ $('navSheet').classList.add('open');backdrop.classList.add('open');$('menuBtn').classList.add('open'); }
 });
-backdrop.addEventListener('click',()=>{$('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open');});
+backdrop.addEventListener('click',()=>{ $('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open'); });
 let ty=0;
 $('navSheet').addEventListener('touchstart',e=>ty=e.touches[0].clientY,{passive:true});
-$('navSheet').addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-ty>60){$('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open');}},{passive:true});
+$('navSheet').addEventListener('touchend',e=>{ if(e.changedTouches[0].clientY-ty>60){ $('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open'); } },{passive:true});
 
-// ══ exportFile() — ISOLATED for native wrapping ══
+// ── ENCODERS (unchanged) ──
 async function exportFile(buffer,format,name,bitrate){
   let blob,ext=format;
   if(format==='mp3'){blob=encodeMP3(buffer,bitrate);}
@@ -329,14 +497,6 @@ function fmtTime(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+S
 function showSpinner(l){$('spinLabel').textContent=l||'Working…';$('overlaySpin').classList.add('show');}
 function hideSpinner(){$('overlaySpin').classList.remove('show');}
 function toast(msg,err){const t=$('toast');t.textContent=msg;t.className='toast show'+(err?' err':'');setTimeout(()=>t.classList.remove('show'),3200);}
-
-function shareTo(platform){
-  const url=encodeURIComponent(window.location.href);
-  const text=encodeURIComponent('Free Audio Converter — convert WAV, MP3, FLAC & more 🎵');
-  const urls={whatsapp:'https://wa.me/?text='+text+'%20'+url,x:'https://x.com/intent/tweet?text='+text+'&url='+url,tiktok:'https://www.tiktok.com/',instagram:'https://www.instagram.com/',copy:null};
-  if(platform==='copy'){navigator.clipboard.writeText(window.location.href);showToast('✓ Link copied!')}
-  else{window.open(urls[platform],'_blank')}
-}
 </script>
 </body>
 </html>
