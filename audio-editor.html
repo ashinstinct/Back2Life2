@@ -40,17 +40,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 .main{position:fixed;top:var(--bar);left:0;right:0;bottom:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 14px 40px}
 
 /* EMPTY STATE */
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-height:60vh;text-align:center;padding:20px}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:240px;text-align:center;padding:24px 20px;border:1.5px dashed var(--border2);border-radius:var(--radius-lg);margin-bottom:16px}
 .empty.hidden{display:none}
 .empty-icon{display:flex;align-items:center;justify-content:center;animation:pulse 2.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.07);opacity:1}}
-.empty-title{font-size:15px;font-weight:700;color:#bbb}
-.empty-sub{font-size:12px;color:#555;max-width:260px}
+.empty-title{font-size:15px;font-weight:700;color:#ddd}
+.empty-sub{font-size:12px;color:#666;max-width:260px}
+.empty-drop{font-size:11px;color:#444;margin-top:2px}
 .empty-btn{background:linear-gradient(135deg,var(--green2),var(--green));color:#000;box-shadow:0 6px 22px rgba(0,255,136,0.3);font-weight:800;font-size:14px;padding:13px 30px;border-radius:var(--pill);border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px}
 
 /* EDITOR */
-.editor{display:none}
-.editor.show{display:block}
+.editor{display:block}
 .track-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;word-break:break-word}
 .track-info{font-size:11px;color:#555;margin-bottom:14px}
 
@@ -138,7 +138,28 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin-label{font-size:13px;color:var(--muted)}
 
-.tool-banner{width:100%;display:block;border-bottom:1px solid rgba(255,255,255,0.06)}
+.tool-panel{background:#000;border:1px solid var(--border);border-radius:var(--radius-lg);padding:6px;margin-bottom:14px}
+.tool-grid{display:grid;grid-template-columns:repeat(5,1fr)}
+.tool-btn{display:flex;flex-direction:column;align-items:center;gap:7px;padding:13px 2px;border-radius:14px;background:none;border:none;color:#666;font-family:'Inter',sans-serif}
+.tool-btn .ic{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center}
+.tool-btn span{font-size:10.5px;font-weight:600;line-height:1.25;text-align:center}
+.tool-btn.active{color:var(--green)}
+.tool-btn.active .ic{background:var(--gdim);border:1px solid rgba(0,255,136,0.3)}
+.tool-btn[disabled]{opacity:.45;pointer-events:none}
+
+.panel-hint{font-size:12.5px;color:#888;text-align:center;padding:6px 4px;line-height:1.5}
+.panel-soon{font-size:12.5px;color:#666;text-align:center;padding:6px 4px;line-height:1.5}
+.panel-soon b{color:var(--green)}
+
+.transport-bar{display:flex;align-items:center;gap:10px;background:#000;border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:14px}
+.tb-field{flex:1;text-align:center}
+.tb-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--green);margin-bottom:4px}
+.tb-val{font-size:12.5px;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+.tb-btn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;color:#aaa;flex-shrink:0}
+.tb-btn[disabled]{opacity:.4;pointer-events:none}
+.tb-play{width:50px;height:50px;background:linear-gradient(135deg,var(--green2),var(--green));box-shadow:0 6px 20px rgba(0,255,136,0.3);flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none}
+.tb-play svg{width:18px;height:18px;fill:#000;margin-left:2px}
+.tb-play[disabled]{opacity:.4;pointer-events:none;box-shadow:none}
 </style>
 <link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
 <link rel="icon" href="/favicon.ico">
@@ -148,29 +169,30 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
 </head>
 <body>
 
-<input type="file" accept="audio/*" id="fileInput" style="position:fixed;top:-100px;left:-100px;width:1px;height:1px;opacity:0">
+<input type="file" accept="audio/*" id="fileInput" style="display:none">
 
 <div class="topbar">
   <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
   <a href="/" style="position:absolute;left:50%;transform:translateX(-50%);text-decoration:none;white-space:nowrap"><span style="font-size:17px;font-weight:900;color:#fff;letter-spacing:-0.5px">Back2Life</span><span style="font-size:17px;font-weight:900;color:#00ff88;letter-spacing:-0.5px">.app</span></a>
   <div class="spacer"></div>
-  <label for="fileInput" class="add-btn" style="cursor:pointer">+ AUDIO</label>
+  <label for="fileInput"><button type="button" class="add-btn">+ AUDIO</button></label>
 </div>
 
 <div class="main">
   <img src="/img/banners/audio-editor-banner.png" alt="" style="width:calc(100% + 28px);display:block;margin:-16px -14px 16px -14px;border-bottom:1px solid rgba(255,255,255,0.06)">
-  <div class="empty" id="empty" onclick="document.getElementById('fileInput').click()" style="cursor:pointer">
-    <div class="empty-icon"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
-    <div class="empty-title">Add an audio file to edit</div>
-    <div class="empty-sub">Trim, fade, adjust volume &amp; speed. Export as MP3, WAV or AIFF.</div>
-    <label for="fileInput" class="empty-btn" style="cursor:pointer">+ Add Audio</label>
+  <div class="empty" id="empty">
+    <div class="empty-icon"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+    <div class="empty-title">No audio loaded</div>
+    <div class="empty-sub">Add an audio file to get started</div>
+    <label for="fileInput"><button type="button" class="empty-btn">+ Add Audio</button></label>
+    <div class="empty-drop">or drag &amp; drop a file here</div>
   </div>
 
   <div class="editor" id="editor">
-    <div class="track-name" id="trackName">—</div>
-    <div class="track-info" id="trackInfo">—</div>
+    <div class="track-name" id="trackName" style="display:none">—</div>
+    <div class="track-info" id="trackInfo" style="display:none;margin-bottom:14px">—</div>
 
-    <div class="wave-wrap">
+    <div class="wave-wrap" id="waveWrap" style="display:none">
       <canvas class="wave-canvas" id="waveCanvas"></canvas>
       <div class="trim-handles" id="trimHandles">
         <div class="trim-region" id="trimRegion"></div>
@@ -179,7 +201,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
         <div class="playhead" id="playhead"></div>
       </div>
     </div>
-    <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:2px 0 4px">
+    <div id="waveZoomRow" style="display:none;align-items:center;justify-content:flex-end;gap:8px;padding:2px 0 12px">
       <button onclick="scrollWave(-0.25)" id="scrollLeft" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#aaa;width:28px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;opacity:0.4" title="Scroll left">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
@@ -196,12 +218,56 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
       </button>
     </div>
 
-    <div class="transport">
-      <button class="play-btn" id="playBtn"><svg viewBox="0 0 24 24" id="playIcon"><path d="M8 5v14l11-7z"/></svg></button>
-      <div class="time-display"><b id="curTime">0:00</b> / <span id="totTime">0:00</span> &nbsp;·&nbsp; trim: <b id="trimTime">0:00</b></div>
+    <div class="tool-panel">
+      <div class="tool-grid" id="toolGrid">
+        <button class="tool-btn active" data-tool="trim">
+          <div class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.12 15.88"/><path d="M14.47 14.48L20 20"/><path d="M8.12 8.12L12 12"/></svg></div>
+          <span>Trim</span>
+        </button>
+        <button class="tool-btn" data-tool="fade">
+          <div class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 18h2l4-12 4 12 4-12 4 12h0"/></svg></div>
+          <span>Fade</span>
+        </button>
+        <button class="tool-btn" data-tool="volume">
+          <div class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="3,9 8,9 13,4 13,20 8,15 3,15"/><path d="M16 8a5 5 0 010 8"/></svg></div>
+          <span>Volume</span>
+        </button>
+        <button class="tool-btn" data-tool="speed">
+          <div class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6"/></svg></div>
+          <span>Speed</span>
+        </button>
+        <button class="tool-btn" data-tool="eq">
+          <div class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 21V14M4 10V3M12 21v-8M12 9V3M20 21v-5M20 12V3"/><circle cx="4" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="12" cy="11" r="2" fill="currentColor" stroke="none"/><circle cx="20" cy="14" r="2" fill="currentColor" stroke="none"/></svg></div>
+          <span>EQ</span>
+        </button>
+        <button class="tool-btn" data-tool="noise">
+          <div class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12h3l2-7 4 14 3-10 2 5h4"/></svg></div>
+          <span>Noise<br>Reduction</span>
+        </button>
+        <button class="tool-btn" data-tool="normalize">
+          <div class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="2"/><circle cx="17" cy="17" r="2"/><path d="M3 17h3M11 17h2M19 17h2M3 7h12M19 7h2"/></svg></div>
+          <span>Normalize</span>
+        </button>
+        <button class="tool-btn" data-tool="compressor">
+          <div class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 9h14M5 15h14"/><path d="M9 5v4M15 5v4M9 15v4M15 15v4"/></svg></div>
+          <span>Compressor</span>
+        </button>
+        <button class="tool-btn" data-tool="denoise">
+          <div class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.6 6.6L22 11l-7.4 2.4L12 22l-2.6-8.6L2 11l7.4-2.4L12 2z"/></svg></div>
+          <span>Denoise</span>
+        </button>
+        <button class="tool-btn" data-tool="more">
+          <div class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></svg></div>
+          <span>More</span>
+        </button>
+      </div>
     </div>
 
-    <div class="ctrl-card">
+    <div class="ctrl-card" id="panelTrim">
+      <div class="panel-hint" id="trimHintText">Add an audio file, then drag the green handles on the waveform to set your trim range.</div>
+    </div>
+
+    <div class="ctrl-card" id="panelVolSpeed" style="display:none">
       <div class="ctrl-card-title">Volume &amp; Speed</div>
       <div class="ctrl-row"><span class="ctrl-name">Volume</span><span class="ctrl-val" id="volVal">100%</span></div>
       <input type="range" id="volRange" min="0" max="300" value="100">
@@ -209,7 +275,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
       <input type="range" id="spdRange" min="25" max="300" value="100">
     </div>
 
-    <div class="ctrl-card">
+    <div class="ctrl-card" id="panelFade" style="display:none">
       <div class="ctrl-card-title">Fade</div>
       <div class="fade-row">
         <div>
@@ -223,9 +289,25 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
       </div>
     </div>
 
+    <div class="ctrl-card" id="panelSoon" style="display:none">
+      <div class="ctrl-card-title" id="soonTitle">Coming Soon</div>
+      <div class="panel-soon">This tool isn't wired up yet — <b>Volume</b>, <b>Speed</b>, <b>Fade</b> and <b>Trim</b> are fully working today.</div>
+    </div>
+
+    <div class="transport-bar">
+      <div class="tb-field"><div class="tb-label">Start</div><div class="tb-val" id="startVal">00:00.00</div></div>
+      <button class="tb-btn" id="skipBackBtn" disabled><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 20L9 12l10-8v16z"/><path d="M5 19V5"/></svg></button>
+      <button class="tb-play" id="playBtn" disabled><svg viewBox="0 0 24 24" id="playIcon"><path d="M8 5v14l11-7z"/></svg></button>
+      <button class="tb-btn" id="skipFwdBtn" disabled><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4l10 8-10 8V4z"/><path d="M19 5v14"/></svg></button>
+      <div class="tb-field"><div class="tb-label">End</div><div class="tb-val" id="endVal">00:00.00</div></div>
+    </div>
+    <div style="display:none">
+      <span id="curTime">0:00</span><span id="totTime">0:00</span><span id="trimTime">0:00</span>
+    </div>
+
     <div class="export-bar">
-      <button class="btn-reset" id="resetBtn">Reset</button>
-      <button class="btn-export" id="exportBtn">Export Audio</button>
+      <button class="btn-reset" id="resetBtn" disabled>Reset</button>
+      <button class="btn-export" id="exportBtn" disabled>Export Audio</button>
     </div>
   </div>
 </div>
@@ -323,10 +405,15 @@ $('fileInput').addEventListener('change', async e=>{
     settings={vol:1,speed:1,fadeIn:0,fadeOut:0};
     resetControls();
     $('empty').classList.add('hidden');
-    $('editor').classList.add('show');
+    $('waveWrap').style.display='block';
+    $('waveZoomRow').style.display='flex';
+    $('trackName').style.display='block';
+    $('trackInfo').style.display='block';
     $('trackName').textContent=file.name;
     $('trackInfo').textContent=`${fmtTime(audioBuffer.duration)} · ${audioBuffer.numberOfChannels===2?'Stereo':'Mono'} · ${Math.round(audioBuffer.sampleRate/1000)}kHz`;
     $('exportName').value=fileName+'-edited';
+    ['skipBackBtn','playBtn','skipFwdBtn','resetBtn','exportBtn'].forEach(id=>$(id).disabled=false);
+    document.querySelectorAll('.tool-btn').forEach(b=>b.disabled=false);
     drawWave();
     updateTrimUI();
     updateTimes();
@@ -512,6 +599,8 @@ function updateTrimUI(){
   if(audioBuffer){
     const trimDur=(trimEnd-trimStart)*audioBuffer.duration;
     $('trimTime').textContent=fmtTime(trimDur);
+    $('startVal').textContent=fmtTimeMs(trimStart*audioBuffer.duration);
+    $('endVal').textContent=fmtTimeMs(trimEnd*audioBuffer.duration);
   }
 }
 function setupHandle(handle,isLeft){
@@ -624,6 +713,32 @@ function resetControls(){
   $('fadeInRange').value=0;$('fadeInVal').textContent='0.0s';
   $('fadeOutRange').value=0;$('fadeOutVal').textContent='0.0s';
 }
+
+// ══ TOOL GRID ══
+const toolPanels={
+  trim:'panelTrim', fade:'panelFade', volume:'panelVolSpeed', speed:'panelVolSpeed'
+};
+const soonTitles={
+  eq:'EQ', noise:'Noise Reduction', normalize:'Normalize', compressor:'Compressor', denoise:'Denoise (AI)', more:'More Tools'
+};
+document.querySelectorAll('.tool-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const tool=btn.dataset.tool;
+    ['panelTrim','panelFade','panelVolSpeed','panelSoon'].forEach(id=>$(id).style.display='none');
+    if(toolPanels[tool]){
+      $(toolPanels[tool]).style.display='block';
+    } else {
+      $('soonTitle').textContent=soonTitles[tool]||'Coming Soon';
+      $('panelSoon').style.display='block';
+    }
+  });
+});
+
+// ══ SKIP BUTTONS ══
+$('skipBackBtn').addEventListener('click',()=>{ if(audioBuffer) seekTo(trimStart); });
+$('skipFwdBtn').addEventListener('click',()=>{ if(audioBuffer) seekTo(Math.max(trimStart,trimEnd-0.001)); });
 $('resetBtn').addEventListener('click',()=>{
   trimStart=0;trimEnd=1;settings={vol:1,speed:1,fadeIn:0,fadeOut:0};
   resetControls();updateTrimUI();updateTimes();toast('Reset to original');
@@ -823,6 +938,7 @@ async function encodeWebM(buffer){
 
 // ══ HELPERS ══
 function fmtTime(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+String(sec).padStart(2,'0');}
+function fmtTimeMs(s){if(isNaN(s)||s<0)s=0;const m=Math.floor(s/60),sec=Math.floor(s%60),cs=Math.floor((s-Math.floor(s))*100);return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')+'.'+String(cs).padStart(2,'0');}
 function showSpinner(label){$('spinLabel').textContent=label||'Working…';$('overlaySpin').classList.add('show');}
 function hideSpinner(){$('overlaySpin').classList.remove('show');}
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
