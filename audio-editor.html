@@ -265,10 +265,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
       </div>
     </div>
 
-    <div class="ctrl-card" id="panelTrim">
-      <div class="panel-hint" id="trimHintText">Add an audio file, then drag the green handles on the waveform to set your trim range.</div>
-    </div>
-
     <div class="ctrl-card" id="panelVolSpeed" style="display:none">
       <div class="ctrl-card-title">Volume &amp; Speed</div>
       <div class="ctrl-row"><span class="ctrl-name">Volume</span><span class="ctrl-val" id="volVal">100%</span></div>
@@ -303,35 +299,30 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
 
     <div class="ctrl-card" id="panelNoise" style="display:none">
       <div class="ctrl-card-title">Noise Reduction</div>
-      <div class="panel-hint" style="text-align:left;padding:0 0 12px">High-pass filter — cuts low rumble, hum and wind noise below the cutoff frequency.</div>
       <div class="ctrl-row"><span class="ctrl-name">Cutoff</span><span class="ctrl-val" id="hpVal">Off</span></div>
       <input type="range" id="hpRange" min="0" max="400" value="0">
     </div>
 
     <div class="ctrl-card" id="panelNormalize" style="display:none">
       <div class="ctrl-card-title">Normalize</div>
-      <div class="panel-hint" style="text-align:left;padding:0 0 12px">Scans the track and automatically raises the volume so its loudest peak sits just under 0dB — no clipping.</div>
       <div class="ctrl-row"><span class="ctrl-name">Status</span><span class="ctrl-val" id="normStatus">Not applied</span></div>
       <button class="seg" id="normalizeBtn" style="width:100%;padding:11px;border:1px solid var(--border2);color:var(--green);background:var(--gdim);font-weight:700;font-size:13px;cursor:pointer;margin-top:6px">Normalize Now</button>
     </div>
 
     <div class="ctrl-card" id="panelCompressor" style="display:none">
       <div class="ctrl-card-title">Compressor</div>
-      <div class="panel-hint" style="text-align:left;padding:0 0 12px">Evens out loud and quiet parts so the track sounds more consistent.</div>
       <div class="ctrl-row"><span class="ctrl-name">Amount</span><span class="ctrl-val" id="compVal">Off</span></div>
       <input type="range" id="compRange" min="0" max="100" value="0">
     </div>
 
     <div class="ctrl-card" id="panelDenoise" style="display:none">
       <div class="ctrl-card-title">Denoise</div>
-      <div class="panel-hint" style="text-align:left;padding:0 0 12px">Noise gate — silences quiet background hiss between words/sounds. (Basic gate, not AI-powered.)</div>
       <div class="ctrl-row"><span class="ctrl-name">Strength</span><span class="ctrl-val" id="gateVal">Off</span></div>
       <input type="range" id="gateRange" min="0" max="100" value="0">
     </div>
 
     <div class="ctrl-card" id="panelReverse" style="display:none">
       <div class="ctrl-card-title">Reverse</div>
-      <div class="panel-hint" style="text-align:left;padding:0">Tap the Reverse icon above to flip the audio backwards — the waveform and playback both reverse instantly.</div>
       <div class="ctrl-row" style="margin-top:14px"><span class="ctrl-name">Status</span><span class="ctrl-val" id="revVal">Off</span></div>
     </div>
 
@@ -888,18 +879,18 @@ function applyNoiseGate(buffer, amount){
 
 
 const toolPanels={
-  trim:'panelTrim', fade:'panelFade', volume:'panelVolSpeed', speed:'panelVolSpeed',
+  fade:'panelFade', volume:'panelVolSpeed', speed:'panelVolSpeed',
   eq:'panelEQ', noise:'panelNoise', normalize:'panelNormalize', compressor:'panelCompressor',
   denoise:'panelDenoise', reverse:'panelReverse'
 };
-const allPanels=['panelTrim','panelFade','panelVolSpeed','panelEQ','panelNoise','panelNormalize','panelCompressor','panelDenoise','panelReverse'];
+const allPanels=['panelFade','panelVolSpeed','panelEQ','panelNoise','panelNormalize','panelCompressor','panelDenoise','panelReverse'];
 document.querySelectorAll('.tool-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     const tool=btn.dataset.tool;
     allPanels.forEach(id=>$(id).style.display='none');
-    $(toolPanels[tool]).style.display='block';
+    if(toolPanels[tool]) $(toolPanels[tool]).style.display='block';
   });
 });
 
