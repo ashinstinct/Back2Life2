@@ -13,162 +13,192 @@
 <meta property="og:url" content="https://back2lifeapp.vercel.app/audio-converter">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Audio Converter — Back2Life.app">
-<meta name="twitter:description" content="Convert audio between WAV, AIFF, FLAC, MP3. Extract audio from video. Free browser tool.">
 <meta name="twitter:image" content="https://back2lifeapp.vercel.app/og-image.png">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#080808;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);
-  --green:#00ff88;--green2:#00cc66;--gdim:rgba(0,255,136,.1);
-  --text:#f0f0f0;--text2:#aaa;--text3:#555;
-  --pill:999px;--radius-lg:20px;--bar:60px;
+  --bg:#080808;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --green:#00ff88;--green2:#00cc66;--gdim:rgba(0,255,136,.09);
+  --text:#f0f0f0;--text2:#aaa;--text3:#555;--bar:60px;--pill:999px;--radius-lg:20px;
 }
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden;touch-action:manipulation}
 body{display:flex;flex-direction:column;height:100dvh}
 
 /* ── TOPBAR ── */
-.topbar{flex-shrink:0;height:var(--bar);background:rgba(8,8,8,0.95);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;padding-top:env(safe-area-inset-top,0px);position:relative;z-index:100}
+.topbar{flex-shrink:0;height:var(--bar);background:rgba(8,8,8,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;padding-top:env(safe-area-inset-top,0px);position:relative;z-index:100}
 .menu-btn{background:none;border:none;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px;z-index:1;flex-shrink:0}
 .menu-btn span{display:block;width:20px;height:2px;background:#aaa;border-radius:2px;transition:all .25s}
 .menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg);background:var(--green)}
 .menu-btn.open span:nth-child(2){opacity:0}
 .menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);background:var(--green)}
 
-/* ── SCROLL AREA ── */
-.scroll{flex:1;overflow-y:auto;padding:18px 14px 0;-webkit-overflow-scrolling:touch;padding-bottom:320px}
+/* ── SCROLL ── */
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 14px 0}
 .scroll::-webkit-scrollbar{display:none}
 
-/* ── EDITABLE FILENAME ── */
-.track-name-input{display:block;width:100%;font-size:15px;font-weight:700;color:#fff;background:none;border:none;border-bottom:1px solid transparent;font-family:'Inter',sans-serif;padding:2px 0 4px;outline:none;margin-bottom:3px}
+/* ── TRACK NAME ── */
+.track-section{display:none;margin-bottom:14px}
+.track-section.show{display:block}
+.track-name-input{display:block;width:100%;font-size:15px;font-weight:700;color:#fff;background:none;border:none;border-bottom:1px solid transparent;font-family:'Inter',sans-serif;padding:2px 0 5px;outline:none;margin-bottom:3px}
 .track-name-input:focus{border-bottom:1px solid var(--green)}
-.track-section{display:none}
-.track-section.show{display:block;margin-bottom:14px}
 .track-info{font-size:11px;color:var(--text3)}
 
 /* ── WAVEFORM ── */
-.wave-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:14px;display:none;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.wave-card{display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:8px;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 .wave-card.show{display:block}
-.wave-canvas{width:100%;height:100px;border-radius:12px;display:block;background:#050505;cursor:pointer}
 .wave-inner{position:relative}
+.wave-canvas{width:100%;height:100px;border-radius:12px;display:block;background:#050505;cursor:pointer}
 .playhead{position:absolute;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 6px rgba(255,255,255,.7);pointer-events:none;display:none;left:0}
 
-/* ── TIME ROW ── */
-.time-row{display:none;justify-content:space-between;align-items:center;margin-bottom:6px;padding:0 2px}
+/* ── TIME ── */
+.time-row{display:none;justify-content:space-between;padding:0 2px;margin-bottom:12px}
 .time-row.show{display:flex}
 .time-lbl{font-size:11px;color:var(--text2);font-variant-numeric:tabular-nums;font-weight:600}
 
-/* ── EMPTY STATE ── */
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:180px;text-align:center;padding:24px 20px;border:1.5px dashed var(--border2);border-radius:var(--radius-lg);margin-bottom:16px}
+/* ── STATUS BANNER ── */
+.status-banner{display:none;align-items:center;justify-content:space-between;background:var(--gdim);border:1px solid rgba(0,255,136,.2);border-radius:14px;padding:11px 14px;margin-bottom:14px}
+.status-banner.show{display:flex}
+.status-fmt{font-size:17px;font-weight:900;color:var(--green);letter-spacing:-.3px}
+.status-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.convert-go{background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:13px;padding:10px 20px;border-radius:var(--pill);border:none;cursor:pointer;font-family:'Inter',sans-serif;position:relative;overflow:hidden;box-shadow:0 4px 14px rgba(0,255,136,.35)}
+.convert-go::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.22) 0%,transparent 100%)}
+.convert-go:disabled{opacity:.4;pointer-events:none}
+
+/* ── EMPTY ── */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:170px;text-align:center;padding:24px 20px;border:1.5px dashed var(--border2);border-radius:var(--radius-lg);margin-bottom:14px}
 .empty.hidden{display:none}
 .empty-icon{animation:pulse 2.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.08);opacity:1}}
 .empty-title{font-size:15px;font-weight:700;color:#ddd}
 .empty-sub{font-size:12px;color:var(--text3);max-width:260px;line-height:1.5}
-.empty-btn{display:inline-block;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;box-shadow:0 6px 22px rgba(0,255,136,.3);font-weight:800;font-size:14px;padding:13px 30px;border-radius:var(--pill);border:none;cursor:pointer;font-family:'Inter',sans-serif;position:relative;overflow:hidden}
-.empty-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.22) 0%,transparent 100%);pointer-events:none}
-
-/* ── STATUS BANNER (selected format info) ── */
-.status-banner{display:none;align-items:center;justify-content:space-between;background:var(--gdim);border:1px solid rgba(0,255,136,.2);border-radius:14px;padding:10px 14px;margin-bottom:14px}
-.status-banner.show{display:flex}
-.status-fmt{font-size:16px;font-weight:900;color:var(--green);letter-spacing:-.3px}
-.status-sub{font-size:11px;color:var(--text2)}
-.convert-trigger{background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:13px;padding:9px 18px;border-radius:var(--pill);border:none;cursor:pointer;font-family:'Inter',sans-serif;position:relative;overflow:hidden;box-shadow:0 4px 14px rgba(0,255,136,.3)}
-.convert-trigger::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.22) 0%,transparent 100%)}
-.convert-trigger:disabled{opacity:.4;cursor:not-allowed}
-
-/* ── RADIAL SEMICIRCLE DOCK ── */
-.radial-dock{
-  position:fixed;bottom:0;left:0;right:0;
-  height:280px;
-  pointer-events:none;
-  z-index:50;
-}
-.radial-backdrop{
-  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-  width:600px;height:300px;
-  background:radial-gradient(ellipse at bottom center, rgba(20,20,24,0.98) 60%, transparent 100%);
-  border-radius:300px 300px 0 0;
-  border-top:1px solid rgba(255,255,255,0.06);
-}
-/* glow ring accent */
-.radial-backdrop::after{
-  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
-  width:400px;height:200px;
-  background:radial-gradient(ellipse at bottom center, rgba(0,255,136,0.04) 0%, transparent 70%);
-  border-radius:200px 200px 0 0;
-}
-/* all radial items are positioned absolutely relative to the dock */
-.rad-btn{
-  position:absolute;
-  width:68px;height:68px;border-radius:50%;
-  background:#111;border:1px solid rgba(255,255,255,0.12);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
-  cursor:pointer;pointer-events:all;
-  transition:all .2s cubic-bezier(.4,0,.2,1);
-  transform:translate(-50%,-50%);
-  /* gloss shine */
-  overflow:hidden;
-  box-shadow:0 4px 16px rgba(0,0,0,.5);
-}
-.rad-btn::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:48%;
-  background:linear-gradient(180deg,rgba(255,255,255,0.13) 0%,rgba(255,255,255,0) 100%);
-  border-radius:50% 50% 0 0;pointer-events:none;z-index:1;
-}
-.rad-btn-label{font-size:12px;font-weight:800;color:rgba(255,255,255,0.55);position:relative;z-index:2;line-height:1}
-.rad-btn-sub{font-size:9px;color:rgba(255,255,255,0.28);position:relative;z-index:2;line-height:1}
-.rad-btn svg{position:relative;z-index:2}
-.rad-btn.active{
-  background:var(--green);border-color:var(--green);
-  box-shadow:0 0 0 3px rgba(0,255,136,.25), 0 6px 22px rgba(0,255,136,.45);
-}
-.rad-btn.active::before{background:linear-gradient(180deg,rgba(255,255,255,0.28) 0%,transparent 100%)}
-.rad-btn.active .rad-btn-label{color:#000}
-.rad-btn.active .rad-btn-sub{color:rgba(0,0,0,0.55)}
-.rad-btn:active{transform:translate(-50%,-50%) scale(.93)}
-
-/* play button — center pivot */
-.rad-play{
-  position:absolute;
-  width:72px;height:72px;border-radius:50%;
-  background:linear-gradient(135deg,var(--green2),var(--green));
-  box-shadow:0 0 0 4px rgba(0,255,136,.2), 0 8px 28px rgba(0,255,136,.45);
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;pointer-events:all;
-  transition:all .2s;transform:translate(-50%,-50%);overflow:hidden;border:none;
-}
-.rad-play::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.28) 0%,transparent 100%);pointer-events:none}
-.rad-play:disabled{opacity:.4;pointer-events:none;box-shadow:none}
-.rad-play svg{width:22px;height:22px;fill:#000;position:relative;z-index:1;margin-left:2px}
-.rad-play:active{transform:translate(-50%,-50%) scale(.93)}
-
-/* inner arc bitrate buttons (appear when MP3 active) */
-.rad-inner{
-  position:absolute;
-  width:52px;height:52px;border-radius:50%;
-  background:#0a0a0a;border:1px solid rgba(255,255,255,0.15);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-  cursor:pointer;pointer-events:all;
-  transition:all .25s cubic-bezier(.4,0,.2,1);
-  transform:translate(-50%,-50%) scale(0);
-  opacity:0;overflow:hidden;
-  box-shadow:0 4px 12px rgba(0,0,0,.5);
-}
-.rad-inner.visible{transform:translate(-50%,-50%) scale(1);opacity:1}
-.rad-inner::before{content:'';position:absolute;top:0;left:0;right:0;height:48%;background:linear-gradient(180deg,rgba(255,255,255,.1) 0%,transparent 100%);border-radius:50% 50% 0 0;pointer-events:none}
-.rad-inner-label{font-size:11px;font-weight:800;color:rgba(255,255,255,.6);position:relative;z-index:1}
-.rad-inner-sub{font-size:8px;color:rgba(255,255,255,.3);position:relative;z-index:1}
-.rad-inner.active{background:rgba(0,255,136,.18);border-color:var(--green);box-shadow:0 0 0 2px rgba(0,255,136,.3)}
-.rad-inner.active .rad-inner-label{color:var(--green)}
-.rad-inner.active .rad-inner-sub{color:rgba(0,255,136,.6)}
-.rad-inner:active{transform:translate(-50%,-50%) scale(.91)}
-
-/* add-audio pill in topbar */
+.empty-btn{display:inline-block;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:14px;padding:12px 28px;border-radius:var(--pill);border:none;cursor:pointer;font-family:'Inter',sans-serif;position:relative;overflow:hidden;box-shadow:0 5px 18px rgba(0,255,136,.3)}
+.empty-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.22) 0%,transparent 100%)}
 .add-btn{display:inline-block;background:var(--gdim);border:1px solid rgba(0,255,136,.25);border-radius:var(--pill);color:var(--green);font-size:11px;font-weight:800;letter-spacing:.5px;padding:7px 14px;cursor:pointer;font-family:'Inter',sans-serif}
 
-/* ── NAV SHEET ── */
+/* ══════════════════════════════════════════
+   RADIAL DOCK
+   Fixed panel at bottom. When closed: only
+   the trigger button is visible. When open:
+   backdrop + format buttons fan out.
+══════════════════════════════════════════ */
+#radialDock{
+  position:fixed;bottom:0;left:0;right:0;
+  /* max height = backdrop radius + trigger area */
+  height:var(--dock-h, 260px);
+  pointer-events:none;
+  z-index:80;
+}
+
+/* dark gradient semicircle backdrop */
+.rad-bg{
+  position:absolute;bottom:0;left:50%;
+  transform:translateX(-50%) scaleY(0);
+  transform-origin:bottom center;
+  width:var(--backdrop-w, 110%);
+  height:var(--backdrop-h, 260px);
+  border-radius:50% 50% 0 0 / 60% 60% 0 0;
+  background:radial-gradient(ellipse 90% 100% at 50% 100%,
+    rgba(14,14,18,0.99) 60%,
+    rgba(10,10,14,0.85) 85%,
+    transparent 100%);
+  transition:transform .45s cubic-bezier(.4,0,.2,1), opacity .35s;
+  opacity:0;
+  pointer-events:none;
+}
+.rad-bg::after{
+  content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent 0%,rgba(0,255,136,.1) 30%,rgba(0,255,136,.18) 50%,rgba(0,255,136,.1) 70%,transparent 100%);
+}
+#radialDock.open .rad-bg{
+  transform:translateX(-50%) scaleY(1);
+  opacity:1;
+}
+
+/* ── TRIGGER / PLAY BUTTON ── */
+.rad-trigger{
+  position:absolute;
+  bottom:var(--trigger-b, 20px);
+  left:50%;
+  transform:translateX(-50%);
+  pointer-events:all;
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-family:'Inter',sans-serif;
+  overflow:hidden;
+  /* closed state: green pill */
+  width:160px;height:54px;border-radius:var(--pill);
+  background:linear-gradient(135deg,var(--green2),var(--green));
+  color:#000;font-weight:800;font-size:14px;
+  box-shadow:0 6px 24px rgba(0,255,136,.45),0 2px 8px rgba(0,0,0,.4);
+  transition:
+    width .35s cubic-bezier(.4,0,.2,1),
+    height .35s cubic-bezier(.4,0,.2,1),
+    border-radius .35s cubic-bezier(.4,0,.2,1),
+    box-shadow .35s;
+}
+.rad-trigger::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,.28) 0%,transparent 100%);
+  pointer-events:none;z-index:1;
+}
+.rad-trigger svg{position:relative;z-index:2;flex-shrink:0}
+.rad-trigger span{position:relative;z-index:2}
+/* open state: shrinks to play circle */
+#radialDock.open .rad-trigger{
+  width:70px;height:70px;border-radius:50%;
+  box-shadow:0 0 0 4px rgba(0,255,136,.25), 0 8px 28px rgba(0,255,136,.5);
+}
+.trigger-label{transition:opacity .2s, width .3s;white-space:nowrap}
+#radialDock.open .trigger-label{display:none}
+.trigger-play{display:none}
+#radialDock.open .trigger-play{display:flex;align-items:center;justify-content:center}
+#radialDock.open .trigger-convert-icon{display:none}
+
+/* ── FORMAT + BITRATE BUTTONS (placed by JS) ── */
+.rad-fmt, .rad-br{
+  position:absolute;
+  border:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  font-family:'Inter',sans-serif;
+  overflow:hidden;
+  pointer-events:none;
+  /* gloss shine */
+  background:#111;
+  border:1px solid rgba(255,255,255,0.13);
+  border-radius:50%;
+  box-shadow:0 4px 16px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08);
+  /* closed → origin at trigger center */
+  opacity:0;
+  transition:
+    transform .4s cubic-bezier(.34,1.56,.64,1),
+    opacity .25s ease,
+    background .2s,
+    box-shadow .2s;
+}
+.rad-fmt::before,.rad-br::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:45%;
+  background:linear-gradient(180deg,rgba(255,255,255,.12) 0%,transparent 100%);
+  border-radius:50% 50% 0 0;pointer-events:none;z-index:1;
+}
+.rad-fmt-name,.rad-br-name{font-size:13px;font-weight:800;color:rgba(255,255,255,.55);position:relative;z-index:2;line-height:1}
+.rad-fmt-sub,.rad-br-sub{font-size:9px;color:rgba(255,255,255,.25);position:relative;z-index:2;line-height:1}
+/* active */
+.rad-fmt.active,.rad-br.active{
+  background:var(--green);
+  border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(0,255,136,.25),0 6px 22px rgba(0,255,136,.5),inset 0 1px 0 rgba(255,255,255,.3);
+}
+.rad-fmt.active::before,.rad-br.active::before{background:linear-gradient(180deg,rgba(255,255,255,.28) 0%,transparent 100%)}
+.rad-fmt.active .rad-fmt-name,.rad-br.active .rad-br-name{color:#000}
+.rad-fmt.active .rad-fmt-sub,.rad-br.active .rad-br-sub{color:rgba(0,0,0,.5)}
+/* open → final position */
+#radialDock.open .rad-fmt,
+#radialDock.open .rad-br{opacity:1;pointer-events:all}
+/* brute-force tap zone */
+.rad-fmt:active,.rad-br:active{filter:brightness(1.15)}
+
+/* ── NAV / TOAST / OVERLAYS ── */
 .nav-sheet{position:fixed;bottom:0;left:0;right:0;background:#161616;border-top:1px solid var(--border);border-radius:26px 26px 0 0;z-index:220;transform:translateY(100%);transition:transform .3s ease;max-height:80vh;overflow-y:auto;padding:0 20px calc(40px + env(safe-area-inset-bottom,0px));box-shadow:0 -20px 60px rgba(0,0,0,.6)}
 .nav-sheet.open{transform:translateY(0)}
 .nav-handle-wrap{padding:12px 0 6px;text-align:center}
@@ -178,10 +208,9 @@ body{display:flex;flex-direction:column;height:100dvh}
 .nav-a{display:flex;align-items:center;gap:14px;padding:12px 0;font-size:15px;font-weight:500;color:#ddd;text-decoration:none;border-bottom:1px solid #222}
 .nav-a:active{color:var(--green)}
 .nav-cta{display:block;margin-top:20px;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:700;font-size:14px;padding:13px;border-radius:var(--pill);text-decoration:none;text-align:center}
-/* ── OVERLAYS ── */
-.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(2px);z-index:190;display:none;pointer-events:none}
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:190;display:none;pointer-events:none}
 .backdrop.open{display:block;pointer-events:all}
-.toast{position:fixed;bottom:calc(290px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) translateY(8px);background:#181818;border:1px solid var(--green);color:var(--green);font-size:12px;font-weight:600;padding:10px 18px;border-radius:var(--pill);opacity:0;transition:all .3s;z-index:300;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+.toast{position:fixed;bottom:var(--toast-b,100px);left:50%;transform:translateX(-50%) translateY(8px);background:#181818;border:1px solid var(--green);color:var(--green);font-size:12px;font-weight:600;padding:10px 18px;border-radius:var(--pill);opacity:0;transition:all .3s;z-index:300;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.err{border-color:#ff4466;color:#ff4466}
 .overlay-spin{position:fixed;inset:0;background:rgba(10,10,10,.88);z-index:400;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px}
@@ -189,6 +218,9 @@ body{display:flex;flex-direction:column;height:100dvh}
 .spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin-label{font-size:13px;color:var(--text2)}
+/* tap-blocking overlay when menu is open */
+.menu-overlay{position:fixed;inset:0;z-index:79;display:none}
+.menu-overlay.show{display:block}
 </style>
 <link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
 <link rel="icon" href="/favicon.ico">
@@ -208,14 +240,12 @@ body{display:flex;flex-direction:column;height:100dvh}
   <label for="fileInput" class="add-btn">+ AUDIO</label>
 </div>
 
-<div class="scroll">
-  <!-- Editable filename -->
+<div class="scroll" id="mainScroll">
   <div class="track-section" id="trackSection">
     <input type="text" class="track-name-input" id="trackName" autocorrect="off" spellcheck="false" placeholder="Untitled">
     <div class="track-info" id="trackInfo">—</div>
   </div>
 
-  <!-- Waveform -->
   <div class="wave-card" id="waveCard">
     <div class="wave-inner" id="waveInner">
       <canvas class="wave-canvas" id="waveCanvas"></canvas>
@@ -227,33 +257,42 @@ body{display:flex;flex-direction:column;height:100dvh}
     <span class="time-lbl" id="totTime">0:00</span>
   </div>
 
-  <!-- Empty state -->
   <div class="empty" id="empty">
     <div class="empty-icon">
-      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="opacity:.75">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="opacity:.75">
         <polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/>
         <path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/>
       </svg>
     </div>
     <div class="empty-title">Add an audio or video file</div>
-    <div class="empty-sub">Use the format wheel below to pick your output — or tap here to load a file first.</div>
+    <div class="empty-sub">Tap the green Convert button to open the format wheel, then load a file.</div>
     <label for="fileInput" class="empty-btn">+ Add File</label>
   </div>
 
-  <!-- Status banner -->
   <div class="status-banner" id="statusBanner">
     <div>
       <div class="status-fmt" id="statusFmt">MP3</div>
-      <div class="status-sub" id="statusSub">192 kbps · tap Convert to download</div>
+      <div class="status-sub" id="statusSub">192 kbps</div>
     </div>
-    <button class="convert-trigger" id="convertBtn" disabled>Convert</button>
+    <button class="convert-go" id="convertBtn" disabled>Convert &amp; Download</button>
   </div>
 </div>
 
-<!-- ── RADIAL DOCK ── -->
-<div class="radial-dock" id="radialDock">
-  <div class="radial-backdrop"></div>
-  <!-- Format buttons, inner bitrate buttons, and play button are injected by JS -->
+<!-- tap-outside overlay when menu is open -->
+<div class="menu-overlay" id="menuOverlay"></div>
+
+<!-- ═══════ RADIAL DOCK ═══════ -->
+<div id="radialDock">
+  <div class="rad-bg"></div>
+
+  <!-- TRIGGER BUTTON — Convert pill (closed) / Play button (open) -->
+  <button class="rad-trigger" id="radTrigger">
+    <!-- Convert icon (shown when closed) -->
+    <svg class="trigger-convert-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg>
+    <span class="trigger-label">CONVERT</span>
+    <!-- Play icon (shown when open) -->
+    <svg class="trigger-play" id="playIcon" width="22" height="22" viewBox="0 0 24 24" fill="#000"><path id="playPath" d="M8 5v14l11-7z"/></svg>
+  </button>
 </div>
 
 <div class="backdrop" id="backdrop"></div>
@@ -261,20 +300,17 @@ body{display:flex;flex-direction:column;height:100dvh}
 <div class="nav-sheet" id="navSheet">
   <div class="nav-handle-wrap"><div class="nav-handle"></div></div>
   <div class="nav-sl">Navigation</div>
-  <a href="/" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/home.png" style="width:28px;height:28px;border-radius:6px"></span>Home</a>
+  <a href="/" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/home.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Home</a>
   <div class="nav-sl">Free Tools</div>
-  <a href="/watermark" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/watermark.png" style="width:28px;height:28px;border-radius:6px"></span>Watermark Tool</a>
-  <a href="/video-splitter" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/video-splitter.png" style="width:28px;height:28px;border-radius:6px"></span>Video Splitter</a>
-  <a href="/frame-extractor" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/frame-extractor.png" style="width:28px;height:28px;border-radius:6px"></span>Frame Extractor</a>
-  <a href="/audio-editor" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/audio-editor.png" style="width:28px;height:28px;border-radius:6px"></span>Audio Editor</a>
-  <a href="/audio-converter" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/audio-converter.png" style="width:28px;height:28px;border-radius:6px"></span>Audio Converter</a>
-  <a href="/video-flipper" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/video-flipper.png" style="width:28px;height:28px;border-radius:6px"></span>Batch Video Flipper</a>
+  <a href="/watermark" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/watermark.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Watermark Tool</a>
+  <a href="/video-splitter" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/video-splitter.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Video Splitter</a>
+  <a href="/frame-extractor" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/frame-extractor.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Frame Extractor</a>
+  <a href="/audio-editor" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/audio-editor.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Editor</a>
+  <a href="/audio-converter" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/audio-converter.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Converter</a>
+  <a href="/video-flipper" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/video-flipper.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Batch Video Flipper</a>
   <div class="nav-sl">AI Generation</div>
   <a href="/ai-studio" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg></span>AI Studio</a>
   <a href="/motion-control" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg></span>Motion Control</a>
-  <div class="nav-sl">Follow Us</div>
-  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-a"><span style="width:28px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="#E1306C"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></span>Instagram</a>
-  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="nav-a"><span style="width:28px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.79a4.85 4.85 0 01-1.01-.1z"/></svg></span>TikTok</a>
   <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-cta">Follow on Instagram</a>
 </div>
 
@@ -285,326 +321,351 @@ body{display:flex;flex-direction:column;height:100dvh}
 <script>
 const $=id=>document.getElementById(id);
 
-/* ═══════════════════════════════════════
-   STATE
-═══════════════════════════════════════ */
+// ─── STATE ────────────────────────────────────
 let audioCtx=null, audioBuffer=null, sourceNode=null;
 let playing=false, startedAt=0, seekPos=0;
 let isVideo=false, sourceFileName='audio';
 let outFormat='mp3', outBitrate=192;
+let menuOpen=false;
 
-/* ═══════════════════════════════════════
-   BUILD RADIAL DOCK
-═══════════════════════════════════════ */
-const FORMATS = [
-  { fmt:'wav',  label:'WAV',  sub:'Lossless',  angle:158 },
-  { fmt:'aiff', label:'AIFF', sub:'Apple',     angle:126 },
-  { fmt:'mp3',  label:'MP3',  sub:'Universal', angle:90  },
-  { fmt:'flac', label:'FLAC', sub:'Compressed',angle:54  },
-  { fmt:'ogg',  label:'OGG',  sub:'Open',      angle:22  },
+// ─── FORMAT CONFIG ────────────────────────────
+const FORMATS=[
+  {fmt:'wav',  label:'WAV',  sub:'Lossless', angle:157},
+  {fmt:'aiff', label:'AIFF', sub:'Apple',    angle:126},
+  {fmt:'mp3',  label:'MP3',  sub:'Universal',angle:90},
+  {fmt:'flac', label:'FLAC', sub:'Compressed',angle:54},
+  {fmt:'ogg',  label:'OGG',  sub:'Open',     angle:23},
 ];
-const BITRATES = [
-  { br:128, label:'128', sub:'kbps', angle:135 },
-  { br:192, label:'192', sub:'kbps', angle:90  },
-  { br:320, label:'320', sub:'kbps', angle:45  },
+const BITRATES=[
+  {br:128,label:'128',sub:'kbps',angle:145},
+  {br:192,label:'192',sub:'kbps',angle:90},
+  {br:320,label:'320',sub:'kbps',angle:35},
 ];
-const OUTER_R = 148;
-const INNER_R = 88;
 
+// ─── BUILD RADIAL MENU ────────────────────────
 function buildRadial(){
-  const dock = $('radialDock');
-  const dockH = dock.offsetHeight || 280;
-  const dockW = dock.offsetWidth || window.innerWidth;
-  // origin: bottom center of dock
-  const cx = dockW / 2;
-  const cy = dockH; // bottom edge of dock
+  const dock=$('radialDock');
+  // remove old buttons
+  dock.querySelectorAll('.rad-fmt,.rad-br').forEach(el=>el.remove());
 
-  // ── FORMAT BUTTONS (outer arc) ──
-  FORMATS.forEach(f => {
-    const rad = f.angle * Math.PI / 180;
-    const bx = cx + OUTER_R * Math.cos(rad);
-    const by = cy - OUTER_R * Math.sin(rad);
+  const sw=window.innerWidth;
+  const safeB=parseInt(getComputedStyle(document.documentElement).paddingBottom||0)||0;
+  const FMT_R = Math.min(Math.round(sw*0.37), 150);  // outer arc radius
+  const BR_R  = Math.round(FMT_R * 0.58);             // inner bitrate arc radius
+  const FMT_BTN = Math.min(Math.round(sw*0.175), 74); // format button size
+  const BR_BTN  = Math.round(FMT_BTN * 0.76);         // bitrate button size
 
-    const btn = document.createElement('button');
-    btn.className = 'rad-btn' + (f.fmt === outFormat ? ' active' : '');
-    btn.dataset.fmt = f.fmt;
-    btn.style.left = bx + 'px';
-    btn.style.top  = by + 'px';
-    btn.innerHTML  = `<span class="rad-btn-label">${f.label}</span><span class="rad-btn-sub">${f.sub}</span>`;
-    btn.addEventListener('click', () => selectFormat(f.fmt));
+  // Trigger sits at horizontal center, bottom: 20 + safeB
+  const triggerB = 20; // px from screen bottom (CSS handles safe-area)
+  const triggerR = 35; // radius of the trigger circle when open
+  const pivotB   = triggerB + triggerR; // pivot bottom offset
+
+  // Dock height: enough to fit the tallest button (MP3 at 90°)
+  const dockH = Math.round(pivotB + FMT_R + FMT_BTN/2 + 12);
+  dock.style.setProperty('--dock-h', dockH+'px');
+  dock.style.setProperty('--backdrop-h', dockH+'px');
+  dock.style.setProperty('--backdrop-w', (sw*1.1)+'px');
+  dock.style.setProperty('--trigger-b', triggerB+'px');
+  dock.style.setProperty('--toast-b', (dockH+20)+'px');
+  document.documentElement.style.setProperty('--toast-b', (dockH+60)+'px');
+  // update scroll padding so content isn't hidden behind dock
+  $('mainScroll').style.paddingBottom = (dockH+20)+'px';
+
+  // cx = screen center; format buttons use bottom/left positioning
+  const cx = sw / 2;
+
+  // ── FORMAT BUTTONS ──
+  FORMATS.forEach((f,i)=>{
+    const rad = f.angle * Math.PI/180;
+    const bx  = cx + FMT_R * Math.cos(rad);
+    const by  = pivotB + FMT_R * Math.sin(rad);
+
+    // closed: button starts scaled to 0 at trigger center
+    // open: button moves to (bx, by) at scale 1
+    // We achieve this by using transform for the fan animation:
+    // The button is always at its final (bx,by) position.
+    // Closed state: scale(0) + translate back toward center.
+    const dx = cx - bx; // offset to move toward center
+    const dy = -(by - pivotB); // offset downward
+
+    const btn=document.createElement('button');
+    btn.className='rad-fmt'+(f.fmt===outFormat?' active':'');
+    btn.dataset.fmt=f.fmt;
+    btn.style.cssText=`
+      left:${bx}px; bottom:${by}px;
+      width:${FMT_BTN}px; height:${FMT_BTN}px;
+      transition-delay:${i*0.045}s;
+      --dx:${dx}px; --dy:${dy}px;
+      transform:translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.1);
+    `;
+    btn.innerHTML=`<span class="rad-fmt-name">${f.label}</span><span class="rad-fmt-sub">${f.sub}</span>`;
+    btn.addEventListener('click',()=>selectFormat(f.fmt));
     dock.appendChild(btn);
   });
 
-  // ── BITRATE INNER BUTTONS ──
-  BITRATES.forEach(b => {
-    const rad = b.angle * Math.PI / 180;
-    const bx = cx + INNER_R * Math.cos(rad);
-    const by = cy - INNER_R * Math.sin(rad);
+  // ── BITRATE BUTTONS ──
+  BITRATES.forEach((b,i)=>{
+    const rad = b.angle * Math.PI/180;
+    const bx  = cx + BR_R * Math.cos(rad);
+    const by  = pivotB + BR_R * Math.sin(rad);
+    const dx  = cx - bx;
+    const dy  = -(by - pivotB);
 
-    const btn = document.createElement('button');
-    btn.className = 'rad-inner' + (b.br === outBitrate ? ' active' : '');
-    btn.dataset.br = b.br;
-    btn.style.left = bx + 'px';
-    btn.style.top  = by + 'px';
-    btn.innerHTML  = `<span class="rad-inner-label">${b.label}</span><span class="rad-inner-sub">${b.sub}</span>`;
-    btn.addEventListener('click', () => selectBitrate(b.br));
+    const btn=document.createElement('button');
+    btn.className='rad-br'+(b.br===outBitrate?' active':'');
+    btn.dataset.br=b.br;
+    btn.style.cssText=`
+      left:${bx}px; bottom:${by}px;
+      width:${BR_BTN}px; height:${BR_BTN}px;
+      transition-delay:${(FORMATS.length + i)*0.045}s;
+      --dx:${dx}px; --dy:${dy}px;
+      transform:translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.1);
+      display:${outFormat==='mp3'?'flex':'none'};
+    `;
+    btn.innerHTML=`<span class="rad-br-name">${b.label}</span><span class="rad-br-sub">${b.sub}</span>`;
+    btn.addEventListener('click',()=>selectBitrate(b.br));
     dock.appendChild(btn);
   });
-
-  // ── PLAY BUTTON (center pivot) ──
-  const safeB = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sab') || '0') || 0;
-  const playBtn = document.createElement('button');
-  playBtn.id = 'radPlayBtn';
-  playBtn.className = 'rad-play';
-  playBtn.disabled = true;
-  playBtn.style.left = cx + 'px';
-  playBtn.style.top  = (cy - 2) + 'px'; // 2px above bottom edge
-  playBtn.innerHTML  = `<svg id="radPlayIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
-  playBtn.addEventListener('click', () => playing ? stopPlayback() : startPlayback());
-  dock.appendChild(playBtn);
-
-  // show/hide inner bitrates based on initial format
-  updateBitrateVisibility();
 }
 
+// ─── OPEN / CLOSE ─────────────────────────────
+function openMenu(){
+  menuOpen=true;
+  $('radialDock').classList.add('open');
+  $('menuOverlay').classList.add('show');
+  // animate buttons to open state
+  $('radialDock').querySelectorAll('.rad-fmt,.rad-br').forEach(btn=>{
+    const show = btn.classList.contains('rad-br') ? outFormat==='mp3' : true;
+    if(show){
+      btn.style.display='flex';
+      btn.style.transform='translate(-50%,-50%) scale(1)';
+      btn.style.opacity='1';
+    }
+  });
+}
+function closeMenu(){
+  menuOpen=false;
+  $('radialDock').querySelectorAll('.rad-fmt,.rad-br').forEach(btn=>{
+    btn.style.transform=`translate(calc(-50% + ${btn.style.getPropertyValue('--dx') || btn.style.cssText.match(/--dx:(.*?);/)?.[1]||'0px'}), calc(-50% + ${btn.style.cssText.match(/--dy:(.*?);/)?.[1]||'0px'})) scale(0.1)`;
+    btn.style.opacity='0';
+  });
+  setTimeout(()=>{
+    $('radialDock').classList.remove('open');
+    $('menuOverlay').classList.remove('show');
+    if(playing) stopPlayback();
+  },350);
+}
+
+$('radTrigger').addEventListener('click',()=>{
+  if(!menuOpen){
+    openMenu();
+  } else {
+    // act as play/pause when open
+    if(audioBuffer){
+      playing ? stopPlayback() : startPlayback();
+    }
+  }
+});
+$('menuOverlay').addEventListener('click',closeMenu);
+
+// ─── FORMAT / BITRATE SELECTION ──────────────
 function selectFormat(fmt){
-  outFormat = fmt;
-  document.querySelectorAll('.rad-btn').forEach(b => b.classList.toggle('active', b.dataset.fmt === fmt));
-  updateBitrateVisibility();
-  updateStatusBanner();
+  outFormat=fmt;
+  $('radialDock').querySelectorAll('.rad-fmt').forEach(b=>b.classList.toggle('active',b.dataset.fmt===fmt));
+  // show/hide bitrate buttons
+  $('radialDock').querySelectorAll('.rad-br').forEach(btn=>{
+    if(fmt==='mp3'){
+      btn.style.display='flex';
+      btn.style.transform='translate(-50%,-50%) scale(1)';
+      btn.style.opacity='1';
+    } else {
+      btn.style.transform=`translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(0.1)`;
+      btn.style.opacity='0';
+      setTimeout(()=>{ btn.style.display='none'; },300);
+    }
+  });
+  updateBanner();
 }
-
 function selectBitrate(br){
-  outBitrate = br;
-  document.querySelectorAll('.rad-inner').forEach(b => b.classList.toggle('active', +b.dataset.br === br));
-  updateStatusBanner();
+  outBitrate=br;
+  $('radialDock').querySelectorAll('.rad-br').forEach(b=>b.classList.toggle('active',+b.dataset.br===br));
+  updateBanner();
 }
-
-function updateBitrateVisibility(){
-  const show = outFormat === 'mp3';
-  document.querySelectorAll('.rad-inner').forEach(b => b.classList.toggle('visible', show));
-}
-
-function updateStatusBanner(){
+function updateBanner(){
   if(!audioBuffer){ $('statusBanner').classList.remove('show'); return; }
   $('statusBanner').classList.add('show');
-  $('statusFmt').textContent = outFormat.toUpperCase();
-  let sub = '';
-  if(outFormat==='mp3') sub = outBitrate+' kbps · tap Convert to download';
-  else if(outFormat==='wav') sub = 'Lossless PCM · tap Convert to download';
-  else if(outFormat==='aiff') sub = 'Lossless Apple · tap Convert to download';
-  else if(outFormat==='flac') sub = 'Lossless compressed (exported as WAV) · tap Convert';
-  else if(outFormat==='ogg') sub = 'Exported as WAV (OGG needs native) · tap Convert';
-  $('statusSub').textContent = sub;
+  $('statusFmt').textContent=outFormat.toUpperCase();
+  $('statusSub').textContent=
+    outFormat==='mp3' ? outBitrate+' kbps':
+    outFormat==='wav' ? 'Lossless PCM':
+    outFormat==='aiff'? 'Lossless Apple':
+    outFormat==='flac'? 'Lossless compressed':
+                        'Open format';
 }
 
-/* ═══════════════════════════════════════
-   FILE LOAD
-═══════════════════════════════════════ */
-$('fileInput').addEventListener('change', async e => {
-  const file = e.target.files[0];
-  if(!file) return;
-  sourceFileName = file.name.replace(/\.[^.]+$/, '');
-  isVideo = file.type.startsWith('video/');
-  showSpinner(isVideo ? 'Extracting audio…' : 'Loading audio…');
+// ─── FILE LOAD ────────────────────────────────
+$('fileInput').addEventListener('change',async e=>{
+  const file=e.target.files[0]; if(!file)return;
+  sourceFileName=file.name.replace(/\.[^.]+$/,'');
+  isVideo=file.type.startsWith('video/');
+  showSpinner(isVideo?'Extracting audio…':'Loading audio…');
   try{
-    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-    if(audioCtx.state==='suspended') await audioCtx.resume();
-    const buf = await file.arrayBuffer();
-    audioBuffer = await audioCtx.decodeAudioData(buf);
-
+    if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended')await audioCtx.resume();
+    const buf=await file.arrayBuffer();
+    audioBuffer=await audioCtx.decodeAudioData(buf);
     $('empty').classList.add('hidden');
     $('trackSection').classList.add('show');
     $('waveCard').classList.add('show');
     $('timeRow').classList.add('show');
-    $('trackName').value = sourceFileName;
-    $('trackInfo').textContent = `${fmtTime(audioBuffer.duration)} · ${audioBuffer.numberOfChannels===2?'Stereo':'Mono'} · ${Math.round(audioBuffer.sampleRate/1000)}kHz${isVideo?' · audio extracted':''}`;
-    $('totTime').textContent = fmtTime(audioBuffer.duration);
-    seekPos = 0;
-    drawWave();
-    $('radPlayBtn').disabled = false;
-    $('convertBtn').disabled = false;
-    updateStatusBanner();
-  } catch(err){
-    toast('Could not read this file', true);
-    $('empty').classList.remove('hidden');
-  }
-  hideSpinner();
-  e.target.value = '';
+    $('trackName').value=sourceFileName;
+    $('trackInfo').textContent=`${fmtTime(audioBuffer.duration)} · ${audioBuffer.numberOfChannels===2?'Stereo':'Mono'} · ${Math.round(audioBuffer.sampleRate/1000)}kHz${isVideo?' · audio extracted':''}`;
+    $('totTime').textContent=fmtTime(audioBuffer.duration);
+    seekPos=0; drawWave(); updateBanner();
+    $('convertBtn').disabled=false;
+  } catch(err){ toast('Could not read this file',true); $('empty').classList.remove('hidden'); }
+  hideSpinner(); e.target.value='';
 });
 
-$('trackName').addEventListener('input', () => {});
-
-/* ═══════════════════════════════════════
-   WAVEFORM
-═══════════════════════════════════════ */
+// ─── WAVEFORM ─────────────────────────────────
 function drawWave(){
-  const canvas = $('waveCanvas');
-  if(!audioBuffer || !canvas) return;
-  const W = canvas.offsetWidth * (window.devicePixelRatio||1);
-  const H = canvas.offsetHeight * (window.devicePixelRatio||1);
-  canvas.width = W; canvas.height = H;
-  const ctx = canvas.getContext('2d');
+  const canvas=$('waveCanvas'); if(!audioBuffer||!canvas)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.offsetWidth*dpr, H=canvas.offsetHeight*dpr;
+  canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d');
   ctx.clearRect(0,0,W,H);
-  const data = audioBuffer.getChannelData(0);
-  const step = Math.ceil(data.length / W);
-  const mid = H / 2;
-  const grad = ctx.createLinearGradient(0,0,0,H);
-  grad.addColorStop(0,'rgba(0,255,136,0.9)');
-  grad.addColorStop(0.5,'rgba(0,255,136,0.6)');
-  grad.addColorStop(1,'rgba(0,200,100,0.25)');
-  ctx.fillStyle = grad;
+  const data=audioBuffer.getChannelData(0);
+  const step=Math.ceil(data.length/W);
+  const mid=H/2;
+  const gr=ctx.createLinearGradient(0,0,0,H);
+  gr.addColorStop(0,'rgba(0,255,136,0.9)');
+  gr.addColorStop(0.5,'rgba(0,255,136,0.6)');
+  gr.addColorStop(1,'rgba(0,200,100,0.25)');
+  ctx.fillStyle=gr;
   for(let i=0;i<W;i++){
-    let mn=1, mx=-1;
-    for(let j=0;j<step;j++){const v=data[i*step+j]||0; if(v<mn)mn=v; if(v>mx)mx=v;}
-    const yTop = mid*(1-mx), yBot = mid*(1-mn);
-    ctx.fillRect(i, yTop, 1.5, Math.max(1, yBot-yTop));
+    let mn=1,mx=-1;
+    for(let j=0;j<step;j++){const v=data[i*step+j]||0;if(v<mn)mn=v;if(v>mx)mx=v;}
+    ctx.fillRect(i,mid*(1-mx),1.5,Math.max(1,mid*(1-mn)-mid*(1-mx)));
   }
 }
-
-// tap waveform to seek
-$('waveCanvas').addEventListener('click', e => {
-  if(!audioBuffer) return;
-  const rect = e.currentTarget.getBoundingClientRect();
-  const frac = (e.clientX - rect.left) / rect.width;
-  seekPos = frac * audioBuffer.duration;
-  updatePlayhead(frac);
-  $('curTime').textContent = fmtTime(seekPos);
-  if(playing){ stopPlayback(); startPlayback(); }
+$('waveCanvas').addEventListener('click',e=>{
+  if(!audioBuffer)return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  seekPos=(e.clientX-rect.left)/rect.width*audioBuffer.duration;
+  updatePH(seekPos/audioBuffer.duration);
+  $('curTime').textContent=fmtTime(seekPos);
+  if(playing){stopPlayback();startPlayback();}
 });
-
-function updatePlayhead(frac){
-  const ph = $('playhead'), inner = $('waveInner');
-  ph.style.display = 'block';
-  ph.style.left = (frac * inner.clientWidth) + 'px';
+function updatePH(frac){
+  const ph=$('playhead'),inner=$('waveInner');
+  ph.style.display='block';ph.style.left=(frac*inner.clientWidth)+'px';
 }
 
-/* ═══════════════════════════════════════
-   PLAYBACK
-═══════════════════════════════════════ */
+// ─── PLAYBACK ─────────────────────────────────
 function startPlayback(){
-  if(!audioBuffer) return;
-  if(audioCtx.state==='suspended') audioCtx.resume();
-  sourceNode = audioCtx.createBufferSource();
-  sourceNode.buffer = audioBuffer;
+  if(!audioBuffer)return;
+  if(audioCtx.state==='suspended')audioCtx.resume();
+  sourceNode=audioCtx.createBufferSource();
+  sourceNode.buffer=audioBuffer;
   sourceNode.connect(audioCtx.destination);
-  sourceNode.start(0, seekPos);
-  startedAt = audioCtx.currentTime - seekPos;
-  playing = true;
-  $('radPlayIcon').innerHTML = '<rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/>';
-  sourceNode.onended = () => { if(playing){ seekPos=0; stopPlayback(); }};
+  sourceNode.start(0,seekPos);
+  startedAt=audioCtx.currentTime-seekPos;
+  playing=true;
+  $('playPath').setAttribute('d','M6 19h4V5H6v14zm8-14v14h4V5h-4z');
+  sourceNode.onended=()=>{ if(playing){seekPos=0;stopPlayback();} };
   requestAnimationFrame(tick);
 }
 function stopPlayback(){
-  if(sourceNode){ try{sourceNode.stop();}catch(e){}}
-  playing = false;
-  $('radPlayIcon').innerHTML = '<path d="M8 5v14l11-7z"/>';
+  if(sourceNode){try{sourceNode.stop();}catch(e){}}
+  playing=false;
+  $('playPath').setAttribute('d','M8 5v14l11-7z');
 }
 function tick(){
-  if(!playing) return;
-  const t = audioCtx.currentTime - startedAt;
-  seekPos = Math.min(t, audioBuffer.duration);
-  updatePlayhead(seekPos / audioBuffer.duration);
-  $('curTime').textContent = fmtTime(seekPos);
+  if(!playing)return;
+  seekPos=Math.min(audioCtx.currentTime-startedAt,audioBuffer.duration);
+  updatePH(seekPos/audioBuffer.duration);
+  $('curTime').textContent=fmtTime(seekPos);
   requestAnimationFrame(tick);
 }
 
-/* ═══════════════════════════════════════
-   CONVERT
-═══════════════════════════════════════ */
-$('convertBtn').addEventListener('click', async () => {
-  if(!audioBuffer) return;
+// ─── CONVERT ──────────────────────────────────
+$('convertBtn').addEventListener('click',async()=>{
+  if(!audioBuffer)return;
   showSpinner('Converting to '+outFormat.toUpperCase()+'…');
   try{
-    const name = ($('trackName').value.trim() || 'converted-audio');
-    await exportFile(audioBuffer, outFormat, name, outBitrate);
+    const name=$('trackName').value.trim()||'converted-audio';
+    await exportFile(audioBuffer,outFormat,name,outBitrate);
     toast('✓ Downloaded '+name+'.'+outFormat);
-  } catch(err){ toast('Conversion failed', true); }
+  } catch(err){toast('Conversion failed',true);}
   hideSpinner();
 });
 
-/* ═══════════════════════════════════════
-   ENCODERS
-═══════════════════════════════════════ */
-async function exportFile(buffer, format, name, bitrate){
-  let blob, ext=format;
-  if(format==='mp3'){ blob=encodeMP3(buffer,bitrate); }
-  else if(format==='wav'){ blob=encodeWAV(buffer); }
-  else if(format==='aiff'){ blob=encodeAIFF(buffer); }
-  else { blob=encodeWAV(buffer); ext='wav'; toast('Exported as WAV (needs native encoder for '+format.toUpperCase()+')');}
-  triggerDownload(blob, name+'.'+ext);
+// ─── ENCODERS ─────────────────────────────────
+async function exportFile(buf,fmt,name,br){
+  let blob,ext=fmt;
+  if(fmt==='mp3')      blob=encodeMP3(buf,br);
+  else if(fmt==='wav') blob=encodeWAV(buf);
+  else if(fmt==='aiff')blob=encodeAIFF(buf);
+  else {blob=encodeWAV(buf);ext='wav';toast('Exported as WAV ('+fmt.toUpperCase()+' needs native encoder)');}
+  triggerDL(blob,name+'.'+ext);
 }
-function triggerDownload(blob, filename){
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(()=>URL.revokeObjectURL(a.href),15000);
+function triggerDL(blob,fn){
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(a.href),15e3);
 }
-function encodeWAV(buffer){
-  const numCh=buffer.numberOfChannels,sr=buffer.sampleRate,len=buffer.length*numCh*2+44;
-  const ab=new ArrayBuffer(len),v=new DataView(ab);
+function encodeWAV(buf){
+  const nc=buf.numberOfChannels,sr=buf.sampleRate,len=buf.length*nc*2+44,ab=new ArrayBuffer(len),v=new DataView(ab);
   const ws=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
   ws(0,'RIFF');v.setUint32(4,len-8,true);ws(8,'WAVE');ws(12,'fmt ');v.setUint32(16,16,true);
-  v.setUint16(20,1,true);v.setUint16(22,numCh,true);v.setUint32(24,sr,true);
-  v.setUint32(28,sr*numCh*2,true);v.setUint16(32,numCh*2,true);v.setUint16(34,16,true);
+  v.setUint16(20,1,true);v.setUint16(22,nc,true);v.setUint32(24,sr,true);
+  v.setUint32(28,sr*nc*2,true);v.setUint16(32,nc*2,true);v.setUint16(34,16,true);
   ws(36,'data');v.setUint32(40,len-44,true);
-  let off=44;const ch=[];for(let c=0;c<numCh;c++)ch.push(buffer.getChannelData(c));
-  for(let i=0;i<buffer.length;i++)for(let c=0;c<numCh;c++){let s=Math.max(-1,Math.min(1,ch[c][i]));v.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;}
+  let o=44;const ch=[];for(let c=0;c<nc;c++)ch.push(buf.getChannelData(c));
+  for(let i=0;i<buf.length;i++)for(let c=0;c<nc;c++){let s=Math.max(-1,Math.min(1,ch[c][i]));v.setInt16(o,s<0?s*0x8000:s*0x7FFF,true);o+=2;}
   return new Blob([v],{type:'audio/wav'});
 }
-function encodeAIFF(buffer){
-  const numCh=buffer.numberOfChannels,sr=buffer.sampleRate,frames=buffer.length,dLen=frames*numCh*2;
-  const ab=new ArrayBuffer(54+dLen),v=new DataView(ab);
+function encodeAIFF(buf){
+  const nc=buf.numberOfChannels,sr=buf.sampleRate,fr=buf.length,dl=fr*nc*2,ab=new ArrayBuffer(54+dl),v=new DataView(ab);
   const ws=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
-  ws(0,'FORM');v.setUint32(4,46+dLen,false);ws(8,'AIFF');ws(12,'COMM');v.setUint32(16,18,false);
-  v.setUint16(20,numCh,false);v.setUint32(22,frames,false);v.setUint16(26,16,false);
-  const setExt=(o,val)=>{const e=Math.floor(Math.log2(val));const m=val/Math.pow(2,e);v.setUint16(o,16383+e,false);v.setUint32(o+2,(Math.floor(m*Math.pow(2,31))>>>0),false);v.setUint32(o+6,0,false);};
-  setExt(28,sr);ws(38,'SSND');v.setUint32(42,8+dLen,false);v.setUint32(46,0,false);v.setUint32(50,0,false);
-  let off=54;const ch=[];for(let c=0;c<numCh;c++)ch.push(buffer.getChannelData(c));
-  for(let i=0;i<frames;i++)for(let c=0;c<numCh;c++){let s=Math.max(-1,Math.min(1,ch[c][i]));v.setInt16(off,s<0?s*0x8000:s*0x7FFF,false);off+=2;}
+  ws(0,'FORM');v.setUint32(4,46+dl,false);ws(8,'AIFF');ws(12,'COMM');v.setUint32(16,18,false);
+  v.setUint16(20,nc,false);v.setUint32(22,fr,false);v.setUint16(26,16,false);
+  const se=(o,val)=>{const e=Math.floor(Math.log2(val)),m=val/Math.pow(2,e);v.setUint16(o,16383+e,false);v.setUint32(o+2,(Math.floor(m*Math.pow(2,31))>>>0),false);v.setUint32(o+6,0,false);};
+  se(28,sr);ws(38,'SSND');v.setUint32(42,8+dl,false);v.setUint32(46,0,false);v.setUint32(50,0,false);
+  let o=54;const ch=[];for(let c=0;c<nc;c++)ch.push(buf.getChannelData(c));
+  for(let i=0;i<fr;i++)for(let c=0;c<nc;c++){let s=Math.max(-1,Math.min(1,ch[c][i]));v.setInt16(o,s<0?s*0x8000:s*0x7FFF,false);o+=2;}
   return new Blob([v],{type:'audio/aiff'});
 }
-function encodeMP3(buffer, kbps){
-  const numCh=buffer.numberOfChannels,sr=buffer.sampleRate;
-  const enc=new lamejs.Mp3Encoder(numCh,sr,kbps);
-  const bs=1152,data=[];
-  const left=f16(buffer.getChannelData(0));
-  const right=numCh>1?f16(buffer.getChannelData(1)):null;
-  for(let i=0;i<left.length;i+=bs){
-    const l=left.subarray(i,i+bs);
-    const chunk=right?enc.encodeBuffer(l,right.subarray(i,i+bs)):enc.encodeBuffer(l);
-    if(chunk.length)data.push(chunk);
+function encodeMP3(buf,kbps){
+  const nc=buf.numberOfChannels,sr=buf.sampleRate,enc=new lamejs.Mp3Encoder(nc,sr,kbps),bs=1152,data=[];
+  const l=f16(buf.getChannelData(0)),r=nc>1?f16(buf.getChannelData(1)):null;
+  for(let i=0;i<l.length;i+=bs){
+    const c=r?enc.encodeBuffer(l.subarray(i,i+bs),r.subarray(i,i+bs)):enc.encodeBuffer(l.subarray(i,i+bs));
+    if(c.length)data.push(c);
   }
-  const end=enc.flush();if(end.length)data.push(end);
+  const e=enc.flush();if(e.length)data.push(e);
   return new Blob(data,{type:'audio/mp3'});
 }
-function f16(f32){const i=new Int16Array(f32.length);for(let j=0;j<f32.length;j++){let s=Math.max(-1,Math.min(1,f32[j]));i[j]=s<0?s*0x8000:s*0x7FFF;}return i;}
+function f16(f32){const i16=new Int16Array(f32.length);for(let j=0;j<f32.length;j++){const s=Math.max(-1,Math.min(1,f32[j]));i16[j]=s<0?s*0x8000:s*0x7FFF;}return i16;}
 
-/* ═══════════════════════════════════════
-   NAV
-═══════════════════════════════════════ */
+// ─── NAV ──────────────────────────────────────
 const backdrop=$('backdrop');
 $('menuBtn').addEventListener('click',()=>{
   const open=$('navSheet').classList.contains('open');
-  $('navSheet').classList.toggle('open',!open);
-  backdrop.classList.toggle('open',!open);
-  $('menuBtn').classList.toggle('open',!open);
+  $('navSheet').classList.toggle('open',!open);backdrop.classList.toggle('open',!open);$('menuBtn').classList.toggle('open',!open);
 });
 backdrop.addEventListener('click',()=>{ $('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open'); });
 
-/* ═══════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════ */
+// ─── HELPERS ──────────────────────────────────
 function fmtTime(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+String(sec).padStart(2,'0');}
 function showSpinner(l){$('spinLabel').textContent=l||'Working…';$('overlaySpin').classList.add('show');}
 function hideSpinner(){$('overlaySpin').classList.remove('show');}
 function toast(msg,err){const t=$('toast');t.textContent=msg;t.className='toast show'+(err?' err':'');setTimeout(()=>t.classList.remove('show'),3200);}
 
-/* ── INIT ── */
+// ─── INIT ─────────────────────────────────────
 window.addEventListener('load', buildRadial);
-window.addEventListener('resize', () => {
-  document.querySelectorAll('.rad-btn,.rad-inner,.rad-play').forEach(el => el.remove());
-  buildRadial();
-});
+window.addEventListener('resize',()=>{ if(!menuOpen){ document.querySelectorAll('.rad-fmt,.rad-br').forEach(el=>el.remove()); buildRadial(); }});
 </script>
 </body>
 </html>
