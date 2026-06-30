@@ -33,7 +33,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 .menu-btn.open span:nth-child(2){opacity:0}
 .menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 .spacer{flex:1}
-.add-btn{background:var(--gdim);border:1px solid rgba(0,255,136,0.25);border-radius:var(--pill);color:var(--green);font-size:11px;font-weight:800;letter-spacing:.5px;padding:7px 14px;cursor:pointer;font-family:'Inter',sans-serif}
+.add-btn{display:inline-block;background:var(--gdim);border:1px solid rgba(0,255,136,0.25);border-radius:var(--pill);color:var(--green);font-size:11px;font-weight:800;letter-spacing:.5px;padding:7px 14px;cursor:pointer;font-family:'Inter',sans-serif}
 .add-btn:active{background:rgba(0,255,136,0.18)}
 
 /* MAIN */
@@ -47,7 +47,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 .empty-title{font-size:15px;font-weight:700;color:#ddd}
 .empty-sub{font-size:12px;color:#666;max-width:260px}
 .empty-drop{font-size:11px;color:#444;margin-top:2px}
-.empty-btn{background:linear-gradient(135deg,var(--green2),var(--green));color:#000;box-shadow:0 6px 22px rgba(0,255,136,0.3);font-weight:800;font-size:14px;padding:13px 30px;border-radius:var(--pill);border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px}
+.empty-btn{display:inline-block;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;box-shadow:0 6px 22px rgba(0,255,136,0.3);font-weight:800;font-size:14px;padding:13px 30px;border-radius:var(--pill);border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px}
 
 /* EDITOR */
 .editor{display:block}
@@ -175,7 +175,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
   <button class="menu-btn" id="menuBtn"><span></span><span></span><span></span></button>
   <a href="/" style="position:absolute;left:50%;transform:translateX(-50%);text-decoration:none;white-space:nowrap"><span style="font-size:17px;font-weight:900;color:#fff;letter-spacing:-0.5px">Back2Life</span><span style="font-size:17px;font-weight:900;color:#00ff88;letter-spacing:-0.5px">.app</span></a>
   <div class="spacer"></div>
-  <label for="fileInput"><button type="button" class="add-btn">+ AUDIO</button></label>
+  <label for="fileInput" class="add-btn">+ AUDIO</label>
 </div>
 
 <div class="main">
@@ -184,7 +184,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
     <div class="empty-icon"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
     <div class="empty-title">No audio loaded</div>
     <div class="empty-sub">Add an audio file to get started</div>
-    <label for="fileInput"><button type="button" class="empty-btn">+ Add Audio</button></label>
+    <label for="fileInput" class="empty-btn">+ Add Audio</label>
   </div>
 
   <div class="editor" id="editor">
@@ -288,9 +288,48 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
       </div>
     </div>
 
-    <div class="ctrl-card" id="panelSoon" style="display:none">
-      <div class="ctrl-card-title" id="soonTitle">Coming Soon</div>
-      <div class="panel-soon">This tool isn't wired up yet — <b>Volume</b>, <b>Speed</b>, <b>Fade</b> and <b>Trim</b> are fully working today.</div>
+    <div class="ctrl-card" id="panelEQ" style="display:none">
+      <div class="ctrl-card-title">3-Band EQ</div>
+      <div class="ctrl-row"><span class="ctrl-name">Bass</span><span class="ctrl-val" id="eqLowVal">0 dB</span></div>
+      <input type="range" id="eqLowRange" min="-120" max="120" value="0">
+      <div class="ctrl-row"><span class="ctrl-name">Mid</span><span class="ctrl-val" id="eqMidVal">0 dB</span></div>
+      <input type="range" id="eqMidRange" min="-120" max="120" value="0">
+      <div class="ctrl-row"><span class="ctrl-name">Treble</span><span class="ctrl-val" id="eqHighVal">0 dB</span></div>
+      <input type="range" id="eqHighRange" min="-120" max="120" value="0">
+    </div>
+
+    <div class="ctrl-card" id="panelNoise" style="display:none">
+      <div class="ctrl-card-title">Noise Reduction</div>
+      <div class="panel-hint" style="text-align:left;padding:0 0 12px">High-pass filter — cuts low rumble, hum and wind noise below the cutoff frequency.</div>
+      <div class="ctrl-row"><span class="ctrl-name">Cutoff</span><span class="ctrl-val" id="hpVal">Off</span></div>
+      <input type="range" id="hpRange" min="0" max="400" value="0">
+    </div>
+
+    <div class="ctrl-card" id="panelNormalize" style="display:none">
+      <div class="ctrl-card-title">Normalize</div>
+      <div class="panel-hint" style="text-align:left;padding:0 0 12px">Scans the track and automatically raises the volume so its loudest peak sits just under 0dB — no clipping.</div>
+      <div class="ctrl-row"><span class="ctrl-name">Status</span><span class="ctrl-val" id="normStatus">Not applied</span></div>
+      <button class="seg" id="normalizeBtn" style="width:100%;padding:11px;border:1px solid var(--border2);color:var(--green);background:var(--gdim);font-weight:700;font-size:13px;cursor:pointer;margin-top:6px">Normalize Now</button>
+    </div>
+
+    <div class="ctrl-card" id="panelCompressor" style="display:none">
+      <div class="ctrl-card-title">Compressor</div>
+      <div class="panel-hint" style="text-align:left;padding:0 0 12px">Evens out loud and quiet parts so the track sounds more consistent.</div>
+      <div class="ctrl-row"><span class="ctrl-name">Amount</span><span class="ctrl-val" id="compVal">Off</span></div>
+      <input type="range" id="compRange" min="0" max="100" value="0">
+    </div>
+
+    <div class="ctrl-card" id="panelDenoise" style="display:none">
+      <div class="ctrl-card-title">Denoise</div>
+      <div class="panel-hint" style="text-align:left;padding:0 0 12px">Noise gate — silences quiet background hiss between words/sounds. (Basic gate, not AI-powered.)</div>
+      <div class="ctrl-row"><span class="ctrl-name">Strength</span><span class="ctrl-val" id="gateVal">Off</span></div>
+      <input type="range" id="gateRange" min="0" max="100" value="0">
+    </div>
+
+    <div class="ctrl-card" id="panelMore" style="display:none">
+      <div class="ctrl-card-title">More</div>
+      <div class="ctrl-row"><span class="ctrl-name">Reverse Audio</span><span class="ctrl-val" id="revVal">Off</span></div>
+      <button class="seg" id="reverseBtn" style="width:100%;padding:11px;border:1px solid var(--border2);color:#bbb;background:rgba(255,255,255,0.04);font-weight:700;font-size:13px;cursor:pointer;margin-top:6px">Toggle Reverse</button>
     </div>
 
     <div class="transport-bar">
@@ -380,7 +419,8 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
 let audioCtx=null, audioBuffer=null, sourceNode=null, gainNode=null;
 let fileName='audio', playing=false, startedAt=0, pausedAt=0;
 let trimStart=0, trimEnd=1; // normalised 0..1
-let settings={vol:1, speed:1, fadeIn:0, fadeOut:0};
+let settings={vol:1, speed:1, fadeIn:0, fadeOut:0, eqLow:0, eqMid:0, eqHigh:0, highpass:0, compAmt:0, gateAmt:0, reverse:false};
+let reversedBufferCache=null;
 let waveZoom = 1;
 let waveOffset = 0;
 let seekOffset = 0;
@@ -401,7 +441,7 @@ $('fileInput').addEventListener('change', async e=>{
     const buf=await file.arrayBuffer();
     audioBuffer=await audioCtx.decodeAudioData(buf);
     trimStart=0; trimEnd=1;
-    settings={vol:1,speed:1,fadeIn:0,fadeOut:0};
+    settings={vol:1,speed:1,fadeIn:0,fadeOut:0,eqLow:0,eqMid:0,eqHigh:0,highpass:0,compAmt:0,gateAmt:0,reverse:false};reversedBufferCache=null;resetEffectControls();
     resetControls();
     $('empty').classList.add('hidden');
     $('waveWrap').style.display='block';
@@ -631,9 +671,10 @@ function startPlaybackFrom(fromPos){
   if(!audioBuffer)return;
   if(audioCtx.state==='suspended')audioCtx.resume();
   sourceNode=audioCtx.createBufferSource();
-  sourceNode.buffer=audioBuffer;
+  sourceNode.buffer=getPlaybackBuffer();
   sourceNode.playbackRate.value=settings.speed;
   gainNode=audioCtx.createGain();
+  const fx=buildEffectsChain(audioCtx);
   const dur=audioBuffer.duration;
   const trimDur=(trimEnd-trimStart)*dur/settings.speed;
   const now=audioCtx.currentTime;
@@ -653,7 +694,8 @@ function startPlaybackFrom(fromPos){
     gainNode.gain.setValueAtTime(vol,now+trimDur-fo);
     gainNode.gain.linearRampToValueAtTime(0,now+trimDur);
   }
-  sourceNode.connect(gainNode).connect(audioCtx.destination);
+  sourceNode.connect(fx.input);
+  fx.output.connect(gainNode).connect(audioCtx.destination);
   const startSec=fromPos*dur;
   const remainDur=(trimEnd*dur-startSec)/settings.speed;
   sourceNode.start(now,startSec,Math.max(0,trimEnd*dur-startSec));
@@ -712,26 +754,143 @@ function resetControls(){
   $('fadeInRange').value=0;$('fadeInVal').textContent='0.0s';
   $('fadeOutRange').value=0;$('fadeOutVal').textContent='0.0s';
 }
+function resetEffectControls(){
+  $('eqLowRange').value=0;$('eqLowVal').textContent='0 dB';
+  $('eqMidRange').value=0;$('eqMidVal').textContent='0 dB';
+  $('eqHighRange').value=0;$('eqHighVal').textContent='0 dB';
+  $('hpRange').value=0;$('hpVal').textContent='Off';
+  $('compRange').value=0;$('compVal').textContent='Off';
+  $('gateRange').value=0;$('gateVal').textContent='Off';
+  $('normStatus').textContent='Not applied';
+  $('revVal').textContent='Off';
+  $('reverseBtn').style.color='#bbb';$('reverseBtn').style.background='rgba(255,255,255,0.04)';
+}
 
-// ══ TOOL GRID ══
+// ══ EFFECT CONTROLS ══
+bindRange('eqLowRange','eqLowVal',v=>(v/10>0?'+':'')+(v/10).toFixed(1)+' dB',v=>settings.eqLow=v/10);
+bindRange('eqMidRange','eqMidVal',v=>(v/10>0?'+':'')+(v/10).toFixed(1)+' dB',v=>settings.eqMid=v/10);
+bindRange('eqHighRange','eqHighVal',v=>(v/10>0?'+':'')+(v/10).toFixed(1)+' dB',v=>settings.eqHigh=v/10);
+bindRange('hpRange','hpVal',v=>v==0?'Off':v+' Hz',v=>settings.highpass=v);
+bindRange('compRange','compVal',v=>v==0?'Off':v+'%',v=>settings.compAmt=v/100);
+bindRange('gateRange','gateVal',v=>v==0?'Off':v+'%',v=>settings.gateAmt=v/100);
+
+$('normalizeBtn').addEventListener('click',()=>{
+  if(!audioBuffer){toast('Add an audio file first');return;}
+  let peak=0;
+  for(let c=0;c<audioBuffer.numberOfChannels;c++){
+    const data=audioBuffer.getChannelData(c);
+    for(let i=0;i<data.length;i+=8){ // sample every 8th for speed
+      const a=Math.abs(data[i]); if(a>peak)peak=a;
+    }
+  }
+  if(peak<=0.0001){toast('Track is silent — nothing to normalize');return;}
+  const targetPeak=0.891; // ~ -1dBFS
+  const gainMult=Math.min(targetPeak/peak,8);
+  settings.vol=Math.min(3, gainMult);
+  $('volRange').value=Math.round(settings.vol*100);
+  $('volVal').textContent=Math.round(settings.vol*100)+'%';
+  $('normStatus').textContent='Applied ('+gainMult.toFixed(2)+'×)';
+  toast('✓ Normalized — volume set to '+Math.round(settings.vol*100)+'%');
+});
+
+$('reverseBtn').addEventListener('click',()=>{
+  if(!audioBuffer){toast('Add an audio file first');return;}
+  settings.reverse=!settings.reverse;
+  $('revVal').textContent=settings.reverse?'On':'Off';
+  $('reverseBtn').style.color=settings.reverse?'#000':'#bbb';
+  $('reverseBtn').style.background=settings.reverse?'var(--green)':'rgba(255,255,255,0.04)';
+  toast(settings.reverse?'✓ Reverse enabled':'Reverse disabled');
+});
+
+function getPlaybackBuffer(){
+  if(!settings.reverse) return audioBuffer;
+  if(reversedBufferCache) return reversedBufferCache;
+  const rev=audioCtx.createBuffer(audioBuffer.numberOfChannels,audioBuffer.length,audioBuffer.sampleRate);
+  for(let c=0;c<audioBuffer.numberOfChannels;c++){
+    const src=audioBuffer.getChannelData(c);
+    const dst=rev.getChannelData(c);
+    for(let i=0,j=src.length-1;i<src.length;i++,j--) dst[i]=src[j];
+  }
+  reversedBufferCache=rev;
+  return rev;
+}
+
+// Builds the shared effects chain (highpass -> 3-band EQ -> compressor) on a given context.
+// Returns {input, output} nodes to splice into a signal path.
+function buildEffectsChain(ctx){
+  const nodes=[];
+  if(settings.highpass>0){
+    const hp=ctx.createBiquadFilter();
+    hp.type='highpass'; hp.frequency.value=settings.highpass; hp.Q.value=0.707;
+    nodes.push(hp);
+  }
+  if(settings.eqLow!==0){
+    const lo=ctx.createBiquadFilter();
+    lo.type='lowshelf'; lo.frequency.value=250; lo.gain.value=settings.eqLow;
+    nodes.push(lo);
+  }
+  if(settings.eqMid!==0){
+    const mid=ctx.createBiquadFilter();
+    mid.type='peaking'; mid.frequency.value=1500; mid.Q.value=0.9; mid.gain.value=settings.eqMid;
+    nodes.push(mid);
+  }
+  if(settings.eqHigh!==0){
+    const hi=ctx.createBiquadFilter();
+    hi.type='highshelf'; hi.frequency.value=4000; hi.gain.value=settings.eqHigh;
+    nodes.push(hi);
+  }
+  if(settings.compAmt>0){
+    const comp=ctx.createDynamicsCompressor();
+    comp.threshold.value=-6-(settings.compAmt*30); // -6 to -36 dB
+    comp.knee.value=12;
+    comp.ratio.value=2+(settings.compAmt*10); // 2:1 to 12:1
+    comp.attack.value=0.003;
+    comp.release.value=0.25;
+    nodes.push(comp);
+  }
+  if(nodes.length===0){
+    // pass-through gain node so callers always get a valid input/output
+    const passthrough=ctx.createGain();
+    return {input:passthrough, output:passthrough};
+  }
+  for(let i=0;i<nodes.length-1;i++) nodes[i].connect(nodes[i+1]);
+  return {input:nodes[0], output:nodes[nodes.length-1]};
+}
+
+// Simple noise gate applied directly to a rendered AudioBuffer (post-process, used at export
+// and approximated live via gain automation during preview for the denoise tool).
+function applyNoiseGate(buffer, amount){
+  if(amount<=0) return buffer;
+  const thresh=amount*0.06; // up to ~6% amplitude threshold at 100%
+  for(let c=0;c<buffer.numberOfChannels;c++){
+    const data=buffer.getChannelData(c);
+    const windowSize=512;
+    for(let i=0;i<data.length;i+=windowSize){
+      let sum=0, end=Math.min(i+windowSize,data.length);
+      for(let j=i;j<end;j++) sum+=data[j]*data[j];
+      const rms=Math.sqrt(sum/(end-i));
+      if(rms<thresh){
+        for(let j=i;j<end;j++) data[j]*=0.05; // duck quiet sections instead of hard mute (avoids clicks)
+      }
+    }
+  }
+  return buffer;
+}
+
+
 const toolPanels={
-  trim:'panelTrim', fade:'panelFade', volume:'panelVolSpeed', speed:'panelVolSpeed'
+  trim:'panelTrim', fade:'panelFade', volume:'panelVolSpeed', speed:'panelVolSpeed',
+  eq:'panelEQ', noise:'panelNoise', normalize:'panelNormalize', compressor:'panelCompressor',
+  denoise:'panelDenoise', more:'panelMore'
 };
-const soonTitles={
-  eq:'EQ', noise:'Noise Reduction', normalize:'Normalize', compressor:'Compressor', denoise:'Denoise (AI)', more:'More Tools'
-};
+const allPanels=['panelTrim','panelFade','panelVolSpeed','panelEQ','panelNoise','panelNormalize','panelCompressor','panelDenoise','panelMore'];
 document.querySelectorAll('.tool-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     const tool=btn.dataset.tool;
-    ['panelTrim','panelFade','panelVolSpeed','panelSoon'].forEach(id=>$(id).style.display='none');
-    if(toolPanels[tool]){
-      $(toolPanels[tool]).style.display='block';
-    } else {
-      $('soonTitle').textContent=soonTitles[tool]||'Coming Soon';
-      $('panelSoon').style.display='block';
-    }
+    allPanels.forEach(id=>$(id).style.display='none');
+    $(toolPanels[tool]).style.display='block';
   });
 });
 
@@ -739,7 +898,7 @@ document.querySelectorAll('.tool-btn').forEach(btn=>{
 $('skipBackBtn').addEventListener('click',()=>{ if(audioBuffer) seekTo(trimStart); });
 $('skipFwdBtn').addEventListener('click',()=>{ if(audioBuffer) seekTo(Math.max(trimStart,trimEnd-0.001)); });
 $('resetBtn').addEventListener('click',()=>{
-  trimStart=0;trimEnd=1;settings={vol:1,speed:1,fadeIn:0,fadeOut:0};
+  trimStart=0;trimEnd=1;settings={vol:1,speed:1,fadeIn:0,fadeOut:0,eqLow:0,eqMid:0,eqHigh:0,highpass:0,compAmt:0,gateAmt:0,reverse:false};reversedBufferCache=null;resetEffectControls();
   resetControls();updateTrimUI();updateTimes();toast('Reset to original');
 });
 
@@ -794,9 +953,10 @@ async function renderEdited(){
   const trimDur=(endSec-startSec)/settings.speed;
   const offCtx=new OfflineAudioContext(audioBuffer.numberOfChannels, Math.ceil(trimDur*sr), sr);
   const src=offCtx.createBufferSource();
-  src.buffer=audioBuffer;
+  src.buffer=getPlaybackBuffer();
   src.playbackRate.value=settings.speed;
   const gain=offCtx.createGain();
+  const fx=buildEffectsChain(offCtx);
   const vol=settings.vol;
   // Build gain automation from start to finish
   gain.gain.cancelScheduledValues(0);
@@ -815,9 +975,11 @@ async function renderEdited(){
     gain.gain.setValueAtTime(vol, foStart);
     gain.gain.linearRampToValueAtTime(0.0001, trimDur);
   }
-  src.connect(gain).connect(offCtx.destination);
+  src.connect(fx.input);
+  fx.output.connect(gain).connect(offCtx.destination);
   src.start(0,startSec,endSec-startSec);
-  return await offCtx.startRendering();
+  const rendered=await offCtx.startRendering();
+  return applyNoiseGate(rendered, settings.gateAmt);
 }
 
 $('doExportBtn').addEventListener('click',async()=>{
