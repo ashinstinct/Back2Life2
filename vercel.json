@@ -1,14 +1,6 @@
 {
   "version": 2,
   "cleanUrls": true,
-  "functions": {
-    "api/shorts/analyze.py": {
-      "maxDuration": 60
-    },
-    "api/shorts/render.py": {
-      "maxDuration": 60
-    }
-  },
   "headers": [
     {
       "source": "/icons/(.*)",
