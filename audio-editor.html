@@ -145,6 +145,9 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
 .tool-btn span{font-size:10.5px;font-weight:600;line-height:1.25;text-align:center}
 .tool-btn.active{color:var(--green)}
 .tool-btn.active .ic{background:var(--gdim);border:1px solid rgba(0,255,136,0.3)}
+.tool-btn.on{color:#000}
+.tool-btn.on .ic{background:var(--green);border:1px solid var(--green);box-shadow:0 0 14px rgba(0,255,136,0.5)}
+.tool-btn.on span{color:var(--green)}
 .tool-btn[disabled]{opacity:.45;pointer-events:none}
 
 .panel-hint{font-size:12.5px;color:#888;text-align:center;padding:6px 4px;line-height:1.5}
@@ -255,9 +258,9 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
           <div class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.6 6.6L22 11l-7.4 2.4L12 22l-2.6-8.6L2 11l7.4-2.4L12 2z"/></svg></div>
           <span>Denoise</span>
         </button>
-        <button class="tool-btn" data-tool="more">
-          <div class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></svg></div>
-          <span>More</span>
+        <button class="tool-btn" data-tool="reverse" id="reverseToolBtn">
+          <div class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></div>
+          <span>Reverse</span>
         </button>
       </div>
     </div>
@@ -326,10 +329,10 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #000
       <input type="range" id="gateRange" min="0" max="100" value="0">
     </div>
 
-    <div class="ctrl-card" id="panelMore" style="display:none">
-      <div class="ctrl-card-title">More</div>
-      <div class="ctrl-row"><span class="ctrl-name">Reverse Audio</span><span class="ctrl-val" id="revVal">Off</span></div>
-      <button class="seg" id="reverseBtn" style="width:100%;padding:11px;border:1px solid var(--border2);color:#bbb;background:rgba(255,255,255,0.04);font-weight:700;font-size:13px;cursor:pointer;margin-top:6px">Toggle Reverse</button>
+    <div class="ctrl-card" id="panelReverse" style="display:none">
+      <div class="ctrl-card-title">Reverse</div>
+      <div class="panel-hint" style="text-align:left;padding:0">Tap the Reverse icon above to flip the audio backwards — the waveform and playback both reverse instantly.</div>
+      <div class="ctrl-row" style="margin-top:14px"><span class="ctrl-name">Status</span><span class="ctrl-val" id="revVal">Off</span></div>
     </div>
 
     <div class="transport-bar">
@@ -474,7 +477,7 @@ function drawWave(){
   ctx.scale(dpr,dpr);
   ctx.clearRect(0,0,w,h);
   if(!audioBuffer)return;
-  const data=audioBuffer.getChannelData(0);
+  const data=getPlaybackBuffer().getChannelData(0);
   const totalSamples=data.length;
   const viewFraction=1/waveZoom;
   const startSample=Math.floor(waveOffset*totalSamples);
@@ -763,7 +766,7 @@ function resetEffectControls(){
   $('gateRange').value=0;$('gateVal').textContent='Off';
   $('normStatus').textContent='Not applied';
   $('revVal').textContent='Off';
-  $('reverseBtn').style.color='#bbb';$('reverseBtn').style.background='rgba(255,255,255,0.04)';
+  $('reverseToolBtn').classList.remove('on');
 }
 
 // ══ EFFECT CONTROLS ══
@@ -793,13 +796,19 @@ $('normalizeBtn').addEventListener('click',()=>{
   toast('✓ Normalized — volume set to '+Math.round(settings.vol*100)+'%');
 });
 
-$('reverseBtn').addEventListener('click',()=>{
+$('reverseToolBtn').addEventListener('click',()=>{
   if(!audioBuffer){toast('Add an audio file first');return;}
+  const wasPlaying=playing;
+  const pos=playFromPos||trimStart;
   settings.reverse=!settings.reverse;
   $('revVal').textContent=settings.reverse?'On':'Off';
-  $('reverseBtn').style.color=settings.reverse?'#000':'#bbb';
-  $('reverseBtn').style.background=settings.reverse?'var(--green)':'rgba(255,255,255,0.04)';
-  toast(settings.reverse?'✓ Reverse enabled':'Reverse disabled');
+  $('reverseToolBtn').classList.toggle('on', settings.reverse);
+  drawWave();
+  if(wasPlaying){
+    stopPlayback();
+    startPlaybackFrom(pos);
+  }
+  toast(settings.reverse?'✓ Playing in reverse':'Reverse off');
 });
 
 function getPlaybackBuffer(){
@@ -881,9 +890,9 @@ function applyNoiseGate(buffer, amount){
 const toolPanels={
   trim:'panelTrim', fade:'panelFade', volume:'panelVolSpeed', speed:'panelVolSpeed',
   eq:'panelEQ', noise:'panelNoise', normalize:'panelNormalize', compressor:'panelCompressor',
-  denoise:'panelDenoise', more:'panelMore'
+  denoise:'panelDenoise', reverse:'panelReverse'
 };
-const allPanels=['panelTrim','panelFade','panelVolSpeed','panelEQ','panelNoise','panelNormalize','panelCompressor','panelDenoise','panelMore'];
+const allPanels=['panelTrim','panelFade','panelVolSpeed','panelEQ','panelNoise','panelNormalize','panelCompressor','panelDenoise','panelReverse'];
 document.querySelectorAll('.tool-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
