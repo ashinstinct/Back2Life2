@@ -13,6 +13,8 @@
 <meta property="og:url" content="https://back2lifeapp.vercel.app/audio-converter">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Audio Converter — Back2Life.app">
+<meta name="twitter:description" content="Convert audio between WAV, AIFF, FLAC, MP3. Extract audio from video. Free browser tool.">
 <meta name="twitter:image" content="https://back2lifeapp.vercel.app/og-image.png">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -37,6 +39,9 @@ body{display:flex;flex-direction:column;height:100dvh}
 .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 14px 0}
 .scroll::-webkit-scrollbar{display:none}
 
+/* ── BANNER ── */
+#bannerImg{transition:opacity .3s, max-height .35s;overflow:hidden}
+
 /* ── TRACK NAME ── */
 .track-section{display:none;margin-bottom:14px}
 .track-section.show{display:block}
@@ -50,8 +55,6 @@ body{display:flex;flex-direction:column;height:100dvh}
 .wave-inner{position:relative}
 .wave-canvas{width:100%;height:100px;border-radius:12px;display:block;background:#050505;cursor:pointer}
 .playhead{position:absolute;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 6px rgba(255,255,255,.7);pointer-events:none;display:none;left:0}
-
-/* ── TIME ── */
 .time-row{display:none;justify-content:space-between;padding:0 2px;margin-bottom:12px}
 .time-row.show{display:flex}
 .time-lbl{font-size:11px;color:var(--text2);font-variant-numeric:tabular-nums;font-weight:600}
@@ -59,14 +62,14 @@ body{display:flex;flex-direction:column;height:100dvh}
 /* ── STATUS BANNER ── */
 .status-banner{display:none;align-items:center;justify-content:space-between;background:var(--gdim);border:1px solid rgba(0,255,136,.2);border-radius:14px;padding:11px 14px;margin-bottom:14px}
 .status-banner.show{display:flex}
-.status-fmt{font-size:17px;font-weight:900;color:var(--green);letter-spacing:-.3px}
+.status-fmt{font-size:17px;font-weight:900;color:var(--green)}
 .status-sub{font-size:11px;color:var(--text2);margin-top:1px}
 .convert-go{background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:800;font-size:13px;padding:10px 20px;border-radius:var(--pill);border:none;cursor:pointer;font-family:'Inter',sans-serif;position:relative;overflow:hidden;box-shadow:0 4px 14px rgba(0,255,136,.35)}
 .convert-go::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.22) 0%,transparent 100%)}
 .convert-go:disabled{opacity:.4;pointer-events:none}
 
 /* ── EMPTY ── */
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:170px;text-align:center;padding:24px 20px;border:1.5px dashed var(--border2);border-radius:var(--radius-lg);margin-bottom:14px}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:140px;text-align:center;padding:20px;border:1.5px dashed var(--border2);border-radius:var(--radius-lg);margin-bottom:14px}
 .empty.hidden{display:none}
 .empty-icon{animation:pulse 2.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.08);opacity:1}}
@@ -76,50 +79,57 @@ body{display:flex;flex-direction:column;height:100dvh}
 .empty-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.22) 0%,transparent 100%)}
 .add-btn{display:inline-block;background:var(--gdim);border:1px solid rgba(0,255,136,.25);border-radius:var(--pill);color:var(--green);font-size:11px;font-weight:800;letter-spacing:.5px;padding:7px 14px;cursor:pointer;font-family:'Inter',sans-serif}
 
-/* ══════════════════════════════════════════
-   RADIAL DOCK - redesigned
-══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════
+   RADIAL DOCK
+   The dock is fixed at the bottom.
+   CLOSED: only the green "CONVERT" pill is visible.
+   OPEN:   a full black semicircle sweeps up, format
+           buttons fan out from the play button at the
+           ARC CENTER, bitrate pills appear below it.
+══════════════════════════════════════════════════ */
 #radialDock{
   position:fixed;bottom:0;left:0;right:0;
-  height:var(--dock-h, 280px);
+  /* height set by JS */
+  height:300px;
   pointer-events:none;
   z-index:80;
 }
 
-/* SOLID black gradient semicircle backdrop */
+/* ── BACKDROP ── */
 .rad-bg{
   position:absolute;
   bottom:0;left:50%;
   transform:translateX(-50%) scaleY(0);
   transform-origin:bottom center;
+  /* wider than screen so the semicircle edge is off-screen */
   width:130%;
   height:100%;
-  border-radius:50% 50% 0 0 / 55% 55% 0 0;
+  border-radius:50% 50% 0 0 / 52% 52% 0 0;
+  /* solid dark fill — not transparent */
   background:
-    radial-gradient(ellipse 100% 100% at 50% 105%,
-      #0d0d0f 0%,
-      #0a0a0c 55%,
-      rgba(8,8,10,0.96) 80%,
+    radial-gradient(ellipse 100% 120% at 50% 108%,
+      #0c0c10 0%,
+      #0b0b0e 45%,
+      #090910 75%,
+      rgba(7,7,10,0.92) 90%,
       transparent 100%);
-  transition:transform .42s cubic-bezier(.4,0,.2,1), opacity .3s;
+  transition:transform .42s cubic-bezier(.4,0,.2,1), opacity .32s;
   opacity:0;
   pointer-events:none;
-  /* glow rim */
-  box-shadow:inset 0 1px 0 rgba(0,255,136,0.1);
 }
 .rad-bg::before{
-  content:'';position:absolute;top:0;left:15%;right:15%;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(0,255,136,.15) 30%,rgba(0,255,136,.25) 50%,rgba(0,255,136,.15) 70%,transparent);
+  content:'';position:absolute;
+  top:-1px;left:18%;right:18%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,255,136,.12) 28%,rgba(0,255,136,.22) 50%,rgba(0,255,136,.12) 72%,transparent);
 }
 #radialDock.open .rad-bg{
   transform:translateX(-50%) scaleY(1);
   opacity:1;
 }
 
-/* ── TRIGGER BUTTON (CONVERT pill → play circle) ── */
+/* ── TRIGGER (CONVERT pill → PLAY circle) ── */
 .rad-trigger{
   position:absolute;
-  bottom:var(--trigger-b, 22px);
   left:50%;
   transform:translateX(-50%);
   pointer-events:all;
@@ -127,92 +137,100 @@ body{display:flex;flex-direction:column;height:100dvh}
   display:flex;align-items:center;justify-content:center;gap:8px;
   font-family:'Inter',sans-serif;
   overflow:hidden;
-  /* closed state */
-  width:162px;height:54px;border-radius:999px;
+  /* CLOSED state: green pill at bottom */
+  width:166px;height:56px;border-radius:999px;
+  bottom:20px;
   background:linear-gradient(135deg,var(--green2),var(--green));
-  color:#000;font-weight:800;font-size:14px;
-  box-shadow:0 6px 24px rgba(0,255,136,.45),0 2px 8px rgba(0,0,0,.4);
+  color:#000;font-weight:800;font-size:14.5px;
+  box-shadow:0 6px 24px rgba(0,255,136,.48),0 2px 8px rgba(0,0,0,.4);
   transition:
     width .38s cubic-bezier(.4,0,.2,1),
     height .38s cubic-bezier(.4,0,.2,1),
     border-radius .38s cubic-bezier(.4,0,.2,1),
     bottom .38s cubic-bezier(.4,0,.2,1),
-    box-shadow .3s;
+    box-shadow .32s;
 }
 .rad-trigger::before{
   content:'';position:absolute;top:0;left:0;right:0;height:50%;
   background:linear-gradient(180deg,rgba(255,255,255,.28) 0%,transparent 100%);
   pointer-events:none;z-index:1;
+  border-radius:inherit;
 }
-.rad-trigger svg,.rad-trigger span{position:relative;z-index:2;flex-shrink:0}
-/* open state: moves to arc center, becomes play circle */
+.rad-trigger>*{position:relative;z-index:2}
+/* OPEN state: moves up to arc center, becomes circle */
 #radialDock.open .rad-trigger{
-  width:76px;height:76px;border-radius:50%;
-  bottom:var(--trigger-open-b, 16px);
-  box-shadow:0 0 0 4px rgba(0,255,136,.25),0 0 28px rgba(0,255,136,.55),inset 0 1px 0 rgba(255,255,255,.3);
+  width:78px;height:78px;border-radius:50%;
+  /* bottom set dynamically by JS to arcCenterB - 39 */
+  box-shadow:
+    0 0 0 5px rgba(0,255,136,.2),
+    0 0 32px rgba(0,255,136,.55),
+    inset 0 1px 0 rgba(255,255,255,.28);
 }
-/* update bottom position via JS (set on open) */
-.trigger-label{white-space:nowrap;transition:opacity .18s}
+.trigger-label{white-space:nowrap}
 #radialDock.open .trigger-label{display:none}
 .trigger-play{display:none}
 #radialDock.open .trigger-play{display:flex;align-items:center;justify-content:center}
-#radialDock.open .trigger-convert-icon{display:none}
+#radialDock.open .trigger-icon{display:none}
 
-/* ── FORMAT BUTTONS (arc) ── */
+/* ── FORMAT BUTTONS (arc circles) ── */
 .rad-fmt{
   position:absolute;
   border:none;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
   font-family:'Inter',sans-serif;
-  overflow:hidden;
-  pointer-events:none;
+  overflow:hidden;pointer-events:none;
   border-radius:50%;
   background:#111;
   border:1px solid rgba(255,255,255,0.14);
-  box-shadow:0 4px 16px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.09);
+  box-shadow:0 4px 18px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.09);
   opacity:0;
+  /* transition: scale from 0 to 1 at fixed position (fan effect) */
   transition:
-    transform .4s cubic-bezier(.34,1.56,.64,1),
-    opacity .25s ease,
-    background .2s,
-    box-shadow .2s;
+    transform .42s cubic-bezier(.34,1.56,.64,1),
+    opacity .26s ease,
+    background .18s,
+    border-color .18s,
+    box-shadow .18s;
 }
 .rad-fmt::before{
   content:'';position:absolute;top:0;left:0;right:0;height:45%;
-  background:linear-gradient(180deg,rgba(255,255,255,.12) 0%,transparent 100%);
+  background:linear-gradient(180deg,rgba(255,255,255,.13) 0%,transparent 100%);
   border-radius:50% 50% 0 0;pointer-events:none;z-index:1;
 }
-.rad-fmt-name{font-size:14px;font-weight:800;color:rgba(255,255,255,.6);position:relative;z-index:2;line-height:1}
+.rad-fmt-name{font-size:13.5px;font-weight:800;color:rgba(255,255,255,.6);position:relative;z-index:2;line-height:1}
 .rad-fmt-sub{font-size:9px;color:rgba(255,255,255,.28);position:relative;z-index:2;line-height:1}
 .rad-fmt.active{
   background:var(--green);border-color:var(--green);
-  box-shadow:0 0 0 3px rgba(0,255,136,.25),0 6px 22px rgba(0,255,136,.5),inset 0 1px 0 rgba(255,255,255,.3);
+  box-shadow:0 0 0 3px rgba(0,255,136,.25),0 6px 22px rgba(0,255,136,.5),inset 0 1px 0 rgba(255,255,255,.28);
 }
-.rad-fmt.active::before{background:linear-gradient(180deg,rgba(255,255,255,.28) 0%,transparent 100%)}
+.rad-fmt.active::before{background:linear-gradient(180deg,rgba(255,255,255,.3) 0%,transparent 100%)}
 .rad-fmt.active .rad-fmt-name{color:#000}
 .rad-fmt.active .rad-fmt-sub{color:rgba(0,0,0,.5)}
 #radialDock.open .rad-fmt{opacity:1;pointer-events:all}
-.rad-fmt:active{filter:brightness(1.12)}
 
-/* ── BITRATE ROW (rectangular pills, below play button) ── */
+/* ── BITRATE ROW (rectangular pills directly below play button) ── */
 .br-row{
   position:absolute;
-  left:50%;transform:translateX(-50%);
-  display:flex;gap:8px;align-items:center;justify-content:center;
+  left:50%;
+  /* combined translate: center horizontally + slide in from below */
+  transform:translateX(-50%) translateY(14px);
+  display:flex;gap:9px;align-items:center;justify-content:center;
   pointer-events:none;
   opacity:0;
-  transition:opacity .28s ease .1s, transform .32s cubic-bezier(.4,0,.2,1) .08s;
-  transform:translateY(12px);
+  transition:opacity .28s ease, transform .32s cubic-bezier(.4,0,.2,1);
+  white-space:nowrap;
 }
-#radialDock.open .br-row.visible{
-  opacity:1;pointer-events:all;transform:translateY(0);
+#radialDock.open .br-row.show{
+  opacity:1;
+  pointer-events:all;
+  transform:translateX(-50%) translateY(0);
 }
 .br-pill{
   position:relative;overflow:hidden;
   background:#111;border:1px solid rgba(255,255,255,.14);
-  border-radius:10px;padding:9px 18px;
+  border-radius:10px;padding:9px 16px;
   cursor:pointer;font-family:'Inter',sans-serif;
-  transition:background .18s, border-color .18s, box-shadow .18s;
+  transition:background .18s,border-color .18s,box-shadow .18s;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
 }
 .br-pill::before{
@@ -220,18 +238,18 @@ body{display:flex;flex-direction:column;height:100dvh}
   background:linear-gradient(180deg,rgba(255,255,255,.1) 0%,transparent 100%);
   pointer-events:none;
 }
-.br-pill-label{font-size:13px;font-weight:800;color:rgba(255,255,255,.55);position:relative;z-index:1}
-.br-pill-sub{font-size:9px;color:rgba(255,255,255,.25);position:relative;z-index:1;display:block;text-align:center}
+.br-label{display:block;font-size:13px;font-weight:800;color:rgba(255,255,255,.55);position:relative;z-index:1;text-align:center}
+.br-sub{display:block;font-size:9px;color:rgba(255,255,255,.28);position:relative;z-index:1;text-align:center}
 .br-pill.active{
   background:var(--green);border-color:var(--green);
-  box-shadow:0 0 0 2px rgba(0,255,136,.2),0 4px 16px rgba(0,255,136,.4),inset 0 1px 0 rgba(255,255,255,.25);
+  box-shadow:0 0 0 2px rgba(0,255,136,.2),0 4px 16px rgba(0,255,136,.42),inset 0 1px 0 rgba(255,255,255,.22);
 }
-.br-pill.active::before{background:linear-gradient(180deg,rgba(255,255,255,.22) 0%,transparent 100%)}
-.br-pill.active .br-pill-label{color:#000}
-.br-pill.active .br-pill-sub{color:rgba(0,0,0,.5)}
-.br-pill:active{filter:brightness(1.1)}
+.br-pill.active .br-label{color:#000}
+.br-pill.active .br-sub{color:rgba(0,0,0,.5)}
+.br-pill::before{background:linear-gradient(180deg,rgba(255,255,255,.1) 0%,transparent 100%)}
+.br-pill.active::before{background:linear-gradient(180deg,rgba(255,255,255,.2) 0%,transparent 100%)}
 
-/* ── NAV / TOAST / OVERLAYS ── */
+/* ── NAV / OVERLAYS ── */
 .nav-sheet{position:fixed;bottom:0;left:0;right:0;background:#161616;border-top:1px solid var(--border);border-radius:26px 26px 0 0;z-index:220;transform:translateY(100%);transition:transform .3s ease;max-height:80vh;overflow-y:auto;padding:0 20px calc(40px + env(safe-area-inset-bottom,0px));box-shadow:0 -20px 60px rgba(0,0,0,.6)}
 .nav-sheet.open{transform:translateY(0)}
 .nav-handle-wrap{padding:12px 0 6px;text-align:center}
@@ -243,7 +261,9 @@ body{display:flex;flex-direction:column;height:100dvh}
 .nav-cta{display:block;margin-top:20px;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-weight:700;font-size:14px;padding:13px;border-radius:var(--pill);text-decoration:none;text-align:center}
 .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:190;display:none;pointer-events:none}
 .backdrop.open{display:block;pointer-events:all}
-.toast{position:fixed;bottom:var(--toast-b,100px);left:50%;transform:translateX(-50%) translateY(8px);background:#181818;border:1px solid var(--green);color:var(--green);font-size:12px;font-weight:600;padding:10px 18px;border-radius:var(--pill);opacity:0;transition:all .3s;z-index:300;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+.menu-overlay{position:fixed;inset:0;z-index:79;display:none}
+.menu-overlay.show{display:block}
+.toast{position:fixed;left:50%;transform:translateX(-50%) translateY(8px);background:#181818;border:1px solid var(--green);color:var(--green);font-size:12px;font-weight:600;padding:10px 18px;border-radius:var(--pill);opacity:0;transition:all .3s;z-index:300;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center;bottom:80px}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.err{border-color:#ff4466;color:#ff4466}
 .overlay-spin{position:fixed;inset:0;background:rgba(10,10,10,.88);z-index:400;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px}
@@ -251,9 +271,6 @@ body{display:flex;flex-direction:column;height:100dvh}
 .spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin-label{font-size:13px;color:var(--text2)}
-/* tap-blocking overlay when menu is open */
-.menu-overlay{position:fixed;inset:0;z-index:79;display:none}
-.menu-overlay.show{display:block}
 </style>
 <link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
 <link rel="icon" href="/favicon.ico">
@@ -274,7 +291,10 @@ body{display:flex;flex-direction:column;height:100dvh}
 </div>
 
 <div class="scroll" id="mainScroll">
-  <img src="/img/banners/audio-converter-banner.png" alt="" style="width:calc(100% + 28px);display:block;margin:-18px -14px 16px -14px;border-bottom:1px solid rgba(255,255,255,0.06)">
+  <div id="bannerImg">
+    <img src="/img/banners/audio-converter-banner.png" alt="" style="width:calc(100% + 28px);display:block;margin:-18px -14px 16px -14px;border-bottom:1px solid rgba(255,255,255,0.06)">
+  </div>
+
   <div class="track-section" id="trackSection">
     <input type="text" class="track-name-input" id="trackName" autocorrect="off" spellcheck="false" placeholder="Untitled">
     <div class="track-info" id="trackInfo">—</div>
@@ -293,13 +313,13 @@ body{display:flex;flex-direction:column;height:100dvh}
 
   <div class="empty" id="empty">
     <div class="empty-icon">
-      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="opacity:.75">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.3" stroke-linecap="round" style="opacity:.75">
         <polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/>
         <path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/>
       </svg>
     </div>
     <div class="empty-title">Add an audio or video file</div>
-    <div class="empty-sub">Tap the green Convert button to open the format wheel, then load a file.</div>
+    <div class="empty-sub">Convert between formats, or extract audio from video.</div>
     <label for="fileInput" class="empty-btn">+ Add File</label>
   </div>
 
@@ -312,44 +332,45 @@ body{display:flex;flex-direction:column;height:100dvh}
   </div>
 </div>
 
-<!-- tap-outside overlay when menu is open -->
 <div class="menu-overlay" id="menuOverlay"></div>
 
 <!-- ═══════ RADIAL DOCK ═══════ -->
 <div id="radialDock">
+  <!-- Dark backdrop semicircle -->
   <div class="rad-bg"></div>
 
-  <!-- Bitrate row (rectangular pills, shown below center when MP3 active) -->
+  <!-- Bitrate pills (below center, shown when MP3 active) -->
   <div class="br-row" id="brRow">
-    <button class="br-pill" data-br="128"><span class="br-pill-label">128</span><span class="br-pill-sub">kbps</span></button>
-    <button class="br-pill active" data-br="192"><span class="br-pill-label">192</span><span class="br-pill-sub">kbps</span></button>
-    <button class="br-pill" data-br="320"><span class="br-pill-label">320</span><span class="br-pill-sub">kbps</span></button>
+    <button class="br-pill" data-br="128"><span class="br-label">128</span><span class="br-sub">kbps</span></button>
+    <button class="br-pill active" data-br="192"><span class="br-label">192</span><span class="br-sub">kbps</span></button>
+    <button class="br-pill" data-br="320"><span class="br-label">320</span><span class="br-sub">kbps</span></button>
   </div>
 
-  <!-- TRIGGER — Convert pill (closed) / Play button (open) -->
+  <!-- Convert pill / Play button -->
   <button class="rad-trigger" id="radTrigger">
-    <svg class="trigger-convert-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg>
+    <svg class="trigger-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg>
     <span class="trigger-label">CONVERT</span>
     <svg class="trigger-play" id="playIcon" width="24" height="24" viewBox="0 0 24 24" fill="#000"><path id="playPath" d="M8 5v14l11-7z"/></svg>
   </button>
 </div>
 
 <div class="backdrop" id="backdrop"></div>
-
 <div class="nav-sheet" id="navSheet">
   <div class="nav-handle-wrap"><div class="nav-handle"></div></div>
   <div class="nav-sl">Navigation</div>
-  <a href="/" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/home.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Home</a>
+  <a href="/" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/home.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Home</a>
   <div class="nav-sl">Free Tools</div>
-  <a href="/watermark" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/watermark.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Watermark Tool</a>
-  <a href="/video-splitter" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/video-splitter.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Video Splitter</a>
-  <a href="/frame-extractor" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/frame-extractor.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Frame Extractor</a>
-  <a href="/audio-editor" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/audio-editor.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Editor</a>
-  <a href="/audio-converter" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/audio-converter.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Converter</a>
-  <a href="/video-flipper" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0"><img src="/icons/video-flipper.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Batch Video Flipper</a>
+  <a href="/watermark" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/watermark.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Watermark Tool</a>
+  <a href="/video-splitter" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/video-splitter.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Video Splitter</a>
+  <a href="/frame-extractor" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/frame-extractor.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Frame Extractor</a>
+  <a href="/audio-editor" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/audio-editor.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Editor</a>
+  <a href="/audio-converter" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/audio-converter.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Audio Converter</a>
+  <a href="/video-flipper" class="nav-a"><span style="width:28px;flex-shrink:0"><img src="/icons/video-flipper.png" style="width:28px;height:28px;border-radius:6px;display:block"></span>Batch Video Flipper</a>
   <div class="nav-sl">AI Generation</div>
   <a href="/ai-studio" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg></span>AI Studio</a>
   <a href="/motion-control" class="nav-a"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg></span>Motion Control</a>
+  <div class="nav-sl">Follow Us</div>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-a"><span style="width:28px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="#E1306C"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></span>Instagram</a>
   <a href="https://www.instagram.com/back2life.ai" target="_blank" class="nav-cta">Follow on Instagram</a>
 </div>
 
@@ -360,279 +381,305 @@ body{display:flex;flex-direction:column;height:100dvh}
 <script>
 const $=id=>document.getElementById(id);
 
-// ─── STATE ────────────────────────────────────
+// ── STATE ──────────────────────────────────────
 let audioCtx=null, audioBuffer=null, sourceNode=null;
 let playing=false, startedAt=0, seekPos=0;
 let isVideo=false, sourceFileName='audio';
 let outFormat='mp3', outBitrate=192;
 let menuOpen=false;
 
-// ─── FORMAT CONFIG ────────────────────────────
+// Format config: angle in degrees, measured CCW from positive-x (right = 0°, up = 90°, left = 180°)
 const FORMATS=[
-  {fmt:'wav',  label:'WAV',  sub:'Lossless', angle:157},
-  {fmt:'aiff', label:'AIFF', sub:'Apple',    angle:126},
-  {fmt:'mp3',  label:'MP3',  sub:'Universal',angle:90},
-  {fmt:'flac', label:'FLAC', sub:'Compressed',angle:54},
-  {fmt:'ogg',  label:'OGG',  sub:'Open',     angle:23},
+  {fmt:'wav',  label:'WAV',  sub:'Lossless',   angle:157},
+  {fmt:'aiff', label:'AIFF', sub:'Apple',       angle:126},
+  {fmt:'mp3',  label:'MP3',  sub:'Universal',   angle:90 },
+  {fmt:'flac', label:'FLAC', sub:'Compressed',  angle:54 },
+  {fmt:'ogg',  label:'OGG',  sub:'Open source', angle:23 },
 ];
 
-// Wire bitrate pill row
-document.querySelectorAll('.br-pill').forEach(btn=>{
-  btn.addEventListener('click',()=>selectBitrate(+btn.dataset.br));
-});
-
-// ─── BUILD RADIAL MENU ────────────────────────
+// ── BUILD RADIAL DOCK ──────────────────────────
+// The play button IS the arc center. Format buttons orbit it.
+// Bitrate pills sit directly below the play button.
 function buildRadial(){
   const dock=$('radialDock');
   dock.querySelectorAll('.rad-fmt').forEach(el=>el.remove());
 
-  const sw=window.innerWidth;
-  const FMT_R   = Math.min(Math.round(sw*0.38), 155);  // arc radius
-  const FMT_BTN = Math.min(Math.round(sw*0.178), 74);  // button diameter
+  const sw = window.innerWidth;
+  // Arc radius scales with screen width
+  const R   = Math.min(Math.round(sw * 0.355), 145);
+  const BTN = Math.min(Math.round(sw * 0.175), 72);
+  const PL  = 39; // half of play button diameter (78px)
 
-  // Trigger sits at bottom center. When open, it moves up to become the arc center.
-  // Arc center = play button center.
-  const triggerB   = 22;           // px from bottom when closed
-  const triggerR   = 38;           // radius of play circle when open
-  // We want the arc center to sit at FMT_R above the bottom so the outermost
-  // buttons (at 90°, straight up) are FMT_R above the center, fitting nicely.
-  const arcCenterB = Math.round(triggerR + 16); // how far above screen bottom the arc center sits
-  const triggerOpenB = arcCenterB - triggerR;   // where the trigger bottom edge is when open
+  // arcCenterB = distance of play button CENTER above screen bottom
+  // Must be high enough that format buttons (R above center) fit in dock,
+  // and low enough that bitrate row (PL+12px below center) stays visible.
+  // Formula: arcCenterB ~ R * 0.62 + PL + 24
+  const arcCenterB = Math.round(R * 0.62 + PL + 24);
 
-  // Dock height = arc center bottom + arc radius + button radius + padding
-  const dockH = Math.round(arcCenterB + FMT_R + FMT_BTN/2 + 20);
-  dock.style.setProperty('--dock-h', dockH+'px');
-  dock.style.setProperty('--trigger-b', triggerB+'px');
-  dock.style.setProperty('--trigger-open-b', triggerOpenB+'px');
-  $('mainScroll').style.paddingBottom = (dockH+20)+'px';
-  document.documentElement.style.setProperty('--toast-b', (dockH+60)+'px');
+  // Where the trigger bottom edge sits when open (center - PL)
+  const triggerOpenB = arcCenterB - PL;
+
+  // Where the bitrate row bottom sits (below play button with gap)
+  const brBottom = Math.max(6, arcCenterB - PL - 12 - 44);
+  // (44 = approx height of brRow: padding 9*2 + font ~18 + sub 11 = 47px, round to 44)
+
+  // Total dock height
+  const dockH = Math.round(arcCenterB + R + BTN/2 + 22);
+
+  dock.style.height = dockH + 'px';
+  $('mainScroll').style.paddingBottom = (dockH + 16) + 'px';
+  $('toast').style.bottom = (dockH + 16) + 'px';
 
   const cx = sw / 2;
 
   // ── FORMAT BUTTONS ──
-  FORMATS.forEach((f,i)=>{
-    const rad = f.angle * Math.PI/180;
-    const bx  = cx + FMT_R * Math.cos(rad);
-    const by  = arcCenterB + FMT_R * Math.sin(rad);  // from bottom of screen
+  // Each button is placed at its final position (bx, by from screen bottom).
+  // Closed: scaled to 0 at center. Open: scaled to 1.
+  FORMATS.forEach((f, i) => {
+    const rad = f.angle * Math.PI / 180;
+    const bx  = cx + R * Math.cos(rad);
+    const by  = arcCenterB + R * Math.sin(rad);
 
-    // Closed: buttons collapse to center (arc origin)
+    // Vector from final position back to center (for closed-state transform)
     const dx = cx - bx;
-    const dy = -(by - arcCenterB);
+    const dy = -(by - arcCenterB); // negative = up (screen coords)
 
-    const btn=document.createElement('button');
-    btn.className='rad-fmt'+(f.fmt===outFormat?' active':'');
-    btn.dataset.fmt=f.fmt;
-    btn.style.cssText=`
-      left:${bx}px; bottom:${by}px;
-      width:${FMT_BTN}px; height:${FMT_BTN}px;
-      transition-delay:${i*0.048}s;
-      transform:translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.05);
-    `;
-    btn.innerHTML=`<span class="rad-fmt-name">${f.label}</span><span class="rad-fmt-sub">${f.sub}</span>`;
-    btn.addEventListener('click',()=>selectFormat(f.fmt));
+    const btn = document.createElement('button');
+    btn.className = 'rad-fmt' + (f.fmt === outFormat ? ' active' : '');
+    btn.dataset.fmt = f.fmt;
+    // Store dx/dy as data attributes for the close animation
+    btn.dataset.dx = dx.toFixed(1);
+    btn.dataset.dy = dy.toFixed(1);
+    btn.style.cssText = [
+      `left:${bx}px`,
+      `bottom:${by}px`,
+      `width:${BTN}px`,
+      `height:${BTN}px`,
+      `transition-delay:${i * 0.05}s`,
+      // Closed: folded to center
+      `transform:translate(calc(-50% + ${dx.toFixed(1)}px),calc(-50% + ${dy.toFixed(1)}px)) scale(0.05)`,
+    ].join(';');
+    btn.innerHTML = `<span class="rad-fmt-name">${f.label}</span><span class="rad-fmt-sub">${f.sub}</span>`;
+    btn.addEventListener('click', () => selectFormat(f.fmt));
     dock.appendChild(btn);
   });
 
-  // ── BITRATE ROW positioning (below center) ──
-  // Position it below the arc center
-  const brBottom = Math.max(4, arcCenterB - triggerR - 14);
+  // Position bitrate row below play button
   $('brRow').style.bottom = brBottom + 'px';
 
-  // ── Move trigger to arc center when open ──
-  dock.style.setProperty('--trigger-open-b', triggerOpenB+'px');
+  // Store arcCenterB for openMenu to use
+  dock._arcCenterB = arcCenterB;
+  dock._triggerOpenB = triggerOpenB;
 }
 
-// ─── OPEN / CLOSE ─────────────────────────────
+// ── OPEN / CLOSE ───────────────────────────────
 function openMenu(){
-  menuOpen=true;
-  const dock=$('radialDock');
+  menuOpen = true;
+  const dock = $('radialDock');
   dock.classList.add('open');
   $('menuOverlay').classList.add('show');
-  // Move trigger to arc center
-  const openB = dock.style.getPropertyValue('--trigger-open-b') || '16px';
-  $('radTrigger').style.bottom = openB;
+
+  // Move trigger up to arc center position
+  $('radTrigger').style.bottom = (dock._triggerOpenB || 50) + 'px';
+
   // Hide banner
-  const banner=document.querySelector('.scroll img');
-  if(banner) banner.style.display='none';
-  // Animate format buttons open
-  dock.querySelectorAll('.rad-fmt').forEach(btn=>{
-    btn.style.transform='translate(-50%,-50%) scale(1)';
-    btn.style.opacity='1';
+  $('bannerImg').style.opacity = '0';
+  $('bannerImg').style.maxHeight = '0';
+  $('bannerImg').style.overflow = 'hidden';
+
+  // Fan out format buttons to open positions
+  $('radialDock').querySelectorAll('.rad-fmt').forEach((btn, i) => {
+    btn.style.transitionDelay = (i * 0.05) + 's';
+    btn.style.transform = 'translate(-50%, -50%) scale(1)';
+    btn.style.opacity = '1';
   });
+
   // Show bitrate row if MP3
-  if(outFormat==='mp3') $('brRow').classList.add('visible');
-}
-function closeMenu(){
-  menuOpen=false;
-  const dock=$('radialDock');
-  // Fold buttons back to center
-  dock.querySelectorAll('.rad-fmt').forEach(btn=>{
-    const m=btn.style.cssText.match(/translate\(calc\(-50% \+ (-?[\d.]+px),\s*calc\(-50% \+ (-?[\d.]+px)/);
-    const dx=m?m[1]:'0px', dy=m?m[2]:'0px';
-    btn.style.transform=`translate(calc(-50% + ${dx}), calc(-50% + ${dy})) scale(0.05)`;
-    btn.style.opacity='0';
-  });
-  $('brRow').classList.remove('visible');
-  setTimeout(()=>{
-    dock.classList.remove('open');
-    $('menuOverlay').classList.remove('show');
-    $('radTrigger').style.bottom='';
-    if(playing) stopPlayback();
-    const banner=document.querySelector('.scroll img');
-    if(banner) banner.style.display='';
-  },390);
+  if(outFormat === 'mp3') $('brRow').classList.add('show');
 }
 
-$('radTrigger').addEventListener('click',()=>{
+function closeMenu(){
+  menuOpen = false;
+  const dock = $('radialDock');
+
+  // Fold format buttons back to center
+  dock.querySelectorAll('.rad-fmt').forEach((btn, i) => {
+    const dx = btn.dataset.dx || '0';
+    const dy = btn.dataset.dy || '0';
+    btn.style.transitionDelay = ((FORMATS.length - 1 - i) * 0.04) + 's';
+    btn.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.05)`;
+    btn.style.opacity = '0';
+  });
+
+  $('brRow').classList.remove('show');
+
+  setTimeout(() => {
+    dock.classList.remove('open');
+    $('menuOverlay').classList.remove('show');
+    $('radTrigger').style.bottom = '';
+    if(playing) stopPlayback();
+    // Restore banner
+    $('bannerImg').style.opacity = '';
+    $('bannerImg').style.maxHeight = '';
+    $('bannerImg').style.overflow = '';
+    // Reset stagger delays
+    dock.querySelectorAll('.rad-fmt').forEach((btn, i) => {
+      btn.style.transitionDelay = (i * 0.05) + 's';
+    });
+  }, 400);
+}
+
+$('radTrigger').addEventListener('click', () => {
   if(!menuOpen){
     openMenu();
   } else {
-    // act as play/pause when open
     if(audioBuffer){
       playing ? stopPlayback() : startPlayback();
     }
   }
 });
-$('menuOverlay').addEventListener('click',closeMenu);
+$('menuOverlay').addEventListener('click', closeMenu);
 
-// ─── FORMAT / BITRATE SELECTION ──────────────
+// ── FORMAT / BITRATE ───────────────────────────
 function selectFormat(fmt){
-  outFormat=fmt;
-  $('radialDock').querySelectorAll('.rad-fmt').forEach(b=>b.classList.toggle('active',b.dataset.fmt===fmt));
-  if(fmt==='mp3'){
-    if(menuOpen) $('brRow').classList.add('visible');
+  outFormat = fmt;
+  $('radialDock').querySelectorAll('.rad-fmt').forEach(b => b.classList.toggle('active', b.dataset.fmt === fmt));
+  if(fmt === 'mp3'){
+    $('brRow').classList.add('show');
   } else {
-    $('brRow').classList.remove('visible');
+    $('brRow').classList.remove('show');
   }
   updateBanner();
 }
+
 function selectBitrate(br){
-  outBitrate=br;
-  document.querySelectorAll('.br-pill').forEach(b=>b.classList.toggle('active',+b.dataset.br===br));
+  outBitrate = br;
+  document.querySelectorAll('.br-pill').forEach(b => b.classList.toggle('active', +b.dataset.br === br));
   updateBanner();
 }
+
+document.querySelectorAll('.br-pill').forEach(btn => {
+  btn.addEventListener('click', () => selectBitrate(+btn.dataset.br));
+});
+
 function updateBanner(){
   if(!audioBuffer){ $('statusBanner').classList.remove('show'); return; }
   $('statusBanner').classList.add('show');
-  $('statusFmt').textContent=outFormat.toUpperCase();
-  $('statusSub').textContent=
-    outFormat==='mp3' ? outBitrate+' kbps':
-    outFormat==='wav' ? 'Lossless PCM':
-    outFormat==='aiff'? 'Lossless Apple':
-    outFormat==='flac'? 'Lossless compressed':
-                        'Open format';
+  $('statusFmt').textContent = outFormat.toUpperCase();
+  const subs = {mp3:`${outBitrate} kbps`, wav:'Lossless PCM', aiff:'Lossless Apple', flac:'Lossless compressed', ogg:'Open format'};
+  $('statusSub').textContent = subs[outFormat] || '';
 }
 
-// ─── FILE LOAD ────────────────────────────────
-$('fileInput').addEventListener('change',async e=>{
-  const file=e.target.files[0]; if(!file)return;
-  sourceFileName=file.name.replace(/\.[^.]+$/,'');
-  isVideo=file.type.startsWith('video/');
-  showSpinner(isVideo?'Extracting audio…':'Loading audio…');
+// ── FILE LOAD ──────────────────────────────────
+$('fileInput').addEventListener('change', async e => {
+  const file = e.target.files[0]; if(!file) return;
+  sourceFileName = file.name.replace(/\.[^.]+$/, '');
+  isVideo = file.type.startsWith('video/');
+  showSpinner(isVideo ? 'Extracting audio…' : 'Loading audio…');
   try{
-    if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    if(audioCtx.state==='suspended')await audioCtx.resume();
-    const buf=await file.arrayBuffer();
-    audioBuffer=await audioCtx.decodeAudioData(buf);
+    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') await audioCtx.resume();
+    const buf = await file.arrayBuffer();
+    audioBuffer = await audioCtx.decodeAudioData(buf);
     $('empty').classList.add('hidden');
     $('trackSection').classList.add('show');
     $('waveCard').classList.add('show');
     $('timeRow').classList.add('show');
-    $('trackName').value=sourceFileName;
-    $('trackInfo').textContent=`${fmtTime(audioBuffer.duration)} · ${audioBuffer.numberOfChannels===2?'Stereo':'Mono'} · ${Math.round(audioBuffer.sampleRate/1000)}kHz${isVideo?' · audio extracted':''}`;
-    $('totTime').textContent=fmtTime(audioBuffer.duration);
-    seekPos=0; drawWave(); updateBanner();
-    $('convertBtn').disabled=false;
-  } catch(err){ toast('Could not read this file',true); $('empty').classList.remove('hidden'); }
-  hideSpinner(); e.target.value='';
+    $('trackName').value = sourceFileName;
+    $('trackInfo').textContent = `${fmtTime(audioBuffer.duration)} · ${audioBuffer.numberOfChannels===2?'Stereo':'Mono'} · ${Math.round(audioBuffer.sampleRate/1000)}kHz${isVideo?' · audio extracted':''}`;
+    $('totTime').textContent = fmtTime(audioBuffer.duration);
+    seekPos = 0; drawWave(); updateBanner();
+    $('convertBtn').disabled = false;
+  } catch(err){ toast('Could not read this file', true); $('empty').classList.remove('hidden'); }
+  hideSpinner(); e.target.value = '';
 });
 
-// ─── WAVEFORM ─────────────────────────────────
+// ── WAVEFORM ───────────────────────────────────
 function drawWave(){
-  const canvas=$('waveCanvas'); if(!audioBuffer||!canvas)return;
-  const dpr=window.devicePixelRatio||1;
-  const W=canvas.offsetWidth*dpr, H=canvas.offsetHeight*dpr;
-  canvas.width=W; canvas.height=H;
-  const ctx=canvas.getContext('2d');
+  const canvas = $('waveCanvas'); if(!audioBuffer || !canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.offsetWidth * dpr;
+  canvas.height = canvas.offsetHeight * dpr;
+  const ctx = canvas.getContext('2d');
+  const data = audioBuffer.getChannelData(0);
+  const W = canvas.width, H = canvas.height;
   ctx.clearRect(0,0,W,H);
-  const data=audioBuffer.getChannelData(0);
-  const step=Math.ceil(data.length/W);
-  const mid=H/2;
-  const gr=ctx.createLinearGradient(0,0,0,H);
+  const step = Math.ceil(data.length/W), mid = H/2;
+  const gr = ctx.createLinearGradient(0,0,0,H);
   gr.addColorStop(0,'rgba(0,255,136,0.9)');
   gr.addColorStop(0.5,'rgba(0,255,136,0.6)');
   gr.addColorStop(1,'rgba(0,200,100,0.25)');
-  ctx.fillStyle=gr;
+  ctx.fillStyle = gr;
   for(let i=0;i<W;i++){
     let mn=1,mx=-1;
     for(let j=0;j<step;j++){const v=data[i*step+j]||0;if(v<mn)mn=v;if(v>mx)mx=v;}
     ctx.fillRect(i,mid*(1-mx),1.5,Math.max(1,mid*(1-mn)-mid*(1-mx)));
   }
 }
-$('waveCanvas').addEventListener('click',e=>{
-  if(!audioBuffer)return;
-  const rect=e.currentTarget.getBoundingClientRect();
-  seekPos=(e.clientX-rect.left)/rect.width*audioBuffer.duration;
+$('waveCanvas').addEventListener('click', e => {
+  if(!audioBuffer) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  seekPos = (e.clientX-rect.left)/rect.width * audioBuffer.duration;
   updatePH(seekPos/audioBuffer.duration);
-  $('curTime').textContent=fmtTime(seekPos);
-  if(playing){stopPlayback();startPlayback();}
+  $('curTime').textContent = fmtTime(seekPos);
+  if(playing){ stopPlayback(); startPlayback(); }
 });
 function updatePH(frac){
-  const ph=$('playhead'),inner=$('waveInner');
-  ph.style.display='block';ph.style.left=(frac*inner.clientWidth)+'px';
+  $('playhead').style.display='block';
+  $('playhead').style.left = (frac * $('waveInner').clientWidth) + 'px';
 }
 
-// ─── PLAYBACK ─────────────────────────────────
+// ── PLAYBACK ───────────────────────────────────
 function startPlayback(){
-  if(!audioBuffer)return;
-  if(audioCtx.state==='suspended')audioCtx.resume();
-  sourceNode=audioCtx.createBufferSource();
-  sourceNode.buffer=audioBuffer;
+  if(!audioBuffer) return;
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  sourceNode = audioCtx.createBufferSource();
+  sourceNode.buffer = audioBuffer;
   sourceNode.connect(audioCtx.destination);
-  sourceNode.start(0,seekPos);
-  startedAt=audioCtx.currentTime-seekPos;
-  playing=true;
+  sourceNode.start(0, seekPos);
+  startedAt = audioCtx.currentTime - seekPos;
+  playing = true;
   $('playPath').setAttribute('d','M6 19h4V5H6v14zm8-14v14h4V5h-4z');
-  sourceNode.onended=()=>{ if(playing){seekPos=0;stopPlayback();} };
+  sourceNode.onended = () => { if(playing){ seekPos=0; stopPlayback(); }};
   requestAnimationFrame(tick);
 }
 function stopPlayback(){
-  if(sourceNode){try{sourceNode.stop();}catch(e){}}
-  playing=false;
+  if(sourceNode){ try{sourceNode.stop();}catch(e){}}
+  playing = false;
   $('playPath').setAttribute('d','M8 5v14l11-7z');
 }
 function tick(){
-  if(!playing)return;
-  seekPos=Math.min(audioCtx.currentTime-startedAt,audioBuffer.duration);
+  if(!playing) return;
+  seekPos = Math.min(audioCtx.currentTime - startedAt, audioBuffer.duration);
   updatePH(seekPos/audioBuffer.duration);
-  $('curTime').textContent=fmtTime(seekPos);
+  $('curTime').textContent = fmtTime(seekPos);
   requestAnimationFrame(tick);
 }
 
-// ─── CONVERT ──────────────────────────────────
-$('convertBtn').addEventListener('click',async()=>{
-  if(!audioBuffer)return;
+// ── CONVERT ────────────────────────────────────
+$('convertBtn').addEventListener('click', async () => {
+  if(!audioBuffer) return;
   showSpinner('Converting to '+outFormat.toUpperCase()+'…');
   try{
-    const name=$('trackName').value.trim()||'converted-audio';
-    await exportFile(audioBuffer,outFormat,name,outBitrate);
+    const name = $('trackName').value.trim() || 'converted-audio';
+    await exportFile(audioBuffer, outFormat, name, outBitrate);
     toast('✓ Downloaded '+name+'.'+outFormat);
-  } catch(err){toast('Conversion failed',true);}
+  } catch(err){ toast('Conversion failed', true); }
   hideSpinner();
 });
 
-// ─── ENCODERS ─────────────────────────────────
+// ── ENCODERS ───────────────────────────────────
 async function exportFile(buf,fmt,name,br){
   let blob,ext=fmt;
-  if(fmt==='mp3')      blob=encodeMP3(buf,br);
-  else if(fmt==='wav') blob=encodeWAV(buf);
-  else if(fmt==='aiff')blob=encodeAIFF(buf);
-  else {blob=encodeWAV(buf);ext='wav';toast('Exported as WAV ('+fmt.toUpperCase()+' needs native encoder)');}
-  triggerDL(blob,name+'.'+ext);
+  if(fmt==='mp3')       blob=encodeMP3(buf,br);
+  else if(fmt==='wav')  blob=encodeWAV(buf);
+  else if(fmt==='aiff') blob=encodeAIFF(buf);
+  else { blob=encodeWAV(buf); ext='wav'; toast('Exported as WAV ('+fmt.toUpperCase()+' needs native encoder)'); }
+  triggerDL(blob, name+'.'+ext);
 }
 function triggerDL(blob,fn){
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=fn;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(a.href),15e3);
 }
 function encodeWAV(buf){
@@ -669,7 +716,7 @@ function encodeMP3(buf,kbps){
 }
 function f16(f32){const i16=new Int16Array(f32.length);for(let j=0;j<f32.length;j++){const s=Math.max(-1,Math.min(1,f32[j]));i16[j]=s<0?s*0x8000:s*0x7FFF;}return i16;}
 
-// ─── NAV ──────────────────────────────────────
+// ── NAV ────────────────────────────────────────
 const backdrop=$('backdrop');
 $('menuBtn').addEventListener('click',()=>{
   const open=$('navSheet').classList.contains('open');
@@ -677,15 +724,20 @@ $('menuBtn').addEventListener('click',()=>{
 });
 backdrop.addEventListener('click',()=>{ $('navSheet').classList.remove('open');backdrop.classList.remove('open');$('menuBtn').classList.remove('open'); });
 
-// ─── HELPERS ──────────────────────────────────
+// ── HELPERS ────────────────────────────────────
 function fmtTime(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+String(sec).padStart(2,'0');}
 function showSpinner(l){$('spinLabel').textContent=l||'Working…';$('overlaySpin').classList.add('show');}
 function hideSpinner(){$('overlaySpin').classList.remove('show');}
 function toast(msg,err){const t=$('toast');t.textContent=msg;t.className='toast show'+(err?' err':'');setTimeout(()=>t.classList.remove('show'),3200);}
 
-// ─── INIT ─────────────────────────────────────
+// ── INIT ───────────────────────────────────────
 window.addEventListener('load', buildRadial);
-window.addEventListener('resize',()=>{ if(!menuOpen){ document.querySelectorAll('.rad-fmt,.rad-br').forEach(el=>el.remove()); buildRadial(); }});
+window.addEventListener('resize', () => {
+  if(!menuOpen){
+    $('radialDock').querySelectorAll('.rad-fmt').forEach(el=>el.remove());
+    buildRadial();
+  }
+});
 </script>
 </body>
 </html>
