@@ -35,12 +35,13 @@ body{display:flex;flex-direction:column;height:100dvh}
 .menu-btn.open span:nth-child(2){opacity:0}
 .menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);background:var(--green)}
 
-/* ── SCROLL ── */
-.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 14px 0}
-.scroll::-webkit-scrollbar{display:none}
-
 /* ── BANNER ── */
-#bannerImg{transition:opacity .3s, max-height .35s;overflow:hidden}
+#bannerImg{display:block;width:100%;transition:opacity .3s, max-height .35s cubic-bezier(.4,0,.2,1);overflow:hidden;flex-shrink:0}
+#bannerImg img{display:block;width:100%;border-bottom:1px solid rgba(255,255,255,0.06)}
+
+/* ── SCROLL ── */
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 0}
+.scroll::-webkit-scrollbar{display:none}
 
 /* ── TRACK NAME ── */
 .track-section{display:none;margin-bottom:14px}
@@ -290,10 +291,9 @@ body{display:flex;flex-direction:column;height:100dvh}
   <label for="fileInput" class="add-btn">+ AUDIO</label>
 </div>
 
+<div id="bannerImg"><img src="/img/banners/audio-converter-banner.png" alt=""></div>
+
 <div class="scroll" id="mainScroll">
-  <div id="bannerImg">
-    <img src="/img/banners/audio-converter-banner.png" alt="" style="width:calc(100% + 28px);display:block;margin:-18px -14px 16px -14px;border-bottom:1px solid rgba(255,255,255,0.06)">
-  </div>
 
   <div class="track-section" id="trackSection">
     <input type="text" class="track-name-input" id="trackName" autocorrect="off" spellcheck="false" placeholder="Untitled">
@@ -390,11 +390,11 @@ let menuOpen=false;
 
 // Format config: angle in degrees, measured CCW from positive-x (right = 0°, up = 90°, left = 180°)
 const FORMATS=[
-  {fmt:'wav',  label:'WAV',  sub:'Lossless',   angle:157},
-  {fmt:'aiff', label:'AIFF', sub:'Apple',       angle:126},
+  {fmt:'wav',  label:'WAV',  sub:'Lossless',   angle:162},
+  {fmt:'aiff', label:'AIFF', sub:'Apple',       angle:128},
   {fmt:'mp3',  label:'MP3',  sub:'Universal',   angle:90 },
-  {fmt:'flac', label:'FLAC', sub:'Compressed',  angle:54 },
-  {fmt:'ogg',  label:'OGG',  sub:'Open source', angle:23 },
+  {fmt:'flac', label:'FLAC', sub:'Compressed',  angle:52 },
+  {fmt:'ogg',  label:'OGG',  sub:'Open source', angle:18 },
 ];
 
 // ── BUILD RADIAL DOCK ──────────────────────────
@@ -410,18 +410,16 @@ function buildRadial(){
   const BTN = Math.min(Math.round(sw * 0.175), 72);
   const PL  = 39; // half of play button diameter (78px)
 
-  // arcCenterB = distance of play button CENTER above screen bottom
-  // Must be high enough that format buttons (R above center) fit in dock,
-  // and low enough that bitrate row (PL+12px below center) stays visible.
-  // Formula: arcCenterB ~ R * 0.62 + PL + 24
-  const arcCenterB = Math.round(R * 0.62 + PL + 24);
+  // arcCenterB = play button CENTER height above screen bottom
+  // Lower value = play button closer to bottom = buttons wrap more around it
+  // Spread angles wide (162°→18°) so WAV/OGG sit to the sides of the play button
+  const arcCenterB = Math.round(R * 0.48 + PL + 16);
 
-  // Where the trigger bottom edge sits when open (center - PL)
+  // Where the trigger bottom edge sits when open
   const triggerOpenB = arcCenterB - PL;
 
-  // Where the bitrate row bottom sits (below play button with gap)
-  const brBottom = Math.max(6, arcCenterB - PL - 12 - 44);
-  // (44 = approx height of brRow: padding 9*2 + font ~18 + sub 11 = 47px, round to 44)
+  // Bitrate row pinned near the bottom of the dock, not below play button
+  const brBottom = 10;
 
   // Total dock height
   const dockH = Math.round(arcCenterB + R + BTN/2 + 22);
