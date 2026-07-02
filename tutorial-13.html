@@ -211,12 +211,12 @@
   <!-- WHAT YOU'LL CREATE -->
   <div class="overview-box">
     <h2>What You'll Create</h2>
-    <p style="color:#ccc;font-size:15px;margin-bottom:20px">A maximum-impact action-movie hero shot — you're launched airborne over a crashing car and exploding truck, a wall of fire and debris behind you, city lights and rain streaking the background. Dramatic freeze-frame composition makes this feel ripped straight from a summer blockbuster trailer.</p>
+    <p style="color:#ccc;font-size:15px;margin-bottom:20px">A 2-scene, 30-second head-on crash sequence shown from two angles — Scene 1 is one continuous forward camera move from inside the car through the windshield and into slow motion; Scene 2 is the same collision replayed from an external drone angle. Gunfire, a head-on hit, and a mid-air one-liner as the fireball erupts behind you.</p>
     <div class="overview-grid">
       <div class="overview-item"><span class="dot">▸</span><span>Your photo as the airborne hero reference</span></div>
-      <div class="overview-item"><span class="dot">▸</span><span>Explosive fireball and debris environment build</span></div>
-      <div class="overview-item"><span class="dot">▸</span><span>Mid-air action freeze-frame composition</span></div>
-      <div class="overview-item"><span class="dot">▸</span><span>Crashing vehicle detail work</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>Same crash shown from two camera angles</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>One continuous unbroken camera move per scene</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>Ultra slow-motion mid-air line delivery</span></div>
       <div class="overview-item"><span class="dot">▸</span><span>Rain and city-light atmosphere</span></div>
       <div class="overview-item"><span class="dot">▸</span><span>Perfect hero shot for action-movie style content</span></div>
     </div>
@@ -252,8 +252,10 @@
     </div>
     <div class="media-block">
       <div class="media-label">Generated with Seedance 2 Mini — Dreamina AI</div>
-      <img src="/img/tut13-poster.jpg?v=11" alt="Caught In The Blast — final generated look">
-      <div class="media-caption">Generated with Seedance 2 Mini using the prompt below. Results vary slightly between runs — regenerate once or twice for the best take.</div>
+      <div class="video-wrap" style="border-radius:0;border:none">
+        <iframe src="https://www.youtube.com/embed/21xCn72zl6Y?rel=0&modestbranding=1" title="Caught In The Blast — Example Output" allowfullscreen></iframe>
+      </div>
+      <div class="media-caption">Generated with Seedance 2 Mini using the prompts below. Results vary slightly between runs — regenerate once or twice for the best take. &nbsp;<a href="https://youtu.be/21xCn72zl6Y?is=BQpKz1tlNxYWDEG7" target="_blank" style="color:#ff6a2d;">Open in YouTube &#8599;</a></div>
     </div>
   </div>
 
@@ -283,7 +285,37 @@
     </div>
     <div class="instruction clearfix">
       <span class="instruction-num">4</span>
-      <p>Upload your reference sheet as the <strong>reference / character image</strong>.</p>
+      <p>Upload your reference sheet plus the start-frame images below — one per scene — as references for that scene's generation.</p>
+    </div>
+
+    <div class="char-sheet">
+      <div class="media-label">Character Sheet — Created With GPT Image 2</div>
+      <img src="/img/tut13-charsheet.jpg?v=1" alt="Ash multi-angle character reference sheet — grey hair, black leather jacket with cross stitching, rock graphic tee">
+    </div>
+
+    <div class="char-sheet">
+      <div class="media-label">Scene 1 Start Frame — Inside The Car</div>
+      <img src="/img/tut13-ref-start1.jpg?v=1" alt="Interior driver POV, wet NYC street, security truck ahead">
+    </div>
+
+    <div class="char-sheet">
+      <div class="media-label">Scene 1 Reference — The Gunmen</div>
+      <img src="/img/tut13-ref-gunmen.jpg?v=1" alt="Interior view through bullet-cracked windshield with two masked gunmen at the open truck doors">
+    </div>
+
+    <div class="char-sheet">
+      <div class="media-label">Scene 2 Start Frame — External Approach</div>
+      <img src="/img/tut13-ref-approach.jpg?v=1" alt="External rear angle of the Charger approaching the tanker with a cracked windshield">
+    </div>
+
+    <div class="char-sheet">
+      <div class="media-label">Scene 2 Reference — The Collision</div>
+      <img src="/img/tut13-ref-collision.jpg?v=1" alt="Head-on collision moment with fireball erupting between the Charger and the tanker">
+    </div>
+
+    <div class="char-sheet">
+      <div class="media-label">Scene 2 Reference — Dashcam Approach</div>
+      <img src="/img/tut13-ref-dashcam.jpg?v=1" alt="Dashcam-style view over the hood approaching the truck at a green light in the rain">
     </div>
   </div>
 
@@ -303,10 +335,11 @@
     <table class="settings-table">
       <thead><tr><th>Setting</th><th>Value</th><th>Why</th></tr></thead>
       <tbody>
-        <tr><td>Model</td><td><span class="val">Seedance 2 Mini</span></td><td>Great for explosive VFX and dynamic mid-air action poses</td></tr>
-        <tr><td>Duration</td><td><span class="val">5-7 seconds</span></td><td>Short and punchy — this works best as a single dramatic beat</td></tr>
-        <tr><td>Aspect Ratio</td><td><span class="val">9:16</span></td><td>Native vertical format for TikTok / Reels / Shorts</td></tr>
-        <tr><td>Reference Role</td><td><span class="val">Character / Face Lock</span></td><td>Keeps your face and jacket detail consistent through the motion</td></tr>
+        <tr><td>Model</td><td><span class="val">Seedance 2 Mini</span></td><td>Great for explosive VFX, slow-motion ramps, and one continuous camera move</td></tr>
+        <tr><td>Duration</td><td><span class="val">2 × 15 seconds</span></td><td>Same crash shown from two angles, one continuous unbroken move each</td></tr>
+        <tr><td>Aspect Ratio</td><td><span class="val">16:9</span></td><td>Widescreen cinematic framing for both interior and drone angles</td></tr>
+        <tr><td>Reference Role</td><td><span class="val">Character / Face Lock + Start Frame</span></td><td>Keeps your face consistent and locks each scene's opening shot</td></tr>
+        <tr><td>Voice Reference</td><td><span class="val">AshLondonVoice.mp3</span></td><td>Locks the London accent for the mid-air line in both scenes</td></tr>
       </tbody>
     </table>
 
@@ -323,36 +356,79 @@
     <div class="step-header">
       <div class="step-number">3</div>
       <div class="step-title-block">
-        <h2>Paste The Prompt & Generate</h2>
-        <p>Paste this into Seedance 2 Mini</p>
+        <h2>Paste The Prompts & Generate</h2>
+        <p>The same crash, shown from two angles</p>
       </div>
     </div>
 
     <div class="instruction clearfix">
       <span class="instruction-num">1</span>
-      <p>Copy the prompt below <strong>exactly as written</strong> and paste it into the Seedance 2 Mini prompt field.</p>
+      <p>Generate both scenes from their own start frame — they're two angles on the same moment, not a continuation of each other.</p>
     </div>
     <div class="instruction clearfix">
       <span class="instruction-num">2</span>
-      <p>Swap in your own details anywhere you want a different look — clothing, setting, colors — the structure is what matters most.</p>
+      <p>Copy each prompt below <strong>exactly as written</strong> and paste it into the Seedance 2 Mini prompt field for that scene.</p>
     </div>
     <div class="instruction clearfix">
       <span class="instruction-num">3</span>
       <p>Tap <strong>Generate</strong> and wait for the render.</p>
     </div>
 
+    <p style="font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ff6a2d;margin:36px 0 16px">Scene 1 — Inside The Car</p>
+
     <div class="prompt-block">
-      <div class="prompt-label">📋 Prompt</div>
+      <div class="prompt-label">📋 Scene 1 Prompt — 15 Seconds, One Continuous Forward Move</div>
       <button class="copy-btn" onclick="copyPrompt(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
         Copy
       </button>
-      <pre>A grey-haired man in a black leather jacket and graphic t-shirt is launched through the air in a full horizontal action pose, one arm outstretched, over the hood of a crashing blue muscle car, a massive fireball explosion and a jackknifing semi truck erupting behind him. City lights and rain streak through the night air, sparks and debris scattering around his body mid-flight. Dramatic freeze-frame composition with strong motion blur trailing behind him, cinematic orange-and-blue color grade contrasting the fire against the cool night city. His expression is calm and focused despite the chaos, classic action-hero energy. Atmosphere: explosion boom, screeching tires, glass shattering, rumbling bass hit.</pre>
+      <pre>One continuous unbroken camera move. Zero cuts. Camera always moves forward, never sideways. 15 seconds. Opens locked to start_image — camera at face level inside black 1969 Dodge Charger, reference_1, white male early 40s, short cropped grey hair, stubble beard, black leather jacket, gothic cross stitching, rock graphic tee, black leather pants, in driver seat, both hands on wheel, eyes forward. Wet NYC street ahead. Heavy rain. Security truck 20 metres ahead.
+
+[0:00-0:02]
+Truck doors swing open. Heavy rear doors of the security truck swing open violently. Two men in black balaclavas raise machine guns directly at the Charger. Both guns open fire, massive muzzle flash, bullets slam into the front windshield, glass spiderwebbing in multiple impact points. Ash ducks and flinches instinctively still gripping the wheel, sparks off the bonnet, rounds punching through the glass. Ash keeps driving straight forward. Face tense.
+
+[0:02-0:05]
+Tanker blocks the road directly ahead. A massive white petrol tanker rolls out from a side street and stops directly ahead blocking both lanes completely. Not from the side. Directly in front. Through the bullet-shattered windshield it fills the entire view dead ahead. Ash's eyes go wide, pure panic, both hands brace hard on the wheel, whole body braces back into the seat. No time to stop. Tanker fills the entire windshield dead ahead.
+
+[0:05-0:07]
+Head-on collision. Charger hits the tanker head-on at full speed, direct frontal impact, violent deceleration, windshield shatters completely outward in one explosive burst directly ahead, blinding orange fireball erupting through the space where the windshield was #FF6600, rolling black smoke #1A0A00. Ash's body thrown forward by the kinetic energy directly through the front windshield, exits straight ahead through the shattered glass.
+
+[0:07-0:15]
+Camera follows Ash forward through the windshield and curves in front. In one single unbroken continuous forward camera move, camera accelerates forward through the shattered windshield frame faster than Ash's body, glass shards frozen in the air as the camera passes through, time drops to 0.05x ultra slow motion, camera continues forward then curves in one smooth fluid arc around to face back toward the wreckage. Now Ash is flying slowly toward the camera face-first in ultra slow motion, his face filling the frame coming toward camera, black leather jacket rippling, glass shards suspended between Ash and camera catching prismatic light. Behind Ash the crumpled Charger buried head-on into the petrol tanker, massive fireball erupting in slow motion behind him #FF6600, black smoke frozen #1A0A00, full scale of explosion visible behind him. Ash looks directly into the camera lens flying toward it. Completely composed. Slight smirk. One eyebrow raised. Delivers quietly with calm London British accent, use only the uploaded audio reference AshLondonVoice.mp3, no other voice, no famous actor voice, no American accent: nobody ever said this job was easy. Time snaps back to full speed. Fireball roars. Glass explodes outward. Ash continues arc downward toward the Chinatown sidewalk. Camera holds wide on the full explosion. One continuous forward camera move. Zero cuts. Zero sideways motion.
+
+Photorealistic cinematic. Anamorphic bokeh. Fireball orange #FF6600. Smoke black #1A0A00. Glass prismatic scatter. Rain on glass. Wet NYC street.</pre>
+    </div>
+
+    <hr class="divider">
+
+    <p style="font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ff6a2d;margin:36px 0 16px">Scene 2 — External Drone Angle</p>
+
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Scene 2 Prompt — 15 Seconds, Same Crash From Outside</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>External shot. Low floating drone camera positioned ahead and to the side of the road at a 30 degree downward angle. One continuous shot. Zero cuts. This is the same crash event seen from outside, a second camera angle of the same moment. Wet NYC street. Heavy rain. Night time.
+
+[0:00-0:03]
+The approach. From the drone angle we see the black 1969 Dodge Charger muscle car coming toward us at full speed on the wrong side of the road, bullet holes in the windshield from earlier gunfire, and directly ahead of the Charger a large white petrol tanker truck stationary blocking the road head-on. The two vehicles closing on each other fast. Armoured Brinks security truck visible in the background to the left of frame with rear doors open. Wet asphalt reflecting headlights and street lights. Heavy rain.
+
+[0:03-0:06]
+Head-on collision. The Charger hits the petrol tanker head-on at full speed, direct frontal collision, completely realistic, like real crash test footage, bonnet crumpling violently on impact, both vehicles lurching, petrol tanker shunting backward from the force, immediate fireball eruption from the engine bay #FF6600, black smoke billowing #1A0A00, debris shower, glass and metal fragments flying, shockwave ripple. No supernatural elements. Realistic crash physics. The collision looks exactly like a real high speed road accident.
+
+[0:06-0:10]
+Ash flies through the front windshield. Reference_1, white male early 40s, short cropped grey hair, stubble beard, black leather jacket, gothic cross stitching, rock graphic tee, black leather pants, black tactical boots, is thrown forward through the shattered front windshield by the kinetic force of the collision, his body exits through the front of the car naturally, like a real crash ejection, not floating or superhero style, realistic human body physics, tumbling forward through the air toward the drone camera position. Glass shards around him from the windshield. Fireball behind him. Charger buried into the tanker. Brinks truck visible background left.
+
+[0:10-0:15]
+Slow motion, the line. Time slows to ultra slow motion 0.05x as Ash is mid-air tumbling toward the camera. His body naturally orients so his face comes toward the camera. He looks directly into the lens. Completely composed despite the chaos. Slight smirk. Delivers quietly calm with London British accent, use only AshLondonVoice.mp3, no other voice, no American accent, no famous actor voice: nobody ever said this job was easy. Glass shards frozen around him. Fireball frozen behind. Full explosion and wreckage visible behind him. Time snaps back to full speed. Ash continues tumbling toward the wet road. Camera holds on the explosion.
+
+Photorealistic. Cinematic. Realistic crash physics throughout. Anamorphic bokeh. Fireball orange #FF6600. Smoke black #1A0A00. Wet NYC street reflections. Heavy rain.</pre>
     </div>
 
     <div class="callout tip">
       <span class="callout-icon">🎬</span>
-      <p>A calm, focused expression mid-explosion is the classic action-hero trick — panic reads as an accident, composure reads as a stunt.</p>
+      <p>Same line, same accent, two angles — cutting between the interior and drone versions of this crash in the edit is what sells it as one continuous stunt sequence rather than two separate clips.</p>
     </div>
   </div>
 
@@ -398,11 +474,11 @@
     <table class="settings-table">
       <thead><tr><th>Swap This</th><th>For This</th><th>Effect</th></tr></thead>
       <tbody>
-        <tr><td>Muscle car + truck</td><td>Motorcycle chase</td><td>Faster, more agile action variant</td></tr>
-        <tr><td>City street explosion</td><td>Desert highway explosion</td><td>Wider, more open Mad-Max-style backdrop</td></tr>
-        <tr><td>Orange/blue grade</td><td>Green/black grade</td><td>Grittier, more military-thriller tone</td></tr>
-        <tr><td>Calm expression</td><td>Screaming mid-air</td><td>More chaotic, less composed hero energy</td></tr>
-        <tr><td>Single explosion</td><td>Chain of explosions</td><td>Bigger-scale destruction for a longer cut</td></tr>
+        <tr><td>Petrol tanker</td><td>Another muscle car</td><td>Car-vs-car crash instead of car-vs-truck</td></tr>
+        <tr><td>Machine gun opening</td><td>No gunfire, straight to the crash</td><td>Simpler setup, faster into the collision</td></tr>
+        <tr><td>Interior + drone angles</td><td>Single angle only</td><td>Faster to generate, less coverage for the edit</td></tr>
+        <tr><td>London accent line</td><td>Any accent / silent</td><td>Different tone for the mid-air beat</td></tr>
+        <tr><td>Single collision</td><td>Chain of explosions</td><td>Bigger-scale destruction for a longer cut</td></tr>
       </tbody>
     </table>
   </div>
