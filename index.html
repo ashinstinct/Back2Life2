@@ -105,12 +105,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,10,10,0.9
 .section-title{font-size:clamp(24px,4vw,36px);font-weight:800;color:#fff;margin-bottom:10px;letter-spacing:-.5px}
 .section-sub{font-size:15px;color:#555;max-width:480px}
 .tutorials-grid{margin-top:20px}
+.tutorial-num-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#00ff88;margin:32px 0 10px}
+.tutorial-card+.tutorial-num-label{margin-top:32px}
 .tutorial-card{background:#111;border:1px solid #1e1e1e;border-radius:16px;overflow:hidden;text-decoration:none;display:block;transition:border-color .2s}
 .tutorial-card:hover{border-color:#00ff88}
 .card-hero{position:relative;aspect-ratio:16/9;overflow:hidden}
 .card-hero img{width:100%;height:100%;object-fit:cover;object-position:center 20%}
 .card-hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.1) 0%,rgba(0,0,0,.7) 100%)}
-.card-badges{position:absolute;top:12px;left:12px;display:flex;gap:6px}
+.card-badges{position:absolute;bottom:12px;left:12px;display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100% - 70px)}
 .card-badge{background:rgba(0,0,0,.7);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:10px;font-weight:600;padding:3px 8px;border-radius:5px}
 .card-badge.new{background:#00ff88;color:#000;border-color:#00ff88}
 .card-body{padding:20px 20px 24px}
@@ -337,6 +339,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
   <h2 class="section-title">AI Video Tutorials</h2>
   <p class="section-sub">Follow along and create your own viral AI video from scratch.</p>
   <div class="tutorials-grid">
+    <div class="tutorial-num-label">Tutorial #001</div>
     <a class="tutorial-card" href="/tutorial-01">
       <div class="card-hero" style="position:relative">
         <img src="/img/hero.jpg" alt="Jump Through The TV Tutorial">
@@ -364,6 +367,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <span class="card-cta">Start Tutorial →</span>
       </div>
     </a>
+    <div class="tutorial-num-label">Tutorial #002</div>
     <a class="tutorial-card" href="/tutorial-02">
       <div class="card-hero" style="position:relative">
         <img src="/img/tut02-hero.jpg?v=1" alt="Falling to Earth Morphing to Superheroes Tutorial" style="object-position:center 20%">
@@ -392,6 +396,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <span class="card-cta">Start Tutorial →</span>
       </div>
     </a>
+    <div class="tutorial-num-label">Tutorial #003</div>
     <a class="tutorial-card" href="/tutorial-03">
       <div class="card-hero" style="position:relative">
         <img src="/img/tut03-hero.jpg?v=2" alt="Rise From Ashes Tutorial" style="object-position:center 30%">
@@ -418,6 +423,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <span class="card-cta">Start Tutorial →</span>
       </div>
     </a>
+    <div class="tutorial-num-label">Tutorial #004</div>
     <a class="tutorial-card" href="/tutorial-04">
       <div class="card-hero" style="position:relative">
         <img src="/img/tut04-hero.jpg?v=2" alt="My 5 Year Old Self In Music Video Tutorial" style="object-position:center 30%">
@@ -444,6 +450,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <span class="card-cta">Start Tutorial →</span>
       </div>
     </a>
+    <div class="tutorial-num-label">Tutorial #005</div>
     <a class="tutorial-card" href="/tutorial-05">
       <div class="card-hero" style="position:relative">
         <img src="/img/tut05-hero.jpg?v=2" alt="VR Fight Club Tutorial" style="object-position:center 30%">
@@ -470,6 +477,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <span class="card-cta">Start Tutorial →</span>
       </div>
     </a>
+    <div class="tutorial-num-label">Tutorial #006</div>
     <a class="tutorial-card" href="/tutorial-06">
       <div class="card-hero" style="position:relative">
         <img src="/img/tut06-hero.jpg?v=2" alt="Monster Invasion Tutorial" style="object-position:center 30%">
@@ -496,6 +504,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <span class="card-cta">Start Tutorial →</span>
       </div>
     </a>
+    <div class="tutorial-num-label">Tutorial #007</div>
     <a class="tutorial-card" href="/tutorial-07">
       <div class="card-hero" style="position:relative">
         <img src="/img/tut07-hero.jpg?v=2" alt="Kitchen Nightmare Fight Tutorial" style="object-position:center 30%">
@@ -522,6 +531,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <span class="card-cta">Start Tutorial →</span>
       </div>
     </a>
+    <div class="tutorial-num-label">Tutorial #008</div>
     <a class="tutorial-card" href="/tutorial-08">
       <div class="card-hero" style="position:relative">
         <img src="/img/tut08-hero.jpg?v=2" alt="Pulled Through The Portal Tutorial" style="object-position:center 30%">
@@ -548,6 +558,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <span class="card-cta">Start Tutorial →</span>
       </div>
     </a>
+    <div class="tutorial-num-label">Tutorial #009</div>
     <a class="tutorial-card" href="/tutorial-09">
       <div class="card-hero" style="position:relative">
         <img src="/img/tut09-hero.jpg?v=2" alt="My Reflection Came Alive Tutorial" style="object-position:center 30%">
@@ -574,6 +585,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <span class="card-cta">Start Tutorial →</span>
       </div>
     </a>
+    <div class="tutorial-num-label">Tutorial #010</div>
     <a class="tutorial-card" href="/tutorial-10">
       <div class="card-hero" style="position:relative">
         <img src="/img/tut10-hero.jpg?v=2" alt="The Neon Sneaker Drop Tutorial" style="object-position:center 30%">
@@ -600,6 +612,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <span class="card-cta">Start Tutorial →</span>
       </div>
     </a>
+    <div class="tutorial-num-label">Tutorial #011</div>
     <a class="tutorial-card" href="/tutorial-11">
       <div class="card-hero" style="position:relative">
         <img src="/img/tut11-hero.jpg?v=2" alt="My Cat Became A Lion Tutorial" style="object-position:center 30%">
@@ -626,6 +639,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <span class="card-cta">Start Tutorial →</span>
       </div>
     </a>
+    <div class="tutorial-num-label">Tutorial #012</div>
     <a class="tutorial-card" href="/tutorial-12">
       <div class="card-hero" style="position:relative">
         <img src="/img/tut12-hero.jpg?v=2" alt="Dinosaurs Invade My Street Tutorial" style="object-position:center 30%">
@@ -652,6 +666,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <span class="card-cta">Start Tutorial →</span>
       </div>
     </a>
+    <div class="tutorial-num-label">Tutorial #013</div>
     <a class="tutorial-card" href="/tutorial-13">
       <div class="card-hero" style="position:relative">
         <img src="/img/tut13-hero.jpg?v=2" alt="The Viral Car Ad Tutorial" style="object-position:center 30%">
@@ -678,6 +693,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <span class="card-cta">Start Tutorial →</span>
       </div>
     </a>
+    <div class="tutorial-num-label">Tutorial #014</div>
     <a class="tutorial-card" href="/tutorial-14">
       <div class="card-hero" style="position:relative">
         <img src="/img/tut14-hero.jpg?v=2" alt="Caught In The Blast Tutorial" style="object-position:center 30%">
@@ -704,6 +720,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <span class="card-cta">Start Tutorial →</span>
       </div>
     </a>
+    <div class="tutorial-num-label">Tutorial #015</div>
     <a class="tutorial-card" href="/tutorial-15">
       <div class="card-hero" style="position:relative">
         <img src="/img/tut15-hero.jpg?v=2" alt="Battle Scars Tutorial" style="object-position:center 30%">
@@ -730,9 +747,10 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <span class="card-cta">Start Tutorial →</span>
       </div>
     </a>
+    <div class="tutorial-num-label">Tutorial #016</div>
     <a class="tutorial-card" href="/tutorial-16">
       <div class="card-hero" style="position:relative">
-        <img src="/img/tut16-hero.jpg?v=1" alt="Escape The Temple Tutorial" style="object-position:center 30%">
+        <img src="/img/tut16-hero.jpg?v=3" alt="Escape The Temple Tutorial" style="object-position:center 30%">
         <img src="/icons/tutorials.png" alt="" style="position:absolute;bottom:12px;right:12px;width:44px;height:44px;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,.5)">
         <div class="card-hero-overlay"></div>
         <div class="card-badges">
