@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta property="og:title" content="The Viral Car Ad — AI Video Tutorial | Back2Life.app">
+<meta property="og:description" content="Free browser-based AI video and creator tools from Back2Life.app.">
+<meta property="og:image" content="https://back2lifeapp.vercel.app/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://back2lifeapp.vercel.app/tutorial-13">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Viral Car Ad — AI Video Tutorial | Back2Life.app">
+<meta name="twitter:description" content="Free browser-based AI video and creator tools from Back2Life.app.">
+<meta name="twitter:image" content="https://back2lifeapp.vercel.app/og-image.png">
+<title>The Viral Car Ad — AI Video Tutorial | Back2Life.app</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #0f0f0f; color: #e8e8e8; line-height: 1.7; }
+  .hero { padding-top: 20px !important; background: linear-gradient(135deg, #050a14 0%, #0a0a1e 40%, #05050f 100%); padding: 60px 40px 50px; text-align: center; border-bottom: 2px solid #3dd2ff; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, #3dd2ff22 0%, transparent 70%); }
+  .brand-tag { display: inline-block; background: linear-gradient(90deg, #3dd2ff, #ff3dc7); color: #000; font-weight: 800; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; padding: 6px 18px; border-radius: 20px; margin-bottom: 24px; }
+  .hero h1 { font-size: clamp(28px, 5vw, 52px); font-weight: 800; color: #fff; margin-bottom: 16px; line-height: 1.15; }
+  .hero h1 span { color: #3dd2ff; }
+  .hero-sub { font-size: 18px; color: #aaa; max-width: 620px; margin: 0 auto 32px; }
+  .hero-meta { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; }
+  .meta-pill { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); padding: 8px 20px; border-radius: 30px; font-size: 13px; color: #ccc; }
+  .meta-pill span { color: #3dd2ff; font-weight: 600; }
+  .social-bar { background: #111; border-bottom: 1px solid #222; padding: 16px 40px; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  .social-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 2px; margin-right: 8px; }
+  .social-link { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; text-decoration: none; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1); color: #ccc; }
+  .social-link:hover { transform: translateY(-1px); border-color: #3dd2ff; color: #3dd2ff; }
+  .container { max-width: 860px; margin: 0 auto; padding: 60px 32px; }
+  .overview-box { background: linear-gradient(135deg, #3dd2ff0f, #ff3dc70a); border: 1px solid #3dd2ff33; border-radius: 16px; padding: 32px 36px; margin-bottom: 56px; }
+  .overview-box h2 { font-size: 20px; color: #3dd2ff; margin-bottom: 16px; }
+  .overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .overview-item { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: #ccc; }
+  .overview-item .dot { color: #3dd2ff; font-size: 18px; margin-top: -2px; flex-shrink: 0; }
+  .tools-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 56px; }
+  .tool-card { flex: 1; min-width: 160px; background: #161616; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; text-align: center; }
+  .tool-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .tool-desc { font-size: 12px; color: #777; }
+  .tool-icon-svg { display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .step-section { margin-bottom: 64px; }
+  .step-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #222; }
+  .step-number { width: 48px; height: 48px; background: linear-gradient(135deg, #3dd2ff, #ff3dc7); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: #000; flex-shrink: 0; }
+  .step-title-block h2 { font-size: 24px; font-weight: 700; color: #fff; }
+  .step-title-block p { font-size: 14px; color: #888; margin-top: 2px; }
+  .instruction { margin-bottom: 20px; }
+  .instruction-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: #3dd2ff1f; border: 1px solid #3dd2ff4d; border-radius: 50%; font-size: 12px; font-weight: 700; color: #3dd2ff; flex-shrink: 0; margin-right: 12px; margin-bottom: 6px; float: left; }
+  .instruction p { color: #ccc; font-size: 15px; overflow: hidden; }
+  .instruction p strong { color: #fff; }
+  .clearfix::after { content: ''; display: table; clear: both; }
+  .prompt-block { background: #0a0a0a; border: 1px solid #2a2a2a; border-left: 3px solid #3dd2ff; border-radius: 10px; padding: 24px 28px; margin: 20px 0; position: relative; }
+  .prompt-block .prompt-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #3dd2ff; margin-bottom: 14px; }
+  .prompt-block pre { font-family: 'Courier New', monospace; font-size: 13px; color: #f0d8e0; white-space: pre-wrap; word-break: break-word; line-height: 1.8; }
+  .copy-btn { position: absolute; top: 14px; right: 14px; background: #3dd2ff1a; border: 1px solid #3dd2ff4d; color: #3dd2ff; font-size: 12px; font-weight: 600; font-family: 'Inter', sans-serif; padding: 5px 14px; border-radius: 6px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+  .copy-btn:hover { background: #3dd2ff33; border-color: #3dd2ff; }
+  .copy-btn.copied { background: #3dd2ff40; }
+  .copy-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .callout { display: flex; gap: 14px; align-items: flex-start; background: rgba(0,200,255,0.05); border: 1px solid rgba(0,200,255,0.2); border-radius: 10px; padding: 18px 22px; margin: 20px 0; }
+  .callout-icon { font-size: 20px; flex-shrink: 0; }
+  .callout p { font-size: 14px; color: #b0d4e0; }
+  .callout p strong { color: #00ccff; }
+  .callout.tip { background: rgba(255,200,0,0.05); border-color: rgba(255,200,0,0.2); }
+  .callout.tip p { color: #d4c07a; }
+  .callout.tip p strong { color: #ffc800; }
+  .settings-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+  .settings-table th { background: #161616; color: #888; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 12px 16px; text-align: left; border-bottom: 1px solid #2a2a2a; }
+  .settings-table td { padding: 12px 16px; border-bottom: 1px solid #1a1a1a; color: #ccc; vertical-align: top; }
+  .settings-table td:first-child { color: #fff; font-weight: 500; }
+  .settings-table td .val { display: inline-block; background: #3dd2ff1a; color: #3dd2ff; font-family: monospace; font-size: 13px; padding: 2px 10px; border-radius: 5px; }
+  .settings-table tr:last-child td { border-bottom: none; }
+  .divider { border: none; border-top: 1px solid #1e1e1e; margin: 56px 0; }
+  .media-block { margin: 24px 0; border-radius: 12px; overflow: hidden; border: 1px solid #2a2a2a; }
+  .media-label { background: #161616; padding: 10px 18px; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #3dd2ff; border-bottom: 1px solid #2a2a2a; }
+  .media-caption { background: #0f0f0f; padding: 12px 18px; font-size: 13px; color: #666; border-top: 1px solid #1a1a1a; }
+  .media-block img { width: 100%; display: block; }
+  .char-sheet { width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid #2a2a2a; margin: 24px 0; }
+  .char-sheet img { width: 100%; display: block; }
+  .storyboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0; }
+  .sb-card { background: #111; border: 1px solid #222; border-radius: 12px; overflow: hidden; transition: border-color 0.2s; }
+  .sb-card:hover { border-color: #3dd2ff; }
+  .sb-img-wrap { position: relative; overflow: hidden; }
+  .sb-img-wrap img { width: 100%; height: auto; display: block; aspect-ratio: 3/4; object-fit: cover; }
+  .sb-timecode { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.75); color: #3dd2ff; font-size: 11px; font-weight: 700; font-family: monospace; padding: 3px 8px; border-radius: 4px; letter-spacing: 1px; }
+  .sb-info { padding: 14px 16px; }
+  .sb-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+  .sb-caption { font-size: 12px; color: #777; line-height: 1.5; }
+  .final-cta { background: linear-gradient(135deg, #141414, #1a1a1a); border: 1px solid #3dd2ff33; border-radius: 20px; padding: 48px 40px; text-align: center; margin-top: 40px; }
+  .final-cta h2 { font-size: 28px; color: #fff; margin-bottom: 12px; }
+  .final-cta h2 span { color: #3dd2ff; }
+  .final-cta p { color: #888; margin-bottom: 32px; font-size: 15px; }
+  .social-grid { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .cta-social { display: inline-flex; align-items: center; gap: 7px; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.12); color: #ccc; }
+  .cta-social:hover { transform: translateY(-2px); color: #3dd2ff; border-color: #3dd2ff; }
+  .site-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,10,10,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);padding:0 16px;height:56px;display:flex;align-items:center;gap:10px}
+  .site-nav-logo{font-size:18px;font-weight:800;color:#fff;text-decoration:none;letter-spacing:-.2px;flex-shrink:0}
+  .site-nav-logo em{color:#00ff88;font-style:normal}
+  .site-spacer{flex:1}
+  .site-nav-back{font-size:13px;font-weight:500;color:#888;text-decoration:none;flex-shrink:0;transition:color .2s}
+  .site-nav-back:hover{color:#3dd2ff}
+  .site-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;z-index:1;flex-shrink:0}
+  .site-burger span{display:block;width:20px;height:2px;background:#aaa;border-radius:2px;transition:all .3s}
+  .site-burger.open span{background:#3dd2ff}
+  .site-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .site-burger.open span:nth-child(2){opacity:0}
+  .site-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  .site-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:290;display:none;backdrop-filter:blur(2px)}
+  .site-backdrop.open{display:block}
+  .site-drawer{position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid #2a2a2a;border-radius:20px 20px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s ease;padding:0 20px 40px;max-height:80vh;overflow-y:auto}
+  .site-drawer.open{transform:translateY(0)}
+  .drawer-handle-wrap{padding:10px 0 6px;text-align:center}
+  .drawer-handle{width:36px;height:4px;background:#333;border-radius:2px;margin:0 auto}
+  .drawer-sl{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:14px 0 7px;border-top:1px solid #1a1a1a;margin-top:4px}
+  .drawer-sl:first-of-type{border-top:none;margin-top:0;padding-top:4px}
+  .drawer-a{display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ddd;text-decoration:none;border-bottom:1px solid #222;transition:color .2s}
+  .drawer-a:active{color:#3dd2ff}
+  .drawer-a .ico{width:26px;text-align:center;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .drawer-cta{display:block;margin-top:20px;background:#00ff88;color:#000;font-weight:700;font-size:14px;padding:13px;border-radius:10px;text-decoration:none;text-align:center}
+  @media(max-width:768px){.site-nav-back{display:none}.site-burger{display:flex}}
+  @media(max-width:600px){.overview-grid{grid-template-columns:1fr}.hero{padding:20px 20px 32px}.container{padding:40px 20px}.final-cta{padding:36px 20px}.storyboard-grid{grid-template-columns:1fr 1fr}}
+</style>
+<link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<meta name="theme-color" content="#0f0505">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Back2Life">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="/manifest.json">
+<meta name="vercel-toolbar" content="off">
+</head>
+<body>
+
+<nav class="site-nav">
+  <button class="site-burger" id="sBurger"><span></span><span></span><span></span></button>
+  <a href="/" class="site-nav-logo">Back2Life<em>.app</em></a>
+  <div class="site-spacer"></div>
+  <a href="/" class="site-nav-back">← Tutorials</a>
+</nav>
+<div class="site-backdrop" id="sBackdrop"></div>
+<div class="site-drawer" id="sDrawer">
+  <div class="drawer-handle-wrap"><div class="drawer-handle"></div></div>
+  <div class="drawer-sl">Navigation</div>
+  <a href="/" class="drawer-a"><span class="ico"><img src="/icons/home.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Home"></span>Home</a>
+  <a href="/#tutorials" class="drawer-a"><span class="ico"><img src="/icons/tutorials.png" alt="Tutorials" style="width:28px;height:28px;border-radius:6px;display:block"></span>Tutorials</a>
+  <div class="drawer-sl"><img src="/icons/free-tools.png" style="width:16px;height:16px;border-radius:3px;vertical-align:middle;margin-right:6px">Free Tools</div>
+  <a href="/watermark" class="drawer-a"><span class="ico"><img src="/icons/watermark.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Watermark"></span>Watermark Tool</a>
+  <a href="/video-splitter" class="drawer-a"><span class="ico"><img src="/icons/video-splitter.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Video Splitter"></span>Video Splitter</a>
+  <a href="/frame-extractor" class="drawer-a"><span class="ico"><img src="/icons/frame-extractor.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Frame Extractor"></span>Frame Extractor</a>
+  <a href="/audio-editor" class="drawer-a"><span class="ico"><img src="/icons/audio-editor.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Audio Editor"></span>Audio Editor</a>
+  <a href="/audio-converter" class="drawer-a"><span class="ico"><img src="/icons/audio-converter.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Audio Converter"></span>Audio Converter</a>
+  <div class="drawer-sl">AI Generation</div>
+  <a href="/video-flipper" class="drawer-a"><span class="ico"><img src="/icons/video-flipper.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Batch Flipper"></span>Batch Video Flipper</a>
+  <a href="/ai-studio" class="drawer-a"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg></span>AI Studio</a>
+  <a href="/motion-control" class="drawer-a"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/><path d="M18 12l3 3-3 3"/></svg></span>Motion Control</a>
+  <div class="drawer-sl">Follow Us</div>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="#E1306C" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="#E1306C" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="#E1306C"/></svg></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.17 8.17 0 004.78 1.52V7.1a4.85 4.85 0 01-1.01-.41z" fill="white"/></svg></span>TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24"><path d="M23.5 6.19a3 3 0 00-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 00.5 6.19 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.81 3 3 0 002.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 002.12-2.12A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.81z" fill="#FF0000"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="white"/></svg></span>YouTube</a>
+  <a href="https://x.com/Back2LifeAI" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="white"/></svg></span>X / Twitter</a>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-cta">Follow on Instagram</a>
+</div>
+
+<!-- HERO IMAGE -->
+<div style="width:100%;background:#050505;overflow:hidden;margin-top:56px;border-bottom:1px solid #3dd2ff33">
+  <img src="/img/tut13-hero.jpg?v=1" alt="The Viral Car Ad" style="width:100%;display:block;max-height:340px;object-fit:cover;object-position:center 30%">
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="position:relative;z-index:1">
+    <div class="brand-tag">BACK2LIFE.APP TUTORIAL</div>
+    <h1>The Viral<br><span>Car Ad</span></h1>
+    <p class="hero-sub">A neo-noir night driving scene — rain, neon signage, and a loaded gun on the dashboard — styled as a high-production car advert with Dreamina Seedance 2 Mini.</p>
+    <div class="hero-meta">
+      <div class="meta-pill">Tool: <span>Seedance 2 Mini</span></div>
+      <div class="meta-pill">Quality: <span>720p · 9:16</span></div>
+      <div class="meta-pill">Difficulty: <span>Intermediate</span></div>
+      <div class="meta-pill">Time: <span>~12 mins</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SOCIAL BAR -->
+<div class="social-bar">
+  <span class="social-label">Follow</span>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="social-link ig">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg>
+    Instagram
+  </a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="social-link tt">
+    <svg width="14" height="14" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.17 8.17 0 004.78 1.52V7.1a4.85 4.85 0 01-1.01-.41z" fill="currentColor"/></svg>
+    TikTok
+  </a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="social-link yt">
+    <svg width="14" height="14" viewBox="0 0 24 24"><path d="M23.5 6.19a3 3 0 00-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 00.5 6.19 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.81 3 3 0 002.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 002.12-2.12A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.81z" fill="currentColor"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="white"/></svg>
+    YouTube
+  </a>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+  <!-- WHAT YOU'LL CREATE -->
+  <div class="overview-box">
+    <h2>What You'll Create</h2>
+    <p style="color:#ccc;font-size:15px;margin-bottom:20px">A neo-noir night driving scene styled like a high-production car commercial — you sit behind the wheel in a rain-slicked city street, neon motel and shop signs glowing pink and cyan in the background, a loaded gun resting on the dashboard. Chrome 3D title treatment and cinematic rain give it real production value.</p>
+    <div class="overview-grid">
+      <div class="overview-item"><span class="dot">▸</span><span>Your photo as the driver reference</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>Neon-lit rainy city street environment</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>Vintage muscle car interior detail work</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>Neo-noir pink-and-cyan lighting contrast</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>Dashboard prop detail for extra edge</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>Strong hook for automotive / lifestyle content</span></div>
+    </div>
+  </div>
+
+  <!-- TOOLS NEEDED -->
+  <div class="tools-row">
+    <div class="tool-card">
+      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3dd2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div class="tool-name">Your Photo</div>
+      <div class="tool-desc">Front-facing photo, moody expression works best</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3dd2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div class="tool-name">Seedance 2 Mini</div>
+      <div class="tool-desc">Dreamina AI — image-to-video</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3dd2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div class="tool-name">Car Reference (optional)</div>
+      <div class="tool-desc">A photo of the specific car model</div>
+    </div>
+  </div>
+
+  <!-- EXAMPLE OUTPUT -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number" style="font-size:14px;font-weight:800">OUT</div>
+      <div class="step-title-block">
+        <h2>Example Output</h2>
+        <p>The final AI-generated look this prompt produces</p>
+      </div>
+    </div>
+    <div class="media-block">
+      <div class="media-label">Generated with Seedance 2 Mini — Dreamina AI</div>
+      <img src="/img/tut13-poster.jpg?v=1" alt="The Viral Car Ad — final generated look">
+      <div class="media-caption">Generated with Seedance 2 Mini using the prompt below. Results vary slightly between runs — regenerate once or twice for the best take.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 1 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">1</div>
+      <div class="step-title-block">
+        <h2>Prepare Your Reference Photo</h2>
+        <p>A clear photo is the foundation this whole generation is built on</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>Choose a <strong>clear, well-lit photo</strong> of yourself (or whoever's appearing in the clip). Front-facing works best — avoid sunglasses or heavy shadows.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>Open <strong>Dreamina AI</strong> and start a new <strong>Seedance 2 Mini</strong> image-to-video generation.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">3</span>
+      <p>Upload your photo as the <strong>reference / character image</strong>.</p>
+    </div>
+
+    <div class="char-sheet">
+      <div class="media-label">Reference Frame — From The Original Generation</div>
+      <img src="/img/tut13-ref.jpg?v=1" alt="Man sitting behind the wheel of a car at night with neon motel signs reflecting off the wet windshield">
+      <div class="media-caption">The steady, unbothered expression against the chaos of neon and rain is what makes this feel like a real advert still, not a snapshot.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 2 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">2</div>
+      <div class="step-title-block">
+        <h2>Configure Your Settings</h2>
+        <p>Set these before pasting the prompt</p>
+      </div>
+    </div>
+
+    <table class="settings-table">
+      <thead><tr><th>Setting</th><th>Value</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Model</td><td><span class="val">Seedance 2 Mini</span></td><td>Strong at neon lighting, rain effects, and moody character shots</td></tr>
+        <tr><td>Duration</td><td><span class="val">5-7 seconds</span></td><td>Enough time to establish mood without dragging the shot</td></tr>
+        <tr><td>Aspect Ratio</td><td><span class="val">9:16</span></td><td>Native vertical format for Reels / TikTok advert-style content</td></tr>
+        <tr><td>Reference Role</td><td><span class="val">Character / Face Lock</span></td><td>Keeps your face and jacket detail consistent</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>Pro tip:</strong> Run it twice if the first result feels a little generic — Seedance 2 Mini varies between takes, and the second or third generation is often the strongest.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 3 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">3</div>
+      <div class="step-title-block">
+        <h2>Paste The Prompt & Generate</h2>
+        <p>A recreation prompt written from this exact generated clip</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>Copy the prompt below <strong>exactly as written</strong> and paste it into the Seedance 2 Mini prompt field.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>Swap in your own details anywhere you want a different look — clothing, setting, colors — the structure is what matters most.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">3</span>
+      <p>Tap <strong>Generate</strong> and wait for the render.</p>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Recreation Prompt — Written From This Generation</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>A grey-stubbled man in a black leather jacket with embroidered patches sits behind the wheel of a vintage muscle car, one hand on the wheel, driver door open, looking directly and steadily at camera. Heavy rain falls in the neon-lit night street behind him, pink and cyan motel and shop signs reflecting off the wet asphalt and car chrome. A dashboard glimpse shows a handgun resting near the wheel, adding tension. Neo-noir cinematic lighting, high contrast between warm skin tones and cool neon backdrop, shallow depth of field blurring the street lights into soft bokeh. Atmosphere: heavy rain sound, distant city hum, a low synth pulse building, single thunder rumble.</pre>
+    </div>
+
+    <div class="callout">
+      <span class="callout-icon">📝</span>
+      <p><strong>Note on this prompt:</strong> Dreamina doesn't expose the original prompt used for this clip, so this is a recreation written by studying the final generated video frame by frame. It's designed to get you a very close match — not a guaranteed pixel-for-pixel copy.</p>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">🎬</span>
+      <p>Let the neon do the color work — keeping the character's expression calm and steady against a chaotic rainy backdrop is the classic noir-advert contrast that sells production value.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 4 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">4</div>
+      <div class="step-title-block">
+        <h2>Download & Share</h2>
+        <p>No editing needed — what you get is the final clip</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>Once generation completes, <strong>preview the clip</strong>. If it isn't quite right, regenerate — results vary between runs.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>Tap <strong>Download</strong> to save the MP4 — ready for <strong>TikTok, Instagram Reels, and YouTube Shorts</strong>.</p>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">🚀</span>
+      <p><strong>Posting tip:</strong> Try the hook "AI made my car ad look like a Netflix trailer" or "POV: you're the villain in a car commercial" for maximum engagement.</p>
+    </div>
+
+    <div style="margin-top:32px">
+      <p style="font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#3dd2ff;margin-bottom:16px">Scene Breakdown</p>
+      <div class="storyboard-grid">
+        <div class="sb-card">
+          <div class="sb-img-wrap">
+            <img src="/img/tut13-ref.jpg?v=1" alt="The Reference — The Viral Car Ad">
+            <span class="sb-timecode">00:00</span>
+          </div>
+          <div class="sb-info">
+            <div class="sb-title">The Reference</div>
+            <div class="sb-caption">Steady driver's seat pose, neon reflections building on the wet windshield and chrome.</div>
+          </div>
+        </div>
+        <div class="sb-card">
+          <div class="sb-img-wrap">
+            <img src="/img/tut13-hero.jpg?v=1" alt="The Street — The Viral Car Ad">
+            <span class="sb-timecode">00:03</span>
+          </div>
+          <div class="sb-info">
+            <div class="sb-title">The Street</div>
+            <div class="sb-caption">Wider shot showing the full rain-soaked neon street environment behind the car.</div>
+          </div>
+        </div>
+        <div class="sb-card">
+          <div class="sb-img-wrap">
+            <img src="/img/tut13-poster.jpg?v=1" alt="The Final Look — The Viral Car Ad">
+            <span class="sb-timecode">00:06</span>
+          </div>
+          <div class="sb-info">
+            <div class="sb-title">The Final Look</div>
+            <div class="sb-caption">Poster-style final frame — full chrome title treatment, complete neo-noir color grade.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- VARIATIONS -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number" style="font-size:14px;font-weight:800">+</div>
+      <div class="step-title-block">
+        <h2>Variations & Ideas</h2>
+        <p>Ways to remix this concept</p>
+      </div>
+    </div>
+
+    <table class="settings-table">
+      <thead><tr><th>Swap This</th><th>For This</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td>Muscle car</td><td>Modern sports car</td><td>Sleeker, more contemporary advert feel</td></tr>
+        <tr><td>Rainy night street</td><td>Desert highway at sunset</td><td>Warmer, more open-road advert mood</td></tr>
+        <tr><td>Neon pink/cyan</td><td>Neon red/blue</td><td>Different genre lean — more thriller than noir</td></tr>
+        <tr><td>Handgun prop</td><td>Sunglasses on dashboard</td><td>Softer, less edgy advert variant</td></tr>
+        <tr><td>Driver's seat shot</td><td>Full exterior car shot</td><td>Product-focused framing instead of character-focused</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FINAL CTA -->
+  <div class="final-cta">
+    <h2>Share Your <span>Creation</span></h2>
+    <p>Generated your version? Tag us — we repost the best results across all our channels.</p>
+    <div class="social-grid">
+      <a href="https://www.instagram.com/back2life.ai" target="_blank" class="cta-social">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg>
+        @back2life.ai
+      </a>
+      <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="cta-social">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.17 8.17 0 004.78 1.52V7.1a4.85 4.85 0 01-1.01-.41z" fill="currentColor"/></svg>
+        @back2life.ai
+      </a>
+      <a href="https://youtube.com/@back2lifeai" target="_blank" class="cta-social">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M23.5 6.19a3 3 0 00-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 00.5 6.19 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.81 3 3 0 002.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 002.12-2.12A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.81z" fill="currentColor"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="white"/></svg>
+        YouTube
+      </a>
+      <a href="https://x.com/Back2LifeAI" target="_blank" class="cta-social">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="currentColor"/></svg>
+        @Back2LifeAI
+      </a>
+    </div>
+    <div style="margin-top:28px">
+      <a href="/" style="display:inline-block;color:#3dd2ff;font-size:14px;font-weight:600;text-decoration:none;border:1px solid #3dd2ff4d;padding:10px 24px;border-radius:8px;transition:all .2s">← Back to all tutorials</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const burger=document.getElementById('sBurger'),backdrop=document.getElementById('sBackdrop'),drawer=document.getElementById('sDrawer');
+function openDrawer(){burger.classList.add('open');backdrop.classList.add('open');drawer.classList.add('open');document.body.style.overflow='hidden'}
+function closeDrawer(){burger.classList.remove('open');backdrop.classList.remove('open');drawer.classList.remove('open');document.body.style.overflow=''}
+burger.addEventListener('click',()=>drawer.classList.contains('open')?closeDrawer():openDrawer());
+backdrop.addEventListener('click',closeDrawer);
+
+function copyPrompt(btn){
+  const pre=btn.closest('.prompt-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent.trim()).then(()=>{
+    const orig=btn.innerHTML;
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Copied!';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.innerHTML=orig;btn.classList.remove('copied')},2000);
+  });
+}
+</script>
+</body>
+</html>
