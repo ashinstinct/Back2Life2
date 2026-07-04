@@ -225,6 +225,7 @@ button,select,input{font-family:'Inter',sans-serif}
 </div>
 
 <div class="sticky-bottom hidden" id="stickyBar">
+  <div id="formatHint" style="font-size:11px;color:var(--text3);text-align:center;margin-bottom:6px"></div>
   <button class="btn-primary" id="processBtn">⬆ Convert &amp; Download All</button>
 </div>
 
@@ -354,6 +355,7 @@ function initResolutionToggle(){
         resHint.textContent = 'Matches or upscales to 1080×1920. Fine for most sources.';
       }
       bgCache = {}; // old cached backgrounds were sized for the previous resolution
+      updateFormatHint();
       queue.forEach(function(_,idx){ drawThumbCanvas(idx); });
     });
   });
@@ -951,15 +953,58 @@ var renameBaseInput = document.getElementById('renameBase');
 var renamePadSelect = document.getElementById('renamePad');
 var renamePreview = document.getElementById('renamePreview');
 
+/* ===================== Recorder format & bitrate ===================== */
+var RECORDER_CHOICE = null;
+function getRecorderChoice(){
+  if(RECORDER_CHOICE) return RECORDER_CHOICE;
+  var candidates = [
+    { mime:'video/mp4;codecs=avc1.640028,mp4a.40.2', ext:'mp4' },
+    { mime:'video/mp4;codecs=h264,aac', ext:'mp4' },
+    { mime:'video/mp4', ext:'mp4' },
+    { mime:'video/webm;codecs=vp9,opus', ext:'webm' },
+    { mime:'video/webm;codecs=vp8,opus', ext:'webm' },
+    { mime:'video/webm', ext:'webm' }
+  ];
+  for(var i=0;i<candidates.length;i++){
+    if(window.MediaRecorder && MediaRecorder.isTypeSupported(candidates[i].mime)){
+      RECORDER_CHOICE = candidates[i];
+      return RECORDER_CHOICE;
+    }
+  }
+  RECORDER_CHOICE = { mime:'video/webm', ext:'webm' };
+  return RECORDER_CHOICE;
+}
+function getRecorderBitrates(){
+  // high-quality presets scaled to output resolution (4K needs far more bits than 1080p to look clean)
+  if(CANVAS_W >= 2160){
+    return { video: 45000000, audio: 192000 };
+  }
+  return { video: 16000000, audio: 192000 };
+}
+
+function updateFormatHint(){
+  var el = document.getElementById('formatHint');
+  if(!el) return;
+  var rc = getRecorderChoice();
+  var br = getRecorderBitrates();
+  var mbps = Math.round(br.video/1000000);
+  if(rc.ext==='mp4'){
+    el.textContent = 'Exporting as MP4 (H.264) at ~' + mbps + ' Mbps';
+  } else {
+    el.textContent = 'Exporting as WebM at ~' + mbps + ' Mbps — this browser can\'t record MP4 directly. Try Safari or a recent Chrome for native MP4.';
+  }
+}
+
 function computeFilename(idx){
+  var ext = getRecorderChoice().ext;
   var base = renameBaseInput.value.trim();
   if(!base){
-    return queue[idx].name.replace(/\.[^/.]+$/, '') + '-9x16.webm';
+    return queue[idx].name.replace(/\.[^/.]+$/, '') + '-9x16.' + ext;
   }
   var pad = +renamePadSelect.value;
   var num = String(idx+1);
   if(pad>0) num = num.padStart(pad,'0');
-  return base + '-' + num + '-9x16.webm';
+  return base + '-' + num + '-9x16.' + ext;
 }
 function updateRenamePreview(){
   if(!queue.length){ renamePreview.textContent=''; return; }
@@ -989,6 +1034,7 @@ function addFiles(files){
   document.getElementById('watermarkCard').classList.toggle('hidden', queue.length===0);
   document.getElementById('viewToggleRow').classList.toggle('hidden', queue.length===0);
   stickyBar.classList.toggle('hidden', queue.length===0);
+  updateFormatHint();
   updateRenamePreview();
   renderQueue();
 }
@@ -1484,13 +1530,17 @@ function processOne(item, idx, done){
       if(vidStream){ vidStream.getAudioTracks().forEach(function(t){ combined.addTrack(t); }); }
     }catch(e){}
 
-    var mime = 'video/webm;codecs=vp9,opus';
-    if(!MediaRecorder.isTypeSupported(mime)) mime = 'video/webm';
-    var recorder = new MediaRecorder(combined, {mimeType:mime});
+    var rc = getRecorderChoice();
+    var bitrates = getRecorderBitrates();
+    var recorder = new MediaRecorder(combined, {
+      mimeType: rc.mime,
+      videoBitsPerSecond: bitrates.video,
+      audioBitsPerSecond: bitrates.audio
+    });
     var chunks = [];
     recorder.ondataavailable = function(e){ if(e.data.size>0) chunks.push(e.data); };
     recorder.onstop = function(){
-      var blob = new Blob(chunks, {type:'video/webm'});
+      var blob = new Blob(chunks, {type:rc.mime.split(';')[0]});
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = computeFilename(idx);
