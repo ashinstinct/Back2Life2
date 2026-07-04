@@ -93,11 +93,44 @@ button,select,input{font-family:'Inter',sans-serif}
 .editor-overlay{position:fixed;inset:0;background:#000;z-index:1200;display:none;flex-direction:column}
 .editor-overlay .stage{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
 .editor-overlay canvas.preview{background:#111;box-shadow:0 0 40px rgba(0,0,0,.6);touch-action:none}
+.editor-topbar{display:flex;align-items:center;gap:10px;padding:12px 14px calc(10px + env(safe-area-inset-top));background:rgba(10,10,10,0.95);border-bottom:1px solid var(--border)}
 .editor-controls{padding:16px;background:rgba(10,10,10,0.95);border-top:1px solid var(--border)}
 .editor-controls .row{margin-bottom:12px}
 .editor-controls input[type=range]{flex:1;accent-color:#00ff88}
 .editor-actions{display:flex;gap:10px}
 .editor-actions button{flex:1}
+
+/* view toggle + grid */
+.view-toggle-row{display:flex;justify-content:flex-end;margin-bottom:10px}
+.view-toggle{display:flex;background:var(--surface2);border-radius:var(--pill);padding:3px;gap:2px}
+.view-toggle button{border:none;background:transparent;color:var(--text2);font-size:12px;font-weight:600;padding:7px 12px;border-radius:var(--pill);cursor:pointer}
+.view-toggle button.active{background:linear-gradient(135deg,#00cc66,#00ff88);color:#000}
+#queueWrap.grid-view{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#queueWrap.grid-view .queue-item{flex-direction:column;align-items:stretch}
+#queueWrap.grid-view .queue-item .vthumb{width:100%;height:auto;aspect-ratio:9/16}
+#queueWrap.grid-view .queue-item .remove-btn{position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.55);border-radius:50%}
+#queueWrap.grid-view .queue-item{position:relative}
+.thumb-clickable{cursor:pointer}
+
+/* batch fill zoom + free trackpad */
+.zoom-row{display:flex;align-items:center;gap:10px;margin-top:12px}
+.zoom-row input[type=range]{flex:1;accent-color:#00ff88}
+.zoom-pct{width:50px;text-align:center;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-xs);padding:6px 4px;color:var(--text);font-size:13px;font-weight:600}
+.trackpad-wrap{margin-top:12px;text-align:center}
+.trackpad{width:120px;aspect-ratio:9/16;margin:8px auto;background:var(--surface2);border:2px dashed var(--border2);border-radius:12px;position:relative;touch-action:none;cursor:grab}
+.trackpad .dot{position:absolute;width:14px;height:14px;border-radius:50%;background:#00ff88;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 8px rgba(0,255,136,0.7)}
+.trackpad-hint{font-size:11px;color:var(--text3);margin-bottom:2px}
+
+/* watermark */
+.wm-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.wm-row{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:8px 10px}
+.wm-row img{width:36px;height:36px;object-fit:contain;border-radius:6px;background:#000;flex-shrink:0}
+.wm-row .wm-name{flex:1;font-size:12.5px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.pos-grid button{aspect-ratio:1;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;cursor:pointer;color:var(--text2);font-size:16px}
+.pos-grid button.active{border-color:#00ff88;color:#00ff88}
+.wm-drag-preview{position:relative;width:130px;margin:12px auto 4px;aspect-ratio:9/16;background:#000;border-radius:10px;overflow:hidden;border:1px solid var(--border2)}
+.wm-drag-preview .wm-handle{position:absolute;border:2px solid #00ff88;border-radius:4px;cursor:grab;touch-action:none;background:rgba(0,255,136,0.08)}
 
 .hidden{display:none!important}
 </style>
@@ -130,6 +163,16 @@ button,select,input{font-family:'Inter',sans-serif}
       <button data-mode="fill">Fill / Zoom</button>
       <button data-mode="free">Free (drag)</button>
     </div>
+    <div class="zoom-row hidden" id="batchFillZoomRow">
+      <label style="font-size:12.5px;color:var(--text2);white-space:nowrap">Zoom all</label>
+      <input type="range" id="batchFillZoomSlider" min="0" max="100" value="0">
+      <input type="text" inputmode="numeric" class="zoom-pct" id="batchFillZoomVal" value="0%">
+    </div>
+    <div class="trackpad-wrap hidden" id="batchTrackpadWrap">
+      <div class="trackpad-hint">Drag to move all videos in this batch</div>
+      <div class="trackpad" id="batchTrackpad"><div class="dot" id="batchTrackpadDot"></div></div>
+      <button class="btn-primary" id="batchTrackpadSave" style="padding:9px 20px;font-size:13px">Save Position</button>
+    </div>
     <div class="row" style="margin-top:14px">
       <label>Background</label>
       <div class="bg-swatch-btn" id="batchBgBtn">
@@ -148,6 +191,19 @@ button,select,input{font-family:'Inter',sans-serif}
         </select>
       </div>
       <div id="renamePreview" style="font-size:11.5px;color:var(--text3)"></div>
+    </div>
+  </div>
+
+  <div class="card hidden" id="watermarkCard">
+    <h4>Watermarks</h4>
+    <div class="wm-list" id="wmList"></div>
+    <button class="btn-secondary" id="wmAddBtn" style="margin-top:10px;width:100%">+ Add Watermark</button>
+  </div>
+
+  <div class="view-toggle-row hidden" id="viewToggleRow">
+    <div class="view-toggle">
+      <button data-view="list" class="active">☰ List</button>
+      <button data-view="grid">▦ Grid</button>
     </div>
   </div>
 
@@ -173,18 +229,59 @@ button,select,input{font-family:'Inter',sans-serif}
   <div class="swatch-grid" id="bgGrid"></div>
 </div>
 
-<!-- Free position editor -->
+<!-- Watermark editor sheet -->
+<div class="sheet-backdrop" id="wmBackdrop"></div>
+<div class="sheet" id="wmSheet" style="max-height:88vh">
+  <div class="handle"><span></span></div>
+  <div class="sheet-title" id="wmSheetTitle">Position Watermark</div>
+  <div style="padding:0 18px 18px;overflow-y:auto">
+    <div class="pos-grid" id="wmPosGrid">
+      <button data-pos="0.12,0.1">↖</button><button data-pos="0.5,0.1">↑</button><button data-pos="0.88,0.1">↗</button>
+      <button data-pos="0.12,0.5">←</button><button data-pos="0.5,0.5">•</button><button data-pos="0.88,0.5">→</button>
+      <button data-pos="0.12,0.9">↙</button><button data-pos="0.5,0.9">↓</button><button data-pos="0.88,0.9">↘</button>
+    </div>
+    <div class="wm-drag-preview" id="wmDragPreview">
+      <div class="wm-handle" id="wmHandle"></div>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <label style="font-size:12.5px;color:var(--text2)">Size</label>
+      <input type="range" id="wmSizeSlider" min="5" max="60" value="22" style="flex:1;margin:0 10px;accent-color:#00ff88">
+    </div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn-secondary" id="wmRemoveBtn" style="flex:1;color:var(--red);border-color:rgba(255,68,68,0.4)">Remove</button>
+      <button class="btn-primary" id="wmSaveBtn" style="flex:1">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Fullscreen position editor -->
 <div class="editor-overlay" id="editorOverlay">
+  <div class="editor-topbar">
+    <div class="seg" id="editorModeSeg" style="flex:1">
+      <button data-mode="fit">Fit</button>
+      <button data-mode="fill">Fill / Zoom</button>
+      <button data-mode="free">Free (drag)</button>
+    </div>
+    <button class="btn-secondary" id="editorReset" style="flex-shrink:0">↺ Reset</button>
+  </div>
   <div class="stage" id="editorStage">
     <canvas class="preview" id="editorCanvas"></canvas>
   </div>
   <div class="editor-controls">
-    <div class="row">
+    <div class="row hidden" id="editorFillZoomRow">
+      <label style="font-size:12.5px;color:var(--text2)">Zoom</label>
+      <input type="range" id="editorFillZoomSlider" min="0" max="100" value="0">
+      <span id="editorFillZoomVal" style="font-size:12.5px;color:var(--text);width:38px;text-align:right">0%</span>
+    </div>
+    <div class="row hidden" id="editorFreeZoomRow">
       <label style="font-size:12.5px;color:var(--text2)">Zoom</label>
       <input type="range" id="scaleSlider" min="50" max="300" value="100">
     </div>
+    <div class="row hidden" id="editorFreeHintRow">
+      <label style="font-size:11px;color:var(--text3)">Drag to reposition • pinch to zoom</label>
+    </div>
     <div class="editor-actions">
-      <button class="btn-secondary" id="editorCancel">Cancel</button>
+      <button class="btn-secondary" id="editorCancel">Close</button>
       <button class="btn-primary" id="editorSave">Save Position</button>
     </div>
   </div>
@@ -733,10 +830,11 @@ var BACKGROUNDS = (function(){
 var CATS = ['Colors','Matte','Gradients','Water','Sunsets','Winter','Autumn','Floral','Space','Star Trails','Patterns','Custom'];
 function getBg(id){ for(var i=0;i<BACKGROUNDS.length;i++) if(BACKGROUNDS[i].id===id) return BACKGROUNDS[i]; return BACKGROUNDS[0]; }
 
-function computeLayout(mode, vw, vh, canvasW, canvasH, freeData){
+function computeLayout(mode, vw, vh, canvasW, canvasH, freeData, fillZoomPct){
   if(!vw || !vh) return {dw:0,dh:0,dx:0,dy:0};
   if(mode==='fill'){
-    var s = Math.max(canvasW/vw, canvasH/vh);
+    var zoomMult = 1 + ((fillZoomPct||0)/100)*1.5;
+    var s = Math.max(canvasW/vw, canvasH/vh) * zoomMult;
     var dw=vw*s, dh=vh*s;
     return { dw:dw, dh:dh, dx:(canvasW-dw)/2, dy:(canvasH-dh)/2 };
   } else if(mode==='free' && freeData){
@@ -785,9 +883,25 @@ function getBgCanvas(id){
 }
 
 /* ===================== App State ===================== */
-var queue = []; // {file,name,url,mode,bgId,free:{scale,offX,offY},duration,w,h}
-var batchDefault = { mode:'fit', bgId:'color_0' };
+var queue = []; // {file,name,url,mode,bgId,free:{scale,offX,offY}|null,fillZoom:number|null,duration,w,h}
+var batchDefault = { mode:'fit', bgId:'color_0', fillZoom:0, free:{scale:1,offX:0,offY:0} };
 var bgSheetTarget = null; // null = batch default, else index into queue
+var viewMode = 'list'; // 'list' | 'grid'
+var watermarks = []; // {id,img,xFrac,yFrac,scaleFrac,name}
+
+function getFreeData(item){ return (item && item.free) ? item.free : batchDefault.free; }
+function getFillZoom(item){ var v = (item && item.fillZoom!=null) ? item.fillZoom : batchDefault.fillZoom; return v||0; }
+
+function drawWatermarks(ctx, canvasW, canvasH){
+  watermarks.forEach(function(wm){
+    if(!wm.img || !wm.img.complete || !wm.img.naturalWidth) return;
+    var dw = canvasW*wm.scaleFrac;
+    var dh = dw * (wm.img.naturalHeight/wm.img.naturalWidth);
+    var dx = wm.xFrac*canvasW - dw/2;
+    var dy = wm.yFrac*canvasH - dh/2;
+    ctx.drawImage(wm.img, dx, dy, dw, dh);
+  });
+}
 
 /* ===================== UI wiring ===================== */
 var uploadZone = document.getElementById('uploadZone');
@@ -835,9 +949,11 @@ function addFiles(files){
   Array.prototype.forEach.call(files, function(f){
     if(!f.type.startsWith('video/')) return;
     var url = URL.createObjectURL(f);
-    queue.push({ file:f, name:f.name, url:url, mode:null, bgId:null, free:null, w:0, h:0 });
+    queue.push({ file:f, name:f.name, url:url, mode:null, bgId:null, free:null, fillZoom:null, w:0, h:0 });
   });
   batchCard.style.display = queue.length ? 'block' : 'none';
+  document.getElementById('watermarkCard').classList.toggle('hidden', queue.length===0);
+  document.getElementById('viewToggleRow').classList.toggle('hidden', queue.length===0);
   stickyBar.classList.toggle('hidden', queue.length===0);
   updateRenamePreview();
   renderQueue();
@@ -851,7 +967,7 @@ function renderQueue(){
     var el = document.createElement('div');
     el.className = 'queue-item';
     el.innerHTML =
-      '<canvas class="vthumb" data-idx="'+idx+'" width="108" height="192"></canvas>'+
+      '<canvas class="vthumb thumb-clickable" data-idx="'+idx+'" width="108" height="192"></canvas>'+
       '<div class="meta">'+
         '<div class="fname">'+item.name+'</div>'+
         '<div class="controls">'+
@@ -869,6 +985,8 @@ function renderQueue(){
       URL.revokeObjectURL(queue[i].url);
       queue.splice(i,1);
       batchCard.style.display = queue.length ? 'block' : 'none';
+      document.getElementById('watermarkCard').classList.toggle('hidden', queue.length===0);
+      document.getElementById('viewToggleRow').classList.toggle('hidden', queue.length===0);
       stickyBar.classList.toggle('hidden', queue.length===0);
       updateRenamePreview();
       renderQueue();
@@ -876,13 +994,12 @@ function renderQueue(){
   });
   queueWrap.querySelectorAll('.mode-chip').forEach(function(chip){
     chip.addEventListener('click', function(){
-      var i = +chip.dataset.idx;
-      var item = queue[i];
-      var current = item.mode || batchDefault.mode;
-      var order = ['fit','fill','free'];
-      var next = order[(order.indexOf(current)+1)%order.length];
-      item.mode = next;
-      if(next==='free'){ openFreeEditor(i); } else { renderQueue(); }
+      openPositionEditor(+chip.dataset.idx);
+    });
+  });
+  queueWrap.querySelectorAll('.vthumb').forEach(function(cnv){
+    cnv.addEventListener('click', function(){
+      openPositionEditor(+cnv.dataset.idx);
     });
   });
   queueWrap.querySelectorAll('.bg-chip').forEach(function(chip){
@@ -907,10 +1024,11 @@ function drawThumbCanvas(idx){
   if(video && item._thumbReady){
     var vw = item.w || video.videoWidth, vh = item.h || video.videoHeight;
     if(vw && vh){
-      var L = computeLayout(mode, vw, vh, canvas.width, canvas.height, item.free);
+      var L = computeLayout(mode, vw, vh, canvas.width, canvas.height, getFreeData(item), getFillZoom(item));
       ctx.drawImage(video, L.dx, L.dy, L.dw, L.dh);
     }
   }
+  drawWatermarks(ctx, canvas.width, canvas.height);
 }
 
 function ensureThumbVideo(idx){
@@ -934,12 +1052,85 @@ function ensureThumbVideo(idx){
 }
 
 /* mode segmented control (batch default) */
+var batchFillZoomRow = document.getElementById('batchFillZoomRow');
+var batchTrackpadWrap = document.getElementById('batchTrackpadWrap');
+var batchFillZoomSlider = document.getElementById('batchFillZoomSlider');
+var batchFillZoomVal = document.getElementById('batchFillZoomVal');
+
+function updateBatchModeUI(){
+  batchFillZoomRow.classList.toggle('hidden', batchDefault.mode!=='fill');
+  batchTrackpadWrap.classList.toggle('hidden', batchDefault.mode!=='free');
+  if(batchDefault.mode==='free') updateTrackpadDot();
+}
 modeSeg.querySelectorAll('button').forEach(function(btn){
   btn.addEventListener('click', function(){
     modeSeg.querySelectorAll('button').forEach(function(b){ b.classList.remove('active'); });
     btn.classList.add('active');
     batchDefault.mode = btn.dataset.mode;
+    updateBatchModeUI();
     renderQueue();
+  });
+});
+batchFillZoomSlider.addEventListener('input', function(){
+  batchDefault.fillZoom = +batchFillZoomSlider.value;
+  batchFillZoomVal.value = batchDefault.fillZoom + '%';
+  queue.forEach(function(_,idx){ drawThumbCanvas(idx); });
+});
+function commitBatchZoomInput(){
+  var n = parseInt(batchFillZoomVal.value.replace(/[^0-9\-]/g,''), 10);
+  if(isNaN(n)) n = 0;
+  n = Math.max(0, Math.min(100, n));
+  batchDefault.fillZoom = n;
+  batchFillZoomSlider.value = n;
+  batchFillZoomVal.value = n + '%';
+  queue.forEach(function(_,idx){ drawThumbCanvas(idx); });
+}
+batchFillZoomVal.addEventListener('focus', function(){ batchFillZoomVal.value = String(batchDefault.fillZoom); batchFillZoomVal.select(); });
+batchFillZoomVal.addEventListener('blur', commitBatchZoomInput);
+batchFillZoomVal.addEventListener('keydown', function(e){ if(e.key==='Enter'){ batchFillZoomVal.blur(); } });
+
+/* batch free-position trackpad */
+var batchTrackpad = document.getElementById('batchTrackpad');
+var batchTrackpadDot = document.getElementById('batchTrackpadDot');
+var tpDragging = false;
+function updateTrackpadDot(){
+  var relX = 0.5 + (batchDefault.free.offX / CANVAS_W);
+  var relY = 0.5 + (batchDefault.free.offY / CANVAS_H);
+  relX = Math.max(0.04, Math.min(0.96, relX));
+  relY = Math.max(0.04, Math.min(0.96, relY));
+  batchTrackpadDot.style.left = (relX*100)+'%';
+  batchTrackpadDot.style.top = (relY*100)+'%';
+}
+function trackpadMove(clientX, clientY){
+  var rect = batchTrackpad.getBoundingClientRect();
+  var relX = (clientX-rect.left)/rect.width;
+  var relY = (clientY-rect.top)/rect.height;
+  relX = Math.max(0,Math.min(1,relX));
+  relY = Math.max(0,Math.min(1,relY));
+  batchDefault.free.offX = (relX-0.5)*CANVAS_W*0.9;
+  batchDefault.free.offY = (relY-0.5)*CANVAS_H*0.9;
+  batchTrackpadDot.style.left = (relX*100)+'%';
+  batchTrackpadDot.style.top = (relY*100)+'%';
+  queue.forEach(function(_,idx){ drawThumbCanvas(idx); });
+}
+batchTrackpad.addEventListener('pointerdown', function(e){ tpDragging=true; batchTrackpad.setPointerCapture(e.pointerId); trackpadMove(e.clientX,e.clientY); });
+batchTrackpad.addEventListener('pointermove', function(e){ if(tpDragging) trackpadMove(e.clientX,e.clientY); });
+batchTrackpad.addEventListener('pointerup', function(){ tpDragging=false; });
+batchTrackpad.addEventListener('pointercancel', function(){ tpDragging=false; });
+document.getElementById('batchTrackpadSave').addEventListener('click', function(btnEvt){
+  var btn = document.getElementById('batchTrackpadSave');
+  var old = btn.textContent;
+  btn.textContent = '✓ Saved';
+  setTimeout(function(){ btn.textContent = old; }, 1200);
+});
+
+/* ===================== View toggle (list/grid) ===================== */
+document.querySelectorAll('#viewToggleRow .view-toggle button').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('#viewToggleRow .view-toggle button').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    viewMode = btn.dataset.view;
+    queueWrap.classList.toggle('grid-view', viewMode==='grid');
   });
 });
 
@@ -1033,21 +1224,45 @@ batchBgBtn.addEventListener('click', function(){ bgSheetTarget=null; openBgSheet
 // init batch thumb
 getBg(batchDefault.bgId).draw(document.getElementById('batchBgThumb').getContext('2d'),60,107);
 
-/* ===================== Free Position Editor ===================== */
+/* ===================== Fullscreen Position Editor ===================== */
 var editorOverlay = document.getElementById('editorOverlay');
 var editorCanvas = document.getElementById('editorCanvas');
 var scaleSlider = document.getElementById('scaleSlider');
+var editorFillZoomRow = document.getElementById('editorFillZoomRow');
+var editorFreeZoomRow = document.getElementById('editorFreeZoomRow');
+var editorFreeHintRow = document.getElementById('editorFreeHintRow');
+var editorFillZoomSlider = document.getElementById('editorFillZoomSlider');
+var editorFillZoomVal = document.getElementById('editorFillZoomVal');
+var editorModeSeg = document.getElementById('editorModeSeg');
 var editorTargetIdx = null;
 var editorVideo = null;
+var editorMode = 'fit';
+var editorFillZoom = 0;
 var editorState = { scale:1, offX:0, offY:0 };
 var dragging=false, dragStart={x:0,y:0}, dragOrig={x:0,y:0};
+var activePointers = {};
+var pinchStartDist = 0, pinchStartScale = 1, pinchStartFillZoom = 0;
 
-function openFreeEditor(idx){
+function bgFor(idx){ return (idx===null||idx===undefined) ? batchDefault.bgId : (queue[idx].bgId || batchDefault.bgId); }
+
+function updateEditorControlsUI(){
+  editorModeSeg.querySelectorAll('button').forEach(function(b){ b.classList.toggle('active', b.dataset.mode===editorMode); });
+  editorFillZoomRow.classList.toggle('hidden', editorMode!=='fill');
+  editorFreeZoomRow.classList.toggle('hidden', editorMode!=='free');
+  editorFreeHintRow.classList.toggle('hidden', editorMode!=='free');
+  editorFillZoomSlider.value = editorFillZoom;
+  editorFillZoomVal.textContent = editorFillZoom + '%';
+  scaleSlider.value = Math.round(editorState.scale*100);
+}
+
+function openPositionEditor(idx){
   editorTargetIdx = idx;
   var item = queue[idx];
-  item.free = item.free || {scale:1, offX:0, offY:0};
-  editorState = { scale:item.free.scale, offX:item.free.offX, offY:item.free.offY };
-  scaleSlider.value = Math.round(editorState.scale*100);
+  editorMode = item.mode || batchDefault.mode;
+  var fd = getFreeData(item);
+  editorState = { scale:fd.scale, offX:fd.offX, offY:fd.offY };
+  editorFillZoom = getFillZoom(item);
+  updateEditorControlsUI();
 
   var dispW = Math.min(window.innerWidth*0.92, 380);
   var dispH = dispW * (CANVAS_H/CANVAS_W);
@@ -1071,39 +1286,104 @@ function drawEditorFrame(){
   bg.draw(ctx, w, h);
   var vw = queue[editorTargetIdx].w || editorVideo.videoWidth;
   var vh = queue[editorTargetIdx].h || editorVideo.videoHeight;
-  if(!vw||!vh) return;
-  var L = computeLayout('free', vw, vh, w, h, editorState);
-  ctx.drawImage(editorVideo, L.dx, L.dy, L.dw, L.dh);
+  if(vw && vh){
+    var L = computeLayout(editorMode, vw, vh, w, h, editorState, editorFillZoom);
+    ctx.drawImage(editorVideo, L.dx, L.dy, L.dw, L.dh);
+  }
+  drawWatermarks(ctx, w, h);
 }
-scaleSlider.addEventListener('input', function(){ editorState.scale = scaleSlider.value/100; drawEditorFrame(); });
 
-function bgFor(idx){ return (idx===null||idx===undefined) ? batchDefault.bgId : (queue[idx].bgId || batchDefault.bgId); }
-
-editorCanvas.addEventListener('pointerdown', function(e){
-  dragging = true; dragStart = {x:e.clientX,y:e.clientY}; dragOrig = {x:editorState.offX,y:editorState.offY};
-  editorCanvas.setPointerCapture(e.pointerId);
+editorModeSeg.querySelectorAll('button').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    editorMode = btn.dataset.mode;
+    updateEditorControlsUI();
+    drawEditorFrame();
+  });
 });
-editorCanvas.addEventListener('pointermove', function(e){
-  if(!dragging) return;
-  var rect = editorCanvas.getBoundingClientRect();
-  var scaleFactor = CANVAS_W / rect.width;
-  editorState.offX = dragOrig.x + (e.clientX-dragStart.x)*scaleFactor;
-  editorState.offY = dragOrig.y + (e.clientY-dragStart.y)*scaleFactor;
+scaleSlider.addEventListener('input', function(){ editorState.scale = scaleSlider.value/100; drawEditorFrame(); });
+editorFillZoomSlider.addEventListener('input', function(){
+  editorFillZoom = +editorFillZoomSlider.value;
+  editorFillZoomVal.textContent = editorFillZoom + '%';
   drawEditorFrame();
 });
-editorCanvas.addEventListener('pointerup', function(){ dragging=false; });
-editorCanvas.addEventListener('pointercancel', function(){ dragging=false; });
+document.getElementById('editorReset').addEventListener('click', function(){
+  editorMode = 'fit';
+  editorState = { scale:1, offX:0, offY:0 };
+  editorFillZoom = 0;
+  updateEditorControlsUI();
+  drawEditorFrame();
+});
+
+function pointerDist(){
+  var pts = Object.keys(activePointers).map(function(k){ return activePointers[k]; });
+  if(pts.length<2) return 0;
+  var dx = pts[0].x-pts[1].x, dy = pts[0].y-pts[1].y;
+  return Math.sqrt(dx*dx+dy*dy);
+}
+editorCanvas.addEventListener('pointerdown', function(e){
+  activePointers[e.pointerId] = {x:e.clientX,y:e.clientY};
+  editorCanvas.setPointerCapture(e.pointerId);
+  var count = Object.keys(activePointers).length;
+  if(count>=2){
+    dragging = false;
+    pinchStartDist = pointerDist();
+    pinchStartScale = editorState.scale;
+    pinchStartFillZoom = editorFillZoom;
+  } else if(editorMode==='free'){
+    dragging = true; dragStart = {x:e.clientX,y:e.clientY}; dragOrig = {x:editorState.offX,y:editorState.offY};
+  }
+});
+editorCanvas.addEventListener('pointermove', function(e){
+  if(!(e.pointerId in activePointers)) return;
+  activePointers[e.pointerId] = {x:e.clientX,y:e.clientY};
+  var count = Object.keys(activePointers).length;
+  if(count>=2){
+    var curDist = pointerDist();
+    if(pinchStartDist>0){
+      var ratio = curDist/pinchStartDist;
+      if(editorMode==='free'){
+        editorState.scale = Math.max(0.5, Math.min(3, pinchStartScale*ratio));
+        scaleSlider.value = Math.round(editorState.scale*100);
+      } else if(editorMode==='fill'){
+        editorFillZoom = Math.max(0, Math.min(100, pinchStartFillZoom + (ratio-1)*140));
+        editorFillZoomSlider.value = Math.round(editorFillZoom);
+        editorFillZoomVal.textContent = Math.round(editorFillZoom) + '%';
+      }
+      drawEditorFrame();
+    }
+    return;
+  }
+  if(dragging && editorMode==='free'){
+    var rect = editorCanvas.getBoundingClientRect();
+    var scaleFactor = CANVAS_W / rect.width;
+    editorState.offX = dragOrig.x + (e.clientX-dragStart.x)*scaleFactor;
+    editorState.offY = dragOrig.y + (e.clientY-dragStart.y)*scaleFactor;
+    drawEditorFrame();
+  }
+});
+function editorPointerEnd(e){
+  delete activePointers[e.pointerId];
+  if(Object.keys(activePointers).length<2) pinchStartDist = 0;
+  if(Object.keys(activePointers).length===0) dragging=false;
+}
+editorCanvas.addEventListener('pointerup', editorPointerEnd);
+editorCanvas.addEventListener('pointercancel', editorPointerEnd);
 
 document.getElementById('editorSave').addEventListener('click', function(){
-  queue[editorTargetIdx].free = { scale:editorState.scale, offX:editorState.offX, offY:editorState.offY };
+  var item = queue[editorTargetIdx];
+  item.mode = editorMode;
+  if(editorMode==='free'){
+    item.free = { scale:editorState.scale, offX:editorState.offX, offY:editorState.offY };
+  } else if(editorMode==='fill'){
+    item.fillZoom = editorFillZoom;
+  } else {
+    item.free = null; item.fillZoom = null;
+  }
   editorOverlay.style.display='none';
   renderQueue();
 });
 document.getElementById('editorCancel').addEventListener('click', function(){
   editorOverlay.style.display='none';
-  // revert to fit if never saved before
-  if(!queue[editorTargetIdx].free) queue[editorTargetIdx].mode='fit';
-  renderQueue();
 });
 
 /* ===================== Processing / Export ===================== */
@@ -1148,7 +1428,7 @@ function processOne(item, idx, done){
 
   video.addEventListener('loadedmetadata', function(){
     var vw = video.videoWidth, vh = video.videoHeight;
-    var L = computeLayout(mode, vw, vh, CANVAS_W, CANVAS_H, item.free);
+    var L = computeLayout(mode, vw, vh, CANVAS_W, CANVAS_H, getFreeData(item), getFillZoom(item));
 
     var canvasStream = canvas.captureStream(30);
     var combined = new MediaStream();
@@ -1176,6 +1456,7 @@ function processOne(item, idx, done){
     function drawFrame(){
       ctx.drawImage(bgCanvas,0,0);
       ctx.drawImage(video, L.dx, L.dy, L.dw, L.dh);
+      drawWatermarks(ctx, CANVAS_W, CANVAS_H);
       if(!video.ended && !video.paused) raf = requestAnimationFrame(drawFrame);
     }
     video.addEventListener('ended', function(){
@@ -1188,6 +1469,145 @@ function processOne(item, idx, done){
     }).catch(function(){ done(); });
   }, {once:true});
 }
+
+/* ===================== Watermarks ===================== */
+var wmList = document.getElementById('wmList');
+var wmAddBtn = document.getElementById('wmAddBtn');
+var wmSheet = document.getElementById('wmSheet');
+var wmBackdrop = document.getElementById('wmBackdrop');
+var wmSheetTitle = document.getElementById('wmSheetTitle');
+var wmPosGrid = document.getElementById('wmPosGrid');
+var wmDragPreview = document.getElementById('wmDragPreview');
+var wmHandle = document.getElementById('wmHandle');
+var wmSizeSlider = document.getElementById('wmSizeSlider');
+var wmTargetId = null;
+var wmCounter = 0;
+
+var wmFileInput = document.createElement('input');
+wmFileInput.type = 'file'; wmFileInput.accept = 'image/*'; wmFileInput.style.display = 'none';
+document.body.appendChild(wmFileInput);
+wmAddBtn.addEventListener('click', function(){ wmFileInput.click(); });
+wmFileInput.addEventListener('change', function(e){
+  var f = e.target.files[0];
+  if(!f) return;
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    var img = new Image();
+    img.onload = function(){
+      wmCounter++;
+      var wm = { id:'wm_'+Date.now()+'_'+wmCounter, img:img, xFrac:0.85, yFrac:0.9, scaleFrac:0.22, name:f.name };
+      watermarks.push(wm);
+      renderWmList();
+      queue.forEach(function(_,idx){ drawThumbCanvas(idx); });
+      openWmSheet(wm.id);
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(f);
+  wmFileInput.value = '';
+});
+
+function renderWmList(){
+  wmList.innerHTML = '';
+  watermarks.forEach(function(wm){
+    var row = document.createElement('div');
+    row.className = 'wm-row';
+    row.innerHTML = '<img src="'+wm.img.src+'"><div class="wm-name">'+wm.name+'</div><button class="remove-btn" style="font-size:15px">✕</button>';
+    row.querySelector('img').addEventListener('click', function(){ openWmSheet(wm.id); });
+    row.querySelector('.wm-name').addEventListener('click', function(){ openWmSheet(wm.id); });
+    row.querySelector('.remove-btn').addEventListener('click', function(){
+      watermarks = watermarks.filter(function(w){ return w.id!==wm.id; });
+      renderWmList();
+      queue.forEach(function(_,idx){ drawThumbCanvas(idx); });
+    });
+    wmList.appendChild(row);
+  });
+}
+
+function getWm(id){ for(var i=0;i<watermarks.length;i++) if(watermarks[i].id===id) return watermarks[i]; return null; }
+
+function openWmSheet(id){
+  wmTargetId = id;
+  var wm = getWm(id);
+  if(!wm) return;
+  wmSheetTitle.textContent = 'Position: ' + wm.name;
+  wmSizeSlider.value = Math.round(wm.scaleFrac*100);
+  updateWmHandle();
+  wmPosGrid.querySelectorAll('button').forEach(function(b){ b.classList.remove('active'); });
+  wmSheet.style.transform = 'translateY(0)';
+  wmBackdrop.style.display = 'block';
+}
+function closeWmSheet(){
+  wmSheet.style.transform = 'translateY(100%)';
+  wmBackdrop.style.display = 'none';
+  wmTargetId = null;
+}
+wmBackdrop.addEventListener('click', closeWmSheet);
+
+function updateWmHandle(){
+  var wm = getWm(wmTargetId);
+  if(!wm) return;
+  var boxW = wmDragPreview.clientWidth, boxH = wmDragPreview.clientHeight;
+  var hw = boxW * wm.scaleFrac;
+  var hh = hw * (wm.img.naturalHeight/wm.img.naturalWidth || 1);
+  wmHandle.style.width = hw+'px';
+  wmHandle.style.height = hh+'px';
+  wmHandle.style.left = (wm.xFrac*boxW - hw/2)+'px';
+  wmHandle.style.top = (wm.yFrac*boxH - hh/2)+'px';
+  wmHandle.style.backgroundImage = 'url('+wm.img.src+')';
+  wmHandle.style.backgroundSize = 'contain';
+  wmHandle.style.backgroundRepeat = 'no-repeat';
+  wmHandle.style.backgroundPosition = 'center';
+}
+
+wmPosGrid.querySelectorAll('button').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var wm = getWm(wmTargetId);
+    if(!wm) return;
+    var parts = btn.dataset.pos.split(',');
+    wm.xFrac = +parts[0]; wm.yFrac = +parts[1];
+    wmPosGrid.querySelectorAll('button').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    updateWmHandle();
+    queue.forEach(function(_,idx){ drawThumbCanvas(idx); });
+  });
+});
+wmSizeSlider.addEventListener('input', function(){
+  var wm = getWm(wmTargetId);
+  if(!wm) return;
+  wm.scaleFrac = wmSizeSlider.value/100;
+  updateWmHandle();
+  queue.forEach(function(_,idx){ drawThumbCanvas(idx); });
+});
+
+var wmDragging = false;
+wmHandle.addEventListener('pointerdown', function(e){
+  wmDragging = true;
+  wmHandle.setPointerCapture(e.pointerId);
+  wmPosGrid.querySelectorAll('button').forEach(function(b){ b.classList.remove('active'); });
+});
+wmHandle.addEventListener('pointermove', function(e){
+  if(!wmDragging) return;
+  var wm = getWm(wmTargetId);
+  if(!wm) return;
+  var rect = wmDragPreview.getBoundingClientRect();
+  var relX = (e.clientX-rect.left)/rect.width;
+  var relY = (e.clientY-rect.top)/rect.height;
+  wm.xFrac = Math.max(0,Math.min(1,relX));
+  wm.yFrac = Math.max(0,Math.min(1,relY));
+  updateWmHandle();
+  queue.forEach(function(_,idx){ drawThumbCanvas(idx); });
+});
+wmHandle.addEventListener('pointerup', function(){ wmDragging=false; });
+wmHandle.addEventListener('pointercancel', function(){ wmDragging=false; });
+
+document.getElementById('wmRemoveBtn').addEventListener('click', function(){
+  watermarks = watermarks.filter(function(w){ return w.id!==wmTargetId; });
+  renderWmList();
+  queue.forEach(function(_,idx){ drawThumbCanvas(idx); });
+  closeWmSheet();
+});
+document.getElementById('wmSaveBtn').addEventListener('click', closeWmSheet);
 </script>
 </body>
 </html>
