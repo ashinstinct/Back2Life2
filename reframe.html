@@ -180,6 +180,14 @@ button,select,input{font-family:'Inter',sans-serif}
         <span id="batchBgName">Black</span>
       </div>
     </div>
+    <div class="row" style="margin-top:14px">
+      <label>Output Quality</label>
+      <div class="seg" id="resSeg" style="max-width:220px">
+        <button data-res="1080" class="active">1080p</button>
+        <button data-res="4k">4K</button>
+      </div>
+    </div>
+    <div id="resHint" style="font-size:11px;color:var(--text3);margin-top:6px">Matches or upscales to 1080×1920. Fine for most sources.</div>
     <div class="row" style="align-items:flex-start;flex-direction:column;gap:8px;margin-top:14px">
       <label style="margin-bottom:2px">Batch Rename (optional)</label>
       <div style="display:flex;gap:8px;width:100%">
@@ -328,6 +336,29 @@ button,select,input{font-family:'Inter',sans-serif}
 <script>
 /* ===================== Background Library ===================== */
 var CANVAS_W = 1080, CANVAS_H = 1920;
+var POS_REF_W = 1080, POS_REF_H = 1920; // fixed reference space for stored free-mode offsets, independent of export resolution
+
+var resSeg = null, resHint = null;
+function initResolutionToggle(){
+  resSeg = document.getElementById('resSeg');
+  resHint = document.getElementById('resHint');
+  resSeg.querySelectorAll('button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      resSeg.querySelectorAll('button').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      if(btn.dataset.res==='4k'){
+        CANVAS_W = 2160; CANVAS_H = 3840;
+        resHint.textContent = '2160×3840 export. Much heavier to render — allow extra time per video, and make sure your device has decent free memory.';
+      } else {
+        CANVAS_W = 1080; CANVAS_H = 1920;
+        resHint.textContent = 'Matches or upscales to 1080×1920. Fine for most sources.';
+      }
+      bgCache = {}; // old cached backgrounds were sized for the previous resolution
+      queue.forEach(function(_,idx){ drawThumbCanvas(idx); });
+    });
+  });
+}
+initResolutionToggle();
 
 function mulberry32(seed){
   return function(){
@@ -837,7 +868,7 @@ function computeLayout(mode, vw, vh, canvasW, canvasH, freeData, zoomPct){
     var base = canvasW/vw;
     var s2 = base*freeData.scale;
     var dw2=vw*s2, dh2=vh*s2;
-    return { dw:dw2, dh:dh2, dx:(canvasW-dw2)/2+freeData.offX*(canvasW/CANVAS_W), dy:(canvasH-dh2)/2+freeData.offY*(canvasW/CANVAS_W) };
+    return { dw:dw2, dh:dh2, dx:(canvasW-dw2)/2+freeData.offX*(canvasW/POS_REF_W), dy:(canvasH-dh2)/2+freeData.offY*(canvasW/POS_REF_W) };
   } else {
     var s3 = (canvasW/vw) * zoomMult;
     var dw3=vw*s3, dh3=vh*s3;
@@ -1109,8 +1140,8 @@ var batchTrackpad = document.getElementById('batchTrackpad');
 var batchTrackpadDot = document.getElementById('batchTrackpadDot');
 var tpDragging = false;
 function updateTrackpadDot(){
-  var relX = 0.5 + (batchDefault.free.offX / CANVAS_W);
-  var relY = 0.5 + (batchDefault.free.offY / CANVAS_H);
+  var relX = 0.5 + (batchDefault.free.offX / POS_REF_W);
+  var relY = 0.5 + (batchDefault.free.offY / POS_REF_H);
   relX = Math.max(0.04, Math.min(0.96, relX));
   relY = Math.max(0.04, Math.min(0.96, relY));
   batchTrackpadDot.style.left = (relX*100)+'%';
@@ -1122,8 +1153,8 @@ function trackpadMove(clientX, clientY){
   var relY = (clientY-rect.top)/rect.height;
   relX = Math.max(0,Math.min(1,relX));
   relY = Math.max(0,Math.min(1,relY));
-  batchDefault.free.offX = (relX-0.5)*CANVAS_W*0.9;
-  batchDefault.free.offY = (relY-0.5)*CANVAS_H*0.9;
+  batchDefault.free.offX = (relX-0.5)*POS_REF_W*0.9;
+  batchDefault.free.offY = (relY-0.5)*POS_REF_H*0.9;
   batchTrackpadDot.style.left = (relX*100)+'%';
   batchTrackpadDot.style.top = (relY*100)+'%';
   queue.forEach(function(_,idx){ drawThumbCanvas(idx); });
@@ -1370,7 +1401,7 @@ editorCanvas.addEventListener('pointermove', function(e){
   }
   if(dragging && editorMode==='free'){
     var rect = editorCanvas.getBoundingClientRect();
-    var scaleFactor = CANVAS_W / rect.width;
+    var scaleFactor = POS_REF_W / rect.width;
     editorState.offX = dragOrig.x + (e.clientX-dragStart.x)*scaleFactor;
     editorState.offY = dragOrig.y + (e.clientY-dragStart.y)*scaleFactor;
     drawEditorFrame();
