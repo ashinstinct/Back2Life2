@@ -163,10 +163,10 @@ button,select,input{font-family:'Inter',sans-serif}
       <button data-mode="fill">Fill / Zoom</button>
       <button data-mode="free">Free (drag)</button>
     </div>
-    <div class="zoom-row hidden" id="batchFillZoomRow">
+    <div class="zoom-row" id="batchZoomRow">
       <label style="font-size:12.5px;color:var(--text2);white-space:nowrap">Zoom all</label>
-      <input type="range" id="batchFillZoomSlider" min="0" max="100" value="0">
-      <input type="text" inputmode="numeric" class="zoom-pct" id="batchFillZoomVal" value="0%">
+      <input type="range" id="batchZoomSlider" min="50" max="300" value="100">
+      <input type="text" inputmode="numeric" class="zoom-pct" id="batchZoomVal" value="100%">
     </div>
     <div class="trackpad-wrap hidden" id="batchTrackpadWrap">
       <div class="trackpad-hint">Drag to move all videos in this batch</div>
@@ -268,14 +268,10 @@ button,select,input{font-family:'Inter',sans-serif}
     <canvas class="preview" id="editorCanvas"></canvas>
   </div>
   <div class="editor-controls">
-    <div class="row hidden" id="editorFillZoomRow">
-      <label style="font-size:12.5px;color:var(--text2)">Zoom</label>
-      <input type="range" id="editorFillZoomSlider" min="0" max="100" value="0">
-      <span id="editorFillZoomVal" style="font-size:12.5px;color:var(--text);width:38px;text-align:right">0%</span>
-    </div>
-    <div class="row hidden" id="editorFreeZoomRow">
+    <div class="row" id="editorZoomRow">
       <label style="font-size:12.5px;color:var(--text2)">Zoom</label>
       <input type="range" id="scaleSlider" min="50" max="300" value="100">
+      <span id="editorZoomVal" style="font-size:12.5px;color:var(--text);width:38px;text-align:right">100%</span>
     </div>
     <div class="row hidden" id="editorFreeHintRow">
       <label style="font-size:11px;color:var(--text3)">Drag to reposition • pinch to zoom</label>
@@ -830,10 +826,10 @@ var BACKGROUNDS = (function(){
 var CATS = ['Colors','Matte','Gradients','Water','Sunsets','Winter','Autumn','Floral','Space','Star Trails','Patterns','Custom'];
 function getBg(id){ for(var i=0;i<BACKGROUNDS.length;i++) if(BACKGROUNDS[i].id===id) return BACKGROUNDS[i]; return BACKGROUNDS[0]; }
 
-function computeLayout(mode, vw, vh, canvasW, canvasH, freeData, fillZoomPct){
+function computeLayout(mode, vw, vh, canvasW, canvasH, freeData, zoomPct){
   if(!vw || !vh) return {dw:0,dh:0,dx:0,dy:0};
+  var zoomMult = (zoomPct||100)/100;
   if(mode==='fill'){
-    var zoomMult = 1 + ((fillZoomPct||0)/100)*1.5;
     var s = Math.max(canvasW/vw, canvasH/vh) * zoomMult;
     var dw=vw*s, dh=vh*s;
     return { dw:dw, dh:dh, dx:(canvasW-dw)/2, dy:(canvasH-dh)/2 };
@@ -843,7 +839,7 @@ function computeLayout(mode, vw, vh, canvasW, canvasH, freeData, fillZoomPct){
     var dw2=vw*s2, dh2=vh*s2;
     return { dw:dw2, dh:dh2, dx:(canvasW-dw2)/2+freeData.offX*(canvasW/CANVAS_W), dy:(canvasH-dh2)/2+freeData.offY*(canvasW/CANVAS_W) };
   } else {
-    var s3 = canvasW/vw;
+    var s3 = (canvasW/vw) * zoomMult;
     var dw3=vw*s3, dh3=vh*s3;
     return { dw:dw3, dh:dh3, dx:(canvasW-dw3)/2, dy:(canvasH-dh3)/2 };
   }
@@ -883,14 +879,21 @@ function getBgCanvas(id){
 }
 
 /* ===================== App State ===================== */
-var queue = []; // {file,name,url,mode,bgId,free:{scale,offX,offY}|null,fillZoom:number|null,duration,w,h}
-var batchDefault = { mode:'fit', bgId:'color_0', fillZoom:0, free:{scale:1,offX:0,offY:0} };
+var queue = []; // {file,name,url,mode,bgId,free:{scale,offX,offY}|null,fitZoom:number|null,fillZoom:number|null,duration,w,h}
+var batchDefault = { mode:'fit', bgId:'color_0', fitZoom:100, fillZoom:100, free:{scale:1,offX:0,offY:0} };
 var bgSheetTarget = null; // null = batch default, else index into queue
 var viewMode = 'list'; // 'list' | 'grid'
 var watermarks = []; // {id,img,xFrac,yFrac,scaleFrac,name}
+var ZOOM_RANGES = { fit:[50,300], fill:[100,250], free:[50,300] };
 
 function getFreeData(item){ return (item && item.free) ? item.free : batchDefault.free; }
-function getFillZoom(item){ var v = (item && item.fillZoom!=null) ? item.fillZoom : batchDefault.fillZoom; return v||0; }
+function getFitZoom(item){ var v = (item && item.fitZoom!=null) ? item.fitZoom : batchDefault.fitZoom; return v||100; }
+function getFillZoom(item){ var v = (item && item.fillZoom!=null) ? item.fillZoom : batchDefault.fillZoom; return v||100; }
+function getZoomPctForMode(item, mode){
+  if(mode==='fill') return getFillZoom(item);
+  if(mode==='free') return Math.round(getFreeData(item).scale*100);
+  return getFitZoom(item);
+}
 
 function drawWatermarks(ctx, canvasW, canvasH){
   watermarks.forEach(function(wm){
@@ -949,7 +952,7 @@ function addFiles(files){
   Array.prototype.forEach.call(files, function(f){
     if(!f.type.startsWith('video/')) return;
     var url = URL.createObjectURL(f);
-    queue.push({ file:f, name:f.name, url:url, mode:null, bgId:null, free:null, fillZoom:null, w:0, h:0 });
+    queue.push({ file:f, name:f.name, url:url, mode:null, bgId:null, free:null, fitZoom:null, fillZoom:null, w:0, h:0 });
   });
   batchCard.style.display = queue.length ? 'block' : 'none';
   document.getElementById('watermarkCard').classList.toggle('hidden', queue.length===0);
@@ -1024,7 +1027,7 @@ function drawThumbCanvas(idx){
   if(video && item._thumbReady){
     var vw = item.w || video.videoWidth, vh = item.h || video.videoHeight;
     if(vw && vh){
-      var L = computeLayout(mode, vw, vh, canvas.width, canvas.height, getFreeData(item), getFillZoom(item));
+      var L = computeLayout(mode, vw, vh, canvas.width, canvas.height, getFreeData(item), getZoomPctForMode(item, mode));
       ctx.drawImage(video, L.dx, L.dy, L.dw, L.dh);
     }
   }
@@ -1052,14 +1055,24 @@ function ensureThumbVideo(idx){
 }
 
 /* mode segmented control (batch default) */
-var batchFillZoomRow = document.getElementById('batchFillZoomRow');
+var batchZoomRow = document.getElementById('batchZoomRow');
 var batchTrackpadWrap = document.getElementById('batchTrackpadWrap');
-var batchFillZoomSlider = document.getElementById('batchFillZoomSlider');
-var batchFillZoomVal = document.getElementById('batchFillZoomVal');
+var batchZoomSlider = document.getElementById('batchZoomSlider');
+var batchZoomVal = document.getElementById('batchZoomVal');
 
+function currentBatchZoomValue(){
+  return batchDefault.mode==='free' ? Math.round(batchDefault.free.scale*100) : (batchDefault.mode==='fill' ? batchDefault.fillZoom : batchDefault.fitZoom);
+}
+function syncBatchZoomToMode(){
+  var range = ZOOM_RANGES[batchDefault.mode];
+  batchZoomSlider.min = range[0]; batchZoomSlider.max = range[1];
+  var v = currentBatchZoomValue();
+  batchZoomSlider.value = v;
+  batchZoomVal.value = v + '%';
+}
 function updateBatchModeUI(){
-  batchFillZoomRow.classList.toggle('hidden', batchDefault.mode!=='fill');
   batchTrackpadWrap.classList.toggle('hidden', batchDefault.mode!=='free');
+  syncBatchZoomToMode();
   if(batchDefault.mode==='free') updateTrackpadDot();
 }
 modeSeg.querySelectorAll('button').forEach(function(btn){
@@ -1071,23 +1084,25 @@ modeSeg.querySelectorAll('button').forEach(function(btn){
     renderQueue();
   });
 });
-batchFillZoomSlider.addEventListener('input', function(){
-  batchDefault.fillZoom = +batchFillZoomSlider.value;
-  batchFillZoomVal.value = batchDefault.fillZoom + '%';
-  queue.forEach(function(_,idx){ drawThumbCanvas(idx); });
-});
-function commitBatchZoomInput(){
-  var n = parseInt(batchFillZoomVal.value.replace(/[^0-9\-]/g,''), 10);
-  if(isNaN(n)) n = 0;
-  n = Math.max(0, Math.min(100, n));
-  batchDefault.fillZoom = n;
-  batchFillZoomSlider.value = n;
-  batchFillZoomVal.value = n + '%';
+function applyBatchZoomValue(v){
+  var range = ZOOM_RANGES[batchDefault.mode];
+  v = Math.max(range[0], Math.min(range[1], v));
+  if(batchDefault.mode==='fill') batchDefault.fillZoom = v;
+  else if(batchDefault.mode==='free') batchDefault.free.scale = v/100;
+  else batchDefault.fitZoom = v;
+  batchZoomSlider.value = v;
+  batchZoomVal.value = v + '%';
   queue.forEach(function(_,idx){ drawThumbCanvas(idx); });
 }
-batchFillZoomVal.addEventListener('focus', function(){ batchFillZoomVal.value = String(batchDefault.fillZoom); batchFillZoomVal.select(); });
-batchFillZoomVal.addEventListener('blur', commitBatchZoomInput);
-batchFillZoomVal.addEventListener('keydown', function(e){ if(e.key==='Enter'){ batchFillZoomVal.blur(); } });
+batchZoomSlider.addEventListener('input', function(){ applyBatchZoomValue(+batchZoomSlider.value); });
+function commitBatchZoomInput(){
+  var n = parseInt(batchZoomVal.value.replace(/[^0-9\-]/g,''), 10);
+  if(isNaN(n)) n = currentBatchZoomValue();
+  applyBatchZoomValue(n);
+}
+batchZoomVal.addEventListener('focus', function(){ batchZoomVal.value = String(currentBatchZoomValue()); batchZoomVal.select(); });
+batchZoomVal.addEventListener('blur', commitBatchZoomInput);
+batchZoomVal.addEventListener('keydown', function(e){ if(e.key==='Enter'){ batchZoomVal.blur(); } });
 
 /* batch free-position trackpad */
 var batchTrackpad = document.getElementById('batchTrackpad');
@@ -1223,36 +1238,39 @@ batchBgBtn.addEventListener('click', function(){ bgSheetTarget=null; openBgSheet
 
 // init batch thumb
 getBg(batchDefault.bgId).draw(document.getElementById('batchBgThumb').getContext('2d'),60,107);
+syncBatchZoomToMode();
 
 /* ===================== Fullscreen Position Editor ===================== */
 var editorOverlay = document.getElementById('editorOverlay');
 var editorCanvas = document.getElementById('editorCanvas');
 var scaleSlider = document.getElementById('scaleSlider');
-var editorFillZoomRow = document.getElementById('editorFillZoomRow');
-var editorFreeZoomRow = document.getElementById('editorFreeZoomRow');
+var editorZoomVal = document.getElementById('editorZoomVal');
 var editorFreeHintRow = document.getElementById('editorFreeHintRow');
-var editorFillZoomSlider = document.getElementById('editorFillZoomSlider');
-var editorFillZoomVal = document.getElementById('editorFillZoomVal');
 var editorModeSeg = document.getElementById('editorModeSeg');
 var editorTargetIdx = null;
 var editorVideo = null;
 var editorMode = 'fit';
-var editorFillZoom = 0;
 var editorState = { scale:1, offX:0, offY:0 };
 var dragging=false, dragStart={x:0,y:0}, dragOrig={x:0,y:0};
 var activePointers = {};
-var pinchStartDist = 0, pinchStartScale = 1, pinchStartFillZoom = 0;
+var pinchStartDist = 0, pinchStartScale = 1;
 
 function bgFor(idx){ return (idx===null||idx===undefined) ? batchDefault.bgId : (queue[idx].bgId || batchDefault.bgId); }
 
+function loadZoomForEditorMode(){
+  var item = queue[editorTargetIdx];
+  if(editorMode==='fill') editorState.scale = getFillZoom(item)/100;
+  else if(editorMode==='fit') editorState.scale = getFitZoom(item)/100;
+  else editorState.scale = getFreeData(item).scale;
+}
 function updateEditorControlsUI(){
   editorModeSeg.querySelectorAll('button').forEach(function(b){ b.classList.toggle('active', b.dataset.mode===editorMode); });
-  editorFillZoomRow.classList.toggle('hidden', editorMode!=='fill');
-  editorFreeZoomRow.classList.toggle('hidden', editorMode!=='free');
   editorFreeHintRow.classList.toggle('hidden', editorMode!=='free');
-  editorFillZoomSlider.value = editorFillZoom;
-  editorFillZoomVal.textContent = editorFillZoom + '%';
-  scaleSlider.value = Math.round(editorState.scale*100);
+  var range = ZOOM_RANGES[editorMode];
+  scaleSlider.min = range[0]; scaleSlider.max = range[1];
+  var pct = Math.round(editorState.scale*100);
+  scaleSlider.value = pct;
+  editorZoomVal.textContent = pct + '%';
 }
 
 function openPositionEditor(idx){
@@ -1260,8 +1278,8 @@ function openPositionEditor(idx){
   var item = queue[idx];
   editorMode = item.mode || batchDefault.mode;
   var fd = getFreeData(item);
-  editorState = { scale:fd.scale, offX:fd.offX, offY:fd.offY };
-  editorFillZoom = getFillZoom(item);
+  editorState = { scale:1, offX:fd.offX, offY:fd.offY };
+  loadZoomForEditorMode();
   updateEditorControlsUI();
 
   var dispW = Math.min(window.innerWidth*0.92, 380);
@@ -1287,7 +1305,7 @@ function drawEditorFrame(){
   var vw = queue[editorTargetIdx].w || editorVideo.videoWidth;
   var vh = queue[editorTargetIdx].h || editorVideo.videoHeight;
   if(vw && vh){
-    var L = computeLayout(editorMode, vw, vh, w, h, editorState, editorFillZoom);
+    var L = computeLayout(editorMode, vw, vh, w, h, editorState, editorState.scale*100);
     ctx.drawImage(editorVideo, L.dx, L.dy, L.dw, L.dh);
   }
   drawWatermarks(ctx, w, h);
@@ -1296,20 +1314,21 @@ function drawEditorFrame(){
 editorModeSeg.querySelectorAll('button').forEach(function(btn){
   btn.addEventListener('click', function(){
     editorMode = btn.dataset.mode;
+    loadZoomForEditorMode();
     updateEditorControlsUI();
     drawEditorFrame();
   });
 });
-scaleSlider.addEventListener('input', function(){ editorState.scale = scaleSlider.value/100; drawEditorFrame(); });
-editorFillZoomSlider.addEventListener('input', function(){
-  editorFillZoom = +editorFillZoomSlider.value;
-  editorFillZoomVal.textContent = editorFillZoom + '%';
+scaleSlider.addEventListener('input', function(){
+  editorState.scale = scaleSlider.value/100;
+  editorZoomVal.textContent = scaleSlider.value + '%';
   drawEditorFrame();
 });
 document.getElementById('editorReset').addEventListener('click', function(){
+  var item = queue[editorTargetIdx];
   editorMode = 'fit';
   editorState = { scale:1, offX:0, offY:0 };
-  editorFillZoom = 0;
+  item.mode = 'fit'; item.free = null; item.fitZoom = null; item.fillZoom = null;
   updateEditorControlsUI();
   drawEditorFrame();
 });
@@ -1328,7 +1347,6 @@ editorCanvas.addEventListener('pointerdown', function(e){
     dragging = false;
     pinchStartDist = pointerDist();
     pinchStartScale = editorState.scale;
-    pinchStartFillZoom = editorFillZoom;
   } else if(editorMode==='free'){
     dragging = true; dragStart = {x:e.clientX,y:e.clientY}; dragOrig = {x:editorState.offX,y:editorState.offY};
   }
@@ -1341,14 +1359,11 @@ editorCanvas.addEventListener('pointermove', function(e){
     var curDist = pointerDist();
     if(pinchStartDist>0){
       var ratio = curDist/pinchStartDist;
-      if(editorMode==='free'){
-        editorState.scale = Math.max(0.5, Math.min(3, pinchStartScale*ratio));
-        scaleSlider.value = Math.round(editorState.scale*100);
-      } else if(editorMode==='fill'){
-        editorFillZoom = Math.max(0, Math.min(100, pinchStartFillZoom + (ratio-1)*140));
-        editorFillZoomSlider.value = Math.round(editorFillZoom);
-        editorFillZoomVal.textContent = Math.round(editorFillZoom) + '%';
-      }
+      var range = ZOOM_RANGES[editorMode];
+      var newScale = Math.max(range[0]/100, Math.min(range[1]/100, pinchStartScale*ratio));
+      editorState.scale = newScale;
+      scaleSlider.value = Math.round(newScale*100);
+      editorZoomVal.textContent = Math.round(newScale*100) + '%';
       drawEditorFrame();
     }
     return;
@@ -1375,9 +1390,9 @@ document.getElementById('editorSave').addEventListener('click', function(){
   if(editorMode==='free'){
     item.free = { scale:editorState.scale, offX:editorState.offX, offY:editorState.offY };
   } else if(editorMode==='fill'){
-    item.fillZoom = editorFillZoom;
+    item.fillZoom = Math.round(editorState.scale*100);
   } else {
-    item.free = null; item.fillZoom = null;
+    item.fitZoom = Math.round(editorState.scale*100);
   }
   editorOverlay.style.display='none';
   renderQueue();
@@ -1428,7 +1443,7 @@ function processOne(item, idx, done){
 
   video.addEventListener('loadedmetadata', function(){
     var vw = video.videoWidth, vh = video.videoHeight;
-    var L = computeLayout(mode, vw, vh, CANVAS_W, CANVAS_H, getFreeData(item), getFillZoom(item));
+    var L = computeLayout(mode, vw, vh, CANVAS_W, CANVAS_H, getFreeData(item), getZoomPctForMode(item, mode));
 
     var canvasStream = canvas.captureStream(30);
     var combined = new MediaStream();
