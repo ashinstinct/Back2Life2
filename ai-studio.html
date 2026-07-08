@@ -196,6 +196,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-syst
   </button>
   <a href="/" style="position:absolute;left:50%;transform:translateX(-50%);text-decoration:none;white-space:nowrap"><span style="font-size:17px;font-weight:900;color:#fff;letter-spacing:-0.5px">Back2Life</span><span style="font-size:17px;font-weight:900;color:#00ff88;letter-spacing:-0.5px">.app</span></a>
   <div class="topbar-right">
+    <div id="creditsBadge" onclick="window.b2lShowPricing && window.b2lShowPricing()" style="display:none;align-items:center;gap:5px;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.25);border-radius:999px;padding:5px 11px;cursor:pointer"><span style="color:#00ff88;font-size:12px">⚡</span><span id="creditsNum" style="color:#00ff88;font-size:12.5px;font-weight:800">0</span></div>
+    <a href="/library" class="icon-btn" title="My Library" style="display:flex;align-items:center;justify-content:center;text-decoration:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></a>
     <div class="icon-btn" onclick="openModelSheet()" style="display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
   </div>
 </header>
@@ -335,8 +337,37 @@ html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-syst
 <script>
 const SVG_MOTION_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg>';
 
-// ── API KEY (hidden from users) ────────────────────────────────────────────
-const FAL_KEY = 'f9b3b700-5df2-48b2-82ed-60e2042db1b7:20f2c6a057d8e4a18dd9a47b24114ba1';
+// ── SECURE PROXY (FAL key lives server-side in Supabase) ──────────────────
+const B2L_FN_URL = 'https://sfpokfgfycsqvhtpamgm.supabase.co/functions/v1/fal-proxy';
+const B2L_ANON = 'sb_publishable_T0QKdJAb6katQhGtA8gWZA_xxnA4r_A';
+let b2lProfile = null;
+
+async function b2lSession() {
+  const res = await window.b2lSupabase.auth.getSession();
+  return res && res.data ? res.data.session : null;
+}
+
+async function b2lProxy(payload) {
+  const session = await b2lSession();
+  if (!session) { window.location.href = '/login?next=/ai-studio'; throw new Error('Please sign in first'); }
+  const res = await fetch(B2L_FN_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token, 'apikey': B2L_ANON },
+    body: JSON.stringify(payload)
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) { const e = new Error(data.error || ('Error ' + res.status)); e.code = data.code; throw e; }
+  return data;
+}
+
+function updateCreditsBadge(n) {
+  if (typeof n !== 'number') return;
+  if (b2lProfile) b2lProfile.credits = n;
+  const el = document.getElementById('creditsNum');
+  const badge = document.getElementById('creditsBadge');
+  if (el) el.textContent = n.toLocaleString();
+  if (badge) badge.style.display = 'flex';
+}
 
 // ── MODEL DEFINITIONS ──────────────────────────────────────────────────────
 const IMAGE_MODELS = [
@@ -973,54 +1004,44 @@ function changeCount(delta) {
 
 // ── FAL UPLOAD ─────────────────────────────────────────────────────────────
 async function uploadToFal(file) {
-  const res = await fetch('https://rest.alpha.fal.ai/storage/upload/initiate', {
-    method: 'POST',
-    headers: { 'Authorization': 'Key ' + FAL_KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ file_name: file.name, content_type: file.type })
-  });
-  if (!res.ok) throw new Error('Upload failed: ' + res.status);
-  const { upload_url, file_url } = await res.json();
+  const { upload_url, file_url } = await b2lProxy({ action: 'upload_init', file_name: file.name, content_type: file.type });
   await fetch(upload_url, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
   return file_url;
 }
 
 // ── FAL QUEUE ──────────────────────────────────────────────────────────────
 async function falRun(modelId, input) {
-  const submitRes = await fetch(`https://queue.fal.run/${modelId}`, {
-    method: 'POST',
-    headers: { 'Authorization': 'Key ' + FAL_KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify(input)
-  });
-  if (!submitRes.ok) {
-    const err = await submitRes.json().catch(() => ({}));
-    throw new Error(err.detail || err.message || 'API error ' + submitRes.status);
-  }
-  const { request_id } = await submitRes.json();
+  const sub = await b2lProxy({ action: 'submit', model_id: modelId, input: input, kind: currentMode });
+  updateCreditsBadge(sub.credits_left);
+  setProgress(5, 'In queue\u2026 (' + sub.credits_cost + ' credits)');
 
-  setProgress(5, 'In queue…');
   let attempts = 0;
   while (attempts < 360) {
     await new Promise(r => setTimeout(r, 2000));
-    const statusRes = await fetch(`https://queue.fal.run/${modelId}/requests/${request_id}/status?logs=1`, {
-      headers: { 'Authorization': 'Key ' + FAL_KEY }
-    });
-    if (!statusRes.ok) { attempts++; continue; }
-    const status = await statusRes.json();
+    let status;
+    try {
+      status = await b2lProxy({ action: 'status', model_id: modelId, request_id: sub.request_id, gen_id: sub.gen_id });
+    } catch (e) { attempts++; continue; }
     if (status.status === 'IN_QUEUE') {
-      setProgress(10, `Queue position: ${status.queue_position || '…'}`);
+      setProgress(10, `Queue position: ${status.queue_position || '\u2026'}`);
     } else if (status.status === 'IN_PROGRESS') {
-      setProgress(50, 'Generating…');
+      setProgress(50, 'Generating\u2026');
       if (status.logs?.length) {
         const msg = status.logs[status.logs.length-1]?.message;
         if (msg) setProgress(50, msg.substring(0,70));
       }
     } else if (status.status === 'COMPLETED') {
-      const resultRes = await fetch(`https://queue.fal.run/${modelId}/requests/${request_id}`, {
-        headers: { 'Authorization': 'Key ' + FAL_KEY }
-      });
-      return await resultRes.json();
+      setProgress(90, 'Saving to your library\u2026');
+      const resu = await b2lProxy({ action: 'result', model_id: modelId, request_id: sub.request_id, gen_id: sub.gen_id });
+      const raw = resu.raw || {};
+      if (resu.url) {
+        if (raw.video && raw.video.url) raw.video.url = resu.url;
+        else if (Array.isArray(raw.images) && raw.images[0]) raw.images[0].url = resu.url;
+        else if (raw.image && raw.image.url) raw.image.url = resu.url;
+      }
+      return raw;
     } else if (status.status === 'FAILED') {
-      throw new Error(status.error || 'Generation failed');
+      throw new Error(status.error || 'Generation failed \u2014 your credits were refunded');
     }
     attempts++;
   }
@@ -1030,6 +1051,14 @@ async function falRun(modelId, input) {
 // ── GENERATE ───────────────────────────────────────────────────────────────
 async function generate() {
   if (generating) return;
+  // ── Sign-in + Pro gate ──
+  const session = await b2lSession();
+  if (!session) { window.location.href = '/login?next=/ai-studio'; return; }
+  if (!b2lProfile) { try { b2lProfile = await b2lProxy({ action: 'me' }); updateCreditsBadge(b2lProfile.credits); } catch(e) {} }
+  if (!b2lProfile || b2lProfile.subscription_status !== 'active') {
+    if (window.b2lShowPricing) window.b2lShowPricing('pro_required');
+    return;
+  }
   const prompt = document.getElementById('promptInput').value.trim();
   if (!prompt) { showToast('⚠️ Enter a prompt first'); return; }
 
@@ -1071,6 +1100,9 @@ async function generate() {
   } catch(err) {
     clearInterval(pInterval);
     console.error(err);
+    if ((err.code === 'pro_required' || err.code === 'insufficient_credits') && window.b2lShowPricing) {
+      window.b2lShowPricing(err.code);
+    }
     setProgress(0, '⚠️ ' + (err.message || 'Failed'));
     showToast('⚠️ ' + (err.message || 'Generation failed'));
     setTimeout(() => showProgressArea(false), 3000);
@@ -1473,6 +1505,19 @@ plusBtn.addEventListener('touchend', handlePlus, {passive:false});
 // Ref add button handled natively by label element
 
 init();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/auth.js"></script>
+<script src="/pricing.js"></script>
+<script>
+(async function(){
+  try {
+    const s = await b2lSession();
+    if (!s) return;
+    b2lProfile = await b2lProxy({ action: 'me' });
+    updateCreditsBadge(b2lProfile.credits);
+  } catch(e) {}
+})();
 </script>
 </body>
 </html>
