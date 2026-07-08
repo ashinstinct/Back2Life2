@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>My Account — Back2Life.app</title>
+<meta name="description" content="Manage your Back2Life.app plan, credits and subscription.">
+<link rel="icon" type="image/png" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080808;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.13);
+  --green:#00ff88;--green2:#00cc66;--text:#f0f0f0;--text2:#aaaaaa;--text3:#555555;--red:#ff5566;
+  --bar-h:60px;--radius:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;min-height:100dvh}
+.topbar{position:sticky;top:0;z-index:100;height:var(--bar-h);display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:rgba(8,8,8,0.92);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border)}
+.topbar a.back{display:flex;align-items:center;justify-content:center;width:40px;height:40px;color:var(--text);text-decoration:none;font-size:22px}
+.topbar .title{font-size:16px;font-weight:800;color:var(--green)}
+.topbar .spacer{width:40px}
+main{max-width:480px;margin:0 auto;padding:26px 18px 60px}
+.avatar{width:74px;height:74px;border-radius:50%;background:linear-gradient(135deg,var(--green2),var(--green));display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#000;margin:0 auto 12px}
+.email{text-align:center;font-size:15px;font-weight:700;margin-bottom:6px;word-break:break-all}
+.chip{display:block;width:fit-content;margin:0 auto 26px;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:999px}
+.chip.free{background:rgba(255,255,255,0.08);color:var(--text2);border:1px solid var(--border2)}
+.chip.active{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.35)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px}
+.card h3{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.row:last-child{border-bottom:none}
+.row .k{font-size:13.5px;color:var(--text2)}
+.row .v{font-size:14px;font-weight:700}
+.row .v.green{color:var(--green)}
+.credits-big{text-align:center;padding:6px 0 2px}
+.credits-big .n{font-size:40px;font-weight:900;color:var(--green);line-height:1}
+.credits-big .l{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-top:6px}
+.btn{display:block;width:100%;text-align:center;padding:14px;border-radius:12px;font-family:'Inter',sans-serif;font-size:14.5px;font-weight:800;cursor:pointer;border:none;text-decoration:none;margin-bottom:12px}
+.btn-primary{background:linear-gradient(135deg,var(--green2),var(--green));color:#000;box-shadow:0 4px 20px rgba(0,255,136,0.18)}
+.btn-ghost{background:var(--surface);color:var(--text);border:1px solid var(--border2)}
+.btn-danger{background:none;color:var(--red);border:1px solid rgba(255,85,102,0.35)}
+.signout{display:block;margin:8px auto 0;background:none;border:none;color:var(--text3);font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline}
+.loading{text-align:center;color:var(--text3);font-size:13px;padding:80px 0}
+#content{display:none}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="/" aria-label="Back to home">&#8249;</a>
+  <div class="title">My Account</div>
+  <div class="spacer"></div>
+</div>
+
+<main>
+  <div class="loading" id="loading">Loading your account&hellip;</div>
+
+  <div id="content">
+    <div class="avatar" id="avatar">B</div>
+    <div class="email" id="email"></div>
+    <span class="chip free" id="planChip">FREE ACCOUNT</span>
+
+    <div class="card">
+      <div class="credits-big">
+        <div class="n" id="credits">0</div>
+        <div class="l">Credits Remaining</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Subscription</h3>
+      <div class="row"><span class="k">Plan</span><span class="v" id="planName">Free</span></div>
+      <div class="row"><span class="k">Status</span><span class="v" id="status">—</span></div>
+      <div class="row"><span class="k">Billing</span><span class="v" id="billing">—</span></div>
+      <div class="row" id="renewRow" style="display:none"><span class="k">Renews</span><span class="v" id="renews">—</span></div>
+    </div>
+
+    <a class="btn btn-primary" id="plansBtn">Plans &amp; Credits</a>
+    <a class="btn btn-ghost" href="/library">My Library</a>
+    <a class="btn btn-ghost" href="/ai-studio">Open AI Studio</a>
+    <a class="btn btn-danger" id="cancelBtn" style="display:none">Manage / Cancel Subscription</a>
+
+    <button class="signout" id="signOutBtn">Sign out</button>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/auth.js"></script>
+<script src="/pricing.js"></script>
+<script>
+(async function(){
+  // Stripe customer portal link — filled in when Stripe billing goes live
+  var PORTAL_URL = '';
+
+  var sb = window.b2lSupabase;
+  var res = await sb.auth.getSession();
+  var session = res && res.data ? res.data.session : null;
+  if (!session) { window.location.href = '/login?next=/account'; return; }
+
+  var email = session.user.email || '';
+  document.getElementById('email').textContent = email;
+  document.getElementById('avatar').textContent = (email[0] || 'B').toUpperCase();
+
+  var p = null;
+  try {
+    var q = await sb.from('profiles')
+      .select('plan, credits, subscription_status, billing_period, sub_renews_at')
+      .eq('id', session.user.id).single();
+    p = q.data;
+  } catch(e) {}
+  p = p || { plan:'free', credits:0, subscription_status:'free' };
+
+  var isActive = p.subscription_status === 'active';
+  var planName = p.plan && p.plan !== 'free'
+    ? p.plan.charAt(0).toUpperCase() + p.plan.slice(1)
+    : 'Free';
+
+  document.getElementById('credits').textContent = (p.credits || 0).toLocaleString();
+  document.getElementById('planName').textContent = planName;
+  document.getElementById('status').textContent = isActive ? 'Active' : 'Free account';
+  document.getElementById('billing').textContent = isActive
+    ? (p.billing_period === 'year' ? 'Yearly (20% off)' : 'Monthly') : '—';
+
+  var chip = document.getElementById('planChip');
+  if (isActive) {
+    chip.textContent = planName.toUpperCase() + ' — PAID ACCOUNT';
+    chip.className = 'chip active';
+    document.getElementById('cancelBtn').style.display = 'block';
+    if (p.sub_renews_at) {
+      document.getElementById('renewRow').style.display = 'flex';
+      document.getElementById('renews').textContent = new Date(p.sub_renews_at).toLocaleDateString();
+    }
+  } else {
+    chip.textContent = 'FREE ACCOUNT';
+    chip.className = 'chip free';
+  }
+
+  document.getElementById('plansBtn').addEventListener('click', function(){
+    if (window.b2lShowPricing) window.b2lShowPricing();
+  });
+  document.getElementById('cancelBtn').addEventListener('click', function(){
+    if (PORTAL_URL) { window.location.href = PORTAL_URL; }
+    else alert('Subscription management is being switched on \u2014 email hello@back2life.app to cancel in the meantime.');
+  });
+  document.getElementById('signOutBtn').addEventListener('click', function(){
+    sb.auth.signOut().then(function(){ window.location.href = '/'; });
+  });
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('content').style.display = 'block';
+})();
+</script>
+</body>
+</html>
