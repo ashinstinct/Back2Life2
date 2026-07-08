@@ -41,6 +41,10 @@ h1{font-size:24px;font-weight:800;text-align:center;margin-bottom:8px}
 label{display:block;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);margin:0 0 8px}
 input{width:100%;padding:14px 16px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:'Inter',sans-serif;font-size:16px;margin-bottom:16px;outline:none;transition:var(--transition)}
 input:focus{border-color:var(--green)}
+.pass-wrap{position:relative}
+.pass-wrap input{padding-right:52px}
+.pass-toggle{position:absolute;top:0;right:0;height:calc(100% - 16px);width:48px;display:flex;align-items:center;justify-content:center;background:none;border:none;color:var(--text2);cursor:pointer;padding:0}
+.pass-toggle:active{color:var(--green)}
 .msg{display:none;font-size:13.5px;line-height:1.5;padding:12px 14px;border-radius:var(--radius-sm);margin-bottom:16px}
 .msg.error{display:block;background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.3);color:#ff8888}
 .msg.ok{display:block;background:var(--green-dim);border:1px solid rgba(0,255,136,0.3);color:var(--green)}
@@ -88,7 +92,13 @@ input:focus{border-color:var(--green)}
       <input type="email" id="email" autocomplete="email" placeholder="you@example.com">
 
       <label for="password">Password</label>
-      <input type="password" id="password" autocomplete="current-password" placeholder="Minimum 6 characters">
+      <div class="pass-wrap">
+        <input type="password" id="password" autocomplete="current-password" placeholder="Minimum 6 characters">
+        <button type="button" class="pass-toggle" id="passToggle" aria-label="Show password">
+          <svg id="eyeOpen" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg id="eyeClosed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
 
       <button class="btn btn-primary" id="submitBtn">Sign In</button>
 
@@ -198,6 +208,18 @@ input:focus{border-color:var(--green)}
   });
 
   passEl.addEventListener('keydown', function(e){ if (e.key === 'Enter') submitBtn.click(); });
+
+  /* Show / hide password */
+  var passToggle = document.getElementById('passToggle');
+  var eyeOpen = document.getElementById('eyeOpen');
+  var eyeClosed = document.getElementById('eyeClosed');
+  passToggle.addEventListener('click', function(){
+    var showing = passEl.type === 'text';
+    passEl.type = showing ? 'password' : 'text';
+    eyeOpen.style.display = showing ? 'block' : 'none';
+    eyeClosed.style.display = showing ? 'none' : 'block';
+    passToggle.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+  });
 })();
 </script>
 </body>
