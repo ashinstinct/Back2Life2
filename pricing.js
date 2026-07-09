@@ -3,10 +3,15 @@
 (function () {
   // ── Stripe payment links (filled in once Stripe products are created) ──
   var LINKS = {
-    starter_month: '', starter_year: '',
-    creator_month: '', creator_year: '',
-    studio_month: '', studio_year: '',
-    topup_small: '', topup_mid: '', topup_big: ''
+    starter_month: 'https://buy.stripe.com/5kQ00i2PF1k58nFeog1VK00',
+    starter_year: 'https://buy.stripe.com/fZudR8cqf0g1dHZ93W1VK01',
+    creator_month: 'https://buy.stripe.com/00wcN4cqf5Al9rJcg81VK02',
+    creator_year: 'https://buy.stripe.com/eVqeVcfCr0g1eM3gwo1VK03',
+    studio_month: 'https://buy.stripe.com/5kQ3cubmbd2N6fx6VO1VK04',
+    studio_year: 'https://buy.stripe.com/28E4gy3TJaUF1Zh93W1VK05',
+    topup_small: 'https://buy.stripe.com/fZufZg4XNaUFbzR93W1VK06',
+    topup_mid: 'https://buy.stripe.com/4gMfZgeyn9QB9rJ7ZS1VK07',
+    topup_big: 'https://buy.stripe.com/fZu00ieyn1k5bzReog1VK08'
   };
 
   var PLANS = [
