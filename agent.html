@@ -40,6 +40,15 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;displ
 #inputBar textarea:focus{border-color:var(--green)}
 #sendBtn{flex-shrink:0;width:46px;height:46px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--green2),var(--green));display:flex;align-items:center;justify-content:center;cursor:pointer}
 #sendBtn:disabled{opacity:0.4}
+#attachBtn{flex-shrink:0;width:46px;height:46px;border-radius:50%;border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer}
+#attachBtn.uploading{opacity:0.5;pointer-events:none}
+#attachStrip{display:none;gap:8px;padding:8px 12px 0;background:rgba(8,8,8,0.95);flex-shrink:0}
+#attachStrip.has{display:flex;flex-wrap:wrap}
+.att{position:relative;width:64px;height:64px;border-radius:10px;overflow:hidden;border:1px solid rgba(0,255,136,0.35)}
+.att img,.att video{width:100%;height:100%;object-fit:cover;display:block}
+.att .x{position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;border:none;background:rgba(0,0,0,0.75);color:#fff;font-size:11px;line-height:1;cursor:pointer}
+.msg .att-in{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.msg .att-in img,.msg .att-in video{width:74px;height:74px;object-fit:cover;border-radius:10px;margin:0}
 </style>
 </head>
 <body>
@@ -52,8 +61,13 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;displ
 
 <div id="chat"></div>
 
+<div id="attachStrip"></div>
 <div id="inputBar">
-  <textarea id="msgInput" rows="1" placeholder="Describe the image or video you want&hellip;"></textarea>
+  <button id="attachBtn" aria-label="Attach image or video">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+  </button>
+  <input type="file" id="fileInput" accept="image/*,video/*" multiple style="display:none">
+  <textarea id="msgInput" rows="1" placeholder="Describe it, or attach an image to edit or animate&hellip;"></textarea>
   <button id="sendBtn" aria-label="Send">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
   </button>
@@ -68,6 +82,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;displ
   var ANON = 'sb_publishable_T0QKdJAb6katQhGtA8gWZA_xxnA4r_A';
   var history = [];
   var busy = false;
+  var attachments = []; // {url, type}
 
   var chat = document.getElementById('chat');
   var input = document.getElementById('msgInput');
@@ -165,11 +180,22 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;displ
     if (!s) { window.location.href = '/login?next=/agent'; return; }
     busy = true; sendBtn.disabled = true;
     input.value = ''; input.style.height = 'auto';
-    add('user', text);
-    history.push({ role:'user', content:text });
+    var sendAtts = attachments.slice();
+    attachments = []; renderStrip();
+    var bubble = add('user', text);
+    if (sendAtts.length) {
+      var wrap = document.createElement('div');
+      wrap.className = 'att-in';
+      wrap.innerHTML = sendAtts.map(function(a){
+        return a.type === 'video' ? '<video src="'+a.url+'" muted playsinline></video>' : '<img src="'+a.url+'" alt="">';
+      }).join('');
+      bubble.appendChild(wrap);
+      chat.scrollTop = chat.scrollHeight;
+    }
+    history.push({ role:'user', content: text + (sendAtts.length ? ' [attached ' + sendAtts.length + ' file(s)]' : '') });
     var t = typing();
     try {
-      var res = await proxy({ action:'agent', messages: history });
+      var res = await proxy({ action:'agent', messages: history, attachments: sendAtts });
       t.remove();
       add('agent', res.reply);
       history.push({ role:'assistant', content: res.reply });
@@ -180,6 +206,54 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;displ
     }
     busy = false; sendBtn.disabled = false;
   }
+
+  /* ---------- Attachments ---------- */
+  var attachBtn = document.getElementById('attachBtn');
+  var fileInput = document.getElementById('fileInput');
+  var strip = document.getElementById('attachStrip');
+
+  function renderStrip(){
+    strip.innerHTML = '';
+    attachments.forEach(function(a, i){
+      var d = document.createElement('div');
+      d.className = 'att';
+      d.innerHTML = (a.type === 'video' ? '<video src="'+a.url+'" muted></video>' : '<img src="'+a.url+'" alt="">') +
+        '<button class="x" aria-label="Remove">\u2715</button>';
+      d.querySelector('.x').addEventListener('click', function(){
+        attachments.splice(i, 1); renderStrip();
+      });
+      strip.appendChild(d);
+    });
+    strip.className = attachments.length ? 'has' : '';
+    strip.id = 'attachStrip';
+  }
+
+  attachBtn.addEventListener('click', function(){
+    var s0 = session();
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', async function(){
+    var files = Array.from(fileInput.files || []).slice(0, 4 - attachments.length);
+    fileInput.value = '';
+    if (!files.length) return;
+    var s = await session();
+    if (!s) { window.location.href = '/login?next=/agent'; return; }
+    attachBtn.classList.add('uploading');
+    for (var i = 0; i < files.length; i++) {
+      var f = files[i];
+      if (f.size > 60 * 1024 * 1024) { add('agent', '\u26a0\ufe0f ' + f.name + ' is over 60MB \u2014 try a smaller file.'); continue; }
+      try {
+        var init = await proxy({ action:'upload_init', file_name: f.name, content_type: f.type || 'application/octet-stream' });
+        await fetch(init.upload_url, { method:'PUT', headers:{ 'Content-Type': f.type || 'application/octet-stream' }, body: f });
+        attachments.push({ url: init.file_url, type: f.type.indexOf('video') === 0 ? 'video' : 'image' });
+        renderStrip();
+      } catch(e) {
+        add('agent', '\u26a0\ufe0f Upload failed: ' + (e.message || 'try again'));
+      }
+    }
+    attachBtn.classList.remove('uploading');
+  });
 
   sendBtn.addEventListener('click', send);
   input.addEventListener('keydown', function(e){
