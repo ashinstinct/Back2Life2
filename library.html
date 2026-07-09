@@ -18,9 +18,9 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;min-height:100dvh}
-.topbar{position:sticky;top:0;z-index:100;height:var(--bar-h);display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:rgba(8,8,8,0.92);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border)}
+.topbar{position:sticky;top:0;z-index:100;height:var(--bar-h);display:flex;align-items:center;padding:0 16px;background:rgba(8,8,8,0.92);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border)}
 .topbar a.back{display:flex;align-items:center;justify-content:center;width:40px;height:40px;color:var(--text);text-decoration:none;font-size:22px}
-.topbar .title{font-size:16px;font-weight:800;color:var(--green)}
+.topbar .title{font-size:16px;font-weight:800;color:var(--green);margin-right:auto;margin-left:2px}
 .badge{display:none;align-items:center;gap:5px;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.25);border-radius:999px;padding:5px 11px;cursor:pointer}
 .badge span{color:var(--green);font-size:12.5px;font-weight:800}
 main{max-width:640px;margin:0 auto;padding:20px 16px 60px}
@@ -48,7 +48,7 @@ h1{font-size:22px;font-weight:800;margin-bottom:4px}
 <div class="topbar">
   <a class="back" href="/ai-studio" aria-label="Back to AI Studio">&#8249;</a>
   <div class="title">My Library</div>
-  <div class="badge" id="creditsBadge" onclick="window.b2lShowPricing && window.b2lShowPricing()"><span>&#9889;</span><span id="creditsNum">0</span></div>
+  <div class="badge" id="creditsBadge" onclick="window.location.href='/account'"><span>&#9889;</span><span id="creditsNum">0</span></div>
 </div>
 
 <main>
