@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Creative Agent — Back2Life.app</title>
+<meta name="description" content="Chat with the Back2Life Creative Agent to generate AI images and videos.">
+<link rel="icon" type="image/png" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080808;--surface:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.09);
+  --green:#00ff88;--green2:#00cc66;--text:#f0f0f0;--text2:#aaaaaa;--text3:#555555;--bar-h:60px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;display:flex;flex-direction:column;height:100dvh}
+.topbar{flex-shrink:0;height:var(--bar-h);display:flex;align-items:center;padding:0 16px;background:rgba(8,8,8,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.topbar a.back{display:flex;align-items:center;justify-content:center;width:40px;height:40px;color:var(--text);text-decoration:none;font-size:22px}
+.topbar .title{font-size:16px;font-weight:800;color:var(--green);margin-left:4px;flex:0 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge{margin-left:auto;flex-shrink:0;display:none;align-items:center;gap:5px;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.25);border-radius:999px;padding:5px 11px;cursor:pointer}
+.badge span{color:var(--green);font-size:12.5px;font-weight:800}
+#chat{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 14px 10px}
+.msg{max-width:86%;margin-bottom:12px;padding:12px 15px;border-radius:18px;font-size:14.5px;line-height:1.55;white-space:pre-wrap;word-wrap:break-word}
+.msg.user{margin-left:auto;background:linear-gradient(135deg,rgba(0,204,102,0.22),rgba(0,255,136,0.14));border:1px solid rgba(0,255,136,0.25);border-bottom-right-radius:6px}
+.msg.agent{margin-right:auto;background:var(--surface);border:1px solid var(--border);border-bottom-left-radius:6px}
+.msg.agent .who{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:5px}
+.msg img,.msg video{display:block;width:100%;border-radius:12px;margin-top:8px;background:#000}
+.msg .dl{display:inline-block;margin-top:8px;font-size:12px;font-weight:800;color:var(--green);text-decoration:none}
+.gen-note{font-size:11.5px;color:var(--text3);margin-top:6px}
+.typing{display:inline-flex;gap:4px;padding:4px 0}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:tp 1s infinite}
+.typing i:nth-child(2){animation-delay:0.15s}.typing i:nth-child(3){animation-delay:0.3s}
+@keyframes tp{0%,60%,100%{opacity:0.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+#inputBar{flex-shrink:0;display:flex;gap:10px;align-items:flex-end;padding:10px 12px calc(12px + env(safe-area-inset-bottom));background:rgba(8,8,8,0.95);border-top:1px solid var(--border)}
+#inputBar textarea{flex:1;resize:none;max-height:110px;background:var(--surface);border:1px solid var(--border);border-radius:16px;color:var(--text);font-family:'Inter',sans-serif;font-size:15px;padding:12px 14px;outline:none;line-height:1.4}
+#inputBar textarea:focus{border-color:var(--green)}
+#sendBtn{flex-shrink:0;width:46px;height:46px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--green2),var(--green));display:flex;align-items:center;justify-content:center;cursor:pointer}
+#sendBtn:disabled{opacity:0.4}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="/ai-studio" aria-label="Back to AI Studio">&#8249;</a>
+  <div class="title">Creative Agent</div>
+  <div class="badge" id="creditsBadge" onclick="window.b2lShowCredits && window.b2lShowCredits()"><span>&#9889;</span><span id="creditsNum">0</span></div>
+</div>
+
+<div id="chat"></div>
+
+<div id="inputBar">
+  <textarea id="msgInput" rows="1" placeholder="Describe the image or video you want&hellip;"></textarea>
+  <button id="sendBtn" aria-label="Send">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+  </button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/auth.js"></script>
+<script src="/pricing.js"></script>
+<script>
+(function(){
+  var FN = 'https://sfpokfgfycsqvhtpamgm.supabase.co/functions/v1/fal-proxy';
+  var ANON = 'sb_publishable_T0QKdJAb6katQhGtA8gWZA_xxnA4r_A';
+  var history = [];
+  var busy = false;
+
+  var chat = document.getElementById('chat');
+  var input = document.getElementById('msgInput');
+  var sendBtn = document.getElementById('sendBtn');
+
+  async function session(){
+    var r = await window.b2lSupabase.auth.getSession();
+    return r && r.data ? r.data.session : null;
+  }
+  async function proxy(payload){
+    var s = await session();
+    if (!s) { window.location.href = '/login?next=/agent'; throw new Error('sign in'); }
+    var res = await fetch(FN, { method:'POST', headers:{ 'Content-Type':'application/json','Authorization':'Bearer '+s.access_token,'apikey':ANON }, body: JSON.stringify(payload) });
+    var d = await res.json().catch(function(){ return {}; });
+    if (!res.ok) { var e = new Error(d.error || ('Error '+res.status)); e.code = d.code; throw e; }
+    return d;
+  }
+
+  function add(role, text){
+    var el = document.createElement('div');
+    el.className = 'msg ' + role;
+    if (role === 'agent') {
+      var who = document.createElement('div'); who.className = 'who'; who.textContent = 'B2L Agent';
+      el.appendChild(who);
+    }
+    var body = document.createElement('div');
+    body.textContent = text;
+    el.appendChild(body);
+    chat.appendChild(el);
+    chat.scrollTop = chat.scrollHeight;
+    return el;
+  }
+  function typing(){
+    var el = document.createElement('div');
+    el.className = 'msg agent';
+    el.innerHTML = '<div class="who">B2L Agent</div><span class="typing"><i></i><i></i><i></i></span>';
+    chat.appendChild(el); chat.scrollTop = chat.scrollHeight;
+    return el;
+  }
+  function updateBadge(n){
+    if (typeof n !== 'number') return;
+    document.getElementById('creditsNum').textContent = n.toLocaleString();
+    document.getElementById('creditsBadge').style.display = 'flex';
+  }
+
+  async function runAction(act){
+    var holder = add('agent', 'Generating ' + act.kind + ' \u2014 ' + act.credits + ' credits\u2026');
+    try {
+      var sub = await proxy({ action:'submit', model_id: act.model_id, input: act.input, kind: act.kind });
+      updateBadge(sub.credits_left);
+      var tries = 0;
+      while (tries < 360) {
+        await new Promise(function(r){ setTimeout(r, 2500); });
+        var st;
+        try { st = await proxy({ action:'status', model_id: act.model_id, request_id: sub.request_id, gen_id: sub.gen_id }); }
+        catch(e){ tries++; continue; }
+        if (st.status === 'COMPLETED') {
+          var resu = await proxy({ action:'result', model_id: act.model_id, request_id: sub.request_id, gen_id: sub.gen_id });
+          if (resu.url) {
+            var media = act.kind === 'video'
+              ? '<video src="'+resu.url+'" controls playsinline loop></video>'
+              : '<img src="'+resu.url+'" alt="">';
+            holder.innerHTML = '<div class="who">B2L Agent</div>Here it is! Saved to your <a class="dl" href="/library">Library</a> too.' + media +
+              '<a class="dl" href="'+resu.url+'" target="_blank" rel="noopener" download>Download</a>';
+            history.push({ role:'assistant', content:'(Generated the '+act.kind+' successfully and showed it to the user.)' });
+          } else {
+            holder.querySelector('div:last-child').textContent = 'Hmm, that generation failed \u2014 your credits were refunded. Want to try again?';
+          }
+          chat.scrollTop = chat.scrollHeight;
+          return;
+        }
+        if (st.status === 'FAILED') {
+          holder.innerHTML = '<div class="who">B2L Agent</div>That one failed on the model side \u2014 your credits have been refunded. Tweak the idea and we\u2019ll go again?';
+          return;
+        }
+        tries++;
+      }
+      holder.innerHTML = '<div class="who">B2L Agent</div>Timed out \u2014 check your Library in a minute, it may still land.';
+    } catch(e) {
+      if (e.code === 'pro_required' || e.code === 'insufficient_credits') {
+        holder.innerHTML = '<div class="who">B2L Agent</div>' + (e.code === 'pro_required'
+          ? 'Generating needs a Pro plan \u2014 pick one and I\u2019ll make it straight away.'
+          : 'You\u2019re out of credits for that one \u2014 grab a top-up and I\u2019ll fire it off.');
+        if (window.b2lShowPricing) window.b2lShowPricing(e.code);
+      } else {
+        holder.innerHTML = '<div class="who">B2L Agent</div>\u26a0\ufe0f ' + (e.message || 'Something went wrong.');
+      }
+    }
+  }
+
+  async function send(){
+    var text = input.value.trim();
+    if (!text || busy) return;
+    var s = await session();
+    if (!s) { window.location.href = '/login?next=/agent'; return; }
+    busy = true; sendBtn.disabled = true;
+    input.value = ''; input.style.height = 'auto';
+    add('user', text);
+    history.push({ role:'user', content:text });
+    var t = typing();
+    try {
+      var res = await proxy({ action:'agent', messages: history });
+      t.remove();
+      add('agent', res.reply);
+      history.push({ role:'assistant', content: res.reply });
+      if (res.action) await runAction(res.action);
+    } catch(e) {
+      t.remove();
+      add('agent', '\u26a0\ufe0f ' + (e.message || 'Something went wrong \u2014 try again.'));
+    }
+    busy = false; sendBtn.disabled = false;
+  }
+
+  sendBtn.addEventListener('click', send);
+  input.addEventListener('keydown', function(e){
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+  });
+  input.addEventListener('input', function(){
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 110) + 'px';
+  });
+
+  /* Welcome + badge */
+  (async function(){
+    add('agent', 'Hey! I\u2019m your creative agent. Tell me what image or video you\u2019re imagining \u2014 I\u2019ll help shape the idea, pick the best model, quote the credits, and generate it right here in the chat.');
+    try {
+      var s = await session();
+      if (!s) return;
+      var me = await proxy({ action:'me' });
+      updateBadge(me.credits);
+    } catch(e){}
+  })();
+})();
+</script>
+</body>
+</html>
