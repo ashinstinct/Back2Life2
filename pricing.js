@@ -145,6 +145,104 @@
 
   function close() { document.getElementById('b2lPriceWrap').classList.remove('open'); }
 
+  /* ---------- Quick credits sheet (thumb-friendly overlay, no navigation) ---------- */
+  var creditsBuilt = false;
+  function buildCredits() {
+    if (creditsBuilt) return;
+    creditsBuilt = true;
+    var st = document.createElement('style');
+    st.textContent =
+      '#b2lCredWrap{position:fixed;inset:0;z-index:100001;display:none}' +
+      '#b2lCredWrap.open{display:block}' +
+      '#b2lCredWrap .bc-dim{position:absolute;inset:0;background:rgba(0,0,0,0.55)}' +
+      '#b2lCredWrap .bc-sheet{position:absolute;left:0;right:0;bottom:0;background:rgba(12,12,12,0.98);backdrop-filter:blur(30px);border-top:1px solid rgba(255,255,255,0.13);border-radius:26px 26px 0 0;padding:14px 20px calc(28px + env(safe-area-inset-bottom));font-family:Inter,sans-serif;transform:translateY(100%);transition:transform 0.25s cubic-bezier(0.4,0,0.2,1)}' +
+      '#b2lCredWrap.open .bc-sheet{transform:translateY(0)}' +
+      '#b2lCredWrap .bc-handle{width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,0.2);margin:0 auto 16px}' +
+      '#b2lCredWrap .bc-big{text-align:center;margin-bottom:4px}' +
+      '#b2lCredWrap .bc-big .n{font-size:42px;font-weight:900;color:#00ff88;line-height:1}' +
+      '#b2lCredWrap .bc-big .l{font-size:10.5px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:#555555;margin-top:6px}' +
+      '#b2lCredWrap .bc-rows{margin:18px 0 6px}' +
+      '#b2lCredWrap .bc-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:13.5px}' +
+      '#b2lCredWrap .bc-row:last-child{border-bottom:none}' +
+      '#b2lCredWrap .bc-row .k{color:#aaaaaa}' +
+      '#b2lCredWrap .bc-row .v{color:#f0f0f0;font-weight:700}' +
+      '#b2lCredWrap .bc-row .v.green{color:#00ff88}' +
+      '#b2lCredWrap .bc-btn{display:block;width:100%;text-align:center;border:none;border-radius:12px;padding:14px;font-family:Inter,sans-serif;font-size:14.5px;font-weight:800;cursor:pointer;margin-top:10px;text-decoration:none}' +
+      '#b2lCredWrap .bc-primary{background:linear-gradient(135deg,#00cc66,#00ff88);color:#000}' +
+      '#b2lCredWrap .bc-ghost{background:rgba(255,255,255,0.05);color:#f0f0f0;border:1px solid rgba(255,255,255,0.13)}';
+    document.head.appendChild(st);
+
+    var wrap = document.createElement('div');
+    wrap.id = 'b2lCredWrap';
+    wrap.innerHTML =
+      '<div class="bc-dim"></div>' +
+      '<div class="bc-sheet">' +
+      '<div class="bc-handle"></div>' +
+      '<div class="bc-big"><div class="n" id="bcCredits">—</div><div class="l">Credits Remaining</div></div>' +
+      '<div class="bc-rows">' +
+      '<div class="bc-row"><span class="k">Plan</span><span class="v" id="bcPlan">—</span></div>' +
+      '<div class="bc-row"><span class="k">Status</span><span class="v" id="bcStatus">—</span></div>' +
+      '<div class="bc-row" id="bcRenewRow" style="display:none"><span class="k">Credits refresh</span><span class="v" id="bcRenews">—</span></div>' +
+      '</div>' +
+      '<button class="bc-btn bc-primary" id="bcPlansBtn">Plans &amp; Top-Up Credits</button>' +
+      '<a class="bc-btn bc-ghost" href="/account">Manage Account</a>' +
+      '</div>';
+    document.body.appendChild(wrap);
+
+    function closeC() { wrap.classList.remove('open'); }
+    wrap.querySelector('.bc-dim').addEventListener('click', closeC);
+    document.getElementById('bcPlansBtn').addEventListener('click', function () {
+      closeC();
+      window.b2lShowPricing();
+    });
+
+    /* Swipe down to close */
+    var sheet = wrap.querySelector('.bc-sheet');
+    var startY = 0, dragging = false;
+    sheet.addEventListener('touchstart', function (e) { startY = e.touches[0].clientY; dragging = true; }, { passive: true });
+    sheet.addEventListener('touchmove', function (e) {
+      if (!dragging) return;
+      var dy = e.touches[0].clientY - startY;
+      if (dy > 0) sheet.style.transform = 'translateY(' + dy + 'px)';
+    }, { passive: true });
+    sheet.addEventListener('touchend', function (e) {
+      if (!dragging) return; dragging = false;
+      var dy = e.changedTouches[0].clientY - startY;
+      sheet.style.transform = '';
+      if (dy > 70) closeC();
+    }, { passive: true });
+  }
+
+  window.b2lShowCredits = async function () {
+    buildCredits();
+    var wrap = document.getElementById('b2lCredWrap');
+    wrap.classList.add('open');
+    try {
+      var res = await window.b2lSupabase.auth.getSession();
+      var session = res && res.data ? res.data.session : null;
+      if (!session) { window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname); return; }
+      var q = await window.b2lSupabase.from('profiles')
+        .select('credits, plan, subscription_status, billing_period, sub_renews_at, last_grant_at')
+        .eq('id', session.user.id).single();
+      var p = q.data || {};
+      var active = p.subscription_status === 'active';
+      document.getElementById('bcCredits').textContent = (p.credits || 0).toLocaleString();
+      document.getElementById('bcPlan').textContent = p.plan && p.plan !== 'free'
+        ? p.plan.charAt(0).toUpperCase() + p.plan.slice(1) + (p.billing_period === 'year' ? ' (Yearly)' : '')
+        : 'Free';
+      var stEl = document.getElementById('bcStatus');
+      stEl.textContent = active ? 'Active' : 'Free account';
+      stEl.className = active ? 'v green' : 'v';
+      if (active && p.sub_renews_at) {
+        document.getElementById('bcRenewRow').style.display = 'flex';
+        var refDate = p.billing_period === 'year' && p.last_grant_at
+          ? new Date(new Date(p.last_grant_at).getTime() + 30 * 864e5)
+          : new Date(p.sub_renews_at);
+        document.getElementById('bcRenews').textContent = refDate.toLocaleDateString();
+      }
+    } catch (e) {}
+  };
+
   window.b2lShowPricing = function (reason) {
     build();
     var t = document.getElementById('bpTitle');
