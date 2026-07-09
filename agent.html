@@ -36,7 +36,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;displ
 .typing i:nth-child(2){animation-delay:0.15s}.typing i:nth-child(3){animation-delay:0.3s}
 @keyframes tp{0%,60%,100%{opacity:0.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
 #inputBar{flex-shrink:0;display:flex;gap:10px;align-items:flex-end;padding:10px 12px calc(12px + env(safe-area-inset-bottom));background:rgba(8,8,8,0.95);border-top:1px solid var(--border)}
-#inputBar textarea{flex:1;resize:none;max-height:110px;background:var(--surface);border:1px solid var(--border);border-radius:16px;color:var(--text);font-family:'Inter',sans-serif;font-size:15px;padding:12px 14px;outline:none;line-height:1.4}
+#inputBar textarea{flex:1;resize:none;max-height:25dvh;background:var(--surface);border:1px solid var(--border);border-radius:16px;color:var(--text);font-family:'Inter',sans-serif;font-size:15px;padding:12px 14px;outline:none;line-height:1.4}
 #inputBar textarea:focus{border-color:var(--green)}
 #sendBtn{flex-shrink:0;width:46px;height:46px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--green2),var(--green));display:flex;align-items:center;justify-content:center;cursor:pointer}
 #sendBtn:disabled{opacity:0.4}
@@ -49,6 +49,15 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;displ
 .att .x{position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;border:none;background:rgba(0,0,0,0.75);color:#fff;font-size:11px;line-height:1;cursor:pointer}
 .msg .att-in{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .msg .att-in img,.msg .att-in video{width:74px;height:74px;object-fit:cover;border-radius:10px;margin:0}
+#composer{position:fixed;inset:0;z-index:100002;display:none;flex-direction:column;background:rgba(10,10,10,0.99);backdrop-filter:blur(20px);transform:translateY(100%);transition:transform 0.25s cubic-bezier(0.4,0,0.2,1)}
+#composer.open{display:flex;transform:translateY(0)}
+#composer .c-top{flex-shrink:0;padding:10px 16px 6px;text-align:center;touch-action:none}
+#composer .c-handle{width:44px;height:5px;border-radius:3px;background:rgba(255,255,255,0.25);margin:0 auto 6px}
+#composer .c-title{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--text3)}
+#composer textarea{flex:1;background:none;border:none;outline:none;resize:none;color:var(--text);font-family:'Inter',sans-serif;font-size:16px;line-height:1.6;padding:14px 18px calc(14px + env(safe-area-inset-bottom))}
+#composer .c-bar{flex-shrink:0;display:flex;gap:10px;align-items:center;padding:10px 12px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--border)}
+#composer .c-count{font-size:12px;color:var(--text3);margin-right:auto;padding-left:6px}
+#composer .c-send{width:46px;height:46px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--green2),var(--green));display:flex;align-items:center;justify-content:center;cursor:pointer}
 </style>
 </head>
 <body>
@@ -61,6 +70,19 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;displ
 
 <div id="chat"></div>
 
+<div id="composer">
+  <div class="c-top" id="composerTop">
+    <div class="c-handle"></div>
+    <div class="c-title">Long prompt &middot; swipe down to minimise</div>
+  </div>
+  <textarea id="composerInput" placeholder="Paste or write your full prompt or script here&hellip;"></textarea>
+  <div class="c-bar">
+    <span class="c-count" id="composerCount">0 characters</span>
+    <button class="c-send" id="composerSend" aria-label="Send">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+    </button>
+  </div>
+</div>
 <div id="attachStrip"></div>
 <div id="inputBar">
   <button id="attachBtn" aria-label="Attach image or video">
@@ -261,8 +283,61 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;displ
   });
   input.addEventListener('input', function(){
     this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 110) + 'px';
+    var cap = Math.floor(window.innerHeight * 0.25);
+    this.style.height = Math.min(this.scrollHeight, cap) + 'px';
+    if (this.value.length > 500 && this.scrollHeight > cap) openComposer();
   });
+
+  /* ---------- Fullscreen composer for long prompts ---------- */
+  var composer = document.getElementById('composer');
+  var composerInput = document.getElementById('composerInput');
+  var composerCount = document.getElementById('composerCount');
+  var composerTop = document.getElementById('composerTop');
+
+  function openComposer(){
+    composerInput.value = input.value;
+    updateCount();
+    composer.classList.add('open');
+    setTimeout(function(){ composerInput.focus(); }, 250);
+  }
+  function closeComposer(){
+    input.value = composerInput.value;
+    composer.classList.remove('open');
+    composer.style.transform = '';
+    input.dispatchEvent(new Event('input'));
+  }
+  function updateCount(){
+    composerCount.textContent = composerInput.value.length.toLocaleString() + ' characters';
+  }
+  composerInput.addEventListener('input', updateCount);
+
+  input.addEventListener('paste', function(e){
+    var pasted = (e.clipboardData || window.clipboardData).getData('text') || '';
+    if (pasted.length > 500 || (input.value.length + pasted.length) > 800) {
+      setTimeout(openComposer, 30);
+    }
+  });
+
+  document.getElementById('composerSend').addEventListener('click', function(){
+    closeComposer();
+    send();
+  });
+
+  /* Swipe down on the top handle to minimise */
+  var cStartY = 0, cDragging = false;
+  composerTop.addEventListener('touchstart', function(e){ cStartY = e.touches[0].clientY; cDragging = true; }, { passive: true });
+  composerTop.addEventListener('touchmove', function(e){
+    if (!cDragging) return;
+    var dy = e.touches[0].clientY - cStartY;
+    if (dy > 0) composer.style.transform = 'translateY(' + dy + 'px)';
+  }, { passive: true });
+  composerTop.addEventListener('touchend', function(e){
+    if (!cDragging) return; cDragging = false;
+    var dy = e.changedTouches[0].clientY - cStartY;
+    if (dy > 90) { closeComposer(); }
+    else { composer.style.transform = ''; }
+  }, { passive: true });
+  composerTop.addEventListener('click', function(){ closeComposer(); });
 
   /* Welcome + badge */
   (async function(){
