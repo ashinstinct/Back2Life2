@@ -436,6 +436,24 @@ const IMAGE_MODELS = [
     }
   },
   {
+    id: 'google/nano-banana-2-lite',
+    name: 'NB 2 Lite',
+    fullName: 'Nano Banana 2 Lite',
+    icon: '\ud83c\udf4c',
+    badge: 'new',
+    desc: 'Google Gemini 3.1 Flash Lite \u2014 4 sec generations',
+    cost: '~$0.04/img',
+    settings: {
+      aspect_ratio: { label: 'Ratio', type: 'ratio',
+        options: ['auto','1:1','16:9','9:16','4:3','3:4','21:9','3:2','2:3'],
+        default: 'auto' },
+      resolution: { label: 'Resolution', type: 'chips',
+        options: [
+          {value:'0.5K',label:'0.5K'},{value:'1K',label:'1K'},{value:'2K',label:'2K'},{value:'4K',label:'4K'}
+        ], default: '1K' },
+    }
+  },
+  {
     id: 'fal-ai/bytedance/seedream/v5/lite/text-to-image',
     id_edit: 'fal-ai/bytedance/seedream/v5/lite/edit',
     name: 'Seedream 5.0',
@@ -1155,7 +1173,7 @@ async function generateImages(prompt, refs) {
         modelId = 'openai/gpt-image-2/edit';
         input.image_urls = refs.filter(r => r.type === 'image').map(r => r.url);
       }
-    } else if (modelId === 'fal-ai/nano-banana-pro' || modelId === 'fal-ai/nano-banana-2') {
+    } else if (modelId === 'fal-ai/nano-banana-pro' || modelId === 'fal-ai/nano-banana-2' || modelId === 'google/nano-banana-2-lite') {
       input.aspect_ratio = s.aspect_ratio || '1:1';
       input.resolution = s.resolution || '1K';
       input.num_images = 1;
