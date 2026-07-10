@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta property="og:title" content="The Sting — Scorpion Transformation — AI Video Tutorial | Back2Life.app">
+<meta property="og:description" content="Transform into a monstrous scorpion creature in one continuous Seedance 2.0 shot — full prompt and settings.">
+<meta property="og:image" content="https://back2lifeapp.vercel.app/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://back2lifeapp.vercel.app/tutorial-19">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Sting — Scorpion Transformation — AI Video Tutorial | Back2Life.app">
+<meta name="twitter:description" content="Transform into a monstrous scorpion creature in one continuous Seedance 2.0 shot — full prompt and settings.">
+<meta name="twitter:image" content="https://back2lifeapp.vercel.app/og-image.png">
+<title>The Sting — Scorpion Transformation — AI Video Tutorial | Back2Life.app</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #0f0f0f; color: #e8e8e8; line-height: 1.7; }
+  .hero { padding-top: 20px !important; background: linear-gradient(135deg, #0e1405 0%, #141c06 40%, #0c1205 100%); padding: 60px 40px 50px; text-align: center; border-bottom: 2px solid #c8ff00; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, #c8ff0022 0%, transparent 70%); }
+  .brand-tag { display: inline-block; background: linear-gradient(90deg, #c8ff00, #6a9c00); color: #000; font-weight: 800; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; padding: 6px 18px; border-radius: 20px; margin-bottom: 24px; }
+  .hero h1 { font-size: clamp(28px, 5vw, 52px); font-weight: 800; color: #fff; margin-bottom: 16px; line-height: 1.15; }
+  .hero h1 span { color: #c8ff00; }
+  .hero-sub { font-size: 18px; color: #aaa; max-width: 620px; margin: 0 auto 32px; }
+  .hero-meta { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; }
+  .meta-pill { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); padding: 8px 20px; border-radius: 30px; font-size: 13px; color: #ccc; }
+  .meta-pill span { color: #c8ff00; font-weight: 600; }
+  .social-bar { background: #111; border-bottom: 1px solid #222; padding: 16px 40px; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  .social-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 2px; margin-right: 8px; }
+  .social-link { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; text-decoration: none; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1); color: #ccc; }
+  .social-link:hover { transform: translateY(-1px); border-color: #c8ff00; color: #c8ff00; }
+  .container { max-width: 860px; margin: 0 auto; padding: 60px 32px; }
+  .overview-box { background: linear-gradient(135deg, #c8ff000f, #6a9c000a); border: 1px solid #c8ff0033; border-radius: 16px; padding: 32px 36px; margin-bottom: 56px; }
+  .overview-box h2 { font-size: 20px; color: #c8ff00; margin-bottom: 16px; }
+  .overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .overview-item { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: #ccc; }
+  .overview-item .dot { color: #c8ff00; font-size: 18px; margin-top: -2px; flex-shrink: 0; }
+  .tools-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 56px; }
+  .tool-card { flex: 1; min-width: 160px; background: #161616; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; text-align: center; }
+  .tool-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .tool-desc { font-size: 12px; color: #777; }
+  .tool-icon-svg { display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .step-section { margin-bottom: 64px; }
+  .step-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #222; }
+  .step-number { width: 48px; height: 48px; background: linear-gradient(135deg, #c8ff00, #6a9c00); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: #000; flex-shrink: 0; }
+  .step-title-block h2 { font-size: 24px; font-weight: 700; color: #fff; }
+  .step-title-block p { font-size: 14px; color: #888; margin-top: 2px; }
+  .instruction { margin-bottom: 20px; }
+  .instruction-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: #c8ff001f; border: 1px solid #c8ff004d; border-radius: 50%; font-size: 12px; font-weight: 700; color: #c8ff00; flex-shrink: 0; margin-right: 12px; margin-bottom: 6px; float: left; }
+  .instruction p { color: #ccc; font-size: 15px; overflow: hidden; }
+  .instruction p strong { color: #fff; }
+  .clearfix::after { content: ''; display: table; clear: both; }
+  .prompt-block { background: #0a0a0a; border: 1px solid #2a2a2a; border-left: 3px solid #c8ff00; border-radius: 10px; padding: 24px 28px; margin: 20px 0; position: relative; }
+  .prompt-block .prompt-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #c8ff00; margin-bottom: 14px; }
+  .prompt-block pre { font-family: 'Courier New', monospace; font-size: 13px; color: #f0d8e0; white-space: pre-wrap; word-break: break-word; line-height: 1.8; }
+  .copy-btn { position: absolute; top: 14px; right: 14px; background: #c8ff001a; border: 1px solid #c8ff004d; color: #c8ff00; font-size: 12px; font-weight: 600; font-family: 'Inter', sans-serif; padding: 5px 14px; border-radius: 6px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+  .copy-btn:hover { background: #c8ff0033; border-color: #c8ff00; }
+  .copy-btn.copied { background: #c8ff0040; }
+  .copy-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .callout { display: flex; gap: 14px; align-items: flex-start; background: rgba(0,200,255,0.05); border: 1px solid rgba(0,200,255,0.2); border-radius: 10px; padding: 18px 22px; margin: 20px 0; }
+  .callout-icon { font-size: 20px; flex-shrink: 0; }
+  .callout p { font-size: 14px; color: #b0d4e0; }
+  .callout p strong { color: #00ccff; }
+  .callout.tip { background: rgba(255,200,0,0.05); border-color: rgba(255,200,0,0.2); }
+  .callout.tip p { color: #d4c07a; }
+  .callout.tip p strong { color: #ffc800; }
+  .settings-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+  .settings-table th { background: #161616; color: #888; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 12px 16px; text-align: left; border-bottom: 1px solid #2a2a2a; }
+  .settings-table td { padding: 12px 16px; border-bottom: 1px solid #1a1a1a; color: #ccc; vertical-align: top; }
+  .settings-table td:first-child { color: #fff; font-weight: 500; }
+  .settings-table td .val { display: inline-block; background: #c8ff001a; color: #c8ff00; font-family: monospace; font-size: 13px; padding: 2px 10px; border-radius: 5px; }
+  .settings-table tr:last-child td { border-bottom: none; }
+  .divider { border: none; border-top: 1px solid #1e1e1e; margin: 56px 0; }
+  .media-block { margin: 24px 0; border-radius: 12px; overflow: hidden; border: 1px solid #2a2a2a; }
+  .media-label { background: #161616; padding: 10px 18px; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #c8ff00; border-bottom: 1px solid #2a2a2a; }
+  .media-caption { background: #0f0f0f; padding: 12px 18px; font-size: 13px; color: #666; border-top: 1px solid #1a1a1a; }
+  .media-block img { width: 100%; display: block; }
+  .char-sheet { width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid #2a2a2a; margin: 24px 0; }
+  .char-sheet img { width: 100%; display: block; }
+  .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
+  .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+  .storyboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0; }
+  .sb-card { background: #111; border: 1px solid #222; border-radius: 12px; overflow: hidden; transition: border-color 0.2s; }
+  .sb-card:hover { border-color: #c8ff00; }
+  .sb-img-wrap { position: relative; overflow: hidden; }
+  .sb-img-wrap img { width: 100%; height: auto; display: block; aspect-ratio: 16/9; object-fit: cover; }
+  .sb-timecode { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.75); color: #c8ff00; font-size: 11px; font-weight: 700; font-family: monospace; padding: 3px 8px; border-radius: 4px; letter-spacing: 1px; }
+  .sb-info { padding: 14px 16px; }
+  .sb-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+  .sb-caption { font-size: 12px; color: #777; line-height: 1.5; }
+  .final-cta { background: linear-gradient(135deg, #141414, #1a1a1a); border: 1px solid #c8ff0033; border-radius: 20px; padding: 48px 40px; text-align: center; margin-top: 40px; }
+  .final-cta h2 { font-size: 28px; color: #fff; margin-bottom: 12px; }
+  .final-cta h2 span { color: #c8ff00; }
+  .final-cta p { color: #888; margin-bottom: 32px; font-size: 15px; }
+  .social-grid { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .cta-social { display: inline-flex; align-items: center; gap: 7px; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.12); color: #ccc; }
+  .cta-social:hover { transform: translateY(-2px); color: #c8ff00; border-color: #c8ff00; }
+  .site-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,10,10,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);padding:0 16px;height:56px;display:flex;align-items:center;gap:10px}
+  .site-nav-logo{font-size:18px;font-weight:800;color:#fff;text-decoration:none;letter-spacing:-.2px;flex-shrink:0}
+  .site-nav-logo em{color:#00ff88;font-style:normal}
+  .site-spacer{flex:1}
+  .site-nav-back{font-size:13px;font-weight:500;color:#888;text-decoration:none;flex-shrink:0;transition:color .2s}
+  .site-nav-back:hover{color:#c8ff00}
+  .site-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;z-index:1;flex-shrink:0}
+  .site-burger span{display:block;width:20px;height:2px;background:#aaa;border-radius:2px;transition:all .3s}
+  .site-burger.open span{background:#c8ff00}
+  .site-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .site-burger.open span:nth-child(2){opacity:0}
+  .site-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  .site-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:290;display:none;backdrop-filter:blur(2px)}
+  .site-backdrop.open{display:block}
+  .site-drawer{position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid #2a2a2a;border-radius:20px 20px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s ease;padding:0 20px 40px;max-height:80vh;overflow-y:auto}
+  .site-drawer.open{transform:translateY(0)}
+  .drawer-handle-wrap{padding:10px 0 6px;text-align:center}
+  .drawer-handle{width:36px;height:4px;background:#333;border-radius:2px;margin:0 auto}
+  .drawer-sl{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:14px 0 7px;border-top:1px solid #1a1a1a;margin-top:4px}
+  .drawer-sl:first-of-type{border-top:none;margin-top:0;padding-top:4px}
+  .drawer-a{display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ddd;text-decoration:none;border-bottom:1px solid #222;transition:color .2s}
+  .drawer-a:active{color:#c8ff00}
+  .drawer-a .ico{width:26px;text-align:center;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .drawer-cta{display:block;margin-top:20px;background:#00ff88;color:#000;font-weight:700;font-size:14px;padding:13px;border-radius:10px;text-decoration:none;text-align:center}
+  @media(max-width:768px){.site-nav-back{display:none}.site-burger{display:flex}}
+  .route-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width:600px){.overview-grid{grid-template-columns:1fr}.hero{padding:20px 20px 32px}.container{padding:40px 20px}.final-cta{padding:36px 20px}.storyboard-grid{grid-template-columns:1fr 1fr}.route-row-grid{grid-template-columns:1fr}}
+</style>
+<link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<meta name="theme-color" content="#0a0f05">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Back2Life">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="/manifest.json">
+<meta name="vercel-toolbar" content="off">
+</head>
+<body>
+
+
+<nav class="site-nav">
+  <button class="site-burger" id="sBurger"><span></span><span></span><span></span></button>
+  <a href="/" class="site-nav-logo">Back2Life<em>.app</em></a>
+  <div class="site-spacer"></div>
+  <a href="/" class="site-nav-back">← Tutorials</a>
+</nav>
+<div class="site-backdrop" id="sBackdrop"></div>
+<div class="site-drawer" id="sDrawer">
+  <div class="drawer-handle-wrap"><div class="drawer-handle"></div></div>
+  <div class="drawer-sl">Navigation</div>
+  <a href="/" class="drawer-a"><span class="ico"><img src="/icons/home.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Home"></span>Home</a>
+  <a href="/#tutorials" class="drawer-a"><span class="ico"><img src="/icons/tutorials.png" alt="Tutorials" style="width:28px;height:28px;border-radius:6px;display:block"></span>Tutorials</a>
+  <div class="drawer-sl"><img src="/icons/free-tools.png" style="width:16px;height:16px;border-radius:3px;vertical-align:middle;margin-right:6px">Free Tools</div>
+  <a href="/watermark" class="drawer-a"><span class="ico"><img src="/icons/watermark.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Watermark"></span>Watermark Tool</a>
+  <a href="/video-splitter" class="drawer-a"><span class="ico"><img src="/icons/video-splitter.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Video Splitter"></span>Video Splitter</a>
+  <a href="/frame-extractor" class="drawer-a"><span class="ico"><img src="/icons/frame-extractor.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Frame Extractor"></span>Frame Extractor</a>
+  <a href="/audio-editor" class="drawer-a"><span class="ico"><img src="/icons/audio-editor.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Audio Editor"></span>Audio Editor</a>
+  <a href="/audio-converter" class="drawer-a"><span class="ico"><img src="/icons/audio-converter.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Audio Converter"></span>Audio Converter</a>
+  <a href="/reframe" class="drawer-a"><span class="ico"><img src="/icons/reframe.svg" style="width:28px;height:28px;border-radius:6px;display:block" alt="Reframe Tool"></span>Reframe Tool</a>
+  <div class="drawer-sl">AI Generation</div>
+  <a href="/video-flipper" class="drawer-a"><span class="ico"><img src="/icons/video-flipper.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Batch Flipper"></span>Batch Video Flipper</a>
+  <a href="/ai-studio" class="drawer-a"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg></span>AI Studio</a>
+  <a href="/motion-control" class="drawer-a"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/><path d="M18 12l3 3-3 3"/></svg></span>Motion Control</a>
+    <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:14px 0 7px;border-top:1px solid #1a1a1a;margin-top:4px">Account</div>
+  <a href="/account" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg></span>My Account &middot; Credits</a>
+  <a href="/library" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>My Library</a>
+  <a href="/characters" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20v-.5a6.5 6.5 0 0113 0v.5"/><path d="M18 4l.9 2.1L21 7l-2.1.9L18 10l-.9-2.1L15 7l2.1-.9z"/></svg></span>Characters <span style="font-size:9px;font-weight:900;letter-spacing:1px;background:rgba(0,255,136,0.15);color:#00ff88;padding:2px 7px;border-radius:999px">NEW</span></a>
+  <a href="/agent" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></span>Creative Agent <span style="font-size:9px;font-weight:900;letter-spacing:1px;background:rgba(0,200,255,0.15);color:#38bdf8;padding:2px 7px;border-radius:999px">NEW</span></a>
+  <div class="drawer-sl">Follow Us</div>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="#E1306C" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="#E1306C" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="#E1306C"/></svg></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.17 8.17 0 004.78 1.52V7.1a4.85 4.85 0 01-1.01-.41z" fill="white"/></svg></span>TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24"><path d="M23.5 6.19a3 3 0 00-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 00.5 6.19 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.81 3 3 0 002.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 002.12-2.12A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.81z" fill="#FF0000"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="white"/></svg></span>YouTube</a>
+  <a href="https://x.com/Back2LifeAI" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="white"/></svg></span>X / Twitter</a>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-cta">Follow on Instagram</a>
+</div>
+
+<!-- HERO IMAGE -->
+<div style="width:100%;background:#050505;overflow:hidden;margin-top:56px;border-bottom:1px solid #c8ff0033">
+  <img src="/img/tut19-hero.jpg?v=1" alt="The Sting — Scorpion Transformation" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover" onerror="this.parentElement.style.display='none'">
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="position:relative;z-index:1">
+    <div class="brand-tag">BACK2LIFE.APP TUTORIAL</div>
+    <h1>The Sting<br><span>Scorpion Body-Horror Transformation</span></h1>
+    <p class="hero-sub">One unbroken 15-second shot: a tiny desert scorpion sprints across a dig site, stings you on the neck, and you transform into a monstrous humanoid scorpion creature — all from a single selfie and one prompt.</p>
+    <div class="hero-meta">
+      <div class="meta-pill">Tool: <span>Seedance 2.0</span></div>
+      <div class="meta-pill">Shot: <span>One 15s take</span></div>
+      <div class="meta-pill">Difficulty: <span>Beginner</span></div>
+      <div class="meta-pill">Time: <span>~10 mins</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SOCIAL BAR -->
+<div class="social-bar">
+  <span class="social-label">Follow</span>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="social-link ig">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg>
+    Instagram
+  </a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="social-link tt">
+    <svg width="14" height="14" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.17 8.17 0 004.78 1.52V7.1a4.85 4.85 0 01-1.01-.41z" fill="currentColor"/></svg>
+    TikTok
+  </a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="social-link yt">
+    <svg width="14" height="14" viewBox="0 0 24 24"><path d="M23.5 6.19a3 3 0 00-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 00.5 6.19 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.81 3 3 0 002.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 002.12-2.12A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.81z" fill="currentColor"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="white"/></svg>
+    YouTube
+  </a>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+  <!-- WHAT YOU'LL CREATE -->
+  <div class="overview-box">
+    <h2>What You'll Create</h2>
+    <p style="color:#ccc;font-size:15px;margin-bottom:20px">This prompt is built around one long uninterrupted camera move — it opens at ground level chasing a palm-sized scorpion, follows it up your arm to the sting, then eases back as glowing venom veins spread and your body warps into a full creature. The genius of the writing is the pacing control: the camera stays locked on the scorpion until the sting, and the prompt explicitly forbids aerial and wide shots so the chaos stays documentary-close.</p>
+    <div class="overview-grid">
+      <div class="overview-item"><span class="dot">▸</span><span>A single continuous 15-second body-horror transformation shot</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>Your face on the archaeologist via one image reference</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>A ground-level scorpion chase that hooks viewers in the first second</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>A handheld documentary-style rampage finale</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>A pacing structure you can reuse for any sting/bite/infection transformation</span></div>
+    </div>
+  </div>
+
+  <!-- TOOLS NEEDED -->
+  <div class="tools-row">
+    <div class="tool-card">
+      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c8ff00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div class="tool-name">Seedance 2.0</div>
+      <div class="tool-desc">Dreamina — Omni reference with a single image mention</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c8ff00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div class="tool-name">1 Reference Photo</div>
+      <div class="tool-desc">A clear selfie or half-body photo — glasses optional but they match the prompt</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c8ff00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div class="tool-name">Back2Life Watermark</div>
+      <div class="tool-desc">Brand the clip before posting — this format gets ripped constantly</div>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">1</div>
+      <div class="step-title-block">
+        <h2>Prepare Your Reference Photo</h2>
+        <p>One good image is all this one needs</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>Pick a <strong>clear, well-lit photo</strong> of yourself — face fully visible, ideally chest-up or half-body, no other people in frame.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>The prompt dresses you in a <strong>khaki expedition shirt, utility vest, cargo pants and glasses</strong> — you do not need to wear these in the photo, the model applies them. But if you happen to have a photo in similar clothing, identity consistency improves.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">3</span>
+      <p>Avoid heavy filters, sunglasses covering the eyes, or hats casting face shadows — the transformation moment relies on the model knowing your face well.</p>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>Pro tip:</strong> The reaction beat is the money shot. The prompt insists the man is calm and unaware until the scorpion lands — that contrast is what makes the sting land. Do not soften it when you customise.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 2 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">2</div>
+      <div class="step-title-block">
+        <h2>Configure Your Settings</h2>
+        <p>Set these before pasting the prompt</p>
+      </div>
+    </div>
+
+    <table class="settings-table">
+      <thead><tr><th>Setting</th><th>Value</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Model</td><td><span class="val">Dreamina Seedance 2.0 Fast</span></td><td>Handles single continuous shots with strong prompt adherence</td></tr>
+        <tr><td>Reference Mode</td><td><span class="val">Omni reference</span></td><td>Type @ in the prompt box and select your uploaded photo where the prompt says [IMAGE REFERENCE]</td></tr>
+        <tr><td>Duration</td><td><span class="val">15 seconds</span></td><td>The full chase → sting → transformation → rampage arc needs all of it</td></tr>
+        <tr><td>Aspect Ratio</td><td><span class="val">16:9</span></td><td>Cinematic desert scale; crop to 9:16 after with the Reframe Tool</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 3 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">3</div>
+      <div class="step-title-block">
+        <h2>Paste The Prompt &amp; Generate</h2>
+        <p>Copy it exactly — then customise once you've seen a clean run</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>Upload your photo as a reference element.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>Copy the prompt below. Where it says <strong>[IMAGE REFERENCE]</strong>, replace the tag by typing <strong>@</strong> and selecting your uploaded image so the mention links properly.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">3</span>
+      <p>Generate and let the full 15 seconds render — the transformation lands around the 8-second mark.</p>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Prompt</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>Single continuous uninterrupted cinematic shot, no cuts, one flowing 15-second take. Desaturated cool palette with warm amber accents, deep shadow falloff, fine 35mm grain. Photorealistic live-action film, NOT animated, NOT a video game, NOT CGI render. A tense body-horror transformation at an archaeological expedition dig site in a vast sun-scorched desert at harsh midday, heat shimmer, drifting sand and dust.
+
+The shot opens at extreme ground level on a SMALL black desert scorpion — only palm-sized, realistic natural scale — ALREADY sprinting at full speed across the sand from the very first frame, mid-run, never stationary, the camera tracking low and fast right beside it. It races across open ground, weaving past scattered expedition gear — brushes, trowels, open crates, ropes, dusty boots of crew members — a long fast ground-level chase.
+
+Still in the same unbroken shot, the small scorpion reaches a man crouched at the dig — the man [IMAGE REFERENCE], in a dusty khaki expedition field shirt with rolled sleeves, utility vest, cargo pants and glasses. He holds a small ancient artifact up in both hands close to his face, calm and completely unaware, carefully examining and inspecting its fine details, turning it slowly to study the carvings, fully absorbed and fascinated by the small relic. The scorpion suddenly leaps onto the back of his hand. ONLY at the moment it lands does he react — he flinches hard, startled. The camera stays locked on the scorpion, following it closely as it scurries fast up his forearm, over his shoulder, onto his neck, and jabs its stinger hard into his neck.
+
+Only now does the camera ease back slightly to a medium shot: he cries out, slaps the scorpion off and flings it away, stumbling to his feet, gripping his neck in pain and confusion. Glowing sickly yellow-green venom veins spread from the sting across his neck and face as he convulses, his body warping and hardening into a monstrous humanoid scorpion creature — glossy dark chitinous exoskeleton with segmented armored plates, serrated pincers forming from his hands, glowing venomous yellow-green eyes, a massive segmented scorpion tail with a dripping stinger arching over his back.
+
+The shot stays close for the finale — a raw handheld medium shot, the camera shaking and reactive like real documentary footage, staying tight on the creature as it screeches and rampages through the dig site, thrashing its pincers and tail, knocking over crates and equipment, while terrified crew members in matching khaki outfits sprint past the camera in panic, dust kicking up, the handheld camera jostling among the chaos, gritty and real. No aerial view, no wide shot — stay in the chaos at ground level until the end. No music.</pre>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">🎬</span>
+      <p>If the scorpion spawns too big, add "the scorpion remains tiny, palm-sized, natural scale" to the front of the prompt — creature scale drift is the most common failure on this one.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 4 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">4</div>
+      <div class="step-title-block">
+        <h2>Download &amp; Share</h2>
+        <p>No editing needed — what you get is the final clip</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>Once generation completes, <strong>preview the clip</strong>. Results vary between runs — regenerate rather than settle.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>Tap <strong>Download</strong> to save the MP4 — ready for <strong>TikTok, Instagram Reels, and YouTube Shorts</strong>.</p>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">🚀</span>
+      <p><strong>Posting tip:</strong> Post the first 3 seconds (the scorpion chase) as the hook — viewers who stay past the sting almost always watch to the rampage.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- EXAMPLE OUTPUT -->
+  <div class="step-section" id="exampleOutput19">
+    <div class="step-header">
+      <div class="step-number" style="font-size:14px;font-weight:800">▶</div>
+      <div class="step-title-block">
+        <h2>Example Output</h2>
+        <p>Generated with the exact prompt above</p>
+      </div>
+    </div>
+    <div class="media-block">
+      <div class="media-label">Generated with Seedance 2.0</div>
+      <video controls playsinline preload="metadata" style="width:100%;display:block;background:#000" onerror="document.getElementById('exampleOutput19').style.display='none';this.closest('.step-section').nextElementSibling.style.display='none'">
+        <source src="/video/tut19-example.mp4?v=1" type="video/mp4">
+      </video>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- VARIATIONS -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number" style="font-size:14px;font-weight:800">+</div>
+      <div class="step-title-block">
+        <h2>Variations &amp; Ideas</h2>
+        <p>Ways to remix this concept</p>
+      </div>
+    </div>
+
+    <table class="settings-table">
+      <thead><tr><th>Swap This</th><th>For This</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td>Desert scorpion</td><td>Spider in an attic, snake in a jungle, wasp in a lab</td><td>Same chase → sting → transformation structure, new creature and location</td></tr>
+        <tr><td>Khaki archaeologist</td><td>Your real outfit or brand merch</td><td>Describe your actual clothing to keep continuity with your channel character</td></tr>
+        <tr><td>Rampage finale</td><td>Creature freezes and stares into the lens</td><td>Swap the last paragraph for a horror-still ending — great loop point</td></tr>
+        <tr><td>No music</td><td>Diegetic desert wind + scuttling foley note</td><td>Some generations respect audio direction; worth testing</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FINAL CTA -->
+  <div class="final-cta">
+    <h2>Share Your <span>Creation</span></h2>
+    <p>Generated your version? Tag us — we repost the best results across all our channels.</p>
+    <div class="social-grid">
+      <a href="https://www.instagram.com/back2life.ai" target="_blank" class="cta-social">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg>
+        @back2life.ai
+      </a>
+      <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="cta-social">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.17 8.17 0 004.78 1.52V7.1a4.85 4.85 0 01-1.01-.41z" fill="currentColor"/></svg>
+        @back2life.ai
+      </a>
+      <a href="https://youtube.com/@back2lifeai" target="_blank" class="cta-social">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M23.5 6.19a3 3 0 00-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 00.5 6.19 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.81 3 3 0 002.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 002.12-2.12A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.81z" fill="currentColor"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="white"/></svg>
+        YouTube
+      </a>
+      <a href="https://x.com/Back2LifeAI" target="_blank" class="cta-social">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="currentColor"/></svg>
+        @Back2LifeAI
+      </a>
+    </div>
+    <div style="margin-top:28px">
+      <a href="/" style="display:inline-block;color:#c8ff00;font-size:14px;font-weight:600;text-decoration:none;border:1px solid #c8ff004d;padding:10px 24px;border-radius:8px;transition:all .2s">← Back to all tutorials</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const burger=document.getElementById('sBurger'),backdrop=document.getElementById('sBackdrop'),drawer=document.getElementById('sDrawer');
+function openDrawer(){burger.classList.add('open');backdrop.classList.add('open');drawer.classList.add('open');document.body.style.overflow='hidden'}
+function closeDrawer(){burger.classList.remove('open');backdrop.classList.remove('open');drawer.classList.remove('open');document.body.style.overflow=''}
+burger.addEventListener('click',()=>drawer.classList.contains('open')?closeDrawer():openDrawer());
+backdrop.addEventListener('click',closeDrawer);
+
+function copyPrompt(btn){
+  const pre=btn.closest('.prompt-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent.trim()).then(()=>{
+    const orig=btn.innerHTML;
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Copied!';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.innerHTML=orig;btn.classList.remove('copied')},2000);
+  });
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/auth.js"></script>
+</body>
+</html>
