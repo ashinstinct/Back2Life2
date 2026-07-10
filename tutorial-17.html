@@ -123,7 +123,8 @@
   .drawer-a .ico{width:26px;text-align:center;display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .drawer-cta{display:block;margin-top:20px;background:#00ff88;color:#000;font-weight:700;font-size:14px;padding:13px;border-radius:10px;text-decoration:none;text-align:center}
   @media(max-width:768px){.site-nav-back{display:none}.site-burger{display:flex}}
-  @media(max-width:600px){.overview-grid{grid-template-columns:1fr}.hero{padding:20px 20px 32px}.container{padding:40px 20px}.final-cta{padding:36px 20px}.storyboard-grid{grid-template-columns:1fr 1fr}}
+  .route-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width:600px){.overview-grid{grid-template-columns:1fr}.hero{padding:20px 20px 32px}.container{padding:40px 20px}.final-cta{padding:36px 20px}.storyboard-grid{grid-template-columns:1fr 1fr}.route-row-grid{grid-template-columns:1fr}}
 </style>
 <link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -433,6 +434,92 @@ Resolution: 8K HDR.</pre>
     <div class="callout tip">
       <span class="callout-icon">🚀</span>
       <p><strong>Posting tip:</strong> "I traced my flight path on Google Maps before generating this" is a strong hook on its own — showing the map screenshot side-by-side with the finished FPV clip makes for a great two-slide carousel or before/after post.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- MORE EXAMPLE ROUTES -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number" style="font-size:14px;font-weight:800">🗺️</div>
+      <div class="step-title-block">
+        <h2>More Example Routes</h2>
+        <p>Four traced maps and the matching FPV footage they produced — same technique, four different cities</p>
+      </div>
+    </div>
+
+    <!-- RIO -->
+    <div style="margin-bottom:40px">
+      <div style="font-size:15px;font-weight:700;color:#f2b705;margin-bottom:12px">🇧🇷 Rio de Janeiro — Copacabana to Christ the Redeemer</div>
+      <div class="route-row-grid">
+        <div class="media-block" style="margin:0">
+          <div class="media-label">Traced Route</div>
+          <img src="/img/tut17-route-rio-map.jpg?v=1" alt="Traced Google Maps flight path from Copacabana Beach to Christ the Redeemer, Rio de Janeiro">
+        </div>
+        <div class="media-block" style="margin:0">
+          <div class="media-label">Generated FPV Footage</div>
+          <video controls playsinline preload="metadata" poster="/img/tut17-route-rio-map.jpg?v=1" style="width:100%;display:block;background:#000">
+            <source src="/video/tut17-route-rio.mp4?v=1" type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+
+    <!-- DUBAI -->
+    <div style="margin-bottom:40px">
+      <div style="font-size:15px;font-weight:700;color:#f2b705;margin-bottom:12px">🇦🇪 Dubai — Ground Level to the Top of Burj Khalifa</div>
+      <div class="route-row-grid">
+        <div class="media-block" style="margin:0">
+          <div class="media-label">Traced Route</div>
+          <img src="/img/tut17-route-dubai-map.jpg?v=1" alt="Traced Google Maps flight path spiraling up the Burj Khalifa, Dubai">
+        </div>
+        <div class="media-block" style="margin:0">
+          <div class="media-label">Generated FPV Footage</div>
+          <video controls playsinline preload="metadata" poster="/img/tut17-route-dubai-map.jpg?v=1" style="width:100%;display:block;background:#000">
+            <source src="/video/tut17-route-dubai.mp4?v=1" type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARIS -->
+    <div style="margin-bottom:40px">
+      <div style="font-size:15px;font-weight:700;color:#f2b705;margin-bottom:12px">🇫🇷 Paris — Champ de Mars to the Eiffel Tower</div>
+      <div class="route-row-grid">
+        <div class="media-block" style="margin:0">
+          <div class="media-label">Traced Route</div>
+          <img src="/img/tut17-route-paris-map.jpg?v=1" alt="Traced Google Maps flight path from Champ de Mars weaving around the Eiffel Tower, Paris">
+        </div>
+        <div class="media-block" style="margin:0">
+          <div class="media-label">Generated FPV Footage</div>
+          <video controls playsinline preload="metadata" poster="/img/tut17-route-paris-map.jpg?v=1" style="width:100%;display:block;background:#000">
+            <source src="/video/tut17-route-paris.mp4?v=1" type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+
+    <!-- NYC -->
+    <div>
+      <div style="font-size:15px;font-weight:700;color:#f2b705;margin-bottom:12px">🇺🇸 New York — Washington Square Park to the Empire State Building</div>
+      <div class="route-row-grid">
+        <div class="media-block" style="margin:0">
+          <div class="media-label">Traced Route</div>
+          <img src="/img/tut17-route-nyc-map.jpg?v=1" alt="Traced Google Maps flight path from Washington Square Park to the Empire State Building, New York">
+        </div>
+        <div class="media-block" style="margin:0">
+          <div class="media-label">Generated FPV Footage</div>
+          <video controls playsinline preload="metadata" poster="/img/tut17-route-nyc-map.jpg?v=1" style="width:100%;display:block;background:#000">
+            <source src="/video/tut17-route-nyc.mp4?v=1" type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip" style="margin-top:32px">
+      <span class="callout-icon">💡</span>
+      <p><strong>Notice the pattern:</strong> a straight line means a fast, direct approach; loops and spirals mean orbit or wraparound moves at the landmark. The shape you draw is the camera move you get.</p>
     </div>
   </div>
 
