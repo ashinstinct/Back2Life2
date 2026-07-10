@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Characters — Back2Life.app</title>
+<meta name="description" content="Create a character once, reuse them in every AI image and video. Consistent faces, outfits and identity across all your generations.">
+<link rel="icon" type="image/png" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080808;--surface:rgba(255,255,255,0.04);--surface2:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.13);
+  --green:#00ff88;--green2:#00cc66;--green-dim:rgba(0,255,136,0.08);
+  --text:#f0f0f0;--text2:#aaaaaa;--text3:#555555;--red:#ff4444;
+  --radius:18px;--radius-sm:12px;--pill:999px;--bar-h:60px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;min-height:100dvh}
+.topbar{position:sticky;top:0;z-index:100;height:var(--bar-h);display:flex;align-items:center;padding:0 16px;background:rgba(8,8,8,0.92);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border)}
+.topbar a.back{display:flex;align-items:center;justify-content:center;width:40px;height:40px;color:var(--text);text-decoration:none;font-size:22px}
+.topbar .title{font-size:16px;font-weight:800;color:var(--green);margin-right:auto;margin-left:2px}
+.badge{margin-left:auto;flex-shrink:0;display:none;align-items:center;gap:5px;background:var(--green-dim);border:1px solid rgba(0,255,136,0.25);border-radius:var(--pill);padding:5px 11px;cursor:pointer}
+.badge span{color:var(--green);font-size:12.5px;font-weight:800}
+main{max-width:640px;margin:0 auto;padding:20px 16px 80px}
+h1{font-size:22px;font-weight:800;margin-bottom:4px}
+.sub{font-size:13.5px;color:var(--text2);margin-bottom:20px;line-height:1.55}
+.loading{text-align:center;color:var(--text3);font-size:13px;padding:60px 0}
+
+/* Library grid */
+.char-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.char-card{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:border-color .2s}
+.char-card:active{border-color:rgba(0,255,136,0.4)}
+.char-card .avatar{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:#111}
+.char-card .cc-meta{padding:10px 12px 12px}
+.char-card .cc-name{font-size:14px;font-weight:800}
+.char-card .cc-sub{font-size:11px;color:var(--text3);margin-top:2px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.new-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:200px;background:var(--green-dim);border:1.5px dashed rgba(0,255,136,0.35);border-radius:16px;cursor:pointer;color:var(--green)}
+.new-card .plus{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-size:26px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.new-card .nc-label{font-size:13px;font-weight:800}
+.empty{text-align:center;padding:56px 20px 30px}
+.empty .icon{font-size:44px;margin-bottom:14px}
+.empty h2{font-size:18px;font-weight:800;margin-bottom:8px}
+.empty p{font-size:13.5px;color:var(--text2);line-height:1.6;margin-bottom:22px}
+
+/* Shared controls */
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);margin-bottom:8px}
+.field input[type=text],.field textarea{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:'Inter',sans-serif;font-size:14.5px;padding:13px 14px;outline:none}
+.field input[type=text]:focus,.field textarea:focus{border-color:rgba(0,255,136,0.4)}
+.field textarea{resize:vertical;min-height:76px;line-height:1.5}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--surface);border:1px solid var(--border2);border-radius:var(--pill);color:var(--text2);font-size:12.5px;font-weight:700;padding:8px 15px;cursor:pointer;user-select:none;font-family:'Inter',sans-serif}
+.chip.on{background:var(--green-dim);border-color:rgba(0,255,136,0.5);color:var(--green)}
+.btn{display:block;width:100%;text-align:center;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-size:15px;font-weight:800;padding:15px;border:none;border-radius:var(--radius-sm);cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 4px 20px rgba(0,255,136,0.2)}
+.btn:disabled{opacity:0.45;box-shadow:none}
+.btn-ghost{display:block;width:100%;text-align:center;background:var(--surface);border:1px solid var(--border2);color:var(--text2);font-size:13.5px;font-weight:700;padding:13px;border-radius:var(--radius-sm);cursor:pointer;font-family:'Inter',sans-serif}
+.btn-danger{background:none;border:none;color:var(--red);font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;padding:12px;width:100%}
+.hr{border-top:1px solid var(--border);margin:20px 0}
+
+/* Upload grid */
+.up-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.up-tile{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:#111;border:2px solid transparent}
+.up-tile img{width:100%;height:100%;object-fit:cover;display:block}
+.up-tile.hero{border-color:var(--green)}
+.up-tile .star{position:absolute;left:4px;top:4px;background:linear-gradient(135deg,var(--green2),var(--green));color:#000;font-size:8.5px;font-weight:900;letter-spacing:0.5px;padding:2px 6px;border-radius:var(--pill)}
+.up-tile .rm{position:absolute;right:4px;top:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.7);color:#fff;border:none;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.up-add{aspect-ratio:1;border-radius:10px;border:1.5px dashed rgba(0,255,136,0.35);background:var(--green-dim);color:var(--green);font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.up-hint{font-size:11.5px;color:var(--text3);margin-top:8px;line-height:1.5}
+
+/* Detail view */
+.d-head{display:flex;gap:14px;align-items:center;margin-bottom:18px}
+.d-head img{width:72px;height:72px;border-radius:16px;object-fit:cover;background:#111;border:1px solid var(--border2)}
+.d-head .d-name{font-size:20px;font-weight:800}
+.d-head .d-sub{font-size:12px;color:var(--text3);margin-top:3px}
+.d-head .d-edit{margin-left:auto;background:var(--surface);border:1px solid var(--border2);color:var(--text2);font-size:12px;font-weight:700;padding:9px 14px;border-radius:var(--pill);cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0}
+.seg{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:var(--pill);padding:4px;margin-bottom:16px}
+.seg button{flex:1;padding:10px;border:none;border-radius:var(--pill);background:none;color:var(--text2);font-family:'Inter',sans-serif;font-size:13px;font-weight:800;cursor:pointer}
+.seg button.on{background:linear-gradient(135deg,var(--green2),var(--green));color:#000}
+.model-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.model-card{flex-shrink:0;min-width:128px;background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:11px 13px;cursor:pointer}
+.model-card.on{background:var(--green-dim);border-color:rgba(0,255,136,0.5)}
+.model-card .m-name{font-size:12.5px;font-weight:800}
+.model-card .m-cost{font-size:10.5px;color:var(--text3);margin-top:3px;font-weight:600}
+.model-card.on .m-cost{color:var(--green)}
+.progress-wrap{display:none;margin:18px 0}
+.progress-bar{height:6px;background:var(--surface2);border-radius:var(--pill);overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--green2),var(--green));border-radius:var(--pill);transition:width .4s}
+.progress-txt{font-size:12px;color:var(--text2);margin-top:8px;text-align:center}
+.result{display:none;margin-top:18px}
+.result img,.result video{width:100%;border-radius:16px;display:block;background:#111}
+.result .r-row{display:flex;gap:10px;margin-top:12px}
+.result .r-row a,.result .r-row button{flex:1;text-align:center;font-size:13px;font-weight:800;padding:13px;border-radius:var(--radius-sm);text-decoration:none;cursor:pointer;font-family:'Inter',sans-serif}
+.result .r-dl{background:linear-gradient(135deg,var(--green2),var(--green));color:#000;border:none}
+.result .r-again{background:var(--surface);border:1px solid var(--border2);color:var(--text2)}
+.cost-note{font-size:11.5px;color:var(--text3);text-align:center;margin-top:10px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(80px);background:rgba(20,20,20,0.97);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:600;padding:12px 20px;border-radius:var(--pill);z-index:9999;transition:transform .3s;max-width:88vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.view{display:none}
+.view.on{display:block}
+.outfit-add{display:none;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-top:10px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="/ai-studio" aria-label="Back to AI Studio" id="backBtn">&#8249;</a>
+  <div class="title">Characters</div>
+  <div class="badge" id="creditsBadge"><span>&#9889;</span><span id="creditsNum">0</span></div>
+</div>
+
+<main>
+
+  <!-- ══ LIBRARY VIEW ══ -->
+  <section class="view on" id="libraryView">
+    <h1>Your Characters</h1>
+    <div class="sub">Create a character once — then reuse the same face, look and style in every image and video. No re-uploading, ever.</div>
+    <div class="loading" id="libLoading">Loading your characters&hellip;</div>
+    <div class="char-grid" id="charGrid" style="display:none"></div>
+    <div class="empty" id="libEmpty" style="display:none">
+      <div class="icon">&#129485;</div>
+      <h2>No characters yet</h2>
+      <p>Upload a few photos of a person (real or AI-generated), describe their look once, and they become a reusable character for all your generations.</p>
+      <button class="btn" style="max-width:280px;margin:0 auto" onclick="openWizard()">+ Create Your First Character</button>
+    </div>
+  </section>
+
+  <!-- ══ WIZARD VIEW ══ -->
+  <section class="view" id="wizardView">
+    <h1 id="wizTitle">New Character</h1>
+    <div class="sub">Add 3&ndash;10 clear photos — different angles, expressions and lighting work best. Tap a photo to set it as the main reference.</div>
+
+    <div class="field">
+      <label>Character Name</label>
+      <input type="text" id="wName" maxlength="40" placeholder="e.g. Ash, Lisa, Cyber Girl&hellip;">
+    </div>
+
+    <div class="field">
+      <label>Reference Photos</label>
+      <div class="up-grid" id="upGrid"></div>
+      <div class="up-hint">&#11088; = main reference (used as identity anchor). Tap any photo to make it the main one.</div>
+      <input type="file" id="fileInput" accept="image/*" multiple style="display:none">
+    </div>
+
+    <div class="field">
+      <label>Gender</label>
+      <div class="chips" id="wGender">
+        <button class="chip" data-v="male">Male</button>
+        <button class="chip" data-v="female">Female</button>
+        <button class="chip" data-v="other">Other</button>
+      </div>
+    </div>
+
+    <div class="field"><label>Age</label><input type="text" id="wAge" maxlength="30" placeholder="e.g. mid 40s"></div>
+    <div class="field"><label>Hair</label><input type="text" id="wHair" maxlength="80" placeholder="e.g. short cropped grey hair"></div>
+    <div class="field"><label>Face &amp; Build</label><input type="text" id="wBuild" maxlength="120" placeholder="e.g. grey stubble beard, blue eyes, athletic build"></div>
+    <div class="field"><label>Signature Style</label><input type="text" id="wStyle" maxlength="160" placeholder="e.g. black t-shirt, beige cargo shorts, green camo trainers"></div>
+    <div class="field"><label>Extra Notes <span style="font-weight:600;text-transform:none;letter-spacing:0">(optional)</span></label><textarea id="wNotes" maxlength="400" placeholder="Anything else that defines this character&hellip;"></textarea></div>
+    <div class="field"><label>Always Avoid <span style="font-weight:600;text-transform:none;letter-spacing:0">(optional negative)</span></label><input type="text" id="wNeg" maxlength="200" placeholder="e.g. glasses, hats, tattoos"></div>
+
+    <button class="btn" id="saveCharBtn">Save Character</button>
+    <div style="height:10px"></div>
+    <button class="btn-ghost" onclick="showView('libraryView');loadCharacters()">Cancel</button>
+    <button class="btn-danger" id="deleteCharBtn" style="display:none">Delete this character</button>
+  </section>
+
+  <!-- ══ DETAIL / GENERATE VIEW ══ -->
+  <section class="view" id="detailView">
+    <div class="d-head">
+      <img id="dAvatar" src="" alt="">
+      <div><div class="d-name" id="dName"></div><div class="d-sub" id="dSub"></div></div>
+      <button class="d-edit" id="dEditBtn">Edit</button>
+    </div>
+
+    <div class="field">
+      <label>Outfit</label>
+      <div class="chips" id="outfitChips"></div>
+      <div class="outfit-add" id="outfitAdd">
+        <div class="field" style="margin-bottom:10px"><input type="text" id="oName" maxlength="30" placeholder="Outfit name, e.g. Black Suit"></div>
+        <div class="field" style="margin-bottom:10px"><input type="text" id="oPrompt" maxlength="200" placeholder="Wearing&hellip; e.g. a tailored black suit, white shirt, no tie"></div>
+        <button class="btn" style="padding:12px;font-size:13.5px" id="oSaveBtn">Add Outfit</button>
+      </div>
+    </div>
+
+    <div class="seg" id="modeSeg">
+      <button class="on" data-mode="image">&#128444; Image</button>
+      <button data-mode="video">&#127916; Video</button>
+    </div>
+
+    <div class="field">
+      <label>Model</label>
+      <div class="model-row" id="modelRow"></div>
+    </div>
+
+    <div class="field" id="ratioField">
+      <label>Aspect Ratio</label>
+      <div class="chips" id="ratioChips"></div>
+    </div>
+
+    <div class="field" id="durField" style="display:none">
+      <label>Duration</label>
+      <div class="chips" id="durChips"></div>
+    </div>
+
+    <div class="field">
+      <label>Scene</label>
+      <textarea id="scenePrompt" maxlength="1200" placeholder="Just describe the scene — identity and outfit are injected automatically. e.g. walking through Tokyo at night, neon reflections"></textarea>
+    </div>
+
+    <button class="btn" id="genBtn">Generate</button>
+    <div class="cost-note" id="costNote"></div>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-txt" id="progressTxt">Starting&hellip;</div>
+    </div>
+
+    <div class="result" id="resultBox">
+      <div id="resultMedia"></div>
+      <div class="r-row">
+        <a class="r-dl" id="resultDl" href="#" target="_blank" rel="noopener" download>Download</a>
+        <button class="r-again" id="resultAgain">Regenerate</button>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+    <button class="btn-ghost" onclick="showView('libraryView');loadCharacters()">&#8249; All Characters</button>
+  </section>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/auth.js"></script>
+<script src="/pricing.js"></script>
+<script>
+// ── Setup ──────────────────────────────────────────────────────────────────
+const B2L_FN_URL = 'https://sfpokfgfycsqvhtpamgm.supabase.co/functions/v1/fal-proxy';
+const B2L_ANON = 'sb_publishable_T0QKdJAb6katQhGtA8gWZA_xxnA4r_A';
+const sb = window.b2lSupabase;
+let session = null, uid = null, b2lProfile = null;
+let characters = [], current = null, editingId = null;
+let refImages = [];        // [{url, path}] — index 0 style: hero tracked separately
+let heroIdx = 0;
+let currentMode = 'image', selectedModel = null, selectedRatio = '9:16', selectedDur = '5', selectedOutfit = 0;
+let generating = false, lastRun = null;
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ var d=document.createElement('div'); d.textContent=s==null?'':String(s); return d.innerHTML; }
+function showToast(msg){ var t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(function(){t.classList.remove('show');},2600); }
+function showView(id){ document.querySelectorAll('.view').forEach(function(v){v.classList.remove('on');}); $(id).classList.add('on'); window.scrollTo(0,0); }
+
+async function b2lProxy(payload){
+  const res = await fetch(B2L_FN_URL, {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+session.access_token, 'apikey':B2L_ANON },
+    body: JSON.stringify(payload)
+  });
+  const data = await res.json().catch(function(){return {};});
+  if (!res.ok){ const e=new Error(data.error||('Error '+res.status)); e.code=data.code; throw e; }
+  return data;
+}
+function updateCreditsBadge(n){
+  if (typeof n!=='number') return;
+  if (b2lProfile) b2lProfile.credits=n;
+  $('creditsNum').textContent=n.toLocaleString();
+  $('creditsBadge').style.display='flex';
+}
+
+// ── Models ─────────────────────────────────────────────────────────────────
+const IMG_MODELS = [
+  { id:'fal-ai/bytedance/seedream/v5/lite/edit', name:'Seedream 5.0', cost:11, costTxt:'11 credits · up to 10 refs',
+    build:function(prompt, refs){ return { prompt:prompt, image_urls:refs.slice(0,10), image_size:'auto_2K' }; } },
+  { id:'fal-ai/nano-banana-2/edit', name:'Nano Banana 2', cost:24, costTxt:'24 credits · great identity',
+    build:function(prompt, refs){ return { prompt:prompt, image_urls:refs.slice(0,4), aspect_ratio:selectedRatio, resolution:'1K' }; } },
+  { id:'fal-ai/nano-banana-pro/edit', name:'NB Pro', cost:36, costTxt:'36 credits · best quality',
+    build:function(prompt, refs){ return { prompt:prompt, image_urls:refs.slice(0,4), aspect_ratio:selectedRatio, resolution:'1K' }; } },
+];
+const VID_MODELS = [
+  { id:'fal-ai/kling-video/v2.5/pro/image-to-video', name:'Kling 2.5 Pro', perSec:21, costTxt:'21 cr/sec · cheapest',
+    build:function(prompt, hero){ return { prompt:prompt, image_url:hero, duration:selectedDur, resolution:'720p' }; } },
+  { id:'bytedance/seedance-2.0/mini/image-to-video', name:'Seedance Mini', perSec:36, costTxt:'36 cr/sec · cinematic',
+    build:function(prompt, hero){ return { prompt:prompt, image_url:hero, duration:selectedDur, resolution:'480p', aspect_ratio:selectedRatio, generate_audio:true }; } },
+  { id:'bytedance/seedance-2.0/image-to-video', name:'Seedance 2.0', perSec:90, costTxt:'90 cr/sec · top tier',
+    build:function(prompt, hero){ return { prompt:prompt, image_url:hero, duration:selectedDur, resolution:'720p', aspect_ratio:selectedRatio, generate_audio:true }; } },
+];
+const IMG_RATIOS = ['1:1','16:9','9:16','4:3','3:4'];
+const VID_RATIOS = ['16:9','9:16','1:1','4:3'];
+const DURATIONS = ['4','5','6','8','10'];
+
+// ── Library ────────────────────────────────────────────────────────────────
+async function loadCharacters(){
+  $('libLoading').style.display='block'; $('charGrid').style.display='none'; $('libEmpty').style.display='none';
+  const q = await sb.from('characters').select('*').order('created_at',{ascending:false});
+  $('libLoading').style.display='none';
+  characters = (q && q.data) ? q.data : [];
+  if (!characters.length){ $('libEmpty').style.display='block'; return; }
+  const grid = $('charGrid'); grid.style.display='grid'; grid.innerHTML='';
+  const nc = document.createElement('div');
+  nc.className='new-card'; nc.onclick=function(){openWizard();};
+  nc.innerHTML='<div class="plus">+</div><div class="nc-label">New Character</div>';
+  grid.appendChild(nc);
+  characters.forEach(function(c){
+    const card=document.createElement('div'); card.className='char-card';
+    const refs = Array.isArray(c.ref_urls)?c.ref_urls:[];
+    const av = c.hero_url || (refs[0]&&refs[0].url) || '';
+    card.innerHTML='<img class="avatar" src="'+esc(av)+'" loading="lazy" alt="">'+
+      '<div class="cc-meta"><div class="cc-name">'+esc(c.name)+'</div>'+
+      '<div class="cc-sub">'+esc(c.appearance_text||'')+'</div></div>';
+    card.onclick=function(){ openDetail(c); };
+    grid.appendChild(card);
+  });
+}
+
+// ── Wizard ─────────────────────────────────────────────────────────────────
+let wizGender='';
+function openWizard(char){
+  editingId = char ? char.id : null;
+  $('wizTitle').textContent = char ? 'Edit Character' : 'New Character';
+  $('deleteCharBtn').style.display = char ? 'block' : 'none';
+  $('wName').value = char ? (char.name||'') : '';
+  const a = char && char.appearance ? char.appearance : {};
+  wizGender = a.gender||'';
+  $('wAge').value=a.age||''; $('wHair').value=a.hair||''; $('wBuild').value=a.build||'';
+  $('wStyle').value=a.style||''; $('wNotes').value=a.notes||''; $('wNeg').value=char?(char.negative_prompt||''):'';
+  document.querySelectorAll('#wGender .chip').forEach(function(ch){ ch.classList.toggle('on', ch.dataset.v===wizGender); });
+  refImages = char && Array.isArray(char.ref_urls) ? char.ref_urls.slice() : [];
+  heroIdx = 0;
+  if (char && char.hero_url){
+    const i = refImages.findIndex(function(r){return r.url===char.hero_url;});
+    if (i>=0) heroIdx=i;
+  }
+  renderUpGrid();
+  showView('wizardView');
+}
+document.querySelectorAll('#wGender .chip').forEach(function(ch){
+  ch.addEventListener('click',function(){
+    wizGender = ch.dataset.v;
+    document.querySelectorAll('#wGender .chip').forEach(function(c){c.classList.toggle('on',c===ch);});
+  });
+});
+function renderUpGrid(){
+  const g=$('upGrid'); g.innerHTML='';
+  refImages.forEach(function(r,i){
+    const t=document.createElement('div');
+    t.className='up-tile'+(i===heroIdx?' hero':'');
+    t.innerHTML='<img src="'+esc(r.url)+'" alt="">'+(i===heroIdx?'<span class="star">MAIN</span>':'')+'<button class="rm" data-i="'+i+'">&#10005;</button>';
+    t.addEventListener('click',function(e){
+      if (e.target.classList.contains('rm')) return;
+      heroIdx=i; renderUpGrid();
+    });
+    t.querySelector('.rm').addEventListener('click',function(e){
+      e.stopPropagation();
+      refImages.splice(i,1);
+      if (heroIdx>=refImages.length) heroIdx=Math.max(0,refImages.length-1);
+      renderUpGrid();
+    });
+    g.appendChild(t);
+  });
+  if (refImages.length<10){
+    const add=document.createElement('div'); add.className='up-add'; add.textContent='+';
+    add.onclick=function(){ $('fileInput').click(); };
+    g.appendChild(add);
+  }
+}
+$('fileInput').addEventListener('change', async function(){
+  const files = Array.from(this.files||[]).slice(0, 10-refImages.length);
+  this.value='';
+  if (!files.length) return;
+  showToast('Uploading '+files.length+' photo'+(files.length>1?'s':'')+'\u2026');
+  for (const f of files){
+    if (f.size > 12*1024*1024){ showToast('\u26a0\ufe0f '+f.name+' is over 12MB \u2014 skipped'); continue; }
+    try {
+      const ext = (f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,5)||'jpg';
+      const path = uid+'/'+(editingId||'new')+'/'+Date.now()+'-'+Math.random().toString(36).slice(2,7)+'.'+ext;
+      const up = await sb.storage.from('characters').upload(path, f, { contentType: f.type||'image/jpeg', upsert:false });
+      if (up.error) throw up.error;
+      const pub = sb.storage.from('characters').getPublicUrl(path);
+      refImages.push({ url: pub.data.publicUrl, path: path });
+    } catch(e){ showToast('\u26a0\ufe0f Upload failed: '+(e.message||'error')); }
+  }
+  renderUpGrid();
+});
+
+function composeAppearance(a){
+  const parts=[];
+  if (a.gender||a.age) parts.push([a.age,a.gender].filter(Boolean).join(' '));
+  if (a.hair) parts.push(a.hair);
+  if (a.build) parts.push(a.build);
+  if (a.style) parts.push('signature style: '+a.style);
+  if (a.notes) parts.push(a.notes);
+  return parts.join(', ');
+}
+
+$('saveCharBtn').addEventListener('click', async function(){
+  const name = $('wName').value.trim();
+  if (!name){ showToast('\u26a0\ufe0f Give your character a name'); return; }
+  if (!refImages.length){ showToast('\u26a0\ufe0f Add at least one reference photo'); return; }
+  const appearance = {
+    gender:wizGender, age:$('wAge').value.trim(), hair:$('wHair').value.trim(),
+    build:$('wBuild').value.trim(), style:$('wStyle').value.trim(), notes:$('wNotes').value.trim()
+  };
+  const row = {
+    user_id: uid,
+    name: name,
+    appearance: appearance,
+    appearance_text: composeAppearance(appearance),
+    ref_urls: refImages,
+    hero_url: refImages[heroIdx] ? refImages[heroIdx].url : refImages[0].url,
+    negative_prompt: $('wNeg').value.trim(),
+    updated_at: new Date().toISOString()
+  };
+  this.disabled=true; this.textContent='Saving\u2026';
+  try {
+    let saved;
+    if (editingId){
+      const r = await sb.from('characters').update(row).eq('id',editingId).select().single();
+      if (r.error) throw r.error; saved=r.data;
+    } else {
+      row.outfits = [{ name:'Signature Look', prompt: appearance.style || 'their signature outfit' }];
+      const r = await sb.from('characters').insert(row).select().single();
+      if (r.error) throw r.error; saved=r.data;
+    }
+    showToast('\u2713 '+name+' saved!');
+    openDetail(saved);
+  } catch(e){ showToast('\u26a0\ufe0f Save failed: '+(e.message||'error')); }
+  this.disabled=false; this.textContent='Save Character';
+});
+
+$('deleteCharBtn').addEventListener('click', async function(){
+  if (!editingId) return;
+  if (!confirm('Delete this character? This cannot be undone.')) return;
+  await sb.from('characters').delete().eq('id',editingId);
+  showToast('Character deleted');
+  showView('libraryView'); loadCharacters();
+});
+
+// ── Detail / Generate ──────────────────────────────────────────────────────
+function openDetail(c){
+  current = c;
+  selectedOutfit = Math.min(c.default_outfit||0, (c.outfits||[]).length-1); if (selectedOutfit<0) selectedOutfit=0;
+  $('dAvatar').src = c.hero_url || '';
+  $('dName').textContent = c.name;
+  const refs = Array.isArray(c.ref_urls)?c.ref_urls:[];
+  $('dSub').textContent = refs.length+' reference photo'+(refs.length===1?'':'s');
+  $('dEditBtn').onclick=function(){ openWizard(current); };
+  renderOutfits(); setMode(currentMode); hideResult();
+  showView('detailView');
+}
+function renderOutfits(){
+  const wrap=$('outfitChips'); wrap.innerHTML='';
+  const outfits = Array.isArray(current.outfits)?current.outfits:[];
+  outfits.forEach(function(o,i){
+    const b=document.createElement('button');
+    b.className='chip'+(i===selectedOutfit?' on':''); b.textContent=o.name||('Outfit '+(i+1));
+    b.onclick=function(){ selectedOutfit=i; renderOutfits(); };
+    wrap.appendChild(b);
+  });
+  const add=document.createElement('button');
+  add.className='chip'; add.textContent='+ Add';
+  add.onclick=function(){ const oa=$('outfitAdd'); oa.style.display = oa.style.display==='block'?'none':'block'; };
+  wrap.appendChild(add);
+}
+$('oSaveBtn').addEventListener('click', async function(){
+  const n=$('oName').value.trim(), p=$('oPrompt').value.trim();
+  if (!n||!p){ showToast('\u26a0\ufe0f Name and description needed'); return; }
+  const outfits = Array.isArray(current.outfits)?current.outfits.slice():[];
+  outfits.push({ name:n, prompt:p });
+  const r = await sb.from('characters').update({ outfits:outfits, updated_at:new Date().toISOString() }).eq('id',current.id).select().single();
+  if (r.error){ showToast('\u26a0\ufe0f Failed to save outfit'); return; }
+  current=r.data; selectedOutfit=outfits.length-1;
+  $('oName').value=''; $('oPrompt').value=''; $('outfitAdd').style.display='none';
+  renderOutfits(); showToast('\u2713 Outfit added');
+});
+
+document.querySelectorAll('#modeSeg button').forEach(function(b){
+  b.addEventListener('click',function(){ setMode(b.dataset.mode); });
+});
+function setMode(mode){
+  currentMode=mode;
+  document.querySelectorAll('#modeSeg button').forEach(function(b){ b.classList.toggle('on', b.dataset.mode===mode); });
+  const models = mode==='image'?IMG_MODELS:VID_MODELS;
+  selectedModel = models[0];
+  const row=$('modelRow'); row.innerHTML='';
+  models.forEach(function(m){
+    const c=document.createElement('div');
+    c.className='model-card'+(m===selectedModel?' on':'');
+    c.innerHTML='<div class="m-name">'+esc(m.name)+'</div><div class="m-cost">'+esc(m.costTxt)+'</div>';
+    c.onclick=function(){ selectedModel=m; row.querySelectorAll('.model-card').forEach(function(x){x.classList.remove('on');}); c.classList.add('on'); updateCost(); };
+    row.appendChild(c);
+  });
+  const ratios = mode==='image'?IMG_RATIOS:VID_RATIOS;
+  if (ratios.indexOf(selectedRatio)<0) selectedRatio=ratios[mode==='image'?2:1]||ratios[0];
+  const rc=$('ratioChips'); rc.innerHTML='';
+  ratios.forEach(function(r){
+    const b=document.createElement('button');
+    b.className='chip'+(r===selectedRatio?' on':''); b.textContent=r;
+    b.onclick=function(){ selectedRatio=r; rc.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');}); b.classList.add('on'); };
+    rc.appendChild(b);
+  });
+  $('durField').style.display = mode==='video'?'block':'none';
+  if (mode==='video'){
+    const dc=$('durChips'); dc.innerHTML='';
+    DURATIONS.forEach(function(d){
+      const b=document.createElement('button');
+      b.className='chip'+(d===selectedDur?' on':''); b.textContent=d+'s';
+      b.onclick=function(){ selectedDur=d; dc.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');}); b.classList.add('on'); updateCost(); };
+      dc.appendChild(b);
+    });
+  }
+  updateCost();
+}
+function updateCost(){
+  if (!selectedModel) return;
+  const cost = currentMode==='image' ? selectedModel.cost : selectedModel.perSec*parseInt(selectedDur,10);
+  $('costNote').textContent = 'Costs '+cost+' credits \u00b7 auto-refunded if it fails';
+}
+
+function buildPrompt(){
+  const scene = $('scenePrompt').value.trim();
+  const outfit = (current.outfits||[])[selectedOutfit];
+  const bits = [];
+  if (currentMode==='image'){
+    bits.push('Keep the exact same person from the reference images \u2014 same face, identity and features.');
+    if (current.appearance_text) bits.push('The person: '+current.appearance_text+'.');
+    if (outfit && outfit.prompt) bits.push('Wearing '+outfit.prompt+'.');
+    bits.push('Scene: '+scene+'.');
+    if (current.negative_prompt) bits.push('Do not include: '+current.negative_prompt+'.');
+  } else {
+    bits.push('The person in the image'+(current.appearance_text?' ('+current.appearance_text+')':'')+(outfit&&outfit.prompt?', wearing '+outfit.prompt:'')+'.');
+    bits.push(scene);
+    if (current.negative_prompt) bits.push('Avoid: '+current.negative_prompt+'.');
+  }
+  return bits.join(' ');
+}
+
+function setProgress(pct,msg){ $('progressFill').style.width=pct+'%'; if(msg) $('progressTxt').textContent=msg; }
+function hideResult(){ $('resultBox').style.display='none'; $('resultMedia').innerHTML=''; }
+
+async function falRun(modelId, input){
+  const sub = await b2lProxy({ action:'submit', model_id:modelId, input:input, kind:currentMode });
+  updateCreditsBadge(sub.credits_left);
+  setProgress(6,'In queue\u2026 ('+sub.credits_cost+' credits)');
+  let attempts=0;
+  while (attempts<360){
+    await new Promise(function(r){setTimeout(r,2000);});
+    let status;
+    try { status = await b2lProxy({ action:'status', model_id:modelId, request_id:sub.request_id, gen_id:sub.gen_id }); }
+    catch(e){ attempts++; continue; }
+    if (status.status==='IN_QUEUE'){ setProgress(12,'Queue position: '+(status.queue_position||'\u2026')); }
+    else if (status.status==='IN_PROGRESS'){ setProgress(55,'Generating '+current.name+'\u2026'); }
+    else if (status.status==='COMPLETED'){
+      setProgress(92,'Saving to your library\u2026');
+      const resu = await b2lProxy({ action:'result', model_id:modelId, request_id:sub.request_id, gen_id:sub.gen_id });
+      return resu;
+    } else if (status.status==='FAILED'){
+      throw new Error(status.error||'Generation failed \u2014 your credits were refunded');
+    }
+    attempts++;
+  }
+  throw new Error('Timed out waiting for generation');
+}
+
+$('genBtn').addEventListener('click', function(){ generate(); });
+$('resultAgain').addEventListener('click', function(){ generate(); });
+
+async function generate(){
+  if (generating || !current) return;
+  if (!b2lProfile || b2lProfile.subscription_status!=='active'){
+    if (window.b2lShowPricing) window.b2lShowPricing('pro_required'); else showToast('\u26a0\ufe0f Pro plan needed');
+    return;
+  }
+  const scene = $('scenePrompt').value.trim();
+  if (!scene){ showToast('\u26a0\ufe0f Describe the scene first'); return; }
+  const refs = (Array.isArray(current.ref_urls)?current.ref_urls:[]).map(function(r){return r.url;});
+  const hero = current.hero_url || refs[0];
+  if (!hero){ showToast('\u26a0\ufe0f This character has no reference photos'); return; }
+  const ordered = [hero].concat(refs.filter(function(u){return u!==hero;}));
+
+  generating=true; $('genBtn').disabled=true; hideResult();
+  $('progressWrap').style.display='block'; setProgress(2,'Starting\u2026');
+
+  try {
+    const prompt = buildPrompt();
+    const input = currentMode==='image' ? selectedModel.build(prompt, ordered) : selectedModel.build(prompt, hero);
+    lastRun = { modelId:selectedModel.id, input:input };
+    const resu = await falRun(selectedModel.id, input);
+    const url = resu.url || (resu.outputs&&resu.outputs[0]&&resu.outputs[0].url);
+    if (!url) throw new Error('No output returned');
+    setProgress(100,'Done!');
+    const rm=$('resultMedia');
+    rm.innerHTML = currentMode==='video'
+      ? '<video src="'+esc(url)+'" controls autoplay muted playsinline loop></video>'
+      : '<img src="'+esc(url)+'" alt="">';
+    $('resultDl').href=url;
+    $('resultBox').style.display='block';
+    setTimeout(function(){ $('progressWrap').style.display='none'; },600);
+  } catch(e){
+    $('progressWrap').style.display='none';
+    if (e.code==='insufficient_credits' && window.b2lShowPricing) window.b2lShowPricing('credits');
+    showToast('\u26a0\ufe0f '+(e.message||'Generation failed'));
+  }
+  generating=false; $('genBtn').disabled=false;
+}
+
+// ── Boot ───────────────────────────────────────────────────────────────────
+(async function(){
+  const res = await sb.auth.getSession();
+  session = res && res.data ? res.data.session : null;
+  if (!session){ window.location.href='/login?next=/characters'; return; }
+  uid = session.user.id;
+  try { b2lProfile = await b2lProxy({ action:'me' }); updateCreditsBadge(b2lProfile.credits); } catch(e){}
+  loadCharacters();
+})();
+</script>
+</body>
+</html>
