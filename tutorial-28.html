@@ -3,41 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta property="og:title" content="Google Maps Flight-Path Prompting — AI Video Tutorial | Back2Life.app">
-<meta property="og:description" content="Free browser-based AI video and creator tools from Back2Life.app.">
+<meta property="og:title" content="How to Create a Character Sheet — AI Video Tutorial | Back2Life.app">
+<meta property="og:description" content="Create a film-studio character turnaround sheet with one master prompt — the backbone of AI video character consistency.">
 <meta property="og:image" content="https://back2lifeapp.vercel.app/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:url" content="https://back2lifeapp.vercel.app/tutorial-17">
+<meta property="og:url" content="https://back2lifeapp.vercel.app/tutorial-28">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Google Maps Flight-Path Prompting — AI Video Tutorial | Back2Life.app">
-<meta name="twitter:description" content="Free browser-based AI video and creator tools from Back2Life.app.">
+<meta name="twitter:title" content="How to Create a Character Sheet — AI Video Tutorial | Back2Life.app">
+<meta name="twitter:description" content="Create a film-studio character turnaround sheet with one master prompt — the backbone of AI video character consistency.">
 <meta name="twitter:image" content="https://back2lifeapp.vercel.app/og-image.png">
-<title>Google Maps Flight-Path Prompting — AI Video Tutorial | Back2Life.app</title>
+<title>How to Create a Character Sheet — AI Video Tutorial | Back2Life.app</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Inter', sans-serif; background: #0f0f0f; color: #e8e8e8; line-height: 1.7; }
-  .hero { padding-top: 20px !important; background: linear-gradient(135deg, #1a1005 0%, #241505 40%, #1a0d05 100%); padding: 60px 40px 50px; text-align: center; border-bottom: 2px solid #f2b705; position: relative; overflow: hidden; }
-  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, #f2b70522 0%, transparent 70%); }
-  .brand-tag { display: inline-block; background: linear-gradient(90deg, #f2b705, #4c9a4c); color: #000; font-weight: 800; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; padding: 6px 18px; border-radius: 20px; margin-bottom: 24px; }
+  .hero { padding-top: 20px !important; background: linear-gradient(135deg, #051a15 0%, #06241d 40%, #051a12 100%); padding: 60px 40px 50px; text-align: center; border-bottom: 2px solid #1ad1b0; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, #1ad1b022 0%, transparent 70%); }
+  .brand-tag { display: inline-block; background: linear-gradient(90deg, #1ad1b0, #0d7a68); color: #000; font-weight: 800; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; padding: 6px 18px; border-radius: 20px; margin-bottom: 24px; }
   .hero h1 { font-size: clamp(28px, 5vw, 52px); font-weight: 800; color: #fff; margin-bottom: 16px; line-height: 1.15; }
-  .hero h1 span { color: #f2b705; }
+  .hero h1 span { color: #1ad1b0; }
   .hero-sub { font-size: 18px; color: #aaa; max-width: 620px; margin: 0 auto 32px; }
   .hero-meta { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; }
   .meta-pill { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); padding: 8px 20px; border-radius: 30px; font-size: 13px; color: #ccc; }
-  .meta-pill span { color: #f2b705; font-weight: 600; }
+  .meta-pill span { color: #1ad1b0; font-weight: 600; }
   .social-bar { background: #111; border-bottom: 1px solid #222; padding: 16px 40px; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
   .social-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 2px; margin-right: 8px; }
   .social-link { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; text-decoration: none; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1); color: #ccc; }
-  .social-link:hover { transform: translateY(-1px); border-color: #f2b705; color: #f2b705; }
+  .social-link:hover { transform: translateY(-1px); border-color: #1ad1b0; color: #1ad1b0; }
   .container { max-width: 860px; margin: 0 auto; padding: 60px 32px; }
-  .overview-box { background: linear-gradient(135deg, #f2b7050f, #4c9a4c0a); border: 1px solid #f2b70533; border-radius: 16px; padding: 32px 36px; margin-bottom: 56px; }
-  .overview-box h2 { font-size: 20px; color: #f2b705; margin-bottom: 16px; }
+  .overview-box { background: linear-gradient(135deg, #1ad1b00f, #0d7a680a); border: 1px solid #1ad1b033; border-radius: 16px; padding: 32px 36px; margin-bottom: 56px; }
+  .overview-box h2 { font-size: 20px; color: #1ad1b0; margin-bottom: 16px; }
   .overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .overview-item { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: #ccc; }
-  .overview-item .dot { color: #f2b705; font-size: 18px; margin-top: -2px; flex-shrink: 0; }
+  .overview-item .dot { color: #1ad1b0; font-size: 18px; margin-top: -2px; flex-shrink: 0; }
   .tools-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 56px; }
   .tool-card { flex: 1; min-width: 160px; background: #161616; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; text-align: center; }
   .tool-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
@@ -45,20 +45,20 @@
   .tool-icon-svg { display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
   .step-section { margin-bottom: 64px; }
   .step-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #222; }
-  .step-number { width: 48px; height: 48px; background: linear-gradient(135deg, #f2b705, #4c9a4c); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: #000; flex-shrink: 0; }
+  .step-number { width: 48px; height: 48px; background: linear-gradient(135deg, #1ad1b0, #0d7a68); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: #000; flex-shrink: 0; }
   .step-title-block h2 { font-size: 24px; font-weight: 700; color: #fff; }
   .step-title-block p { font-size: 14px; color: #888; margin-top: 2px; }
   .instruction { margin-bottom: 20px; }
-  .instruction-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: #f2b7051f; border: 1px solid #f2b7054d; border-radius: 50%; font-size: 12px; font-weight: 700; color: #f2b705; flex-shrink: 0; margin-right: 12px; margin-bottom: 6px; float: left; }
+  .instruction-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: #1ad1b01f; border: 1px solid #1ad1b04d; border-radius: 50%; font-size: 12px; font-weight: 700; color: #1ad1b0; flex-shrink: 0; margin-right: 12px; margin-bottom: 6px; float: left; }
   .instruction p { color: #ccc; font-size: 15px; overflow: hidden; }
   .instruction p strong { color: #fff; }
   .clearfix::after { content: ''; display: table; clear: both; }
-  .prompt-block { background: #0a0a0a; border: 1px solid #2a2a2a; border-left: 3px solid #f2b705; border-radius: 10px; padding: 24px 28px; margin: 20px 0; position: relative; }
-  .prompt-block .prompt-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #f2b705; margin-bottom: 14px; }
+  .prompt-block { background: #0a0a0a; border: 1px solid #2a2a2a; border-left: 3px solid #1ad1b0; border-radius: 10px; padding: 24px 28px; margin: 20px 0; position: relative; }
+  .prompt-block .prompt-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #1ad1b0; margin-bottom: 14px; }
   .prompt-block pre { font-family: 'Courier New', monospace; font-size: 13px; color: #f0d8e0; white-space: pre-wrap; word-break: break-word; line-height: 1.8; }
-  .copy-btn { position: absolute; top: 14px; right: 14px; background: #f2b7051a; border: 1px solid #f2b7054d; color: #f2b705; font-size: 12px; font-weight: 600; font-family: 'Inter', sans-serif; padding: 5px 14px; border-radius: 6px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
-  .copy-btn:hover { background: #f2b70533; border-color: #f2b705; }
-  .copy-btn.copied { background: #f2b70540; }
+  .copy-btn { position: absolute; top: 14px; right: 14px; background: #1ad1b01a; border: 1px solid #1ad1b04d; color: #1ad1b0; font-size: 12px; font-weight: 600; font-family: 'Inter', sans-serif; padding: 5px 14px; border-radius: 6px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+  .copy-btn:hover { background: #1ad1b033; border-color: #1ad1b0; }
+  .copy-btn.copied { background: #1ad1b040; }
   .copy-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
   .callout { display: flex; gap: 14px; align-items: flex-start; background: rgba(0,200,255,0.05); border: 1px solid rgba(0,200,255,0.2); border-radius: 10px; padding: 18px 22px; margin: 20px 0; }
   .callout-icon { font-size: 20px; flex-shrink: 0; }
@@ -71,11 +71,11 @@
   .settings-table th { background: #161616; color: #888; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 12px 16px; text-align: left; border-bottom: 1px solid #2a2a2a; }
   .settings-table td { padding: 12px 16px; border-bottom: 1px solid #1a1a1a; color: #ccc; vertical-align: top; }
   .settings-table td:first-child { color: #fff; font-weight: 500; }
-  .settings-table td .val { display: inline-block; background: #f2b7051a; color: #f2b705; font-family: monospace; font-size: 13px; padding: 2px 10px; border-radius: 5px; }
+  .settings-table td .val { display: inline-block; background: #1ad1b01a; color: #1ad1b0; font-family: monospace; font-size: 13px; padding: 2px 10px; border-radius: 5px; }
   .settings-table tr:last-child td { border-bottom: none; }
   .divider { border: none; border-top: 1px solid #1e1e1e; margin: 56px 0; }
   .media-block { margin: 24px 0; border-radius: 12px; overflow: hidden; border: 1px solid #2a2a2a; }
-  .media-label { background: #161616; padding: 10px 18px; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #f2b705; border-bottom: 1px solid #2a2a2a; }
+  .media-label { background: #161616; padding: 10px 18px; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #1ad1b0; border-bottom: 1px solid #2a2a2a; }
   .media-caption { background: #0f0f0f; padding: 12px 18px; font-size: 13px; color: #666; border-top: 1px solid #1a1a1a; }
   .media-block img { width: 100%; display: block; }
   .char-sheet { width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid #2a2a2a; margin: 24px 0; }
@@ -84,29 +84,29 @@
   .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
   .storyboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0; }
   .sb-card { background: #111; border: 1px solid #222; border-radius: 12px; overflow: hidden; transition: border-color 0.2s; }
-  .sb-card:hover { border-color: #f2b705; }
+  .sb-card:hover { border-color: #1ad1b0; }
   .sb-img-wrap { position: relative; overflow: hidden; }
   .sb-img-wrap img { width: 100%; height: auto; display: block; aspect-ratio: 16/9; object-fit: cover; }
-  .sb-timecode { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.75); color: #f2b705; font-size: 11px; font-weight: 700; font-family: monospace; padding: 3px 8px; border-radius: 4px; letter-spacing: 1px; }
+  .sb-timecode { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.75); color: #1ad1b0; font-size: 11px; font-weight: 700; font-family: monospace; padding: 3px 8px; border-radius: 4px; letter-spacing: 1px; }
   .sb-info { padding: 14px 16px; }
   .sb-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 5px; }
   .sb-caption { font-size: 12px; color: #777; line-height: 1.5; }
-  .final-cta { background: linear-gradient(135deg, #141414, #1a1a1a); border: 1px solid #f2b70533; border-radius: 20px; padding: 48px 40px; text-align: center; margin-top: 40px; }
+  .final-cta { background: linear-gradient(135deg, #141414, #1a1a1a); border: 1px solid #1ad1b033; border-radius: 20px; padding: 48px 40px; text-align: center; margin-top: 40px; }
   .final-cta h2 { font-size: 28px; color: #fff; margin-bottom: 12px; }
-  .final-cta h2 span { color: #f2b705; }
+  .final-cta h2 span { color: #1ad1b0; }
   .final-cta p { color: #888; margin-bottom: 32px; font-size: 15px; }
   .social-grid { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
   .cta-social { display: inline-flex; align-items: center; gap: 7px; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.12); color: #ccc; }
-  .cta-social:hover { transform: translateY(-2px); color: #f2b705; border-color: #f2b705; }
+  .cta-social:hover { transform: translateY(-2px); color: #1ad1b0; border-color: #1ad1b0; }
   .site-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,10,10,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);padding:0 16px;height:56px;display:flex;align-items:center;gap:10px}
   .site-nav-logo{font-size:18px;font-weight:800;color:#fff;text-decoration:none;letter-spacing:-.2px;flex-shrink:0}
   .site-nav-logo em{color:#00ff88;font-style:normal}
   .site-spacer{flex:1}
   .site-nav-back{font-size:13px;font-weight:500;color:#888;text-decoration:none;flex-shrink:0;transition:color .2s}
-  .site-nav-back:hover{color:#f2b705}
+  .site-nav-back:hover{color:#1ad1b0}
   .site-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;z-index:1;flex-shrink:0}
   .site-burger span{display:block;width:20px;height:2px;background:#aaa;border-radius:2px;transition:all .3s}
-  .site-burger.open span{background:#f2b705}
+  .site-burger.open span{background:#1ad1b0}
   .site-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
   .site-burger.open span:nth-child(2){opacity:0}
   .site-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
@@ -119,7 +119,7 @@
   .drawer-sl{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:14px 0 7px;border-top:1px solid #1a1a1a;margin-top:4px}
   .drawer-sl:first-of-type{border-top:none;margin-top:0;padding-top:4px}
   .drawer-a{display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ddd;text-decoration:none;border-bottom:1px solid #222;transition:color .2s}
-  .drawer-a:active{color:#f2b705}
+  .drawer-a:active{color:#1ad1b0}
   .drawer-a .ico{width:26px;text-align:center;display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .drawer-cta{display:block;margin-top:20px;background:#00ff88;color:#000;font-weight:700;font-size:14px;padding:13px;border-radius:10px;text-decoration:none;text-align:center}
   @media(max-width:768px){.site-nav-back{display:none}.site-burger{display:flex}}
@@ -129,7 +129,7 @@
 <link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
-<meta name="theme-color" content="#0f0505">
+<meta name="theme-color" content="#050f0c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Back2Life">
@@ -138,6 +138,7 @@
 <meta name="vercel-toolbar" content="off">
 </head>
 <body>
+
 
 <nav class="site-nav">
   <button class="site-burger" id="sBurger"><span></span><span></span><span></span></button>
@@ -176,21 +177,21 @@
 </div>
 
 <!-- HERO IMAGE -->
-<div style="width:100%;background:#050505;overflow:hidden;margin-top:56px;border-bottom:1px solid #f2b70533">
-  <img src="/img/tut17-hero.jpg?v=2" alt="Google Maps Flight-Path Prompting" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover">
+<div style="width:100%;background:#050505;overflow:hidden;margin-top:56px;border-bottom:1px solid #1ad1b033">
+  <img src="/img/tut28-hero.jpg?v=1" alt="How to Create a Character Sheet" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover" onerror="this.parentElement.style.display='none'">
 </div>
 
 <!-- HERO -->
 <div class="hero">
   <div style="position:relative;z-index:1">
     <div class="brand-tag">BACK2LIFE.APP TUTORIAL</div>
-    <h1>Google Maps<br><span>Flight-Path Prompting</span></h1>
-    <p class="hero-sub">Trace a real flight path over a Google Maps satellite screenshot and hand it to your AI video model as a navigation reference — turning a vague "fly over the city" prompt into an exact, repeatable route from ground level to a landmark, with a real cameo dropped in along the way.</p>
+    <h1>Character Sheets<br><span>The Master Turnaround Prompt</span></h1>
+    <p class="hero-sub">One master prompt that turns your reference photos into a premium film-studio character turnaround board — hero face close-up, face rotation grid, T-poses and a full body turnaround on a 9:16 canvas. This sheet is the backbone of character consistency in every video tutorial on this site.</p>
     <div class="hero-meta">
-      <div class="meta-pill">Tool: <span>Seedance 2.0</span></div>
-      <div class="meta-pill">Quality: <span>8K HDR FPV</span></div>
-      <div class="meta-pill">Difficulty: <span>Intermediate</span></div>
-      <div class="meta-pill">Time: <span>~15 mins</span></div>
+      <div class="meta-pill">Tool: <span>AI Image Model</span></div>
+      <div class="meta-pill">Output: <span>9:16 sheet</span></div>
+      <div class="meta-pill">Difficulty: <span>Beginner</span></div>
+      <div class="meta-pill">Time: <span>~10 mins</span></div>
     </div>
   </div>
 </div>
@@ -218,83 +219,65 @@
   <!-- WHAT YOU'LL CREATE -->
   <div class="overview-box">
     <h2>What You'll Create</h2>
-    <p style="color:#ccc;font-size:15px;margin-bottom:20px">A single continuous FPV drone shot that follows an exact, pre-planned route — no vague "fly over the city" guesswork. You screenshot Google Maps in satellite/3D view, trace your flight path directly on top of it in a photo editor, then feed that annotated image to Seedance 2.0 as a navigation reference alongside your written prompt. The model follows the drawn line instead of inventing its own path, so beach launches, favela weaves, and a landmark orbit all land exactly where you planned them.</p>
+    <p style="color:#ccc;font-size:15px;margin-bottom:20px">A character sheet is the single highest-leverage asset in AI video. Video models don't remember your character between generations — the sheet does it for them. This master prompt builds a studio-grade turnaround board with a strict hierarchy: a large hero face close-up and rotation grid on top (identity first), then T-poses and a full body turnaround below (proportions and outfit second). Feed the finished sheet into Seedance as a character board reference and your face, outfit and proportions survive every shot, every cut, every regeneration.</p>
     <div class="overview-grid">
-      <div class="overview-item"><span class="dot">▸</span><span>One annotated Google Maps screenshot used as a navigation reference image</span></div>
-      <div class="overview-item"><span class="dot">▸</span><span>A hand-drawn flight path from ground level to a named landmark</span></div>
-      <div class="overview-item"><span class="dot">▸</span><span>A single unbroken FPV shot with no cuts, resets, or teleports</span></div>
-      <div class="overview-item"><span class="dot">▸</span><span>A real photo cameo composited into the landmark reveal</span></div>
-      <div class="overview-item"><span class="dot">▸</span><span>A reusable technique for any city, route, or landmark you can screenshot</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>A 9:16 studio turnaround board from your own reference photos</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>Hero face close-up + face rotation grid for identity locking</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>T-pose front/back plus a full 8-angle body turnaround</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>Outfit prompts you append for different versions of the same character</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>A reusable board for tutorials 18, 24, 26 and any reference-lock prompt</span></div>
     </div>
   </div>
 
   <!-- TOOLS NEEDED -->
   <div class="tools-row">
     <div class="tool-card">
-      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f2b705" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
-      <div class="tool-name">Google Maps</div>
-      <div class="tool-desc">Satellite/3D view screenshot of your route — the navigation reference image</div>
+      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1ad1b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div class="tool-name">AI Image Model</div>
+      <div class="tool-desc">Nano Banana 2, Seedream, or GPT Image — anything with multi-image reference input</div>
     </div>
     <div class="tool-card">
-      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f2b705" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
-      <div class="tool-name">Seedance 2.0</div>
-      <div class="tool-desc">Dreamina AI — image-to-video with a reference image for the flight path</div>
+      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1ad1b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div class="tool-name">2–4 Reference Photos</div>
+      <div class="tool-desc">Clear face shots of your character from a couple of angles</div>
     </div>
     <div class="tool-card">
-      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f2b705" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
-      <div class="tool-name">Photo Editor / Markup</div>
-      <div class="tool-desc">Anything with a pen tool — Photos markup, Procreate, or even Google Maps' own path draw feature</div>
+      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1ad1b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div class="tool-name">Back2Life AI Studio</div>
+      <div class="tool-desc">Generate the sheet right on this site with your credits</div>
     </div>
   </div>
-
-  <!-- THE TECHNIQUE -->
-  <div class="step-section">
-    <div class="step-header">
-      <div class="step-number" style="font-size:14px;font-weight:800">OUT</div>
-      <div class="step-title-block">
-        <h2>The Technique</h2>
-        <p>Why a hand-drawn map beats a text-only prompt</p>
-      </div>
-    </div>
-    <div class="media-block">
-      <div class="media-label">Google Maps → Traced Route → FPV Drone Reference</div>
-      <img src="/img/tut17-hero.jpg?v=2" alt="Google Maps flight-path tracing technique — satellite screenshot with a hand-drawn orange route next to the resulting photorealistic FPV drone footage of the same path over Rio de Janeiro toward Christ the Redeemer">
-      <div class="media-caption">Text prompts alone let the model invent its own route — a traced map locks the exact path, order of landmarks, and altitude changes before you ever hit generate.</div>
-    </div>
-  </div>
-
-  <hr class="divider">
 
   <!-- STEP 1 -->
   <div class="step-section">
     <div class="step-header">
       <div class="step-number">1</div>
       <div class="step-title-block">
-        <h2>Trace Your Flight Path on Google Maps</h2>
-        <p>Turn a satellite screenshot into a navigation reference image</p>
+        <h2>Gather Your Reference Photos</h2>
+        <p>The sheet is only as good as what goes in</p>
       </div>
     </div>
 
     <div class="instruction clearfix">
       <span class="instruction-num">1</span>
-      <p>Open <strong>Google Maps</strong>, switch to <strong>Satellite view</strong>, and tilt into 3D if the area supports it. Zoom until your start point and end landmark are both visible in one frame — or take two overlapping screenshots if the route is long.</p>
+      <p>Collect <strong>2–4 photos</strong> of your character: at minimum one sharp front-facing portrait, plus a 3/4 angle and a full-body shot if you have them.</p>
     </div>
     <div class="instruction clearfix">
       <span class="instruction-num">2</span>
-      <p>Screenshot the map, then open it in any photo editor or markup tool — Photos markup on iPhone, Procreate, or even Google Maps' own <strong>Measure/Add a Missing Road</strong> line tool works in a pinch.</p>
+      <p>Even, natural lighting and a neutral expression work best — dramatic shadows in the reference become inconsistencies across panels.</p>
     </div>
     <div class="instruction clearfix">
       <span class="instruction-num">3</span>
-      <p>Draw your route as a <strong>single continuous line</strong>, thick enough to read clearly, from ground level at the start point, winding through any streets or terrain you want the drone to weave through, and ending with a small loop or spiral around your landmark to signal an orbit.</p>
+      <p>If your character already exists as an AI generation (like a saved Higgsfield element), use its cleanest, most canonical renders as the references.</p>
     </div>
     <div class="instruction clearfix">
       <span class="instruction-num">4</span>
-      <p>Label the landmark clearly if it isn't obvious from the map already, and keep the line color high-contrast (orange or red works best against satellite imagery).</p>
+      <p>Decide the outfit before generating — a character sheet locks <strong>one look</strong>. Different outfit = different sheet (that's what the clothing prompts below are for).</p>
     </div>
 
     <div class="callout tip">
       <span class="callout-icon">💡</span>
-      <p><strong>Pro tip:</strong> Loops and spirals in the drawn line get read by the model as orbit or wraparound camera moves — use them deliberately at your key landmark to cue a slow reveal instead of a straight flyover.</p>
+      <p><strong>Pro tip:</strong> Make one sheet per outfit, not one sheet per character. The whole point is that every panel shows identical clothing — a "greatest hits" sheet with mixed outfits teaches the video model to randomise your wardrobe.</p>
     </div>
   </div>
 
@@ -313,18 +296,12 @@
     <table class="settings-table">
       <thead><tr><th>Setting</th><th>Value</th><th>Why</th></tr></thead>
       <tbody>
-        <tr><td>Model</td><td><span class="val">Seedance 2.0</span></td><td>Image-to-video with reference support — reads the traced map as a navigation cue</td></tr>
-        <tr><td>Reference Image</td><td><span class="val">Your annotated map screenshot</span></td><td>Anchors the route, order of landmarks, and camera direction before generation starts</td></tr>
-        <tr><td>Duration</td><td><span class="val">8–15 seconds</span></td><td>Long enough to cover ground-to-landmark without feeling rushed; longer routes may need to be split into linked clips</td></tr>
-        <tr><td>Aspect Ratio</td><td><span class="val">9:16 vertical</span></td><td>Matches real FPV drone footage shared on TikTok/Reels/Shorts; use 16:9 for YouTube</td></tr>
-        <tr><td>Style</td><td><span class="val">Photorealistic, golden-hour</span></td><td>Keeps the generated footage looking like real drone capture rather than stylized animation</td></tr>
+        <tr><td>Model</td><td><span class="val">Nano Banana 2 / Seedream / GPT Image</span></td><td>You need strong multi-image reference adherence — this is an image generation, not video</td></tr>
+        <tr><td>Reference Images</td><td><span class="val">2–4 photos</span></td><td>Face front, 3/4 angle, and full body if available</td></tr>
+        <tr><td>Aspect Ratio</td><td><span class="val">9:16 portrait</span></td><td>The layout is designed for a tall canvas — landscape crushes the hierarchy</td></tr>
+        <tr><td>Resolution</td><td><span class="val">Highest available</span></td><td>The sheet gets re-read by video models later; detail survives compression better</td></tr>
       </tbody>
     </table>
-
-    <div class="callout tip">
-      <span class="callout-icon">💡</span>
-      <p><strong>Pro tip:</strong> If the model struggles to hold a long or winding route in one generation, split it into two linked clips at a natural midpoint (like ground-level city flying → landmark climb) and stitch them together with a hard cut disguised as a bank or dive.</p>
-    </div>
   </div>
 
   <hr class="divider">
@@ -334,57 +311,56 @@
     <div class="step-header">
       <div class="step-number">3</div>
       <div class="step-title-block">
-        <h2>Paste The Prompt & Generate</h2>
-        <p>Upload your traced map as the reference image, then paste this into Seedance 2.0</p>
+        <h2>Paste The Prompt &amp; Generate</h2>
+        <p>Copy it exactly — then customise once you've seen a clean run</p>
       </div>
     </div>
 
     <div class="instruction clearfix">
       <span class="instruction-num">1</span>
-      <p>Upload your <strong>annotated Google Maps screenshot</strong> as the reference/navigation image in Seedance 2.0.</p>
+      <p>Upload your reference photos to your image model of choice.</p>
     </div>
     <div class="instruction clearfix">
       <span class="instruction-num">2</span>
-      <p>Copy the prompt below <strong>exactly as written</strong> and paste it into the prompt field — this example is a real Rio de Janeiro route from Copacabana Beach to Christ the Redeemer.</p>
+      <p>Copy the <strong>master prompt</strong> below and paste it as-is.</p>
     </div>
     <div class="instruction clearfix">
       <span class="instruction-num">3</span>
-      <p>Swap the city, landmark, and opening scene for your own route — the structure (reference the traced map, describe ground level, describe the climb, describe the landmark reveal, describe the exit) is what carries over to any location.</p>
+      <p>Append <strong>one clothing prompt</strong> from the gallery further down (or write your own in the same style) to the end of the master prompt.</p>
     </div>
     <div class="instruction clearfix">
       <span class="instruction-num">4</span>
-      <p>Tap <strong>Generate</strong> and wait for the render.</p>
+      <p>Generate, then zoom in and audit: same face in every panel, same outfit details panel to panel, clean gutters, no stray text. Regenerate until the sheet passes — a flawed sheet poisons every video made from it.</p>
     </div>
 
     <div class="prompt-block">
-      <div class="prompt-label">📋 Prompt</div>
+      <div class="prompt-label">📋 Character Sheet Master Prompt</div>
       <button class="copy-btn" onclick="copyPrompt(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
         Copy
       </button>
-      <pre>Using the attached Google Earth screenshot as the navigation reference, generate a single continuous unbroken FPV drone shot that follows the exact red flight path. No cuts, no edits, no transitions, no camera resets. The entire sequence must feel like one uninterrupted real-world FPV drone flight.
+      <pre>Character reference sheet — enlarged hero face close-up, face rotation grid, T-pose front, T-pose back, Front neutral, Side — left, Side — right, 3/4 front, 3/4 back, Full back, Walking pose.
 
-The flight begins low on Copacabana Beach, Rio de Janeiro, Brazil, just a few metres above the sand. In the very first second, people walk toward the camera along the shoreline before the drone banks upward and climbs above them, revealing the wider beach scene below: people playing volleyball and football, sunbathers, surfers carrying boards, joggers along the promenade, and cars driving along the beachfront road. Continue skimming past crashing waves, beach umbrellas, and swaying palm trees before accelerating inland.
+Layout: vertical 9:16 portrait canvas, designed like a premium film/game studio character turnaround board.
 
-Climb aggressively through Rio's colourful hillside neighbourhoods, weaving smoothly between the tightly packed favela buildings, power lines, rooftop terraces, narrow streets, and staircases. Every movement should feel physically accurate with natural FPV banking, dives, climbs, and momentum.
+Top section (identity focus): one very large hero face close-up spanning ~50–60% of the width, positioned prominently as the main visual anchor. Beside it: a compact face rotation sheet/grid showing multiple head angles (front, 3/4, side, back, looking down/up) plus one supporting portrait crop. This top row should immediately establish facial identity.
 
-As the drone gains altitude, reveal the city alive with the spectacle of Rio Carnival. Fly above vibrant streets filled with enormous parade floats, thousands of samba dancers in dazzling costumes, live drummers, confetti cannons, colourful flags, fireworks, cheering crowds, and an electric festival atmosphere stretching across the city.
+Middle section: T-pose front, T-pose back, Front neutral (3 evenly spaced panels).
 
-Without breaking the shot, continue climbing towards the iconic Christ the Redeemer. As the statue comes into full view, reveal a man sitting on top of the statue's head, perched confidently on the crown of the monument, wearing a black hoodie and holding up a black flag on a pole with his raised arm, the flag rippling in the wind, catching the warm golden hour light against the sky. Execute one smooth, high-speed cinematic orbit around the statue and the man, before flowing into a graceful looping manoeuvre that wraps around the monument and exits with a breathtaking panoramic view overlooking Sugarloaf Mountain, Guanabara Bay, Copacabana Beach, the sprawling city, and the Carnival celebrations below.
+Lower section: Side — left, Side — right, 3/4 front, Full back, 3/4 back, Walking pose arranged in clean stacked rows with balanced spacing.
 
-Maintain uninterrupted forward momentum throughout the entire flight. The camera should never stop, jump, teleport, or cut. Every movement should connect naturally as though captured by a professional FPV drone pilot in one flawless take.
+Full-body panels remain large enough to preserve proportions and outfit detail while prioritizing the face sheet at the top.
 
-Photorealistic. Ultra-realistic FPV drone physics. Golden-hour lighting. HDR. Volumetric sunlight. Natural atmospheric haze. Motion blur. Cinematic lens characteristics. Realistic reflections. Dynamic shadows. Ultra-detailed textures. Hollywood-quality colour grading.
+Composition must fully utilize the tall 9:16 frame, with a strong hierarchy: face identity first, body turnaround second.
 
-Style: Real FPV drone footage.
-Shot: Single continuous one-take, no edits.
-Aspect Ratio: 9:16 vertical.
-Resolution: 8K HDR.</pre>
+Match the visual style, face, outfit, skin texture, hair, and proportions from the reference images exactly. No redesign, no stylization, no reinterpretation. Photorealistic appearance preserved 100% consistently across every panel.
+
+Neutral grey studio backdrop. Soft studio three-point lighting, flat even illumination, no harsh shadows. Thin white gutters separating panels. No text, no labels, no watermarks.</pre>
     </div>
 
     <div class="callout tip">
       <span class="callout-icon">🎬</span>
-      <p>Keep the drawn path a single unbroken line with no gaps — a break in the line is often read by the model as a cut, which fights against the "one continuous take" instruction in the prompt.</p>
+      <p>The line "No redesign, no stylization, no reinterpretation" is the guard rail — image models love to "improve" faces. If panels still drift, add "identical facial features in all panels, same person throughout" at the end.</p>
     </div>
   </div>
 
@@ -395,14 +371,14 @@ Resolution: 8K HDR.</pre>
     <div class="step-header">
       <div class="step-number">4</div>
       <div class="step-title-block">
-        <h2>Download & Share</h2>
+        <h2>Download &amp; Share</h2>
         <p>No editing needed — what you get is the final clip</p>
       </div>
     </div>
 
     <div class="instruction clearfix">
       <span class="instruction-num">1</span>
-      <p>Once generation completes, <strong>preview the clip</strong>. If the drone deviates from the drawn path, regenerate — results vary slightly between runs.</p>
+      <p>Once generation completes, <strong>preview the clip</strong>. Results vary between runs — regenerate rather than settle.</p>
     </div>
     <div class="instruction clearfix">
       <span class="instruction-num">2</span>
@@ -411,93 +387,26 @@ Resolution: 8K HDR.</pre>
 
     <div class="callout tip">
       <span class="callout-icon">🚀</span>
-      <p><strong>Posting tip:</strong> "I traced my flight path on Google Maps before generating this" is a strong hook on its own — showing the map screenshot side-by-side with the finished FPV clip makes for a great two-slide carousel or before/after post.</p>
+      <p><strong>Posting tip:</strong> Save the finished sheet into your character library and upload it wherever a tutorial calls for a character board — it's the @Image2 in Tutorial 18's reference lock, and the fastest fix for identity drift in any multi-shot prompt.</p>
     </div>
   </div>
 
   <hr class="divider">
 
-  <!-- MORE EXAMPLE ROUTES -->
-  <div class="step-section">
+  <!-- EXAMPLE OUTPUT -->
+  <div class="step-section" id="exampleOutput28">
     <div class="step-header">
-      <div class="step-number" style="font-size:14px;font-weight:800">🗺️</div>
+      <div class="step-number" style="font-size:14px;font-weight:800">▶</div>
       <div class="step-title-block">
-        <h2>More Example Routes</h2>
-        <p>Four traced maps and the matching FPV footage they produced — same technique, four different cities</p>
+        <h2>Example Output</h2>
+        <p>Generated with the exact prompt above</p>
       </div>
     </div>
-
-    <!-- RIO -->
-    <div style="margin-bottom:40px">
-      <div style="font-size:15px;font-weight:700;color:#f2b705;margin-bottom:12px">🇧🇷 Rio de Janeiro — Copacabana to Christ the Redeemer</div>
-      <div class="route-row-grid">
-        <div class="media-block" style="margin:0">
-          <div class="media-label">Traced Route</div>
-          <img src="/img/tut17-route-rio-map.jpg?v=1" alt="Traced Google Maps flight path from Copacabana Beach to Christ the Redeemer, Rio de Janeiro">
-        </div>
-        <div class="media-block" style="margin:0">
-          <div class="media-label">Generated FPV Footage</div>
-          <video controls playsinline preload="metadata" style="width:100%;display:block;background:#000">
-            <source src="/video/tut17-route-rio.mp4?v=1" type="video/mp4">
-          </video>
-        </div>
-      </div>
-    </div>
-
-    <!-- DUBAI -->
-    <div style="margin-bottom:40px">
-      <div style="font-size:15px;font-weight:700;color:#f2b705;margin-bottom:12px">🇦🇪 Dubai — Ground Level to the Top of Burj Khalifa</div>
-      <div class="route-row-grid">
-        <div class="media-block" style="margin:0">
-          <div class="media-label">Traced Route</div>
-          <img src="/img/tut17-route-dubai-map.jpg?v=1" alt="Traced Google Maps flight path spiraling up the Burj Khalifa, Dubai">
-        </div>
-        <div class="media-block" style="margin:0">
-          <div class="media-label">Generated FPV Footage</div>
-          <video controls playsinline preload="metadata" style="width:100%;display:block;background:#000">
-            <source src="/video/tut17-route-dubai.mp4?v=1" type="video/mp4">
-          </video>
-        </div>
-      </div>
-    </div>
-
-    <!-- PARIS -->
-    <div style="margin-bottom:40px">
-      <div style="font-size:15px;font-weight:700;color:#f2b705;margin-bottom:12px">🇫🇷 Paris — Champ de Mars to the Eiffel Tower</div>
-      <div class="route-row-grid">
-        <div class="media-block" style="margin:0">
-          <div class="media-label">Traced Route</div>
-          <img src="/img/tut17-route-paris-map.jpg?v=1" alt="Traced Google Maps flight path from Champ de Mars weaving around the Eiffel Tower, Paris">
-        </div>
-        <div class="media-block" style="margin:0">
-          <div class="media-label">Generated FPV Footage</div>
-          <video controls playsinline preload="metadata" style="width:100%;display:block;background:#000">
-            <source src="/video/tut17-route-paris.mp4?v=1" type="video/mp4">
-          </video>
-        </div>
-      </div>
-    </div>
-
-    <!-- NYC -->
-    <div>
-      <div style="font-size:15px;font-weight:700;color:#f2b705;margin-bottom:12px">🇺🇸 New York — Washington Square Park to the Empire State Building</div>
-      <div class="route-row-grid">
-        <div class="media-block" style="margin:0">
-          <div class="media-label">Traced Route</div>
-          <img src="/img/tut17-route-nyc-map.jpg?v=1" alt="Traced Google Maps flight path from Washington Square Park to the Empire State Building, New York">
-        </div>
-        <div class="media-block" style="margin:0">
-          <div class="media-label">Generated FPV Footage</div>
-          <video controls playsinline preload="metadata" style="width:100%;display:block;background:#000">
-            <source src="/video/tut17-route-nyc.mp4?v=1" type="video/mp4">
-          </video>
-        </div>
-      </div>
-    </div>
-
-    <div class="callout tip" style="margin-top:32px">
-      <span class="callout-icon">💡</span>
-      <p><strong>Notice the pattern:</strong> a straight line means a fast, direct approach; loops and spirals mean orbit or wraparound moves at the landmark. The shape you draw is the camera move you get.</p>
+    <div class="media-block">
+      <div class="media-label">Generated with Seedance 2.0</div>
+      <video controls playsinline preload="metadata" style="width:100%;display:block;background:#000" onerror="document.getElementById('exampleOutput28').style.display='none';this.closest('.step-section').nextElementSibling.style.display='none'">
+        <source src="/video/tut28-example.mp4?v=1" type="video/mp4">
+      </video>
     </div>
   </div>
 
@@ -508,7 +417,7 @@ Resolution: 8K HDR.</pre>
     <div class="step-header">
       <div class="step-number" style="font-size:14px;font-weight:800">+</div>
       <div class="step-title-block">
-        <h2>Variations & Ideas</h2>
+        <h2>Variations &amp; Ideas</h2>
         <p>Ways to remix this concept</p>
       </div>
     </div>
@@ -516,13 +425,83 @@ Resolution: 8K HDR.</pre>
     <table class="settings-table">
       <thead><tr><th>Swap This</th><th>For This</th><th>Effect</th></tr></thead>
       <tbody>
-        <tr><td>Rio de Janeiro</td><td>Any city with 3D Google Maps coverage</td><td>The same tracing technique works anywhere satellite/3D imagery exists</td></tr>
-        <tr><td>Christ the Redeemer</td><td>Any landmark — tower, stadium, bridge, monument</td><td>Swap the destination while keeping the ground-to-landmark structure</td></tr>
-        <tr><td>Beach launch</td><td>Rooftop, street level, or car park start</td><td>Changes the opening hook without touching the traced route</td></tr>
-        <tr><td>Loop-orbit at the end</td><td>Straight flyover or hard stop</td><td>Different drawn line shapes cue different camera moves at the destination</td></tr>
-        <tr><td>Character cameo</td><td>No cameo, or a product/logo reveal</td><td>Swap the landmark reveal for a UGC-style brand moment instead of a personal cameo</td></tr>
+        <tr><td>9:16 turnaround board</td><td>16:9 landscape board with the face grid on the left</td><td>For platforms that reject tall reference images</td></tr>
+        <tr><td>Photorealistic</td><td>"stylized 3D animation character sheet" or "2D anime model sheet"</td><td>Change one line in the style paragraph to match your project's look</td></tr>
+        <tr><td>Neutral grey backdrop</td><td>Chroma green backdrop</td><td>Easier automated cutouts if you composite panels manually</td></tr>
+        <tr><td>Single character</td><td>Duo sheet — two characters side by side per panel</td><td>For locked character pairs like Ash &amp; Lisa; halve the panel count</td></tr>
       </tbody>
     </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- OUTFIT GALLERY -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number" style="font-size:14px;font-weight:800">👕</div>
+      <div class="step-title-block">
+        <h2>Outfit Prompts</h2>
+        <p>Append one of these to the master prompt — one sheet per outfit</p>
+      </div>
+    </div>
+    <p style="color:#ccc;font-size:15px;margin-bottom:24px">Each clothing prompt below builds a different sheet of the <em>same</em> character. Generate one per look your character needs, and note how every prompt ends by pinning details "identical across all panels" — that phrase is what stops outfit drift between panels.</p>
+
+    <div style="margin-bottom:34px">
+      <div class="media-block">
+        <div class="media-label">Tactical Superhero — The suit from our Sea Colossus battle — pairs with Tutorial 18</div>
+        <img src="/img/tut28-sheet1.jpg?v=1" alt="Tactical Superhero character sheet example" style="width:100%;display:block" onerror="this.style.display='none'">
+      </div>
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Clothing Prompt — Tactical Superhero</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>Outfit: form-fitting matte black tactical superhero suit with deep navy panelling, glowing electric blue circuit lines tracing across the chest and down both forearms, reinforced carbon-fibre shoulder plates, a slim tactical utility belt with compact pouches, armoured knee-high boots with metallic buckles, fitted gloves with reinforced knuckles, a short structured collar, and subtle weathering and scuff marks across the plating. The suit silhouette stays identical in every panel — same panel lines, same glow placement, same wear marks.</pre>
+    </div>
+    </div>
+    <div style="margin-bottom:34px">
+      <div class="media-block">
+        <div class="media-label">Urban Streetwear — The everyday creator look — your default recurring character</div>
+        <img src="/img/tut28-sheet2.jpg?v=1" alt="Urban Streetwear character sheet example" style="width:100%;display:block" onerror="this.style.display='none'">
+      </div>
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Clothing Prompt — Urban Streetwear</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>Outfit: relaxed urban streetwear — a plain black crew-neck t-shirt with a natural cotton drape, beige multi-pocket cargo shorts ending just below the knee, camo green retro running sneakers with a chunky white midsole, a matte black sports watch on the left wrist, and no other accessories. Fabric folds, pocket placement, and sneaker colourway remain identical across every panel — no added logos, no colour drift.</pre>
+    </div>
+    </div>
+    <div style="margin-bottom:34px">
+      <div class="media-block">
+        <div class="media-label">Tribal Hunter Armor — The battle-worn hunter — pairs with Tutorial 24</div>
+        <img src="/img/tut28-sheet3.jpg?v=1" alt="Tribal Hunter Armor character sheet example" style="width:100%;display:block" onerror="this.style.display='none'">
+      </div>
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Clothing Prompt — Tribal Hunter Armor</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>Outfit: futuristic tribal hunter armor — layered brown leather and dark tactical fabric, weathered metallic chest and shoulder plates with glowing blue accent lines, crossed rope straps and hanging utility pouches, wrapped forearm guards, rugged combat boots caked with dust, small bone and feather accessories at the shoulder, visible battle scratches and grime. Every strap, pouch and glowing accent sits in exactly the same position in all panels.</pre>
+    </div>
+    </div>
+    <div style="margin-bottom:34px">
+      <div class="media-block">
+        <div class="media-label">Elegant All-Black — The luxury aura look — pairs with Tutorial 26</div>
+        <img src="/img/tut28-sheet4.jpg?v=1" alt="Elegant All-Black character sheet example" style="width:100%;display:block" onerror="this.style.display='none'">
+      </div>
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Clothing Prompt — Elegant All-Black</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>Outfit: elegant all-black premium look — a tailored black overshirt in fine wool worn open over a fitted black crew-neck, slim black trousers with a sharp crease, polished minimal black leather derby shoes, a discreet silver ring on the right hand, and slim black sunglasses hooked into the crew-neck collar in every panel. Clean silhouette, no visible branding, fabric texture and drape identical across all panels.</pre>
+    </div>
+    </div>
   </div>
 
   <!-- FINAL CTA -->
@@ -548,7 +527,7 @@ Resolution: 8K HDR.</pre>
       </a>
     </div>
     <div style="margin-top:28px">
-      <a href="/" style="display:inline-block;color:#f2b705;font-size:14px;font-weight:600;text-decoration:none;border:1px solid #f2b7054d;padding:10px 24px;border-radius:8px;transition:all .2s">← Back to all tutorials</a>
+      <a href="/" style="display:inline-block;color:#1ad1b0;font-size:14px;font-weight:600;text-decoration:none;border:1px solid #1ad1b04d;padding:10px 24px;border-radius:8px;transition:all .2s">← Back to all tutorials</a>
     </div>
   </div>
 
