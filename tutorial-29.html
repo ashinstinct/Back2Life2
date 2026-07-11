@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta property="og:title" content="Freestyle Football Chaos — AI Video Tutorial + Prompts | Back2Life.app">
+<meta property="og:description" content="A 3-video Seedance 2.0 sequence: a 16-count football freestyle that smashes a London house wide open — full prompts, reference stack and the prompt-page trick included.">
+<meta property="og:image" content="https://back2lifeapp.vercel.app/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://back2lifeapp.vercel.app/tutorial-29">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Freestyle Football Chaos — AI Video Tutorial + Prompts | Back2Life.app">
+<meta name="twitter:description" content="A 3-video Seedance 2.0 sequence: a 16-count football freestyle that smashes a London house wide open — full prompts, reference stack and the prompt-page trick included.">
+<meta name="twitter:image" content="https://back2lifeapp.vercel.app/og-image.png">
+<title>Freestyle Football Chaos — AI Video Tutorial + Prompts | Back2Life.app</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #0f0f0f; color: #e8e8e8; line-height: 1.7; }
+  .hero { padding-top: 20px !important; background: linear-gradient(135deg, #051a15 0%, #06241d 40%, #051a12 100%); padding: 60px 40px 50px; text-align: center; border-bottom: 2px solid #1ad1b0; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, #1ad1b022 0%, transparent 70%); }
+  .brand-tag { display: inline-block; background: linear-gradient(90deg, #1ad1b0, #0d7a68); color: #000; font-weight: 800; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; padding: 6px 18px; border-radius: 20px; margin-bottom: 24px; }
+  .hero h1 { font-size: clamp(28px, 5vw, 52px); font-weight: 800; color: #fff; margin-bottom: 16px; line-height: 1.15; }
+  .hero h1 span { color: #1ad1b0; }
+  .hero-sub { font-size: 18px; color: #aaa; max-width: 620px; margin: 0 auto 32px; }
+  .hero-meta { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; }
+  .meta-pill { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); padding: 8px 20px; border-radius: 30px; font-size: 13px; color: #ccc; }
+  .meta-pill span { color: #1ad1b0; font-weight: 600; }
+  .social-bar { background: #111; border-bottom: 1px solid #222; padding: 16px 40px; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  .social-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 2px; margin-right: 8px; }
+  .social-link { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; text-decoration: none; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1); color: #ccc; }
+  .social-link:hover { transform: translateY(-1px); border-color: #1ad1b0; color: #1ad1b0; }
+  .container { max-width: 860px; margin: 0 auto; padding: 60px 32px; }
+  .overview-box { background: linear-gradient(135deg, #1ad1b00f, #0d7a680a); border: 1px solid #1ad1b033; border-radius: 16px; padding: 32px 36px; margin-bottom: 56px; }
+  .overview-box h2 { font-size: 20px; color: #1ad1b0; margin-bottom: 16px; }
+  .overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .overview-item { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: #ccc; }
+  .overview-item .dot { color: #1ad1b0; font-size: 18px; margin-top: -2px; flex-shrink: 0; }
+  .tools-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 56px; }
+  .tool-card { flex: 1; min-width: 160px; background: #161616; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; text-align: center; }
+  .tool-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .tool-desc { font-size: 12px; color: #777; }
+  .tool-icon-svg { display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .step-section { margin-bottom: 64px; }
+  .step-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #222; }
+  .step-number { width: 48px; height: 48px; background: linear-gradient(135deg, #1ad1b0, #0d7a68); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: #000; flex-shrink: 0; }
+  .step-title-block h2 { font-size: 24px; font-weight: 700; color: #fff; }
+  .step-title-block p { font-size: 14px; color: #888; margin-top: 2px; }
+  .instruction { margin-bottom: 20px; }
+  .instruction-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: #1ad1b01f; border: 1px solid #1ad1b04d; border-radius: 50%; font-size: 12px; font-weight: 700; color: #1ad1b0; flex-shrink: 0; margin-right: 12px; margin-bottom: 6px; float: left; }
+  .instruction p { color: #ccc; font-size: 15px; overflow: hidden; }
+  .instruction p strong { color: #fff; }
+  .clearfix::after { content: ''; display: table; clear: both; }
+  .prompt-block { background: #0a0a0a; border: 1px solid #2a2a2a; border-left: 3px solid #1ad1b0; border-radius: 10px; padding: 24px 28px; margin: 20px 0; position: relative; }
+  .prompt-block .prompt-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #1ad1b0; margin-bottom: 14px; }
+  .prompt-block pre { font-family: 'Courier New', monospace; font-size: 13px; color: #f0d8e0; white-space: pre-wrap; word-break: break-word; line-height: 1.8; }
+  .copy-btn { position: absolute; top: 14px; right: 14px; background: #1ad1b01a; border: 1px solid #1ad1b04d; color: #1ad1b0; font-size: 12px; font-weight: 600; font-family: 'Inter', sans-serif; padding: 5px 14px; border-radius: 6px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+  .copy-btn:hover { background: #1ad1b033; border-color: #1ad1b0; }
+  .copy-btn.copied { background: #1ad1b040; }
+  .copy-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .callout { display: flex; gap: 14px; align-items: flex-start; background: rgba(0,200,255,0.05); border: 1px solid rgba(0,200,255,0.2); border-radius: 10px; padding: 18px 22px; margin: 20px 0; }
+  .callout-icon { font-size: 20px; flex-shrink: 0; }
+  .callout p { font-size: 14px; color: #b0d4e0; }
+  .callout p strong { color: #00ccff; }
+  .callout.tip { background: rgba(255,200,0,0.05); border-color: rgba(255,200,0,0.2); }
+  .callout.tip p { color: #d4c07a; }
+  .callout.tip p strong { color: #ffc800; }
+  .settings-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+  .settings-table th { background: #161616; color: #888; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 12px 16px; text-align: left; border-bottom: 1px solid #2a2a2a; }
+  .settings-table td { padding: 12px 16px; border-bottom: 1px solid #1a1a1a; color: #ccc; vertical-align: top; }
+  .settings-table td:first-child { color: #fff; font-weight: 500; }
+  .settings-table td .val { display: inline-block; background: #1ad1b01a; color: #1ad1b0; font-family: monospace; font-size: 13px; padding: 2px 10px; border-radius: 5px; }
+  .settings-table tr:last-child td { border-bottom: none; }
+  .divider { border: none; border-top: 1px solid #1e1e1e; margin: 56px 0; }
+  .media-block { margin: 24px 0; border-radius: 12px; overflow: hidden; border: 1px solid #2a2a2a; }
+  .media-label { background: #161616; padding: 10px 18px; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #1ad1b0; border-bottom: 1px solid #2a2a2a; }
+  .media-caption { background: #0f0f0f; padding: 12px 18px; font-size: 13px; color: #666; border-top: 1px solid #1a1a1a; }
+  .media-block img { width: 100%; display: block; }
+  .char-sheet { width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid #2a2a2a; margin: 24px 0; }
+  .char-sheet img { width: 100%; display: block; }
+  .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
+  .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+  .storyboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0; }
+  .sb-card { background: #111; border: 1px solid #222; border-radius: 12px; overflow: hidden; transition: border-color 0.2s; }
+  .sb-card:hover { border-color: #1ad1b0; }
+  .sb-img-wrap { position: relative; overflow: hidden; }
+  .sb-img-wrap img { width: 100%; height: auto; display: block; aspect-ratio: 16/9; object-fit: cover; }
+  .sb-timecode { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.75); color: #1ad1b0; font-size: 11px; font-weight: 700; font-family: monospace; padding: 3px 8px; border-radius: 4px; letter-spacing: 1px; }
+  .sb-info { padding: 14px 16px; }
+  .sb-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+  .sb-caption { font-size: 12px; color: #777; line-height: 1.5; }
+  .final-cta { background: linear-gradient(135deg, #141414, #1a1a1a); border: 1px solid #1ad1b033; border-radius: 20px; padding: 48px 40px; text-align: center; margin-top: 40px; }
+  .final-cta h2 { font-size: 28px; color: #fff; margin-bottom: 12px; }
+  .final-cta h2 span { color: #1ad1b0; }
+  .final-cta p { color: #888; margin-bottom: 32px; font-size: 15px; }
+  .social-grid { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .cta-social { display: inline-flex; align-items: center; gap: 7px; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.12); color: #ccc; }
+  .cta-social:hover { transform: translateY(-2px); color: #1ad1b0; border-color: #1ad1b0; }
+  .site-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,10,10,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);padding:0 16px;height:56px;display:flex;align-items:center;gap:10px}
+  .site-nav-logo{font-size:18px;font-weight:800;color:#fff;text-decoration:none;letter-spacing:-.2px;flex-shrink:0}
+  .site-nav-logo em{color:#00ff88;font-style:normal}
+  .site-spacer{flex:1}
+  .site-nav-back{font-size:13px;font-weight:500;color:#888;text-decoration:none;flex-shrink:0;transition:color .2s}
+  .site-nav-back:hover{color:#1ad1b0}
+  .site-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;z-index:1;flex-shrink:0}
+  .site-burger span{display:block;width:20px;height:2px;background:#aaa;border-radius:2px;transition:all .3s}
+  .site-burger.open span{background:#1ad1b0}
+  .site-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .site-burger.open span:nth-child(2){opacity:0}
+  .site-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  .site-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:290;display:none;backdrop-filter:blur(2px)}
+  .site-backdrop.open{display:block}
+  .site-drawer{position:fixed;bottom:0;left:0;right:0;background:#181818;border-top:1px solid #2a2a2a;border-radius:20px 20px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s ease;padding:0 20px 40px;max-height:80vh;overflow-y:auto}
+  .site-drawer.open{transform:translateY(0)}
+  .drawer-handle-wrap{padding:10px 0 6px;text-align:center}
+  .drawer-handle{width:36px;height:4px;background:#333;border-radius:2px;margin:0 auto}
+  .drawer-sl{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:14px 0 7px;border-top:1px solid #1a1a1a;margin-top:4px}
+  .drawer-sl:first-of-type{border-top:none;margin-top:0;padding-top:4px}
+  .drawer-a{display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ddd;text-decoration:none;border-bottom:1px solid #222;transition:color .2s}
+  .drawer-a:active{color:#1ad1b0}
+  .drawer-a .ico{width:26px;text-align:center;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .drawer-cta{display:block;margin-top:20px;background:#00ff88;color:#000;font-weight:700;font-size:14px;padding:13px;border-radius:10px;text-decoration:none;text-align:center}
+  @media(max-width:768px){.site-nav-back{display:none}.site-burger{display:flex}}
+  .route-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width:600px){.overview-grid{grid-template-columns:1fr}.hero{padding:20px 20px 32px}.container{padding:40px 20px}.final-cta{padding:36px 20px}.storyboard-grid{grid-template-columns:1fr 1fr}.route-row-grid{grid-template-columns:1fr}}
+</style>
+<link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<meta name="theme-color" content="#050f0c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Back2Life">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="/manifest.json">
+<meta name="vercel-toolbar" content="off">
+</head>
+<body>
+
+
+<nav class="site-nav">
+  <button class="site-burger" id="sBurger"><span></span><span></span><span></span></button>
+  <a href="/" class="site-nav-logo">Back2Life<em>.app</em></a>
+  <div class="site-spacer"></div>
+  <a href="/" class="site-nav-back">← Tutorials</a>
+</nav>
+<div class="site-backdrop" id="sBackdrop"></div>
+<div class="site-drawer" id="sDrawer">
+  <div class="drawer-handle-wrap"><div class="drawer-handle"></div></div>
+  <div class="drawer-sl">Navigation</div>
+  <a href="/" class="drawer-a"><span class="ico"><img src="/icons/home.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Home"></span>Home</a>
+  <a href="/#tutorials" class="drawer-a"><span class="ico"><img src="/icons/tutorials.png" alt="Tutorials" style="width:28px;height:28px;border-radius:6px;display:block"></span>Tutorials</a>
+  <div class="drawer-sl"><img src="/icons/free-tools.png" style="width:16px;height:16px;border-radius:3px;vertical-align:middle;margin-right:6px">Free Tools</div>
+  <a href="/watermark" class="drawer-a"><span class="ico"><img src="/icons/watermark.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Watermark"></span>Watermark Tool</a>
+  <a href="/video-splitter" class="drawer-a"><span class="ico"><img src="/icons/video-splitter.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Video Splitter"></span>Video Splitter</a>
+  <a href="/frame-extractor" class="drawer-a"><span class="ico"><img src="/icons/frame-extractor.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Frame Extractor"></span>Frame Extractor</a>
+  <a href="/audio-editor" class="drawer-a"><span class="ico"><img src="/icons/audio-editor.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Audio Editor"></span>Audio Editor</a>
+  <a href="/audio-converter" class="drawer-a"><span class="ico"><img src="/icons/audio-converter.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Audio Converter"></span>Audio Converter</a>
+  <a href="/reframe" class="drawer-a"><span class="ico"><img src="/icons/reframe.svg" style="width:28px;height:28px;border-radius:6px;display:block" alt="Reframe Tool"></span>Reframe Tool</a>
+  <div class="drawer-sl">AI Generation</div>
+  <a href="/video-flipper" class="drawer-a"><span class="ico"><img src="/icons/video-flipper.png" style="width:28px;height:28px;border-radius:6px;display:block" alt="Batch Flipper"></span>Batch Video Flipper</a>
+  <a href="/ai-studio" class="drawer-a"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg></span>AI Studio</a>
+  <a href="/motion-control" class="drawer-a"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/><path d="M18 12l3 3-3 3"/></svg></span>Motion Control</a>
+    <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;padding:14px 0 7px;border-top:1px solid #1a1a1a;margin-top:4px">Account</div>
+  <a href="/account" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg></span>My Account &middot; Credits</a>
+  <a href="/library" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>My Library</a>
+  <a href="/characters" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20v-.5a6.5 6.5 0 0113 0v.5"/><path d="M18 4l.9 2.1L21 7l-2.1.9L18 10l-.9-2.1L15 7l2.1-.9z"/></svg></span>Characters <span style="font-size:9px;font-weight:900;letter-spacing:1px;background:rgba(0,255,136,0.15);color:#00ff88;padding:2px 7px;border-radius:999px">NEW</span></a>
+  <a href="/agent" style="display:flex;align-items:center;gap:12px;padding:12px 0;font-size:15px;font-weight:500;color:#ccc;text-decoration:none;border-bottom:1px solid #111"><span style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></span>Creative Agent <span style="font-size:9px;font-weight:900;letter-spacing:1px;background:rgba(0,200,255,0.15);color:#38bdf8;padding:2px 7px;border-radius:999px">NEW</span></a>
+  <div class="drawer-sl">Follow Us</div>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="#E1306C" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="#E1306C" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="#E1306C"/></svg></span>Instagram</a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.17 8.17 0 004.78 1.52V7.1a4.85 4.85 0 01-1.01-.41z" fill="white"/></svg></span>TikTok</a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24"><path d="M23.5 6.19a3 3 0 00-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 00.5 6.19 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.81 3 3 0 002.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 002.12-2.12A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.81z" fill="#FF0000"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="white"/></svg></span>YouTube</a>
+  <a href="https://x.com/Back2LifeAI" target="_blank" class="drawer-a"><span class="ico" style="display:flex;align-items:center"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="white"/></svg></span>X / Twitter</a>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="drawer-cta">Follow on Instagram</a>
+</div>
+
+<!-- HERO IMAGE -->
+<div style="width:100%;background:#050505;overflow:hidden;margin-top:56px;border-bottom:1px solid #1ad1b033">
+  <img src="/img/tut29-hero.jpg?v=1" alt="Freestyle Football Chaos" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover" onerror="this.parentElement.style.display='none'">
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="position:relative;z-index:1">
+    <div class="brand-tag">BACK2LIFE.APP TUTORIAL</div>
+    <h1>Freestyle Football Chaos<br><span>Tutorial + Prompts</span></h1>
+    <p class="hero-sub">A three-video Seedance 2.0 sequence: a 16-count football freestyle choreographed beat-by-beat, a kick that smashes a London terrace wide open, and the furious family who live inside it. Four reference images, four prompts, one continuous story — including the prompt-page trick that lets you feed a prompt too big for the text box straight into the model as an image.</p>
+    <div class="hero-meta">
+      <div class="meta-pill">Tool: <span>Seedance 2.0</span></div>
+      <div class="meta-pill">Output: <span>3 × 10s videos</span></div>
+      <div class="meta-pill">Difficulty: <span>Intermediate</span></div>
+      <div class="meta-pill">Time: <span>~45 mins</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SOCIAL BAR -->
+<div class="social-bar">
+  <span class="social-label">Follow</span>
+  <a href="https://www.instagram.com/back2life.ai" target="_blank" class="social-link ig">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg>
+    Instagram
+  </a>
+  <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="social-link tt">
+    <svg width="14" height="14" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.17 8.17 0 004.78 1.52V7.1a4.85 4.85 0 01-1.01-.41z" fill="currentColor"/></svg>
+    TikTok
+  </a>
+  <a href="https://youtube.com/@back2lifeai" target="_blank" class="social-link yt">
+    <svg width="14" height="14" viewBox="0 0 24 24"><path d="M23.5 6.19a3 3 0 00-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 00.5 6.19 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.81 3 3 0 002.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 002.12-2.12A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.81z" fill="currentColor"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="white"/></svg>
+    YouTube
+  </a>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+  <!-- WHAT YOU'LL CREATE -->
+  <div class="overview-box">
+    <h2>What You'll Create</h2>
+    <p style="color:#ccc;font-size:15px;margin-bottom:20px">This is a full mini-film built from three chained Seedance 2.0 generations. Video 1 is a precision piece — a 10-second freestyle routine where all 16 moves are choreographed to a timeline, so the model performs your routine instead of improvising one. Videos 2 and 3 are extension prompts that pick up where the last clip ended: the ball obliterates the house behind the court, revealing a doll's-house cross-section of the family inside, who then fight back. Everything holds together because all three prompts call back to the same four reference images.</p>
+    <div class="overview-grid">
+      <div class="overview-item"><span class="dot">▸</span><span>A 16-count freestyle routine timed beat-by-beat across 10 seconds</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>The prompt-page trick — feeding an oversized prompt in as an image</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>A 4-image reference stack: character, choreography, ball, court</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>Extension prompts that continue one scene across multiple videos</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>Cinematic destruction with an interior cross-section reveal</span></div>
+      <div class="overview-item"><span class="dot">▸</span><span>A physics-fix regeneration prompt for when ball contact drifts</span></div>
+    </div>
+  </div>
+
+  <!-- TOOLS NEEDED -->
+  <div class="tools-row">
+    <div class="tool-card">
+      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1ad1b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div class="tool-name">Seedance 2.0</div>
+      <div class="tool-desc">Via Dreamina or Higgsfield — multi-reference video generation with extensions</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1ad1b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div class="tool-name">4 Reference Images</div>
+      <div class="tool-desc">Character, choreography sheet, ball and court — generate or photograph them</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1ad1b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div class="tool-name">Back2Life AI Studio</div>
+      <div class="tool-desc">Generate your reference images right on this site with your credits</div>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">1</div>
+      <div class="step-title-block">
+        <h2>Build Your Reference Stack</h2>
+        <p>Four images that lock the whole sequence together</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p><strong>Image 1 — Character.</strong> A clean full-body shot of your character in the exact outfit for the video. A character sheet from <a href="/tutorial-28" style="color:#1ad1b0">Tutorial #028</a> is ideal — one look, head to toe, sharp face.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p><strong>Image 2 — Choreography sheet.</strong> The star of this tutorial: the full 16-count prompt rendered as a page — white text on a black background (see Step 2). Seedance reads the moves off it in order.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">3</span>
+      <p><strong>Image 3 — Ball.</strong> A product-style shot of your ball. A custom branded ball (like our Back2Life ball) survives every touch when it's supplied as its own reference instead of described in text.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">4</span>
+      <p><strong>Image 4 — Court.</strong> A wide establishing frame of the location. Ours is a London concrete cage court with the mural wall — the same wall that gets demolished in Video 2, so make sure the building you want to destroy is in shot.</p>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>Pro tip:</strong> Whatever is in the court reference is what the model will destroy. Frame the establishing shot so the sacrificial building sits behind the goal line — that gives the wall-smash kick a natural direction of travel.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 2 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">2</div>
+      <div class="step-title-block">
+        <h2>The Prompt-Page Trick</h2>
+        <p>When your prompt is bigger than the text box</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>A 16-move timeline plus character, ball, location, framing, camera and music direction blows straight past most prompt-length limits. The fix: <strong>lay the whole prompt out as a page</strong> — white text, black background, bold section headers — and export it as an image.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>Upload that page as one of your reference images. Seedance 2.0 reads text from reference images remarkably well — it treats the page as the brief and the timeline as the shot list.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">3</span>
+      <p>Keep the short text prompt pointing at it: <em>"follow the 16 moves from Image 2 in order"</em>. The image carries the detail; the text prompt carries the instruction to obey it.</p>
+    </div>
+
+    <div class="media-block" style="margin-top:22px">
+      <div class="media-label">The choreography sheet — the entire routine as one readable page</div>
+      <img src="/img/tut29-prompt-page.png?v=1" alt="16-count freestyle choreography prompt page — white text on black" style="width:100%;display:block" loading="lazy" onerror="this.style.display='none'">
+      <div class="media-caption">Bold headers, one beat pair per line, no decoration. The cleaner the page, the better the model reads it.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 3 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">3</div>
+      <div class="step-title-block">
+        <h2>Configure Your Settings</h2>
+        <p>Same settings for all three generations</p>
+      </div>
+    </div>
+
+    <table class="settings-table">
+      <thead><tr><th>Setting</th><th>Value</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Model</td><td><span class="val">Seedance 2.0</span></td><td>Multi-image reference plus scene extension is the whole workflow</td></tr>
+        <tr><td>Duration</td><td><span class="val">10 seconds</span></td><td>16 counts at 1.2s per pair lands exactly on 10s — the timeline is built for it</td></tr>
+        <tr><td>Aspect Ratio</td><td><span class="val">16:9</span></td><td>Full-body framing plus a two-storey house needs the width</td></tr>
+        <tr><td>Resolution</td><td><span class="val">1080p</span></td><td>Debris, dust and the interior reveal all reward the detail</td></tr>
+        <tr><td>References</td><td><span class="val">4 images</span></td><td>Character, choreography sheet, ball, court — attach all four to every generation</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 4 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">4</div>
+      <div class="step-title-block">
+        <h2>Video 1 — The 16-Count Freestyle</h2>
+        <p>The main prompt: a routine, not a vibe</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>Attach all four references and paste the prompt below. The three things that make it work: <strong>numbered moves mapped to timestamps</strong>, <strong>hard full-body framing rules</strong>, and every element pinned to a reference image.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>Audit the result against the timeline — you're checking that moves happen <strong>in order</strong>, not that each lands on its exact frame. Order and flow are what sell the routine.</p>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Video 1 — 16-Count Freestyle Master Prompt</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>Create a 10-second cinematic realistic football freestyle video with 16 counts, following the 16 moves from Image 2 (the choreography sheet) in order.
+
+Character: adult English male in his early 40s, athletic build, short cropped grey hair, grey stubble beard, wearing the same white England home jersey with navy trim and number 10, navy blue shorts, white socks and black football boots from Image 1. Keep his identity, outfit and proportions consistent.
+
+Ball: use the same black-and-white freestyle football from Image 3.
+
+Location: use the same London street football court from Image 4: outdoor concrete cage court in London England, tall wire fences, graffiti, red brick council estate buildings and terraced houses in the background, overcast British daylight with soft grey skies.
+
+The freestyler must remain fully visible in full body at all times, from head to toe, with no cropped framing. Keep him centered in frame as much as possible, mostly facing the camera, staying near the middle of the court. The camera should follow him smoothly while always keeping his entire body and the ball visible.
+
+Timeline / 16 counts / 10s
+0.0-1.2s — 1 toe juggle / 2 around the world
+1.2-2.4s — 3 crossover step / 4 heel flick
+2.4-3.6s — 5 neck stall / 6 shoulder stall
+3.6-4.8s — 7 sole control / 8 inside touch
+4.8-6.0s — 9 outside touch / 10 ground control
+6.0-7.2s — 11 roll and pull / 12 spin turn
+7.2-8.4s — 13 toe stall / 14 hop over
+8.4-10.0s — 15 around the leg / 16 style finish with the ball stopped under his foot
+
+The routine should feel like one continuous freestyle combo, fast, fluid and connected. Use cinematic realism, natural ball physics, realistic body mechanics and smooth transitions.
+
+Camera: mostly wide or medium-wide full-body framing, gentle handheld tracking, minimal reframing, no close-ups that crop the body, no extreme angles, always keep the full character visible.
+
+Music: energetic London hip hop beat, gritty UK drums, urban street vibe.</pre>
+    </div>
+
+    <div class="callout">
+      <span class="callout-icon">🎯</span>
+      <p><strong>Why 16 counts?</strong> Dancers and freestylers count in 8s and 16s for a reason — it forces even pacing. Two moves per 1.2-second beat keeps the routine fast without the model rushing or padding.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 5 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">5</div>
+      <div class="step-title-block">
+        <h2>The Physics-Fix Regeneration</h2>
+        <p>When the ball floats, tighten the contact</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>The most common failure: the ball hovers near the boot instead of touching it. Don't re-roll the same prompt — regenerate with a version that makes <strong>ball-foot contact the headline instruction</strong>.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>The word <strong>"Crucial:"</strong> in front of the physics line genuinely shifts the model's priorities. Name the specific move that broke and describe what a clean version looks like.</p>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Refined Regeneration Prompt (Ball Physics)</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>Cinematic realistic football freestyle video with perfect ball-foot contact and natural physics. Subject: The adult English male from Image 1 (athletic, grey cropped hair, England jersey #10). Action: A continuous 16-move freestyle combo following Image 2 exactly. Crucial: Ensure the ball physically touches his foot during every juggle, flick, and stall. Every stall must be a single, fluid, anatomically realistic motion with the character landing cleanly. Ball: The black-and-white ball from Image 3. Scene: The London street court from Image 4. Camera: Smooth full-body tracking, keeping his entire form and the ball centered and visible head-to-toe throughout. Style: High-fidelity realism, gritty urban lighting, energetic London hip hop audio.</pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 6 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">6</div>
+      <div class="step-title-block">
+        <h2>Video 2 — Wall Smash &amp; Interior Reveal</h2>
+        <p>Extend the scene, demolish the house</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>Open the prompt with <strong>"Extension of the football freestyle scene, continuing from the last 3 seconds of Video 1"</strong> — that one line carries character position, lighting and energy across the cut.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>The interior cross-section is written as a fact, not a wish: <em>"through the wreckage, we see a cross-section of the house"</em> — then furnish it. Family upstairs watching the football, mum in the kitchen below. Those two details become the entire cast of Video 3.</p>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Video 2 — Wall Smash & Interior Reveal</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>Extension of the football freestyle scene, continuing from the last 3 seconds of Video 1. The adult English male (Image 1) turns and kicks the ball with ferocious intensity towards the graffiti mural wall from Image 4. The ball smashes through the red bricks, creating a giant hole that causes the roof to cave in and the side wall to collapse. Through the wreckage, we see a cross-section of the house: on the second floor, a family sits on a sofa watching football on TV; on the first floor, a woman is in the kitchen washing dishes. Maintain consistent character appearance (England jersey #10), ball (Image 3), and court setting. Style: Cinematic destruction, realistic physics, dramatic debris and dust, gritty urban atmosphere. Audio: Loud impact crash, crumbling masonry, muffled TV sounds, and continuing London hip hop beat.</pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 7 -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">7</div>
+      <div class="step-title-block">
+        <h2>Video 3 — Family Reaction &amp; Plate Throw</h2>
+        <p>The comedy payoff</p>
+      </div>
+    </div>
+
+    <div class="instruction clearfix">
+      <span class="instruction-num">1</span>
+      <p>Same extension technique, but now the characters the model invented in Video 2 get direction: the family rushes to the broken wall to scream, mum weaponises the washing-up.</p>
+    </div>
+    <div class="instruction clearfix">
+      <span class="instruction-num">2</span>
+      <p>Give the audio a full sentence. Shouting, the plate shatter and the continuing hip hop beat are all in the prompt — sound continuity is half of what makes three clips feel like one film.</p>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Video 3 — Family Reaction & Plate Throw</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>Extension of the previous scene, continuing from the aftermath of the wall collapse in Video 2. On the second floor, the family members jump up from the sofa in shock and rush to the edge of the broken wall, leaning out and shouting down angrily at the man (Image 1) below. Downstairs in the kitchen, the woman turns around from the sink, still holding a ceramic plate; she runs to the opening where the wall fell and throws the plate directly at the man in the England jersey. The man remains in the court, looking up at them in surprise. Maintain consistent character (Image 1), house interior, and court setting (Image 4). Style: Cinematic, high emotion, realistic body mechanics, urban street vibe. Audio: Angry shouting, the sound of a ceramic plate being thrown and shattering, and the London hip hop beat continuing.</pre>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p><strong>Pro tip:</strong> Keep the man's reaction understated — <em>"looking up at them in surprise"</em>. The family plays it big, he plays it small. Comedy contrast is a directing choice, and it goes in the prompt.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STORYBOARD -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number">✓</div>
+      <div class="step-title-block">
+        <h2>The Finished Sequence</h2>
+        <p>Twelve frames from the three videos</p>
+      </div>
+    </div>
+
+    <div class="storyboard-grid">
+    <div class="sb-card">
+      <div class="sb-img-wrap"><img src="/img/tut29-sb01.jpg?v=1" alt="Opening Stance" loading="lazy"><div class="sb-timecode">VIDEO 1 · 0:00</div></div>
+      <div class="sb-info"><div class="sb-title">Opening Stance</div><div class="sb-caption">Full-body framing locked from frame one — Ash on the centre-circle logo, ball under foot, court and mural established.</div></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-img-wrap"><img src="/img/tut29-sb02.jpg?v=1" alt="The Combo Flows" loading="lazy"><div class="sb-timecode">VIDEO 1 · 0:03</div></div>
+      <div class="sb-info"><div class="sb-title">The Combo Flows</div><div class="sb-caption">Counts 5–8 in front of the Back2Life mural — juggles and stalls chained as one continuous freestyle run.</div></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-img-wrap"><img src="/img/tut29-sb03.jpg?v=1" alt="Around The World" loading="lazy"><div class="sb-timecode">VIDEO 1 · 0:07</div></div>
+      <div class="sb-info"><div class="sb-title">Around The World</div><div class="sb-caption">The camera tracks the big moves without ever cropping the body — the framing rules in the prompt doing their job.</div></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-img-wrap"><img src="/img/tut29-sb04.jpg?v=1" alt="The Ball Hero Shot" loading="lazy"><div class="sb-timecode">VIDEO 1 · 0:09</div></div>
+      <div class="sb-info"><div class="sb-title">The Ball Hero Shot</div><div class="sb-caption">The custom branded ball from the reference image stays consistent through every touch — reference-lock in action.</div></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-img-wrap"><img src="/img/tut29-sb05.jpg?v=1" alt="Wall Smash" loading="lazy"><div class="sb-timecode">VIDEO 2 · 0:02</div></div>
+      <div class="sb-info"><div class="sb-title">Wall Smash</div><div class="sb-caption">Video 2 extends the scene: the ball rips a hole clean through the graffiti mural and the bricks erupt.</div></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-img-wrap"><img src="/img/tut29-sb06.jpg?v=1" alt="The House Gives Way" loading="lazy"><div class="sb-timecode">VIDEO 2 · 0:05</div></div>
+      <div class="sb-info"><div class="sb-title">The House Gives Way</div><div class="sb-caption">The roof caves and the whole gable end tips into the court — cinematic destruction physics from one sentence.</div></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-img-wrap"><img src="/img/tut29-sb07.jpg?v=1" alt="Full Collapse" loading="lazy"><div class="sb-timecode">VIDEO 2 · 0:07</div></div>
+      <div class="sb-info"><div class="sb-title">Full Collapse</div><div class="sb-caption">Debris, dust plumes and falling masonry — Seedance handles the chaos while keeping the court geography intact.</div></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-img-wrap"><img src="/img/tut29-sb08.jpg?v=1" alt="Interior Reveal" loading="lazy"><div class="sb-timecode">VIDEO 2 · 0:09</div></div>
+      <div class="sb-info"><div class="sb-title">Interior Reveal</div><div class="sb-caption">The payoff: a doll's-house cross-section — family watching the football upstairs, mum washing dishes below.</div></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-img-wrap"><img src="/img/tut29-sb09.jpg?v=1" alt="The Family Erupts" loading="lazy"><div class="sb-timecode">VIDEO 3 · 0:02</div></div>
+      <div class="sb-info"><div class="sb-title">The Family Erupts</div><div class="sb-caption">Video 3 continues the story — the whole family jumps off the sofa screaming at the freestyler below.</div></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-img-wrap"><img src="/img/tut29-sb10.jpg?v=1" alt="The Plate Throw" loading="lazy"><div class="sb-timecode">VIDEO 3 · 0:05</div></div>
+      <div class="sb-info"><div class="sb-title">The Plate Throw</div><div class="sb-caption">Mum spins from the sink and launches a ceramic plate straight at the man in the England shirt.</div></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-img-wrap"><img src="/img/tut29-sb11.jpg?v=1" alt="Impact POV" loading="lazy"><div class="sb-timecode">VIDEO 3 · 0:08</div></div>
+      <div class="sb-info"><div class="sb-title">Impact POV</div><div class="sb-caption">First-person shot of the plate shattering at his feet next to the ball — a camera angle the prompt never asked for, gifted by the model.</div></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-img-wrap"><img src="/img/tut29-sb12.jpg?v=1" alt="The Stare-Down" loading="lazy"><div class="sb-timecode">VIDEO 3 · 0:10</div></div>
+      <div class="sb-info"><div class="sb-title">The Stare-Down</div><div class="sb-caption">Final beat: dead-eye close-up with the wrecked house behind — the comedy button on the whole sequence.</div></div>
+    </div>
+    </div>
+  </div>
+
+  <div class="final-cta">
+    <h2>Share Your <span>Creation</span></h2>
+    <p>Generated your version? Tag us — we repost the best results across all our channels.</p>
+    <div class="social-grid">
+      <a href="https://www.instagram.com/back2life.ai" target="_blank" class="cta-social">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg>
+        @back2life.ai
+      </a>
+      <a href="https://www.tiktok.com/@back2life.ai" target="_blank" class="cta-social">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.17 8.17 0 004.78 1.52V7.1a4.85 4.85 0 01-1.01-.41z" fill="currentColor"/></svg>
+        @back2life.ai
+      </a>
+      <a href="https://youtube.com/@back2lifeai" target="_blank" class="cta-social">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M23.5 6.19a3 3 0 00-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 00.5 6.19 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.81 3 3 0 002.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 002.12-2.12A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.81z" fill="currentColor"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="white"/></svg>
+        YouTube
+      </a>
+      <a href="https://x.com/Back2LifeAI" target="_blank" class="cta-social">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="currentColor"/></svg>
+        @Back2LifeAI
+      </a>
+    </div>
+    <div style="margin-top:28px">
+      <a href="/" style="display:inline-block;color:#1ad1b0;font-size:14px;font-weight:600;text-decoration:none;border:1px solid #1ad1b04d;padding:10px 24px;border-radius:8px;transition:all .2s">← Back to all tutorials</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const burger=document.getElementById('sBurger'),backdrop=document.getElementById('sBackdrop'),drawer=document.getElementById('sDrawer');
+function openDrawer(){burger.classList.add('open');backdrop.classList.add('open');drawer.classList.add('open');document.body.style.overflow='hidden'}
+function closeDrawer(){burger.classList.remove('open');backdrop.classList.remove('open');drawer.classList.remove('open');document.body.style.overflow=''}
+burger.addEventListener('click',()=>drawer.classList.contains('open')?closeDrawer():openDrawer());
+backdrop.addEventListener('click',closeDrawer);
+
+function copyPrompt(btn){
+  const pre=btn.closest('.prompt-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent.trim()).then(()=>{
+    const orig=btn.innerHTML;
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Copied!';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.innerHTML=orig;btn.classList.remove('copied')},2000);
+  });
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/auth.js"></script>
+</body>
+</html>
