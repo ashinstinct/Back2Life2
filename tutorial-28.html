@@ -279,6 +279,11 @@
       <span class="callout-icon">💡</span>
       <p><strong>Pro tip:</strong> Make one sheet per outfit, not one sheet per character. The whole point is that every panel shows identical clothing — a "greatest hits" sheet with mixed outfits teaches the video model to randomise your wardrobe.</p>
     </div>
+
+    <div class="media-block" style="margin-top:22px">
+      <div class="media-label">The input — one ordinary selfie is all these sheets were built from</div>
+      <img src="/img/tut28-ref-selfie.jpg?v=1" alt="Reference selfie used to generate the character sheets" style="width:100%;display:block" onerror="this.style.display='none'">
+    </div>
   </div>
 
   <hr class="divider">
@@ -441,65 +446,93 @@ Neutral grey studio backdrop. Soft studio three-point lighting, flat even illumi
       <div class="step-number" style="font-size:14px;font-weight:800">👕</div>
       <div class="step-title-block">
         <h2>Outfit Prompts</h2>
-        <p>Append one of these to the master prompt — one sheet per outfit</p>
+        <p>Six real sheets, one character — append one clothing prompt per generation</p>
       </div>
     </div>
-    <p style="color:#ccc;font-size:15px;margin-bottom:24px">Each clothing prompt below builds a different sheet of the <em>same</em> character. Generate one per look your character needs, and note how every prompt ends by pinning details "identical across all panels" — that phrase is what stops outfit drift between panels.</p>
+    <p style="color:#ccc;font-size:15px;margin-bottom:24px">Every sheet below is the <em>same character</em> from the <em>same selfie</em> — only the appended clothing prompt changed. Copy the master prompt, add one clothing prompt to the end, and generate one sheet per look. Note how every clothing prompt ends by pinning details "identical across all panels" — that phrase is what stops outfit drift between panels.</p>
 
     <div style="margin-bottom:34px">
       <div class="media-block">
-        <div class="media-label">Tactical Superhero — The suit from our Sea Colossus battle — pairs with Tutorial 18</div>
-        <img src="/img/tut28-sheet1.jpg?v=1" alt="Tactical Superhero character sheet example" style="width:100%;display:block" onerror="this.style.display='none'">
+        <div class="media-label">Back2Life Streetwear — The everyday creator look — generated from the selfie above</div>
+        <img src="/img/tut28-sheet1.jpg?v=1" alt="Back2Life Streetwear character sheet example" style="width:100%;display:block" onerror="this.style.display='none'">
       </div>
     <div class="prompt-block">
-      <div class="prompt-label">📋 Clothing Prompt — Tactical Superhero</div>
+      <div class="prompt-label">📋 Clothing Prompt — Back2Life Streetwear</div>
       <button class="copy-btn" onclick="copyPrompt(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
         Copy
       </button>
-      <pre>Outfit: form-fitting matte black tactical superhero suit with deep navy panelling, glowing electric blue circuit lines tracing across the chest and down both forearms, reinforced carbon-fibre shoulder plates, a slim tactical utility belt with compact pouches, armoured knee-high boots with metallic buckles, fitted gloves with reinforced knuckles, a short structured collar, and subtle weathering and scuff marks across the plating. The suit silhouette stays identical in every panel — same panel lines, same glow placement, same wear marks.</pre>
+      <pre>Outfit: black pullover hoodie with drawstring hood and kangaroo pocket, a large neon-glow Back2Life.ai logo printed across the chest in cyan, blue and magenta, beige multi-pocket cargo shorts ending just below the knee, and black retro running sneakers covered in glowing neon cyan and magenta circuit-line detailing with a pink-lit midsole. Logo placement, cargo pocket layout and sneaker glow pattern remain identical across every panel — no colour drift, no added branding.</pre>
     </div>
     </div>
     <div style="margin-bottom:34px">
       <div class="media-block">
-        <div class="media-label">Urban Streetwear — The everyday creator look — your default recurring character</div>
-        <img src="/img/tut28-sheet2.jpg?v=1" alt="Urban Streetwear character sheet example" style="width:100%;display:block" onerror="this.style.display='none'">
+        <div class="media-label">Demon Slayer — Leather Class — The Instinct, Shadow Requiem class — Demon Slayers NY wardrobe</div>
+        <img src="/img/tut28-sheet2.jpg?v=1" alt="Demon Slayer — Leather Class character sheet example" style="width:100%;display:block" onerror="this.style.display='none'">
       </div>
     <div class="prompt-block">
-      <div class="prompt-label">📋 Clothing Prompt — Urban Streetwear</div>
+      <div class="prompt-label">📋 Clothing Prompt — Demon Slayer — Leather Class</div>
       <button class="copy-btn" onclick="copyPrompt(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
         Copy
       </button>
-      <pre>Outfit: relaxed urban streetwear — a plain black crew-neck t-shirt with a natural cotton drape, beige multi-pocket cargo shorts ending just below the knee, camo green retro running sneakers with a chunky white midsole, a matte black sports watch on the left wrist, and no other accessories. Fabric folds, pocket placement, and sneaker colourway remain identical across every panel — no added logos, no colour drift.</pre>
+      <pre>Outfit: black leather biker jacket with a raised stitched gothic cross across the front panels and back, worn open over a faded vintage graphic t-shirt with colourful Demon Slayer artwork, a silver cross pendant on a chain, brown leather utility belt carrying three silver throwing knives holstered on the left hip and three corked glass potion vials on the right, black leather jeans with studded cross detailing on the back pockets, and black strapped combat boots with glowing cyan and magenta sole accents. Every knife, vial, stitch line and glow accent sits in exactly the same position in all panels.</pre>
     </div>
     </div>
     <div style="margin-bottom:34px">
       <div class="media-block">
-        <div class="media-label">Tribal Hunter Armor — The battle-worn hunter — pairs with Tutorial 24</div>
-        <img src="/img/tut28-sheet3.jpg?v=1" alt="Tribal Hunter Armor character sheet example" style="width:100%;display:block" onerror="this.style.display='none'">
+        <div class="media-label">Demon Slayer — Shadow Requiem Coat — Full boss-mode variant with the flame staff</div>
+        <img src="/img/tut28-sheet3.jpg?v=1" alt="Demon Slayer — Shadow Requiem Coat character sheet example" style="width:100%;display:block" onerror="this.style.display='none'">
       </div>
     <div class="prompt-block">
-      <div class="prompt-label">📋 Clothing Prompt — Tribal Hunter Armor</div>
+      <div class="prompt-label">📋 Clothing Prompt — Demon Slayer — Shadow Requiem Coat</div>
       <button class="copy-btn" onclick="copyPrompt(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
         Copy
       </button>
-      <pre>Outfit: futuristic tribal hunter armor — layered brown leather and dark tactical fabric, weathered metallic chest and shoulder plates with glowing blue accent lines, crossed rope straps and hanging utility pouches, wrapped forearm guards, rugged combat boots caked with dust, small bone and feather accessories at the shoulder, visible battle scratches and grime. Every strap, pouch and glowing accent sits in exactly the same position in all panels.</pre>
+      <pre>Outfit: long flowing black trench coat with glowing cyan and magenta trim tracing the lapels, cuffs and hem, deep blood-red inner lining, and a large arcane eye sigil emblazoned across the back in purple and blue, worn over a black graphic t-shirt with dripping purple Demon Slayer lettering and eye emblem, dark ripped denim jeans with magenta stitching, a black leather belt with an occult metal buckle, and heavy black lace-up boots with purple energy glowing from the soles. He carries a tall ornate dark staff wreathed in purple flame with glowing runes along the shaft, held in the same hand in every standing panel. Coat trim glow, back sigil and staff design identical across all panels.</pre>
     </div>
     </div>
     <div style="margin-bottom:34px">
       <div class="media-block">
-        <div class="media-label">Elegant All-Black — The luxury aura look — pairs with Tutorial 26</div>
-        <img src="/img/tut28-sheet4.jpg?v=1" alt="Elegant All-Black character sheet example" style="width:100%;display:block" onerror="this.style.display='none'">
+        <div class="media-label">England Football Kit — Number 10 — name and number personalised</div>
+        <img src="/img/tut28-sheet4.jpg?v=1" alt="England Football Kit character sheet example" style="width:100%;display:block" onerror="this.style.display='none'">
       </div>
     <div class="prompt-block">
-      <div class="prompt-label">📋 Clothing Prompt — Elegant All-Black</div>
+      <div class="prompt-label">📋 Clothing Prompt — England Football Kit</div>
       <button class="copy-btn" onclick="copyPrompt(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
         Copy
       </button>
-      <pre>Outfit: elegant all-black premium look — a tailored black overshirt in fine wool worn open over a fitted black crew-neck, slim black trousers with a sharp crease, polished minimal black leather derby shoes, a discreet silver ring on the right hand, and slim black sunglasses hooked into the crew-neck collar in every panel. Clean silhouette, no visible branding, fabric texture and drape identical across all panels.</pre>
+      <pre>Outfit: classic white national-team football shirt with navy crew trim and red side accents, embroidered three-lions crest on the left chest, the number 10 printed on the right chest and large across the back beneath the printed surname WILLIAMS, navy blue shorts with crest and number 10 on the left leg, white knee-high socks, and black leather football boots. Crest position, number typography and name spelling identical in every panel.</pre>
+    </div>
+    </div>
+    <div style="margin-bottom:34px">
+      <div class="media-block">
+        <div class="media-label">NASA Astronaut Suit — Orange launch-and-entry suit build</div>
+        <img src="/img/tut28-sheet5.jpg?v=1" alt="NASA Astronaut Suit character sheet example" style="width:100%;display:block" onerror="this.style.display='none'">
+      </div>
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Clothing Prompt — NASA Astronaut Suit</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>Outfit: bright orange astronaut launch suit with royal blue harness webbing across the chest and shoulders, NASA insignia patch on the chest, name tag above it, US flag patch on the left shoulder and a round mission patch on the right, a grey metallic helmet neck-ring collar, black gloves with blue wrist-lock cuffs, a black chunky wristwatch over the left cuff, utility pockets on both thighs, blue survival-gear canisters strapped to each lower leg, and black boots. Patch placement, harness routing and canister position identical across all panels.</pre>
+    </div>
+    </div>
+    <div style="margin-bottom:34px">
+      <div class="media-block">
+        <div class="media-label">Black Executive Suit — The formal look — clean 9:16 board with labeled panels</div>
+        <img src="/img/tut28-sheet6.jpg?v=1" alt="Black Executive Suit character sheet example" style="width:100%;display:block" onerror="this.style.display='none'">
+      </div>
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Clothing Prompt — Black Executive Suit</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>Outfit: tailored black three-piece suit with notch lapels, a matching black waistcoat, black dress shirt and slim black tie, a subtle black leather belt, sharply creased black suit trousers, and polished black leather derby shoes. Jacket drape, tie width and shirt collar identical across every panel — no pattern, no visible branding, pure matte black fabric throughout.</pre>
     </div>
     </div>
   </div>
