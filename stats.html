@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Stats — Back2Life.app</title>
+<link rel="icon" type="image/png" href="/favicon-32.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080808;--surface:rgba(255,255,255,0.04);--surface2:rgba(255,255,255,0.07);--border:rgba(255,255,255,0.08);--green:#00ff88;--green2:#00cc66;--text:#f0f0f0;--text2:#aaaaaa;--text3:#555555;--radius:18px;--radius-sm:12px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;padding-bottom:60px}
+.topbar{position:sticky;top:0;z-index:50;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(8,8,8,0.92);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border)}
+.topbar a{color:var(--text2);text-decoration:none;font-size:14px;font-weight:600}
+.topbar h1{font-size:16px;font-weight:800;color:var(--green);letter-spacing:1px}
+main{max-width:860px;margin:0 auto;padding:20px 16px}
+.range{display:flex;gap:8px;margin-bottom:18px}
+.range button{flex:1;padding:10px 0;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.range button.on{background:linear-gradient(135deg,#00cc66,#00ff88);color:#000;border-color:transparent}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 12px;text-align:center}
+.card .num{font-size:26px;font-weight:900;color:var(--green)}
+.card .lbl{font-size:11px;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px;margin-bottom:18px}
+.section h2{font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:14px}
+.srcrow{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.srcrow .name{width:86px;font-size:13px;font-weight:600;color:var(--text);text-transform:capitalize;flex-shrink:0}
+.srcrow .bar{flex:1;height:10px;background:var(--surface2);border-radius:5px;overflow:hidden}
+.srcrow .bar i{display:block;height:100%;border-radius:5px}
+.srcrow .val{width:52px;text-align:right;font-size:13px;font-weight:700;color:var(--text2);flex-shrink:0}
+.chart{display:flex;align-items:flex-end;gap:2px;height:110px;margin-top:6px}
+.chart .col{flex:1;background:linear-gradient(180deg,#00ff88,#00cc66);border-radius:2px 2px 0 0;min-height:2px;opacity:.85}
+.chartlbl{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:1px;padding:6px 6px;border-bottom:1px solid var(--border)}
+td{padding:9px 6px;border-bottom:1px solid rgba(255,255,255,0.05);color:var(--text2);vertical-align:top}
+td.path,td.link{color:var(--text);font-weight:600;word-break:break-all}
+td.n{text-align:right;font-weight:700}
+th.n{text-align:right}
+td .sub{display:block;font-size:11px;color:var(--text3);font-weight:400;margin-top:2px;word-break:break-all}
+.msg{text-align:center;padding:60px 20px;color:var(--text2);font-size:15px;line-height:1.7}
+.msg a{color:var(--green);font-weight:700;text-decoration:none}
+.note{font-size:12px;color:var(--text3);line-height:1.6;margin-top:10px}
+.spin{width:26px;height:26px;border:3px solid var(--surface2);border-top-color:var(--green);border-radius:50%;margin:60px auto;animation:sp 0.8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(max-width:480px){.cards{gap:8px}.card .num{font-size:22px}}
+</style>
+</head>
+<body>
+<div class="topbar"><a href="/">&larr; Home</a><h1>PRIVATE STATS</h1><a href="#" onclick="loadAll();return false">&#8635;</a></div>
+<main id="main"><div class="spin"></div></main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+var SUPABASE_URL='https://sfpokfgfycsqvhtpamgm.supabase.co';
+var SUPABASE_KEY='sb_publishable_T0QKdJAb6katQhGtA8gWZA_xxnA4r_A';
+var sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+var days=30;
+var SRC_COLORS={tiktok:'#00f2ea',instagram:'#E1306C',youtube:'#FF0000',x:'#ffffff',facebook:'#1877F2',bitly:'#EE6123',search:'#4285F4',direct:'#00ff88',internal:'#555555',other:'#aaaaaa'};
+
+function el(h){var d=document.createElement('div');d.innerHTML=h;return d.firstElementChild}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+
+async function loadAll(){
+  var m=document.getElementById('main');
+  m.innerHTML='<div class="spin"></div>';
+  var s=await sb.auth.getSession();
+  var session=s.data.session;
+  if(!session){m.innerHTML='<div class="msg">This page is private.<br><a href="/login">Sign in</a> to continue.</div>';return}
+
+  var out=document.createElement('div');
+
+  /* range toggle */
+  var rng=el('<div class="range"><button data-d="7">7 days</button><button data-d="30">30 days</button><button data-d="90">90 days</button></div>');
+  rng.querySelectorAll('button').forEach(function(b){
+    if(+b.dataset.d===days)b.classList.add('on');
+    b.onclick=function(){days=+b.dataset.d;loadAll()};
+  });
+  out.appendChild(rng);
+
+  /* traffic stats */
+  var r=await sb.rpc('get_visit_stats',{days:days});
+  if(r.error){
+    if((r.error.message||'').indexOf('not authorized')!==-1){window.location.href='/';return}
+    out.appendChild(el('<div class="msg">Could not load stats: '+esc(r.error.message)+'</div>'));
+  }else{
+    var d=r.data;
+    out.appendChild(el('<div class="cards">'+
+      '<div class="card"><div class="num">'+d.visits_today+'</div><div class="lbl">Today</div></div>'+
+      '<div class="card"><div class="num">'+d.visits_7d+'</div><div class="lbl">7 Days</div></div>'+
+      '<div class="card"><div class="num">'+d.total_visits+'</div><div class="lbl">'+days+' Days</div></div>'+
+    '</div>'));
+
+    /* daily chart */
+    var daily=d.daily||[];
+    if(daily.length){
+      var max=Math.max.apply(null,daily.map(function(x){return x.visits}))||1;
+      var cols=daily.map(function(x){return '<div class="col" style="height:'+Math.max(2,Math.round(x.visits/max*100))+'%" title="'+esc(x.day)+': '+x.visits+'"></div>'}).join('');
+      out.appendChild(el('<div class="section"><h2>Visits per day</h2><div class="chart">'+cols+'</div><div class="chartlbl"><span>'+esc(daily[0].day)+'</span><span>'+esc(daily[daily.length-1].day)+'</span></div></div>'));
+    }
+
+    /* sources */
+    var srcs=(d.by_source||[]);
+    if(srcs.length){
+      var smax=Math.max.apply(null,srcs.map(function(x){return x.visits}))||1;
+      var rows=srcs.map(function(x){
+        var c=SRC_COLORS[x.source]||'#aaaaaa';
+        return '<div class="srcrow"><div class="name">'+esc(x.source)+'</div><div class="bar"><i style="width:'+Math.round(x.visits/smax*100)+'%;background:'+c+'"></i></div><div class="val">'+x.visits+'</div></div>';
+      }).join('');
+      out.appendChild(el('<div class="section"><h2>Traffic sources</h2>'+rows+'<div class="note">tiktok / instagram / youtube = people arriving from your socials. internal = moving between pages on the site. direct = typed URL or bio link with no referrer (most in-app browsers hide it — add ?utm_source=tiktok etc to bio links for accuracy).</div></div>'));
+    }else{
+      out.appendChild(el('<div class="section"><h2>Traffic sources</h2><div class="note">No visits logged yet — tracking starts from this deploy. Check back after your next post.</div></div>'));
+    }
+
+    /* pages */
+    var pages=(d.by_page||[]);
+    if(pages.length){
+      var prows=pages.map(function(p){
+        return '<tr><td class="path">'+esc(p.path)+'</td><td class="n">'+p.visits+'</td><td class="n">'+p.tiktok+'</td><td class="n">'+p.instagram+'</td><td class="n">'+p.youtube+'</td><td class="n">'+p.direct+'</td></tr>';
+      }).join('');
+      out.appendChild(el('<div class="section"><h2>Pages</h2><div style="overflow-x:auto"><table><thead><tr><th>Page</th><th class="n">All</th><th class="n">TT</th><th class="n">IG</th><th class="n">YT</th><th class="n">Direct</th></tr></thead><tbody>'+prows+'</tbody></table></div></div>'));
+    }
+  }
+
+  /* bitly */
+  var bx=el('<div class="section"><h2>Bitly links (30 days)</h2><div class="spin" style="margin:20px auto"></div></div>');
+  out.appendChild(bx);
+
+  m.innerHTML='';m.appendChild(out);
+
+  try{
+    var resp=await fetch(SUPABASE_URL+'/functions/v1/bitly-stats',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+session.access_token},
+      body:'{}'
+    });
+    var bd=await resp.json();
+    if(bd.error==='missing_token'){
+      bx.innerHTML='<h2>Bitly links (30 days)</h2><div class="note">One-time setup: create an access token at bitly.com &rarr; Settings &rarr; API, then add it as <b style="color:#f0f0f0">BITLY_TOKEN</b> in Supabase Dashboard &rarr; Edge Functions &rarr; Secrets. Refresh this page after.</div>';
+    }else if(bd.links&&bd.links.length){
+      var brows=bd.links.map(function(l){
+        return '<tr><td class="link">'+esc(l.link.replace('https://',''))+'<span class="sub">'+esc(l.title||l.long_url)+'</span></td><td class="n">'+l.clicks_30d+'</td></tr>';
+      }).join('');
+      bx.innerHTML='<h2>Bitly links (30 days)</h2><table><thead><tr><th>Link</th><th class="n">Clicks</th></tr></thead><tbody>'+brows+'</tbody></table>';
+    }else{
+      bx.innerHTML='<h2>Bitly links (30 days)</h2><div class="note">'+esc(bd.message||'No links found.')+'</div>';
+    }
+  }catch(e){
+    bx.innerHTML='<h2>Bitly links (30 days)</h2><div class="note">Could not reach Bitly stats function.</div>';
+  }
+}
+loadAll();
+</script>
+</body>
+</html>
