@@ -178,7 +178,7 @@
 
 <!-- HERO IMAGE -->
 <div style="width:100%;background:#050505;overflow:hidden;margin-top:56px;border-bottom:1px solid #00ccff33">
-  <img src="/img/tut18-hero.jpg?v=2" alt="Sea Colossus — You vs a Giant Ocean Titan" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover" onerror="this.parentElement.style.display='none'">
+  <img src="/img/tut18-hero.jpg?v=3" alt="Sea Colossus — You vs a Giant Ocean Titan" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover" onerror="this.parentElement.style.display='none'">
 </div>
 
 <!-- HERO -->
@@ -278,6 +278,59 @@
     <div class="callout tip">
       <span class="callout-icon">💡</span>
       <p><strong>Pro tip:</strong> The character board matters more than the portrait. If the model ever loses your face mid-sequence, it is almost always because the board lacked a clear front-facing close-up.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- THE THREE REFERENCE BOARDS -->
+  <div class="step-section">
+    <div class="step-header">
+      <div class="step-number" style="font-size:14px;font-weight:800">◈</div>
+      <div class="step-title-block">
+        <h2>The Three Reference Boards</h2>
+        <p>The exact boards used for the example video — with the prompt that created each one</p>
+      </div>
+    </div>
+    <p style="color:#ccc;font-size:15px;margin-bottom:24px">These are the actual reference images fed into Seedance for the example output on this page. Copy the prompt under each board, swap in your own selfie as the source, and generate your own set — they map to <strong>@Image1</strong>, <strong>@Image2</strong> and <strong>@Image3</strong> in the master prompt.</p>
+
+    <div class="media-block" style="max-width:520px;margin:0 auto 4px">
+      <div class="media-label">@Image1 — Superhero Portrait</div>
+      <img src="/img/tut18-ref1.jpg?v=1" alt="Superhero portrait reference — full body hero in neon circuit suit" style="width:100%;display:block" loading="lazy" onerror="this.style.display='none'">
+    </div>
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Image Prompt — Superhero Portrait (@Image1)</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>Ultra-realistic full-body cinematic portrait, 9:16, of the man in the reference selfie as a superhero, standing facing camera in a powerful wide stance with clenched fists. Skin-tight black armoured suit made of cracked-scale textured panels, laced with glowing neon circuit lines in cyber cyan, neon purple and electric pink running along the arms, torso and legs. Glowing neon emblem on the chest: a minimal side-profile human head containing a play-button triangle with circuit traces descending below it, drawn in cyan-to-purple gradient neon. High armoured collar, dark tactical utility belt, armoured gloves and boots, long dark navy cape falling behind the shoulders to the floor. Wet reflective black studio floor, drifting blue smoke, dark moody backdrop lit with a cold blue rim light. Photorealistic skin, sharp facial likeness preserved from the reference, dramatic hero lighting, 8k detail.</pre>
+    </div>
+
+    <div class="media-block" style="margin:28px 0 4px">
+      <div class="media-label">@Image2 — Character Board</div>
+      <img src="/img/tut18-ref2.jpg?v=1" alt="Character reference board — profile, turnaround, costume details, palette" style="width:100%;display:block" loading="lazy" onerror="this.style.display='none'">
+    </div>
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Image Prompt — Character Board (@Image2)</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>Professional character reference sheet, 16:9, dark UI design on a near-black background, for the superhero in the reference image. Layout: large full-body hero shot on the left standing on a wet reflective floor; CHARACTER PROFILE panel listing NAME: INSTINCT, ALIAS: THE CURRENT, ORIGIN: UNKNOWN, HEIGHT: 6'1" / 185 CM, WEIGHT: 197 LBS / 89 KG, BUILD: ATHLETIC / PEAK HUMAN, EYES: BROWN, HAIR: GRAY, AFFILIATION: INDEPENDENT, ROLE: PROTECTOR / ENFORCER, ALIGNMENT: NEUTRAL GOOD; a short BACKGROUND paragraph; a TURNAROUND section with front, side and back full-body views including the cape with a glowing circuit line down its centre; a FACE CLOSE-UP panel; a COSTUME DETAILS grid with labelled crops of the energy core chest logo, shoulder armour, utility belt, energy veins, armoured gloves and armoured boots; a COLOR PALETTE row of hex swatches #00FFFF cyber cyan, #7A00FF neon purple, #FF00D4 electric pink, #0F172A deep navy, #E6F1FF soft white; a MATERIALS &amp; TEXTURES strip (cracked scale armour, energy vein glow, micro mesh, gunmetal hardware, satin cape weave); a POWER VISUALIZATION panel of the hero crackling with blue-purple lightning; and a SUIT SCHEMATIC line drawing front and back. Same face, suit and emblem in every panel, clean sans-serif labels, studio quality.</pre>
+    </div>
+
+    <div class="media-block" style="max-width:520px;margin:28px auto 4px">
+      <div class="media-label">@Image3 — Sea Colossus Design Board</div>
+      <img src="/img/tut18-ref3.jpg?v=1" alt="Sea Colossus design board — turnaround, close-ups, poses, scale" style="width:100%;display:block" loading="lazy" onerror="this.style.display='none'">
+    </div>
+    <div class="prompt-block">
+      <div class="prompt-label">📋 Image Prompt — Sea Colossus Board (@Image3)</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <pre>Creature design reference sheet, tall vertical layout on a clean white background, titled SEA COLOSSUS — THE ABYSSAL ENTITY. Subject: a massive humanoid titan made of living ocean water — dark abyssal blue-purple translucent body streaked with glowing cyan and purple energy veins, blazing white-blue eyes, a bright lightning energy core in the chest, and a lower body that dissolves into a churning whirlpool of waves, spray and dripping water. Layout: large hero render top-left with a short description block and a SCALE REFERENCE note (height approx 300–400 meters, 3x the Empire State Building, with a 60–100 meter navy ship shown for scale); a 3D TURNAROUND row with labelled front, side and back views; a DETAILED CLOSE-UPS grid of head &amp; face, energy core &amp; veins, skin &amp; muscle texture, and arm &amp; hand detail; an IN ACTION / POSE EXPLORATION row of four poses including one gripping a warship; a BACK SURFACE DETAIL panel; a SILHOUETTE SCALE diagram comparing the titan against the Empire State Building and a human ship; and a COLOR PALETTE column with swatches #0A0E17 deep abyss, #0E2240 ocean depths, #00E5FF energy blue, #E8F6FF foam white, #4A5560 steel grey. Identical creature in every panel, clean editorial layout, concept-art studio quality.</pre>
     </div>
   </div>
 
@@ -589,7 +642,7 @@ negative_prompt:
     <div class="media-block">
       <div class="media-label">Generated with Seedance 2.0</div>
       <video controls playsinline preload="metadata" style="width:100%;display:block;background:#000" onerror="document.getElementById('exampleOutput18').style.display='none';this.closest('.step-section').nextElementSibling.style.display='none'">
-        <source src="/video/tut18-example.mp4?v=1" type="video/mp4">
+        <source src="/video/tut18-example.mp4?v=2" type="video/mp4">
       </video>
     </div>
   </div>
