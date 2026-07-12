@@ -280,6 +280,12 @@
 <!-- MAIN CONTENT -->
 <div class="container">
 
+  <!-- EXAMPLE VIDEO - autoplay muted YouTube -->
+  <div style="position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;margin:0 0 32px;background:#000">
+    <iframe src="https://www.youtube.com/embed/8vWEVLtCbaY?autoplay=1&mute=1&loop=1&playlist=8vWEVLtCbaY&rel=0&modestbranding=1&playsinline=1" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+  </div>
+
+
   <!-- WHAT YOU'LL CREATE -->
   <div class="overview-box">
     <h2>What You'll Create</h2>
@@ -315,24 +321,6 @@
       <div class="tool-icon-svg"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff4488" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
       <div class="tool-name">Kitten Photo</div>
       <div class="tool-desc">Optional — or describe your own animal</div>
-    </div>
-  </div>
-
-  <!-- EXAMPLE OUTPUT -->
-  <div class="step-section">
-    <div class="step-header">
-      <div class="step-number" style="font-size:14px;font-weight:800">OUT</div>
-      <div class="step-title-block">
-        <h2>Example Output</h2>
-        <p>The final AI-generated look this prompt produces</p>
-      </div>
-    </div>
-    <div class="media-block">
-      <div class="media-label">Generated Video — Seedance 2.0 Fast · 480p · 16:9</div>
-      <div class="video-wrap" style="border-radius:0;border:none">
-        <iframe src="https://www.youtube.com/embed/8vWEVLtCbaY?rel=0&modestbranding=1" allowfullscreen></iframe>
-      </div>
-      <div class="media-caption">Generated with Seedance 2.0 Fast at 480p 16:9 using the prompt and character reference below. One continuous unbroken shot — no editing required.</div>
     </div>
   </div>
 
@@ -704,5 +692,6 @@ function copyPrompt(btn){
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="/auth.js"></script>
 <script defer src="/t.js"></script>
+<script src="/b2l-media.js?v=1" defer></script>
 </body>
 </html>

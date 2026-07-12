@@ -216,6 +216,10 @@
 <!-- MAIN CONTENT -->
 <div class="container">
 
+  <!-- EXAMPLE VIDEO - autoplay muted, tap to toggle sound -->
+  <video autoplay muted loop playsinline preload="auto" src="/video/tut26-example.mp4?v=1" style="width:100%;display:block;border-radius:14px;margin:0 0 32px;cursor:pointer;background:#000" onclick="this.muted=!this.muted" onerror="this.style.display='none'"></video>
+
+
   <!-- WHAT YOU'LL CREATE -->
   <div class="overview-box">
     <h2>What You'll Create</h2>
@@ -403,25 +407,6 @@ Medium close-up of the character walking, sharp gaze into the camera, still movi
 
   <hr class="divider">
 
-  <!-- EXAMPLE OUTPUT -->
-  <div class="step-section" id="exampleOutput26">
-    <div class="step-header">
-      <div class="step-number" style="font-size:14px;font-weight:800">▶</div>
-      <div class="step-title-block">
-        <h2>Example Output</h2>
-        <p>Generated with the exact prompt above</p>
-      </div>
-    </div>
-    <div class="media-block">
-      <div class="media-label">Generated with Seedance 2.0</div>
-      <video controls playsinline preload="metadata" style="width:100%;display:block;background:#000" onerror="document.getElementById('exampleOutput26').style.display='none';this.closest('.step-section').nextElementSibling.style.display='none'">
-        <source src="/video/tut26-example.mp4?v=1" type="video/mp4">
-      </video>
-    </div>
-  </div>
-
-  <hr class="divider">
-
   <!-- VARIATIONS -->
   <div class="step-section">
     <div class="step-header">
@@ -492,5 +477,6 @@ function copyPrompt(btn){
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="/auth.js"></script>
 <script defer src="/t.js"></script>
+<script src="/b2l-media.js?v=1" defer></script>
 </body>
 </html>

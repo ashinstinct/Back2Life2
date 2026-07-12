@@ -214,6 +214,10 @@
 <!-- MAIN CONTENT -->
 <div class="container">
 
+  <!-- EXAMPLE VIDEO - autoplay muted, tap to toggle sound -->
+  <video autoplay muted loop playsinline preload="auto" src="/video/tut14-example.mp4?v=1" style="width:100%;display:block;border-radius:14px;margin:0 0 32px;cursor:pointer;background:#000" onclick="this.muted=!this.muted" onerror="this.style.display='none'"></video>
+
+
   <!-- WHAT YOU'LL CREATE -->
   <div class="overview-box">
     <h2>What You'll Create</h2>
@@ -467,5 +471,6 @@ function copyPrompt(btn){
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="/auth.js"></script>
 <script defer src="/t.js"></script>
+<script src="/b2l-media.js?v=1" defer></script>
 </body>
 </html>
