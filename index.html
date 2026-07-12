@@ -88,16 +88,17 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,10,10,0.95);backdrop-fi
 .tools-heading{font-size:clamp(20px,4vw,32px);font-weight:900;color:#fff;margin-bottom:6px;letter-spacing:-.5px}
 .tools-heading em{color:#00ff88;font-style:normal}
 .tools-sub{font-size:14px;color:#555}
-.tools-grid{display:flex;flex-direction:column;gap:10px}
-.tool-card{background:#111;border:1px solid #1e1e1e;border-radius:14px;padding:16px 18px;text-decoration:none;display:flex;flex-direction:row;align-items:center;gap:16px;transition:all .15s;position:relative;overflow:hidden;min-height:76px}
-.tool-card:hover,.tool-card:active{border-color:#00ff88;background:#0d0d0d}
-.tool-card-icon{flex-shrink:0;width:52px;height:52px}
-.tool-card-icon img{width:52px;height:52px;border-radius:12px;display:block;object-fit:cover}
-.tool-card-body{flex:1;min-width:0}
-.tool-card-badge{background:#00ff88;color:#000;font-size:8px;font-weight:800;letter-spacing:1px;padding:2px 6px;border-radius:4px;display:inline-block;margin-bottom:4px}
-.tool-card-title{font-size:14px;font-weight:800;color:#fff;line-height:1.2;margin-bottom:2px}
-.tool-card-desc{font-size:11px;color:#555;line-height:1.4}
-.tool-card-arrow{font-size:20px;color:#00ff88;flex-shrink:0;opacity:.5}
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tool-card{background:#111;border:1px solid #1e1e1e;border-radius:18px;padding:20px 8px 14px;text-decoration:none;display:flex;flex-direction:column;align-items:center;text-align:center;transition:all .15s;position:relative;overflow:hidden}
+.tool-card:hover,.tool-card:active{border-color:#00ff88;background:#0d0d0d;transform:translateY(-2px)}
+.tool-card-icon{flex-shrink:0;width:60px;height:60px;margin-bottom:10px}
+.tool-card-icon img{width:60px;height:60px;border-radius:14px;display:block;object-fit:cover;box-shadow:0 6px 16px rgba(0,0,0,.45)}
+.tool-card-body{min-width:0;width:100%}
+.tool-card-badge{position:absolute;top:8px;right:8px;background:#00ff88;color:#000;font-size:7px;font-weight:800;letter-spacing:1px;padding:2px 5px;border-radius:4px}
+.tool-card-title{font-size:12px;font-weight:800;color:#fff;line-height:1.25;margin-bottom:4px}
+.tool-card-desc{font-size:9.5px;color:#666;line-height:1.35}
+.tool-card-arrow{display:none}
+@media(min-width:700px){.tools-grid{grid-template-columns:repeat(4,1fr);gap:14px}.tool-card-icon,.tool-card-icon img{width:76px;height:76px}.tool-card-title{font-size:14px}.tool-card-desc{font-size:11px}}
 
 /* ── TUTORIALS SECTION ── */
 .section{padding:40px 20px;max-width:800px;margin:0 auto}
@@ -258,7 +259,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <div class="tool-card-body">
           <div class="tool-card-badge">FREE</div>
           <div class="tool-card-title">Watermark Tool</div>
-          <div class="tool-card-desc">Batch watermark images & videos. Dual logos, 10 positions, Above Social safe zone.</div>
+          <div class="tool-card-desc">Batch watermark photos &amp; videos</div>
         </div>
         <div class="tool-card-arrow">›</div>
       </a>
@@ -267,7 +268,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <div class="tool-card-body">
           <div class="tool-card-badge">FREE</div>
           <div class="tool-card-title">Video Splitter</div>
-          <div class="tool-card-desc">Slice videos into 10s, 15s, 20s, 30s or 1-min clips for Stories, Reels &amp; TikTok.</div>
+          <div class="tool-card-desc">Slice clips for Reels &amp; TikTok</div>
         </div>
         <div class="tool-card-arrow">›</div>
       </a>
@@ -276,7 +277,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <div class="tool-card-body">
           <div class="tool-card-badge">FREE</div>
           <div class="tool-card-title">Frame Extractor</div>
-          <div class="tool-card-desc">Grab any frame from a video as a high-quality PNG. Scrub, rename &amp; download.</div>
+          <div class="tool-card-desc">Grab any frame as a PNG</div>
         </div>
         <div class="tool-card-arrow">›</div>
       </a>
@@ -285,7 +286,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <div class="tool-card-body">
           <div class="tool-card-badge">FREE</div>
           <div class="tool-card-title">Audio Editor</div>
-          <div class="tool-card-desc">Trim, fade, adjust volume &amp; speed. Export as MP3, WAV or AIFF.</div>
+          <div class="tool-card-desc">Trim, fade &amp; export audio</div>
         </div>
         <div class="tool-card-arrow">›</div>
       </a>
@@ -294,7 +295,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <div class="tool-card-body">
           <div class="tool-card-badge">FREE</div>
           <div class="tool-card-title">Audio Converter</div>
-          <div class="tool-card-desc">Convert WAV, AIFF, FLAC &amp; MP3. Extract audio from any video.</div>
+          <div class="tool-card-desc">Convert WAV, FLAC &amp; MP3</div>
         </div>
         <div class="tool-card-arrow">›</div>
       </a>
@@ -303,7 +304,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <div class="tool-card-body">
           <div class="tool-card-badge">FREE</div>
           <div class="tool-card-title">Batch Video Flipper</div>
-          <div class="tool-card-desc">Flip & mirror hundreds of videos at once. Live preview, MP4 export, mute & ZIP.</div>
+          <div class="tool-card-desc">Flip &amp; mirror videos in bulk</div>
         </div>
         <div class="tool-card-arrow">›</div>
       </a>
@@ -312,7 +313,7 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
         <div class="tool-card-body">
           <div class="tool-card-badge">FREE</div>
           <div class="tool-card-title">Reframe Tool</div>
-          <div class="tool-card-desc">Batch-convert 16:9 to 9:16 with 50+ backgrounds — colors, matte, floral, space & tonal patterns, or upload your own.</div>
+          <div class="tool-card-desc">16:9 to 9:16 with 50+ backgrounds</div>
         </div>
         <div class="tool-card-arrow">›</div>
       </a>
@@ -328,20 +329,20 @@ footer{background:#080808;border-top:1px solid #161616;padding:24px 20px 20px;te
   <p style="font-size:14px;color:#666;margin-bottom:16px">Generate images and videos with fal.ai models</p>
   <div class="tools-grid">
     <a href="/ai-studio" class="tool-card">
-      <div class="tool-card-icon" style="background:linear-gradient(135deg,rgba(168,85,247,0.2),rgba(124,58,237,0.3));display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:12px"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="1.5" stroke-linecap="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg></div>
+      <div class="tool-card-icon" style="background:linear-gradient(135deg,rgba(168,85,247,0.2),rgba(124,58,237,0.3));display:flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:14px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="1.5" stroke-linecap="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg></div>
       <div class="tool-card-body">
         <div class="tool-card-badge" style="background:rgba(168,85,247,0.15);color:#a855f7;border-color:rgba(168,85,247,0.3)">FAL.AI</div>
         <div class="tool-card-title">AI Studio</div>
-        <div class="tool-card-desc">Generate images with GPT Image 2, Nano Banana Pro. Videos with Kling 3.0 &amp; Seedance 2.0.</div>
+        <div class="tool-card-desc">Images &amp; video with GPT, Kling &amp; Seedance</div>
       </div>
       <div class="tool-card-arrow">›</div>
     </a>
     <a href="/motion-control" class="tool-card">
-      <div class="tool-card-icon" style="background:linear-gradient(135deg,rgba(0,255,136,0.15),rgba(0,204,102,0.25));display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:12px"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/><path d="M18 12l3 3-3 3"/></svg></div>
+      <div class="tool-card-icon" style="background:linear-gradient(135deg,rgba(0,255,136,0.15),rgba(0,204,102,0.25));display:flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:14px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/><path d="M18 12l3 3-3 3"/></svg></div>
       <div class="tool-card-body">
         <div class="tool-card-badge" style="background:rgba(0,255,136,0.1);color:#00ff88;border-color:rgba(0,255,136,0.3)">KLING</div>
         <div class="tool-card-title">Motion Control</div>
-        <div class="tool-card-desc">Animate any character with Kling Motion Control. Upload a photo and a motion reference video.</div>
+        <div class="tool-card-desc">Animate characters from a photo</div>
       </div>
       <div class="tool-card-arrow">›</div>
     </a>
