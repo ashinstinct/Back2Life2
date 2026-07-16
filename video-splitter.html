@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Video Splitter — Back2Life.app</title>
-<meta name="description" content="Split any video into 10s, 15s, 20s, 30s or 1-minute clips. Perfect for Facebook Stories, Instagram Reels and TikTok. Free & browser-based.">
+<meta name="description" content="Split any video into 15s, 20s, 30s, 1-minute or custom-length MP4 clips. Perfect for Facebook Stories, Instagram Reels and TikTok. Free & browser-based.">
 <meta property="og:title" content="Video Splitter — Back2Life.app">
-<meta property="og:description" content="Split any video into 10s, 15s, 20s, 30s or 1-minute clips. Perfect for Facebook Stories, Instagram Reels and TikTok. Free & browser-based.">
+<meta property="og:description" content="Split any video into 15s, 20s, 30s, 1-minute or custom-length MP4 clips. Perfect for Facebook Stories, Instagram Reels and TikTok. Free & browser-based.">
 <meta property="og:image" content="https://back2lifeapp.vercel.app/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -14,7 +14,7 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Video Splitter — Back2Life.app">
-<meta name="twitter:description" content="Split any video into 10s, 15s, 20s, 30s or 1-minute clips. Perfect for Facebook Stories, Instagram Reels and TikTok. Free & browser-based.">
+<meta name="twitter:description" content="Split any video into 15s, 20s, 30s, 1-minute or custom-length MP4 clips. Perfect for Facebook Stories, Instagram Reels and TikTok. Free & browser-based.">
 <meta name="twitter:image" content="https://back2lifeapp.vercel.app/og-image.png">>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -172,6 +172,7 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Video Splitter">
 <link rel="manifest" href="/manifest.json">
+<script defer src="https://cdn.jsdelivr.net/npm/mp4box/dist/mp4box.all.min.js"></script>
 </head>
 <body>
 
@@ -187,7 +188,7 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
   <div class="upload-zone" id="dropzone">
     <div class="upload-icon"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 12px rgba(0,255,136,0.4))"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg></div>
     <div class="upload-title">Drop a video to split</div>
-    <div class="upload-sub">Slice into 10s, 15s, 20s, 30s or 1-min clips<br>Perfect for Stories, Reels &amp; TikTok</div>
+    <div class="upload-sub">Slice into 15s, 20s, 30s, 1-min or custom clips<br>Perfect for Stories, Reels &amp; TikTok</div>
     <div class="chips"><span class="chip">MP4</span><span class="chip">MOV</span><span class="chip">WebM</span><span class="chip">MKV</span></div>
     <button class="upload-cta" type="button" id="browseBtn">Choose Video</button>
     <input type="file" id="fileInput" accept="video/*">
@@ -207,15 +208,20 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
     <div class="sect-label">Output Filename</div>
     <div style="display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);overflow:hidden;margin-bottom:20px;transition:border-color var(--transition)" id="renameWrap">
       <input type="text" id="renameInput" placeholder="clip_name" spellcheck="false" autocorrect="off" style="flex:1;background:none;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;font-weight:500;padding:11px 14px;outline:none">
-      <span style="background:rgba(255,255,255,0.04);color:var(--text3);font-size:11px;font-weight:700;padding:11px 12px;border-left:1px solid var(--border);white-space:nowrap">_clip01.webm</span>
+      <span style="background:rgba(255,255,255,0.04);color:var(--text3);font-size:11px;font-weight:700;padding:11px 12px;border-left:1px solid var(--border);white-space:nowrap" id="renameExtLabel">_clip01.mp4</span>
     </div>
     <div class="sect-label">Clip Duration</div>
     <div class="segment-wrap">
-      <button class="seg" data-dur="10">10s<small>Stories</small></button>
       <button class="seg active" data-dur="15">15s<small>TikTok</small></button>
       <button class="seg" data-dur="20">20s<small>Reels</small></button>
       <button class="seg" data-dur="30">30s<small>YouTube</small></button>
       <button class="seg" data-dur="60">1 min<small>Long</small></button>
+      <button class="seg" data-dur="custom" id="customSegBtn">Custom<small>Set sec</small></button>
+    </div>
+    <div id="customDurWrap" style="display:none;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;margin:-8px 0 20px">
+      <span style="font-size:13px;color:var(--text2);flex-shrink:0">Clip length</span>
+      <input type="number" id="customDurInput" min="1" max="7200" step="1" value="15" style="flex:1;background:none;border:none;border-bottom:1px solid var(--border2);color:var(--green);font-family:'Inter',sans-serif;font-size:15px;font-weight:700;padding:4px 6px;outline:none;text-align:right">
+      <span style="font-size:13px;color:var(--text3);flex-shrink:0">seconds</span>
     </div>
 
     <div class="sect-label">Clip Range</div>
@@ -370,13 +376,27 @@ dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-ove
 dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); });
 
 // ── SEGMENT ──
+const customDurWrap  = document.getElementById('customDurWrap');
+const customDurInput = document.getElementById('customDurInput');
+
 document.querySelectorAll('.seg').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.seg').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    clipDuration = parseInt(btn.dataset.dur);
+    if (btn.dataset.dur === 'custom') {
+      customDurWrap.style.display = 'flex';
+      clipDuration = Math.max(1, parseInt(customDurInput.value) || 15);
+    } else {
+      customDurWrap.style.display = 'none';
+      clipDuration = parseInt(btn.dataset.dur);
+    }
     updateClipPreview();
   });
+});
+customDurInput.addEventListener('input', () => {
+  const v = Math.max(1, Math.min(7200, parseInt(customDurInput.value) || 1));
+  clipDuration = v;
+  updateClipPreview();
 });
 
 // ── RANGE ──
@@ -431,7 +451,7 @@ function updateClipPreview() {
   clipsCard.classList.add('show');
 }
 
-// ── SPLIT — native Blob URL + seek approach, no FFmpeg needed ──
+// ── SPLIT ──
 splitBtn.addEventListener('click', doSplit);
 resetBtn.addEventListener('click', resetAll);
 
@@ -444,36 +464,221 @@ async function doSplit() {
   const span    = endSec - startSec;
   const count   = Math.ceil(span / clipDuration);
   const exportName = (document.getElementById('renameInput').value.trim() || originalName).replace(/[^a-zA-Z0-9_\-]/g, '_');
-  const ext     = videoFile.name.split('.').pop().toLowerCase();
 
   progressLabel.textContent = `Preparing ${count} clip${count !== 1 ? 's' : ''}…`;
   progressFill.style.width = '0%';
 
-  for (let i = 0; i < count; i++) {
-    const clipStart = startSec + i * clipDuration;
-    const clipEnd   = Math.min(clipStart + clipDuration, endSec);
-    const clipDur   = clipEnd - clipStart;
-
-    // Update UI
-    progressLabel.textContent = `Exporting clip ${i+1} of ${count}…`;
-    progressFill.style.width  = ((i / count) * 95) + '%';
-    const statusEl = document.getElementById('cs' + i);
-    if (statusEl) { statusEl.textContent = '⏳'; statusEl.className = 'clip-status active'; }
-
-    await exportClipBlob(srcURL, clipStart, clipDur, i + 1, count, ext, exportName);
-
-    if (statusEl) { statusEl.textContent = '✓'; statusEl.className = 'clip-status done'; }
+  // Try the fast, no-re-encode MP4 path first (mp4box.js). Falls back to the
+  // slower WebM MediaRecorder path automatically if the source isn't a
+  // parseable MP4/MOV (H.264+AAC) container, or if anything else goes wrong.
+  let usedFastPath = false;
+  try {
+    if (window.MP4Box) {
+      usedFastPath = await splitFastMP4(videoFile, count, exportName);
+    }
+  } catch (e) {
+    console.warn('Fast MP4 split failed, falling back to WebM:', e);
+    usedFastPath = false;
   }
 
-  URL.revokeObjectURL(srcURL);
+  if (!usedFastPath) {
+    const srcURL = URL.createObjectURL(videoFile);
+    for (let i = 0; i < count; i++) {
+      const clipStart = startSec + i * clipDuration;
+      const clipEnd   = Math.min(clipStart + clipDuration, endSec);
+      const clipDur   = clipEnd - clipStart;
+
+      progressLabel.textContent = `Exporting clip ${i+1} of ${count} (standard mode)…`;
+      progressFill.style.width  = ((i / count) * 95) + '%';
+      const statusEl = document.getElementById('cs' + i);
+      if (statusEl) { statusEl.textContent = '⏳'; statusEl.className = 'clip-status active'; }
+
+      await exportClipBlobWebM(srcURL, clipStart, clipDur, exportName, i);
+
+      if (statusEl) { statusEl.textContent = '✓'; statusEl.className = 'clip-status done'; }
+    }
+    URL.revokeObjectURL(srcURL);
+  }
+
   progressFill.style.width  = '100%';
   progressLabel.textContent = `✓ Done — ${count} clip${count !== 1 ? 's' : ''} downloaded`;
   showToast(`✓ ${count} clip${count !== 1 ? 's' : ''} exported!`);
   setTimeout(() => { progressWrap.classList.remove('visible'); splitting = false; splitBtn.disabled = false; }, 4000);
 }
 
-// Seek-and-record a single clip using MediaRecorder on a hidden video element
-function exportClipBlob(srcURL, startTime, duration, num, total, ext, exportName) {
+// ══════════════════════════════════════════════════════════════════
+// FAST PATH — mp4box.js: cuts MP4/MOV at real keyframes, copies the
+// compressed bytes directly (no decode, no re-encode, no re-recording
+// in real time). Output stays true MP4 (H.264/AAC) on iOS and Android.
+// Because it can't re-encode, each clip start snaps to the nearest
+// keyframe at or before the target time — usually within a second or
+// two, depending on the source's GOP length.
+// ══════════════════════════════════════════════════════════════════
+function splitFastMP4(file, count, exportName) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('file read failed'));
+    reader.onload = () => {
+      const buf = reader.result;
+      buf.fileStart = 0;
+      const mp4boxfile = MP4Box.createFile();
+      let settled = false;
+      const fail = (err) => { if (!settled) { settled = true; reject(err); } };
+      setTimeout(() => fail(new Error('mp4box timeout')), 15000);
+
+      mp4boxfile.onError = fail;
+
+      mp4boxfile.onReady = (info) => {
+        try {
+          const vTrack = info.tracks.find(t => t.video);
+          const aTrack = info.tracks.find(t => t.audio);
+          if (!vTrack) { fail(new Error('no video track')); return; }
+
+          if (vTrack) mp4boxfile.setSegmentOptions(vTrack.id, 'video', { nbSamples: 1 });
+          if (aTrack) mp4boxfile.setSegmentOptions(aTrack.id, 'audio', { nbSamples: 1 });
+          let initSegs = mp4boxfile.initializeSegmentation();
+          const initBuffer = Array.isArray(initSegs) ? initSegs[0].buffer : initSegs.buffer;
+          if (!initBuffer) { fail(new Error('no init segment')); return; }
+          const initBytes = new Uint8Array(initBuffer);
+
+          const collected = { video: [], audio: [] };
+          const expected  = { video: vTrack.nb_samples, audio: aTrack ? aTrack.nb_samples : 0 };
+
+          mp4boxfile.onSamples = (id, user, samples) => {
+            collected[user] = collected[user].concat(samples);
+            const done = collected.video.length >= expected.video && collected.audio.length >= expected.audio;
+            if (done && !settled) {
+              try {
+                buildAndDownloadMP4Clips(collected.video, collected.audio, vTrack, aTrack, count, exportName, initBytes);
+                settled = true; resolve(true);
+              } catch (e) { fail(e); }
+            }
+          };
+
+          mp4boxfile.setExtractionOptions(vTrack.id, 'video', { nbSamples: vTrack.nb_samples });
+          if (aTrack) mp4boxfile.setExtractionOptions(aTrack.id, 'audio', { nbSamples: aTrack.nb_samples });
+          mp4boxfile.start();
+        } catch (e) { fail(e); }
+      };
+
+      try {
+        mp4boxfile.appendBuffer(buf);
+        mp4boxfile.flush();
+      } catch (e) { fail(e); }
+    };
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+function buildAndDownloadMP4Clips(videoSamples, audioSamples, vTrack, aTrack, count, exportName, initBytes) {
+  const vTimescale = vTrack.timescale;
+  const aTimescale = aTrack ? aTrack.timescale : null;
+  videoSamples.sort((a, b) => a.cts - b.cts);
+  audioSamples.sort((a, b) => a.cts - b.cts);
+
+  const startTicks = startSec * vTimescale;
+  const endTicks    = endSec   * vTimescale;
+  const clipTicks   = clipDuration * vTimescale;
+  const syncTicks   = videoSamples.filter(s => s.is_sync).map(s => s.cts).sort((a, b) => a - b);
+
+  function nearestSyncAtOrBefore(t) {
+    let best = syncTicks[0];
+    for (const s of syncTicks) { if (s <= t) best = s; else break; }
+    return best;
+  }
+
+  // Build keyframe-snapped cut points across the full requested range.
+  const cuts = [nearestSyncAtOrBefore(startTicks)];
+  let t = cuts[0] + clipTicks;
+  while (t < endTicks) {
+    const snap = nearestSyncAtOrBefore(t);
+    cuts.push(snap > cuts[cuts.length - 1] ? snap : t);
+    t = cuts[cuts.length - 1] + clipTicks;
+  }
+  cuts.push(endTicks);
+
+  for (let i = 0; i < count && i < cuts.length - 1; i++) {
+    const cStart = cuts[i], cEnd = cuts[i + 1];
+    const vSamples = videoSamples.filter(s => s.cts >= cStart && s.cts < cEnd);
+    const aSamples = audioSamples.filter(s => (s.cts / aTimescale) * vTimescale >= cStart && (s.cts / aTimescale) * vTimescale < cEnd);
+    if (!vSamples.length) continue;
+
+    const fragment = buildFragment(i + 1, [
+      { trackId: vTrack.id, samples: vSamples },
+      ...(aSamples.length ? [{ trackId: aTrack.id, samples: aSamples }] : [])
+    ]);
+
+    const blob = new Blob([initBytes, fragment], { type: 'video/mp4' });
+    downloadBlob(blob, `${exportName}_clip${String(i + 1).padStart(2, '0')}_${fmtSafe(cStart / vTimescale)}-${fmtSafe(cEnd / vTimescale)}.mp4`);
+
+    const statusEl = document.getElementById('cs' + i);
+    if (statusEl) { statusEl.textContent = '✓'; statusEl.className = 'clip-status done'; }
+    progressFill.style.width = (((i + 1) / count) * 95) + '%';
+    progressLabel.textContent = `Exporting clip ${i + 1} of ${count}…`;
+  }
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 8000);
+}
+
+// ── Minimal ISO-BMFF fragment (moof+mdat) writer — no external deps ──
+function u32(n) { const b = new Uint8Array(4); new DataView(b.buffer).setUint32(0, n >>> 0); return b; }
+function s32(n) { const b = new Uint8Array(4); new DataView(b.buffer).setInt32(0, n | 0); return b; }
+function str4(s) { return new Uint8Array([s.charCodeAt(0), s.charCodeAt(1), s.charCodeAt(2), s.charCodeAt(3)]); }
+function concatBytes(arrs) {
+  let len = 0; for (const a of arrs) len += a.length;
+  const out = new Uint8Array(len); let o = 0;
+  for (const a of arrs) { out.set(a, o); o += a.length; }
+  return out;
+}
+function mbox(type, ...parts) {
+  const payload = concatBytes(parts);
+  return concatBytes([u32(8 + payload.length), str4(type), payload]);
+}
+function buildMfhd(seq) { return mbox('mfhd', u32(0), u32(seq)); }
+function buildTfhd(trackId) { return mbox('tfhd', u32(0x020000), u32(trackId)); }
+function buildTfdt() { return mbox('tfdt', new Uint8Array([1,0,0,0]), u32(0), u32(0)); }
+function buildTrun(samples, dataOffset) {
+  const flags = 0x000f01; // data-offset + duration + size + flags + composition-offset present
+  const versionFlags = (1 << 24) | flags;
+  const parts = [u32(versionFlags), u32(samples.length), s32(dataOffset)];
+  for (const s of samples) {
+    const flagsVal = s.is_sync ? 0x02000000 : 0x01010000;
+    parts.push(u32(s.duration || 1), u32(s.size), u32(flagsVal), s32(s.cts - s.dts));
+  }
+  return mbox('trun', ...parts);
+}
+function trunSize(n) { return 8 + 12 + n * 16; }
+function trafSize(n) { return 8 + 16 + 20 + trunSize(n); }
+function moofSize(counts) { return 8 + 16 + counts.reduce((s, n) => s + trafSize(n), 0); }
+
+function buildFragment(seq, tracks) {
+  const counts = tracks.map(t => t.samples.length);
+  const moofTotal = moofSize(counts);
+  let cumulative = 0;
+  const trafBoxes = [];
+  for (const tr of tracks) {
+    const dataOffset = moofTotal + 8 + cumulative;
+    const traf = mbox('traf', buildTfhd(tr.trackId), buildTfdt(), buildTrun(tr.samples, dataOffset));
+    trafBoxes.push(traf);
+    cumulative += tr.samples.reduce((s, x) => s + x.size, 0);
+  }
+  const moof = mbox('moof', buildMfhd(seq), ...trafBoxes);
+  const mdatPayload = concatBytes(tracks.flatMap(tr => tr.samples.map(s => new Uint8Array(s.data.buffer || s.data, s.data.byteOffset || 0, s.size))));
+  const mdat = mbox('mdat', mdatPayload);
+  return concatBytes([moof, mdat]);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// FALLBACK PATH — canvas + MediaRecorder re-record (WebM only).
+// Used only when the fast MP4 path can't parse the source file.
+// ══════════════════════════════════════════════════════════════════
+function exportClipBlobWebM(srcURL, startTime, duration, exportName, index) {
   return new Promise((resolve, reject) => {
     const vid = document.createElement('video');
     vid.src = srcURL;
@@ -520,7 +725,7 @@ function exportClipBlob(srcURL, startTime, duration, num, total, ext, exportName
         const blobURL  = URL.createObjectURL(blob);
         const a        = document.createElement('a');
         a.href         = blobURL;
-        a.download     = `${exportName || originalName}_clip${String(num).padStart(2,'0')}_${fmtSafe(startTime)}-${fmtSafe(startTime+duration)}.webm`;
+        a.download     = `${exportName || originalName}_clip${String(index+1).padStart(2,'0')}_${fmtSafe(startTime)}-${fmtSafe(startTime+duration)}.webm`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
