@@ -172,7 +172,11 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Video Splitter">
 <link rel="manifest" href="/manifest.json">
-<script defer src="https://cdn.jsdelivr.net/npm/mp4box/dist/mp4box.all.min.js"></script>
+<script type="module">
+  import * as MP4BoxNS from 'https://cdn.jsdelivr.net/npm/mp4box/dist/mp4box.all.min.js';
+  window.MP4Box = MP4BoxNS;
+  window.dispatchEvent(new Event('mp4boxready'));
+</script>
 <script defer src="https://cdn.jsdelivr.net/npm/fix-webm-duration/dist/fix-webm-duration.js"></script>
 </head>
 <body>
@@ -197,7 +201,7 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
 
   <!-- VIDEO PREVIEW -->
   <div class="video-preview-wrap" id="videoPreview">
-    <video id="videoEl" muted playsinline preload="metadata"></video>
+    <video id="videoEl" controls playsinline preload="metadata"></video>
     <div class="vid-info-bar">
       <div class="vid-info-name" id="vidName">—</div>
       <div class="vid-info-meta" id="vidMeta">—</div>
@@ -745,14 +749,14 @@ function exportClipBlobWebM(srcURL, startTime, duration, exportName, index) {
       // Capture video stream from canvas
       const videoStream = canvas.captureStream(30);
 
-      // Try to capture audio too
+      // Try to capture audio too (routed only to the recorder, not to
+      // speakers — we don't want export to audibly play the clip).
       let combinedStream = videoStream;
       try {
         const audioCtx = new AudioContext();
         const src = audioCtx.createMediaElementSource(vid);
         const dest = audioCtx.createMediaStreamDestination();
         src.connect(dest);
-        src.connect(audioCtx.destination);
         const audioTrack = dest.stream.getAudioTracks()[0];
         if (audioTrack) {
           combinedStream = new MediaStream([...videoStream.getTracks(), audioTrack]);
