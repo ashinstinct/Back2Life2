@@ -173,6 +173,7 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
 <meta name="apple-mobile-web-app-title" content="Video Splitter">
 <link rel="manifest" href="/manifest.json">
 <script defer src="https://cdn.jsdelivr.net/npm/mp4box/dist/mp4box.all.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/fix-webm-duration/dist/fix-webm-duration.js"></script>
 </head>
 <body>
 
@@ -472,16 +473,22 @@ async function doSplit() {
   // slower WebM MediaRecorder path automatically if the source isn't a
   // parseable MP4/MOV (H.264+AAC) container, or if anything else goes wrong.
   let usedFastPath = false;
+  let fastPathError = null;
   try {
+    await waitForMP4Box(4000);
     if (window.MP4Box) {
       usedFastPath = await splitFastMP4(videoFile, count, exportName);
+    } else {
+      fastPathError = 'mp4box.js failed to load';
     }
   } catch (e) {
-    console.warn('Fast MP4 split failed, falling back to WebM:', e);
+    fastPathError = (e && e.message) || String(e);
+    console.error('Fast MP4 split failed, falling back to WebM:', e);
     usedFastPath = false;
   }
 
   if (!usedFastPath) {
+    if (fastPathError) showToast(`⚠️ Fast MP4 unavailable (${fastPathError}) — using standard export`);
     const srcURL = URL.createObjectURL(videoFile);
     for (let i = 0; i < count; i++) {
       const clipStart = startSec + i * clipDuration;
@@ -514,6 +521,19 @@ async function doSplit() {
 // keyframe at or before the target time — usually within a second or
 // two, depending on the source's GOP length.
 // ══════════════════════════════════════════════════════════════════
+function waitForMP4Box(timeoutMs) {
+  return new Promise((resolve) => {
+    if (window.MP4Box) { resolve(); return; }
+    const start = Date.now();
+    const iv = setInterval(() => {
+      if (window.MP4Box || Date.now() - start > timeoutMs) {
+        clearInterval(iv);
+        resolve();
+      }
+    }, 100);
+  });
+}
+
 function splitFastMP4(file, count, exportName) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -573,35 +593,60 @@ function splitFastMP4(file, count, exportName) {
 function buildAndDownloadMP4Clips(videoSamples, audioSamples, vTrack, aTrack, count, exportName, initBytes) {
   const vTimescale = vTrack.timescale;
   const aTimescale = aTrack ? aTrack.timescale : null;
-  videoSamples.sort((a, b) => a.cts - b.cts);
-  audioSamples.sort((a, b) => a.cts - b.cts);
+
+  // Sort by DECODE order (dts), never by cts. With B-frames present, cts
+  // (display time) is not monotonic with decode order — filtering samples
+  // by a cts time range silently drops/reorders samples mid-GOP and
+  // corrupts the reference-frame chain. We must slice by array index in
+  // decode order so every GOP stays fully intact.
+  videoSamples.sort((a, b) => a.dts - b.dts);
+  audioSamples.sort((a, b) => a.dts - b.dts);
 
   const startTicks = startSec * vTimescale;
   const endTicks    = endSec   * vTimescale;
   const clipTicks   = clipDuration * vTimescale;
-  const syncTicks   = videoSamples.filter(s => s.is_sync).map(s => s.cts).sort((a, b) => a - b);
 
-  function nearestSyncAtOrBefore(t) {
-    let best = syncTicks[0];
-    for (const s of syncTicks) { if (s <= t) best = s; else break; }
+  const syncIdx = [];
+  for (let i = 0; i < videoSamples.length; i++) if (videoSamples[i].is_sync) syncIdx.push(i);
+  if (!syncIdx.length) throw new Error('source has no keyframes');
+
+  function idxOfNearestSyncAtOrBeforeTime(t) {
+    let best = syncIdx[0];
+    for (const idx of syncIdx) { if (videoSamples[idx].cts <= t) best = idx; else break; }
     return best;
   }
 
-  // Build keyframe-snapped cut points across the full requested range.
-  const cuts = [nearestSyncAtOrBefore(startTicks)];
-  let t = cuts[0] + clipTicks;
-  while (t < endTicks) {
-    const snap = nearestSyncAtOrBefore(t);
-    cuts.push(snap > cuts[cuts.length - 1] ? snap : t);
-    t = cuts[cuts.length - 1] + clipTicks;
+  // Cut points as decode-order sample INDICES (GOP-safe), derived from
+  // keyframe display times snapped to the requested clip length.
+  const cutIdx = [idxOfNearestSyncAtOrBeforeTime(startTicks)];
+  while (true) {
+    const targetTime = videoSamples[cutIdx[cutIdx.length - 1]].cts + clipTicks;
+    if (targetTime >= endTicks) break;
+    const nextIdx = idxOfNearestSyncAtOrBeforeTime(targetTime);
+    if (nextIdx <= cutIdx[cutIdx.length - 1]) break; // no further keyframe available
+    cutIdx.push(nextIdx);
   }
-  cuts.push(endTicks);
+  cutIdx.push(nearestSyncOrEndIndex(endTicks)); // sentinel — respects requested end, not just source end
 
-  for (let i = 0; i < count && i < cuts.length - 1; i++) {
-    const cStart = cuts[i], cEnd = cuts[i + 1];
-    const vSamples = videoSamples.filter(s => s.cts >= cStart && s.cts < cEnd);
-    const aSamples = audioSamples.filter(s => (s.cts / aTimescale) * vTimescale >= cStart && (s.cts / aTimescale) * vTimescale < cEnd);
+  function nearestSyncOrEndIndex(t) {
+    for (let i = 0; i < videoSamples.length; i++) { if (videoSamples[i].cts >= t) return i; }
+    return videoSamples.length;
+  }
+
+  for (let i = 0; i < count && i < cutIdx.length - 1; i++) {
+    const vSamples = videoSamples.slice(cutIdx[i], cutIdx[i + 1]);
     if (!vSamples.length) continue;
+
+    const segStartTicks = vSamples[0].cts;
+    const segEndTicks = (cutIdx[i + 1] < videoSamples.length) ? videoSamples[cutIdx[i + 1]].cts : endTicks;
+
+    // Audio has no B-frame reordering (cts === dts), so a plain time-window
+    // filter against the video segment's real (keyframe-snapped) boundaries
+    // is safe and keeps audio in sync with this specific clip.
+    const aSamples = aTrack ? audioSamples.filter(s => {
+      const tTicks = (s.cts / aTimescale) * vTimescale;
+      return tTicks >= segStartTicks && tTicks < segEndTicks;
+    }) : [];
 
     const fragment = buildFragment(i + 1, [
       { trackId: vTrack.id, samples: vSamples },
@@ -609,7 +654,7 @@ function buildAndDownloadMP4Clips(videoSamples, audioSamples, vTrack, aTrack, co
     ]);
 
     const blob = new Blob([initBytes, fragment], { type: 'video/mp4' });
-    downloadBlob(blob, `${exportName}_clip${String(i + 1).padStart(2, '0')}_${fmtSafe(cStart / vTimescale)}-${fmtSafe(cEnd / vTimescale)}.mp4`);
+    downloadBlob(blob, `${exportName}_clip${String(i + 1).padStart(2, '0')}_${fmtSafe(segStartTicks / vTimescale)}-${fmtSafe(segEndTicks / vTimescale)}.mp4`);
 
     const statusEl = document.getElementById('cs' + i);
     if (statusEl) { statusEl.textContent = '✓'; statusEl.className = 'clip-status done'; }
@@ -721,18 +766,27 @@ function exportClipBlobWebM(srcURL, startTime, duration, exportName, index) {
 
       recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
       recorder.onstop = () => {
-        const blob     = new Blob(chunks, { type: mimeType });
-        const blobURL  = URL.createObjectURL(blob);
-        const a        = document.createElement('a');
-        a.href         = blobURL;
-        a.download     = `${exportName || originalName}_clip${String(index+1).padStart(2,'0')}_${fmtSafe(startTime)}-${fmtSafe(startTime+duration)}.webm`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(blobURL), 8000);
-        vid.pause();
-        vid.remove();
-        resolve();
+        const rawBlob = new Blob(chunks, { type: mimeType });
+        const finish = (finalBlob) => {
+          const blobURL  = URL.createObjectURL(finalBlob);
+          const a        = document.createElement('a');
+          a.href         = blobURL;
+          a.download     = `${exportName || originalName}_clip${String(index+1).padStart(2,'0')}_${fmtSafe(startTime)}-${fmtSafe(startTime+duration)}.webm`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(blobURL), 8000);
+          vid.pause();
+          vid.remove();
+          resolve();
+        };
+        // MediaRecorder doesn't write a duration into the WebM header, which
+        // is why exported clips show 0:00 and can't be scrubbed. Patch it in.
+        if (window.ysFixWebmDuration) {
+          ysFixWebmDuration(rawBlob, duration * 1000, undefined, { logger: false }).then(finish).catch(() => finish(rawBlob));
+        } else {
+          finish(rawBlob);
+        }
       };
 
       // Draw frames continuously
