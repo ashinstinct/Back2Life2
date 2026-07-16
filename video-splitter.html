@@ -205,6 +205,7 @@ input[type=range].rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;h
     <div class="vid-info-bar">
       <div class="vid-info-name" id="vidName">—</div>
       <div class="vid-info-meta" id="vidMeta">—</div>
+      <button type="button" id="closeVideoBtn" title="Close video and load another" style="flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text2);width:26px;height:26px;border-radius:50%;font-size:14px;line-height:1;cursor:pointer;font-family:'Inter',sans-serif;margin-left:4px">✕</button>
     </div>
   </div>
 
@@ -459,6 +460,7 @@ function updateClipPreview() {
 // ── SPLIT ──
 splitBtn.addEventListener('click', doSplit);
 resetBtn.addEventListener('click', resetAll);
+document.getElementById('closeVideoBtn').addEventListener('click', resetAll);
 
 async function doSplit() {
   if (!videoFile || splitting) return;
@@ -657,7 +659,17 @@ function buildAndDownloadMP4Clips(videoSamples, audioSamples, vTrack, aTrack, co
       ...(aSamples.length ? [{ trackId: aTrack.id, samples: aSamples }] : [])
     ]);
 
-    const blob = new Blob([initBytes, fragment], { type: 'video/mp4' });
+    // The reused init segment (ftyp+moov) was built by mp4box.js for MSE
+    // streaming and has mvhd/tkhd/mdhd duration fields set to 0 — that's
+    // exactly why exported clips were showing 0:00 and couldn't be
+    // scrubbed. Patch in this clip's real duration before writing it out.
+    const clipSeconds = (segEndTicks - segStartTicks) / vTimescale;
+    const audioTicks = aSamples.length ? aSamples.reduce((s, x) => s + x.duration, 0) : 0;
+    const trackTicksById = { [vTrack.id]: segEndTicks - segStartTicks };
+    if (aTrack && aSamples.length) trackTicksById[aTrack.id] = audioTicks;
+    const patchedInit = patchInitDurations(initBytes, clipSeconds, trackTicksById);
+
+    const blob = new Blob([patchedInit, fragment], { type: 'video/mp4' });
     downloadBlob(blob, `${exportName}_clip${String(i + 1).padStart(2, '0')}_${fmtSafe(segStartTicks / vTimescale)}-${fmtSafe(segEndTicks / vTimescale)}.mp4`);
 
     const statusEl = document.getElementById('cs' + i);
@@ -665,6 +677,69 @@ function buildAndDownloadMP4Clips(videoSamples, audioSamples, vTrack, aTrack, co
     progressFill.style.width = (((i + 1) / count) * 95) + '%';
     progressLabel.textContent = `Exporting clip ${i + 1} of ${count}…`;
   }
+}
+
+// ── Patch mvhd/tkhd/mdhd duration fields (0 by default in an MSE-oriented
+// init segment) so every player reports correct duration and can seek. ──
+function readU32(bytes, off) { return ((bytes[off]<<24) | (bytes[off+1]<<16) | (bytes[off+2]<<8) | bytes[off+3]) >>> 0; }
+function writeU32At(bytes, off, val) {
+  bytes[off] = (val >>> 24) & 0xff; bytes[off+1] = (val >>> 16) & 0xff;
+  bytes[off+2] = (val >>> 8) & 0xff; bytes[off+3] = val & 0xff;
+}
+function findChildBoxes(bytes, start, end) {
+  const boxes = []; let i = start;
+  while (i + 8 <= end) {
+    const size = readU32(bytes, i);
+    if (size < 8) break;
+    const type = String.fromCharCode(bytes[i+4], bytes[i+5], bytes[i+6], bytes[i+7]);
+    boxes.push({ type, start: i, size, payloadStart: i + 8 });
+    i += size;
+  }
+  return boxes;
+}
+function readMvhdTimescale(initBytes) {
+  const top = findChildBoxes(initBytes, 0, initBytes.length);
+  const moov = top.find(b => b.type === 'moov');
+  if (!moov) return 1000;
+  const mvhd = findChildBoxes(initBytes, moov.payloadStart, moov.start + moov.size).find(b => b.type === 'mvhd');
+  if (!mvhd || initBytes[mvhd.payloadStart] !== 0) return 1000; // only v0 supported/expected here
+  return readU32(initBytes, mvhd.payloadStart + 4 + 8);
+}
+function patchInitDurations(initBytes, clipSeconds, trackTicksById) {
+  const bytes = new Uint8Array(initBytes); // work on a fresh copy each clip
+  const top = findChildBoxes(bytes, 0, bytes.length);
+  const moov = top.find(b => b.type === 'moov');
+  if (!moov) return bytes;
+  const moovChildren = findChildBoxes(bytes, moov.payloadStart, moov.start + moov.size);
+
+  const mvhd = moovChildren.find(b => b.type === 'mvhd');
+  let movieTicks = Math.round(clipSeconds * 1000);
+  if (mvhd && bytes[mvhd.payloadStart] === 0) {
+    const base = mvhd.payloadStart + 4;
+    const movieTimescale = readU32(bytes, base + 8);
+    movieTicks = Math.round(clipSeconds * movieTimescale);
+    writeU32At(bytes, base + 12, movieTicks);
+  }
+
+  for (const trak of moovChildren.filter(b => b.type === 'trak')) {
+    const trakChildren = findChildBoxes(bytes, trak.payloadStart, trak.start + trak.size);
+    const tkhd = trakChildren.find(b => b.type === 'tkhd');
+    let trackId = null;
+    if (tkhd && bytes[tkhd.payloadStart] === 0) {
+      const base = tkhd.payloadStart + 4;
+      trackId = readU32(bytes, base + 8);
+      writeU32At(bytes, base + 16, movieTicks);
+    }
+    const mdia = trakChildren.find(b => b.type === 'mdia');
+    if (mdia && trackId !== null && trackTicksById[trackId] !== undefined) {
+      const mdhd = findChildBoxes(bytes, mdia.payloadStart, mdia.start + mdia.size).find(b => b.type === 'mdhd');
+      if (mdhd && bytes[mdhd.payloadStart] === 0) {
+        const base = mdhd.payloadStart + 4;
+        writeU32At(bytes, base + 12, trackTicksById[trackId]);
+      }
+    }
+  }
+  return bytes;
 }
 
 function downloadBlob(blob, filename) {
@@ -824,6 +899,8 @@ function exportClipBlobWebM(srcURL, startTime, duration, exportName, index) {
 function resetAll() {
   if (splitting) return;
   videoFile = null; videoDuration = 0;
+  if (videoEl.src) { try { URL.revokeObjectURL(videoEl.src); } catch (e) {} }
+  videoEl.pause();
   videoEl.src = '';
   videoPreview.classList.remove('show');
   settingsCard.classList.remove('show');
@@ -833,6 +910,19 @@ function resetAll() {
   dropzone.style.display = 'flex';
   splitBtn.disabled = false;
   progressFill.style.width = '0%';
+  fileInput.value = ''; // allow re-selecting the same file
+  document.getElementById('renameInput').value = '';
+  clipsList.innerHTML = '';
+
+  // Reset duration + range controls back to defaults
+  document.querySelectorAll('.seg').forEach(b => b.classList.remove('active'));
+  document.querySelector('.seg[data-dur="15"]').classList.add('active');
+  clipDuration = 15;
+  customDurWrap.style.display = 'none';
+  fullVideoCheck.checked = true;
+  useFullVideo = true;
+  rangeControls.style.display = 'none';
+  startSec = 0; endSec = 0;
 }
 
 // ── HELPERS ──
