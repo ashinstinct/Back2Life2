@@ -442,6 +442,11 @@ const $=id=>document.getElementById(id);
 $('fileInput').addEventListener('change', async e=>{
   const file=e.target.files[0];
   if(!file)return;
+  await loadFile(file);
+  e.target.value='';
+});
+async function loadFile(file){
+  if(!file)return;
   fileName=file.name.replace(/\.[^.]+$/,'');
   showSpinner('Loading audio…');
   try{
@@ -470,8 +475,42 @@ $('fileInput').addEventListener('change', async e=>{
     console.error(err);
   }
   hideSpinner();
-  e.target.value='';
-});
+}
+
+// ══ IMPORT HANDOFF (from Audio Converter "Open in Editor") ══
+function b2lHandoffOpen(){
+  return new Promise((resolve,reject)=>{
+    const req=indexedDB.open('b2lHandoff',1);
+    req.onupgradeneeded=()=>{req.result.createObjectStore('files',{keyPath:'id'});};
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+}
+async function b2lHandoffTake(id){
+  try{
+    const db=await b2lHandoffOpen();
+    const rec=await new Promise((resolve,reject)=>{
+      const tx=db.transaction('files','readwrite'),store=tx.objectStore('files');
+      const getReq=store.get(id);
+      getReq.onsuccess=()=>{
+        if(getReq.result)store.delete(id);
+        resolve(getReq.result||null);
+      };
+      getReq.onerror=()=>reject(getReq.error);
+    });
+    return rec;
+  }catch(err){console.error(err);return null;}
+}
+(async function checkImportHandoff(){
+  const params=new URLSearchParams(location.search);
+  if(params.get('import')!=='1')return;
+  history.replaceState(null,'',location.pathname);
+  const rec=await b2lHandoffTake('audioHandoff');
+  if(!rec||!rec.blob)return;
+  const file=new File([rec.blob],rec.name||'audio.mp3',{type:rec.blob.type||'audio/mpeg'});
+  await loadFile(file);
+  toast('✓ Imported from Audio Converter');
+})();
 
 // ══ WAVEFORM ══
 function drawWave(){
