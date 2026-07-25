@@ -125,6 +125,148 @@
   @media(max-width:768px){.site-nav-back{display:none}.site-burger{display:flex}}
   .route-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   @media(max-width:600px){.overview-grid{grid-template-columns:1fr}.hero{padding:20px 20px 32px}.container{padding:40px 20px}.final-cta{padding:36px 20px}.storyboard-grid{grid-template-columns:1fr 1fr}.route-row-grid{grid-template-columns:1fr}}
+
+  /* ═══════════════════════════════════════ */
+  /* SHARE BUTTON */
+  /* ═══════════════════════════════════════ */
+  #shareButtonContainer {
+    position: relative;
+  }
+
+  .share-btn {
+    background: linear-gradient(135deg, #00cc66, #00ff88);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 255, 136, 0.15);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .share-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 255, 136, 0.25);
+  }
+
+  .share-btn:active {
+    transform: scale(0.95);
+  }
+
+  .share-menu {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(12, 12, 12, 0.97);
+    backdrop-filter: blur(30px);
+    border-radius: 26px 26px 0 0;
+    padding: 20px 20px 40px;
+    z-index: 1000;
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .share-menu.hidden {
+    display: none !important;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .share-menu-header {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #00ff88;
+    padding: 12px 0 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .share-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 16px;
+    margin-top: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    color: #f0f0f0;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .share-option:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.16);
+    transform: translateX(4px);
+  }
+
+  .share-option:active {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .share-option img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .share-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    animation: fadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .share-toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 255, 136, 0.2);
+    border: 1px solid rgba(0, 255, 136, 0.4);
+    color: #00ff88;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 1001;
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
 </style>
 <link rel="apple-touch-icon" sizes="512x512" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -544,6 +686,45 @@ No Music</pre>
     </div>
   </div>
 
+
+  <!-- SHARE BUTTON -->
+  <div style="margin-top: 80px; padding-top: 60px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
+    <h3 style="font-size: 16px; color: #aaa; margin-bottom: 24px; font-weight: 500;">Share this tutorial</h3>
+    <div id="shareButtonContainer" style="display: flex; justify-content: center;">
+      <button id="shareBtn" class="share-btn" title="Share this tutorial">
+        ↗️
+      </button>
+      <div id="shareMenu" class="share-menu" style="display:none">
+        <div class="share-menu-header">Share this tutorial</div>
+        <button class="share-option" id="shareNative" style="display:none">
+          📱 Share via...
+        </button>
+        <button class="share-option" id="shareTwitter">
+          <img src="https://cdn.simpleicons.org/x/ffffff" alt="X"> Post on X
+        </button>
+        <button class="share-option" id="shareFacebook">
+          <img src="https://cdn.simpleicons.org/facebook/1877F2" alt="Facebook"> Share on Facebook
+        </button>
+        <button class="share-option" id="shareInstagram">
+          <img src="https://cdn.simpleicons.org/instagram/E1306C" alt="Instagram"> Share on Instagram
+        </button>
+        <button class="share-option" id="shareTikTok">
+          <img src="https://cdn.simpleicons.org/tiktok/ffffff" alt="TikTok"> Share on TikTok
+        </button>
+        <button class="share-option" id="shareLinkedIn">
+          <img src="https://cdn.simpleicons.org/linkedin/0A66C2" alt="LinkedIn"> Share on LinkedIn
+        </button>
+        <button class="share-option" id="shareEmail">
+          <img src="https://cdn.simpleicons.org/gmail/EA4335" alt="Email"> Share via Email
+        </button>
+        <button class="share-option" id="shareCopy">
+          <span style="font-size:16px">🔗</span> Copy link
+        </button>
+      </div>
+    </div>
+  </div>
+
+
 </div>
 
 <script>
@@ -567,5 +748,149 @@ function copyPrompt(btn){
 <script src="/auth.js"></script>
 <script defer src="/t.js"></script>
 <script src="/b2l-media.js?v=1" defer></script>
+
+<script>
+
+function shareButtonInit(pageTitle, pageUrl) {
+  const url = pageUrl || window.location.href;
+  const title = pageTitle || document.title;
+  const text = `Check out "${title}" — AI video tutorial on Back2Life.app`;
+
+  const shareBtn = document.getElementById('shareBtn');
+  const shareMenu = document.getElementById('shareMenu');
+  const shareNative = document.getElementById('shareNative');
+  const shareTwitter = document.getElementById('shareTwitter');
+  const shareFacebook = document.getElementById('shareFacebook');
+  const shareInstagram = document.getElementById('shareInstagram');
+  const shareTikTok = document.getElementById('shareTikTok');
+  const shareLinkedIn = document.getElementById('shareLinkedIn');
+  const shareEmail = document.getElementById('shareEmail');
+  const shareCopy = document.getElementById('shareCopy');
+
+  const hasNativeShare = navigator.share !== undefined;
+  if (hasNativeShare) {
+    shareNative.style.display = 'block';
+  }
+
+  shareBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (shareMenu.style.display === 'none') {
+      openShareMenu();
+    } else {
+      closeShareMenu();
+    }
+  });
+
+  function openShareMenu() {
+    shareMenu.style.display = 'block';
+    const overlay = document.createElement('div');
+    overlay.className = 'share-overlay';
+    overlay.id = 'shareOverlay';
+    overlay.addEventListener('click', closeShareMenu);
+    document.body.appendChild(overlay);
+  }
+
+  function closeShareMenu() {
+    shareMenu.style.display = 'none';
+    const overlay = document.getElementById('shareOverlay');
+    if (overlay) overlay.remove();
+  }
+
+  if (hasNativeShare) {
+    shareNative.addEventListener('click', async () => {
+      try {
+        await navigator.share({
+          title: title,
+          text: text,
+          url: url,
+        });
+        closeShareMenu();
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error('Share failed:', err);
+        }
+      }
+    });
+  }
+
+  shareTwitter.addEventListener('click', () => {
+    const tweetUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+    window.open(tweetUrl, '_blank', 'width=550,height=420');
+    closeShareMenu();
+  });
+
+  shareFacebook.addEventListener('click', () => {
+    const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+    window.open(fbUrl, '_blank', 'width=550,height=420');
+    closeShareMenu();
+  });
+
+  shareInstagram.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast('Link copied! 📋 Share it in your Instagram story or DMs');
+      closeShareMenu();
+    } catch (err) {
+      console.error('Copy failed:', err);
+    }
+  });
+
+  shareTikTok.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast('Link copied! 📋 Share it in your TikTok bio or messages');
+      closeShareMenu();
+    } catch (err) {
+      console.error('Copy failed:', err);
+    }
+  });
+
+  shareLinkedIn.addEventListener('click', () => {
+    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+    window.open(linkedInUrl, '_blank', 'width=550,height=420');
+    closeShareMenu();
+  });
+
+  shareEmail.addEventListener('click', () => {
+    const emailUrl = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(text + '\n\n' + url)}`;
+    window.location.href = emailUrl;
+    closeShareMenu();
+  });
+
+  shareCopy.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast('Link copied! 🎉');
+      closeShareMenu();
+    } catch (err) {
+      console.error('Copy failed:', err);
+    }
+  });
+
+  function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'share-toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.remove();
+    }, 2000);
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const shareMenu = document.getElementById('shareMenu');
+    const overlay = document.getElementById('shareOverlay');
+    if (shareMenu) shareMenu.style.display = 'none';
+    if (overlay) overlay.remove();
+  }
+});
+
+</script>
+<script>
+
+shareButtonInit("The Yellow Superhero Awakening — AI Video Tutorial", "https://back2life.app/tutorial-27");
+</script>
 </body>
 </html>
